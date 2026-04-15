@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
@@ -139,7 +141,7 @@ export default async function PanelPage() {
             <h2 className="text-lg font-bold text-white mb-4">Randevularım</h2>
             {appointments && appointments.length > 0 ? (
               <div className="space-y-3">
-                {appointments.map((apt: any) => (
+                {(appointments as unknown as Array<{id: string; appointment_date: string | null; status: string; clinics: {name: string} | null}>).map((apt) => (
                   <div key={apt.id} className="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl">
                     <div>
                       <div className="text-white text-sm font-medium">{apt.clinics?.name ?? 'Klinik'}</div>
