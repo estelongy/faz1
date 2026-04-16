@@ -3,6 +3,28 @@ export const dynamic = 'force-dynamic'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
+const APT_STATUS_LABEL: Record<string, string> = {
+  pending: 'Beklemede',
+  confirmed: 'Onaylandı',
+  completed: 'Tamamlandı',
+  cancelled: 'İptal',
+}
+
+const APT_STATUS_COLOR: Record<string, string> = {
+  pending: 'bg-amber-500/20 text-amber-400',
+  confirmed: 'bg-blue-500/20 text-blue-400',
+  completed: 'bg-emerald-500/20 text-emerald-400',
+  cancelled: 'bg-red-500/20 text-red-400',
+}
+
+async function cancelAppointment(formData: FormData) {
+  'use server'
+  const supabase = await createClient()
+  const appointmentId = formData.get('appointmentId') as string
+  await supabase.from('appointments').update({ status: 'cancelled' }).eq('id', appointmentId)
+  redirect('/panel')
+}
+
 export default async function PanelPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -138,28 +160,45 @@ export default async function PanelPage() {
           </div>
 
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
-            <h2 className="text-lg font-bold text-white mb-4">Randevularım</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white">Randevularım</h2>
+              <a href="/randevu" className="text-xs text-violet-400 hover:text-violet-300 transition-colors">+ Yeni Randevu</a>
+            </div>
             {appointments && appointments.length > 0 ? (
               <div className="space-y-3">
                 {(appointments as unknown as Array<{id: string; appointment_date: string | null; status: string; clinics: {name: string} | null}>).map((apt) => (
                   <div key={apt.id} className="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl">
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="text-white text-sm font-medium">{apt.clinics?.name ?? 'Klinik'}</div>
                       <div className="text-slate-500 text-xs mt-0.5">
                         {apt.appointment_date ? new Date(apt.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '—'}
                       </div>
                     </div>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      apt.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' :
-                      apt.status === 'cancelled' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'
-                    }`}>
-                      {apt.status === 'completed' ? 'Tamamlandı' : apt.status === 'cancelled' ? 'İptal' : 'Beklemede'}
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                      <span className={`text-xs px-2 py-1 rounded-full ${APT_STATUS_COLOR[apt.status] ?? APT_STATUS_COLOR.pending}`}>
+                        {APT_STATUS_LABEL[apt.status] ?? apt.status}
+                      </span>
+                      {(apt.status === 'pending' || apt.status === 'confirmed') && (
+                        <form action={cancelAppointment}>
+                          <input type="hidden" name="appointmentId" value={apt.id} />
+                          <button type="submit" className="text-slate-500 hover:text-red-400 transition-colors" title="İptal et">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </form>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-slate-500 text-sm">Randevunuz yok. <a href="/randevu" className="text-violet-400 hover:text-violet-300">Randevu al →</a></p>
+              <div className="text-center py-8">
+                <p className="text-slate-500 text-sm mb-3">Henüz randevunuz yok.</p>
+                <a href="/randevu" className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-xl transition-colors">
+                  Randevu Al →
+                </a>
+              </div>
             )}
           </div>
         </div>
