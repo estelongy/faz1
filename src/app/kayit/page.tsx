@@ -9,7 +9,6 @@ import { createClient } from '@/lib/supabase/client'
 
 export default function KayitPage() {
   const router = useRouter()
-  const supabase = createClient()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,6 +20,7 @@ export default function KayitPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    const supabase = createClient()
     if (password.length < 6) {
       setError('Şifre en az 6 karakter olmalıdır.')
       setLoading(false)
@@ -44,6 +44,7 @@ export default function KayitPage() {
   }
 
   async function handleGoogle() {
+    const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${location.origin}/auth/callback` },

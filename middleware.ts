@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Auth gerektiren sayfalar
-  const protectedRoutes = ['/panel', '/analiz', '/klinik']
+  const protectedRoutes = ['/panel', '/analiz', '/klinik', '/admin']
   const isProtected = protectedRoutes.some(r => pathname.startsWith(r))
 
   // Giriş yapmışken auth sayfalarına gitmesin
@@ -39,6 +39,19 @@ export async function middleware(request: NextRequest) {
 
   if (user && isAuthPage) {
     return NextResponse.redirect(new URL('/panel', request.url))
+  }
+
+  // Admin koruması: /admin rotaları için role kontrolü
+  if (user && pathname.startsWith('/admin')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile || profile.role !== 'admin') {
+      return NextResponse.redirect(new URL('/panel', request.url))
+    }
   }
 
   return supabaseResponse

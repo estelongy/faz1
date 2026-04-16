@@ -49,7 +49,6 @@ const scoreBarColor = (score: number) =>
 
 export default function AnalizPage() {
   const router = useRouter()
-  const supabase = createClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [step, setStep] = useState<Step>('upload')
@@ -80,6 +79,7 @@ export default function AnalizPage() {
 
   async function startAnalysis() {
     if (!previewUrl) return
+    const supabase = createClient()
     setStep('processing')
 
     // Yapay gecikme — AI işlem süresi simülasyonu

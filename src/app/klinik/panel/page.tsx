@@ -43,7 +43,7 @@ export default async function KlinikPanelPage() {
   const { data: clinic } = await supabase
     .from('clinics')
     .select('*')
-    .eq('owner_id', user.id)
+    .eq('user_id', user.id)
     .single()
 
   // Klinik yoksa oluşturma sayfasına yönlendir

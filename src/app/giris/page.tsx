@@ -9,7 +9,6 @@ import { createClient } from '@/lib/supabase/client'
 
 export default function GirisPage() {
   const router = useRouter()
-  const supabase = createClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -19,6 +18,7 @@ export default function GirisPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       setError(error.message === 'Invalid login credentials' ? 'E-posta veya şifre hatalı.' : error.message)
@@ -30,6 +30,7 @@ export default function GirisPage() {
   }
 
   async function handleGoogle() {
+    const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${location.origin}/auth/callback` },
