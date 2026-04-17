@@ -1,11 +1,10 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import EGSScoreBar from '@/components/EGSScoreBar'
 
 type Step = 'upload' | 'processing' | 'result'
 
@@ -267,20 +266,17 @@ export default function AnalizPage() {
         {step === 'result' && result && (
           <div>
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-white mb-2">Analiz Tamamlandı</h1>
-              <p className="text-slate-400">İşte cilt sağlığı raporunuz</p>
+              <h1 className="text-3xl font-bold text-white mb-2">Analiziniz Hazır</h1>
+              <p className="text-slate-400">İlk EGS Gençlik Skorunuz hesaplandı</p>
             </div>
 
-            {/* Ana skor */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/20 text-center mb-6">
-              <p className="text-slate-400 text-sm mb-2">Genel Cilt Skoru</p>
-              <div className={`text-7xl font-bold mb-1 ${scoreColor(result.overall)}`}>
-                {result.overall}
-              </div>
-              <div className="text-slate-400 text-sm">/ 100</div>
-              <div className="mt-3 text-sm font-medium text-slate-300">
-                {result.overall >= 80 ? 'Harika bir cilt sağlığınız var!' : result.overall >= 65 ? 'Cilt sağlığınız iyi, geliştirebilirsiniz.' : 'Düzenli bakıma ihtiyacınız var.'}
-              </div>
+            {/* EGS Canlı Skor Barı */}
+            <div className="p-6 rounded-2xl bg-slate-800/50 border border-slate-700/60 mb-6">
+              <EGSScoreBar
+                score={result.overall}
+                phase="ai_analiz"
+                animated={true}
+              />
             </div>
 
             {/* Metrikler */}
