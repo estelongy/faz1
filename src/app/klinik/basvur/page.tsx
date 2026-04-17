@@ -1,8 +1,14 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Klinik Başvurusu',
+  description: 'Kliniğinizi Estelongy platformuna kaydedin. Hastaları kolayca yönetin.',
+}
 
 const SPECIALTIES = [
   'Cilt Bakımı', 'Lazer Tedavisi', 'Botoks & Dolgu', 'PRP Tedavisi',

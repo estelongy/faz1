@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 
-type AppointmentStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled'
+type AppointmentStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show'
 
 interface Appointment {
   id: string
@@ -21,6 +21,7 @@ const STATUS_LABEL: Record<AppointmentStatus, string> = {
   in_progress: 'Görüşmede',
   completed:   'Tamamlandı',
   cancelled:   'İptal',
+  no_show:     'Gelmedi',
 }
 
 const STATUS_COLOR: Record<AppointmentStatus, string> = {
@@ -29,6 +30,7 @@ const STATUS_COLOR: Record<AppointmentStatus, string> = {
   in_progress: 'bg-violet-500/20 text-violet-400',
   completed:   'bg-emerald-500/20 text-emerald-400',
   cancelled:   'bg-red-500/20 text-red-400',
+  no_show:     'bg-slate-500/20 text-slate-400',
 }
 
 function scoreColorClass(s: number) {
@@ -128,6 +130,22 @@ export default async function KlinikPanelPage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              {/* Jeton bakiyesi */}
+              {clinic && (
+                <Link href="/klinik/panel/jeton" className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-opacity hover:opacity-80 ${
+                  (clinic.jeton_balance ?? 0) === 0
+                    ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                    : (clinic.jeton_balance ?? 0) <= 3
+                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                    : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                }`}>
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
+                  </svg>
+                  {clinic.jeton_balance ?? 0} Jeton
+                </Link>
+              )}
               <Link href="/panel" className="text-sm text-slate-400 hover:text-white transition-colors">Kullanıcı Paneli</Link>
               <form action={handleSignOut}>
                 <button type="submit" className="text-sm text-slate-400 hover:text-white transition-colors">Çıkış</button>
@@ -157,6 +175,28 @@ export default async function KlinikPanelPage() {
                 </p>
               </div>
             </div>
+          </div>
+        )}
+
+        {clinic && (clinic.jeton_balance ?? 0) === 0 && (
+          <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
+            <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-red-400 text-sm flex-1">
+              <strong>Jeton bakiyeniz sıfır.</strong> Hasta kabul edebilmek için yöneticinizden jeton yüklemesini isteyin.
+            </p>
+          </div>
+        )}
+
+        {clinic && (clinic.jeton_balance ?? 0) > 0 && (clinic.jeton_balance ?? 0) <= 3 && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
+            <svg className="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p className="text-amber-400 text-sm">
+              Yalnızca <strong>{clinic.jeton_balance}</strong> jetonunuz kaldı. Yakında yenilemeniz gerekecek.
+            </p>
           </div>
         )}
 
@@ -341,7 +381,7 @@ function AppointmentActions({
   apt: Appointment
   action: (f: FormData) => Promise<void>
 }) {
-  if (apt.status === 'cancelled' || apt.status === 'completed') {
+  if (apt.status === 'cancelled' || apt.status === 'completed' || apt.status === 'no_show') {
     return <span className="text-slate-600 text-xs">—</span>
   }
   return (
@@ -361,13 +401,24 @@ function AppointmentActions({
           </button>
         </form>
       )}
-      <form action={action}>
-        <input type="hidden" name="appointmentId" value={apt.id} />
-        <input type="hidden" name="status" value="cancelled" />
-        <button type="submit" className="px-2 py-1 bg-red-900/50 hover:bg-red-800/50 text-red-400 text-xs rounded-lg transition-colors border border-red-800/50">
-          İptal
-        </button>
-      </form>
+      {apt.status === 'confirmed' && (
+        <form action={action}>
+          <input type="hidden" name="appointmentId" value={apt.id} />
+          <input type="hidden" name="status" value="no_show" />
+          <button type="submit" className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-400 text-xs rounded-lg transition-colors border border-slate-600">
+            Gelmedi
+          </button>
+        </form>
+      )}
+      {apt.status !== 'in_progress' && (
+        <form action={action}>
+          <input type="hidden" name="appointmentId" value={apt.id} />
+          <input type="hidden" name="status" value="cancelled" />
+          <button type="submit" className="px-2 py-1 bg-red-900/50 hover:bg-red-800/50 text-red-400 text-xs rounded-lg transition-colors border border-red-800/50">
+            İptal
+          </button>
+        </form>
+      )}
     </div>
   )
 }

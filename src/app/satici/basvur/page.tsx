@@ -1,8 +1,14 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Satıcı Başvurusu',
+  description: 'Cilt bakım ürünlerinizi Estelongy platformunda satışa sunun.',
+}
 
 async function submitApplication(formData: FormData) {
   'use server'

@@ -12,6 +12,7 @@ const STATUS_LABEL: Record<string, string> = {
   in_progress: 'Görüşmede',
   completed:   'Tamamlandı',
   cancelled:   'İptal',
+  no_show:     'Gelmedi',
 }
 const STATUS_COLOR: Record<string, string> = {
   pending:     'bg-amber-500/20 text-amber-400',
@@ -19,6 +20,7 @@ const STATUS_COLOR: Record<string, string> = {
   in_progress: 'bg-violet-500/20 text-violet-400',
   completed:   'bg-emerald-500/20 text-emerald-400',
   cancelled:   'bg-red-500/20 text-red-400',
+  no_show:     'bg-slate-500/20 text-slate-400',
 }
 
 export default async function HastaDetayPage({

@@ -61,7 +61,8 @@ interface AnalysisData {
 interface Props {
   appointment: AppointmentData
   analysis: AnalysisData | null
-  onKabul:            (apptId: string) => Promise<void>
+  jetonBalance: number
+  onKabul:            (apptId: string) => Promise<{ ok: boolean; error?: string }>
   onSaveAnket:        (analysisId: string, answers: Record<string, number>, total: number) => Promise<void>
   onSaveTetkik:       (analysisId: string, data: Record<string, number>) => Promise<void>
   onSaveHekim:        (analysisId: string, score: number, notes: string) => Promise<void>
@@ -70,10 +71,11 @@ interface Props {
 
 // ── Bileşen ───────────────────────────────────────────────────────
 export default function KlinikAkisWizard({
-  appointment, analysis,
+  appointment, analysis, jetonBalance,
   onKabul, onSaveAnket, onSaveTetkik, onSaveHekim, onFinalOnay,
 }: Props) {
   const [isPending, startTransition] = useTransition()
+  const [kabulError, setKabulError]   = useState<string | null>(null)
 
   // Başlangıç adımı — kaldığı yerden devam
   function getInitialStep() {
@@ -150,15 +152,45 @@ export default function KlinikAkisWizard({
           </div>
         )}
 
+        {/* Jeton bakiyesi */}
+        {!alreadyIn && (
+          <div className={`p-4 rounded-xl border text-sm flex items-center justify-between ${
+            jetonBalance > 0
+              ? 'border-slate-700 bg-slate-800/40'
+              : 'border-red-500/30 bg-red-500/10'
+          }`}>
+            <div>
+              <span className={jetonBalance > 0 ? 'text-slate-400' : 'text-red-400'}>Jeton Bakiyesi</span>
+              {jetonBalance === 0 && (
+                <p className="text-red-400 text-xs mt-0.5">Hasta kabul etmek için jeton gerekli. Yöneticinizle iletişime geçin.</p>
+              )}
+            </div>
+            <span className={`text-2xl font-black ${jetonBalance > 0 ? 'text-white' : 'text-red-400'}`}>
+              {jetonBalance}
+            </span>
+          </div>
+        )}
+
+        {kabulError && (
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            ✕ {kabulError}
+          </div>
+        )}
+
         {!alreadyIn ? (
           <button
-            disabled={isPending}
+            disabled={isPending || jetonBalance < 1}
             onClick={() => startTransition(async () => {
-              await onKabul(appointment.id)
-              setStep(2)
+              setKabulError(null)
+              const result = await onKabul(appointment.id)
+              if (result.ok) {
+                setStep(2)
+              } else {
+                setKabulError(result.error ?? 'Bir hata oluştu')
+              }
             })}
-            className="w-full py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50">
-            {isPending ? 'İşleniyor...' : '✓ Hastayı Kabul Et — Süreci Başlat'}
+            className="w-full py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+            {isPending ? 'İşleniyor...' : jetonBalance < 1 ? '✕ Yetersiz Jeton' : '✓ Hastayı Kabul Et — 1 Jeton Düşülecek'}
           </button>
         ) : (
           <button onClick={() => setStep(2)}

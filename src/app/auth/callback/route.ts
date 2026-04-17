@@ -4,7 +4,10 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/panel'
+  const nextParam = searchParams.get('next') ?? '/panel'
+
+  // Open redirect koruması: next sadece kendi domain'imize izin ver
+  const next = nextParam.startsWith('/') && !nextParam.startsWith('//') ? nextParam : '/panel'
 
   if (code) {
     const supabase = await createClient()

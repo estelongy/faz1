@@ -1,26 +1,27 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import AdminNavLink from '@/components/AdminNavLink'
 
 export const dynamic = 'force-dynamic'
 
 const NAV = [
-  { href: '/admin', label: 'Dashboard', icon: (
+  { href: '/admin', label: 'Dashboard', exact: true, icon: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
     </svg>
   )},
-  { href: '/admin/kullanicilar', label: 'Kullanıcılar', icon: (
+  { href: '/admin/kullanicilar', label: 'Kullanıcılar', exact: false, icon: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
   )},
-  { href: '/admin/klinikler', label: 'Klinikler', icon: (
+  { href: '/admin/klinikler', label: 'Klinikler', exact: false, icon: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
     </svg>
   )},
-  { href: '/admin/saticilar', label: 'Satıcılar', icon: (
+  { href: '/admin/saticilar', label: 'Satıcılar', exact: false, icon: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
     </svg>
@@ -61,15 +62,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
 
         <nav className="flex-1 p-3 space-y-1">
-          {NAV.map(({ href, label, icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm group"
-            >
-              <span className="group-hover:text-orange-400 transition-colors">{icon}</span>
-              {label}
-            </Link>
+          {NAV.map(({ href, label, icon, exact }) => (
+            <AdminNavLink key={href} href={href} label={label} icon={icon} exact={exact} />
           ))}
         </nav>
 

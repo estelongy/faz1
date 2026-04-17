@@ -7,18 +7,44 @@ import KlinikAkisWizard from '@/components/KlinikAkisWizard'
 
 // ── Server Actions ─────────────────────────────────────────────────
 
-async function kabulEt(apptId: string) {
+async function kabulEt(apptId: string): Promise<{ ok: boolean; error?: string }> {
   'use server'
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return
-  // Ownership: klinik sahibi mi?
-  const { data: clinic } = await supabase.from('clinics').select('id').eq('user_id', user.id).single()
-  if (!clinic) return
+  if (!user) return { ok: false, error: 'Yetkilendirme hatası' }
+
+  const { data: clinic } = await supabase
+    .from('clinics')
+    .select('id, jeton_balance')
+    .eq('user_id', user.id)
+    .single()
+  if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
+  if ((clinic.jeton_balance ?? 0) < 1) return { ok: false, error: 'Yetersiz jeton bakiyesi. Lütfen jeton yükleyin.' }
+
+  // Atomik jeton düşme (race condition guard: .gte)
+  const { error: jetonErr } = await supabase
+    .from('clinics')
+    .update({ jeton_balance: clinic.jeton_balance - 1 })
+    .eq('id', clinic.id)
+    .gte('jeton_balance', 1)
+  if (jetonErr) return { ok: false, error: 'Jeton düşülemedi, tekrar deneyin.' }
+
+  // Randevu güncelle
   await supabase.from('appointments')
     .update({ status: 'in_progress' })
     .eq('id', apptId)
     .eq('clinic_id', clinic.id)
+
+  // İşlem logu
+  await supabase.from('jeton_transactions').insert({
+    clinic_id: clinic.id,
+    amount: -1,
+    type: 'usage',
+    description: 'Hasta kabulü',
+    appointment_id: apptId,
+  })
+
+  return { ok: true }
 }
 
 async function saveAnket(analysisId: string, answers: Record<string, number>, total: number) {
@@ -105,7 +131,7 @@ export default async function RandevuAkisPage({
   if (!user) redirect('/giris')
 
   const { data: clinic } = await supabase
-    .from('clinics').select('id, name').eq('user_id', user.id).single()
+    .from('clinics').select('id, name, jeton_balance').eq('user_id', user.id).single()
   if (!clinic) redirect('/klinik/panel')
 
   // Randevu — ownership kontrolü ile
@@ -180,6 +206,7 @@ export default async function RandevuAkisPage({
         <KlinikAkisWizard
           appointment={appointment as Parameters<typeof KlinikAkisWizard>[0]['appointment']}
           analysis={analysis as Parameters<typeof KlinikAkisWizard>[0]['analysis']}
+          jetonBalance={(clinic as { jeton_balance?: number }).jeton_balance ?? 0}
           onKabul={kabulEt}
           onSaveAnket={saveAnket}
           onSaveTetkik={saveTetkik}

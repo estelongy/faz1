@@ -13,6 +13,7 @@ interface Clinic {
   specialties: string[] | null
   approval_status: ApprovalStatus
   is_active: boolean
+  jeton_balance: number
   created_at: string
   profiles: { full_name: string | null } | null
 }
@@ -31,10 +32,56 @@ const STATUS_LABEL: Record<ApprovalStatus, string> = {
 async function updateClinic(formData: FormData) {
   'use server'
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
   const clinicId = formData.get('clinicId') as string
   const status = formData.get('status') as ApprovalStatus
   const isActive = status === 'approved'
+
+  // Starter jeton: ilk kez onaylanıyorsa 10 jeton ver
+  if (status === 'approved') {
+    const { data: current } = await supabase
+      .from('clinics')
+      .select('approval_status, jeton_balance')
+      .eq('id', clinicId)
+      .single()
+    if (current?.approval_status === 'pending' && (current?.jeton_balance ?? 0) === 0) {
+      await supabase.from('clinics').update({ approval_status: status, is_active: isActive, jeton_balance: 10 }).eq('id', clinicId)
+      await supabase.from('jeton_transactions').insert({
+        clinic_id: clinicId,
+        amount: 10,
+        type: 'manual',
+        description: 'Hoş geldiniz! Başlangıç jetonu (10 adet)',
+      })
+      redirect('/admin/klinikler')
+    }
+  }
+
   await supabase.from('clinics').update({ approval_status: status, is_active: isActive }).eq('id', clinicId)
+  redirect('/admin/klinikler')
+}
+
+async function addJeton(formData: FormData) {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+
+  const clinicId = formData.get('clinicId') as string
+  const amount   = parseInt(formData.get('amount') as string, 10)
+  if (!clinicId || isNaN(amount) || amount < 1) redirect('/admin/klinikler')
+
+  const { data: clinic } = await supabase.from('clinics').select('jeton_balance').eq('id', clinicId).single()
+  const newBalance = (clinic?.jeton_balance ?? 0) + amount
+
+  await supabase.from('clinics').update({ jeton_balance: newBalance }).eq('id', clinicId)
+  await supabase.from('jeton_transactions').insert({
+    clinic_id: clinicId,
+    amount,
+    type: 'manual',
+    description: `Admin tarafından ${amount} jeton yüklendi`,
+  })
+
   redirect('/admin/klinikler')
 }
 
@@ -45,7 +92,7 @@ export default async function KliniklerPage() {
 
   const { data: clinics } = await supabase
     .from('clinics')
-    .select('id, name, location, bio, specialties, approval_status, is_active, created_at, profiles(full_name)')
+    .select('id, name, location, bio, specialties, approval_status, is_active, jeton_balance, created_at, profiles(full_name)')
     .order('created_at', { ascending: false })
 
   const all = (clinics ?? []) as unknown as Clinic[]
@@ -99,6 +146,7 @@ export default async function KliniklerPage() {
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">Klinik</th>
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">Konum</th>
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">Kayıt</th>
+                <th className="text-left px-4 py-3 text-slate-400 font-medium">Jeton</th>
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">Durum</th>
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">İşlem</th>
               </tr>
@@ -112,6 +160,20 @@ export default async function KliniklerPage() {
                   </td>
                   <td className="px-4 py-3 text-slate-400 text-xs">{c.location ?? '—'}</td>
                   <td className="px-4 py-3 text-slate-400 text-xs">{new Date(c.created_at).toLocaleDateString('tr-TR')}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm font-bold ${
+                        (c.jeton_balance ?? 0) === 0 ? 'text-red-400' :
+                        (c.jeton_balance ?? 0) <= 3 ? 'text-amber-400' : 'text-emerald-400'
+                      }`}>{c.jeton_balance ?? 0}</span>
+                      <form action={addJeton} className="flex gap-1 items-center">
+                        <input type="hidden" name="clinicId" value={c.id} />
+                        <input type="number" name="amount" defaultValue={10} min={1} max={1000}
+                          className="w-14 bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded px-1.5 py-0.5 focus:outline-none focus:border-violet-500" />
+                        <button type="submit" className="px-1.5 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white text-xs rounded transition-colors">+</button>
+                      </form>
+                    </div>
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLOR[c.approval_status]}`}>
                       {STATUS_LABEL[c.approval_status]}
