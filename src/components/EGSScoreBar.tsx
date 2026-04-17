@@ -53,8 +53,8 @@ function arcPath(startDeg: number, endDeg: number, r: number = R) {
   const s = polar(CX, CY, r, startDeg)
   const e = polar(CX, CY, r, endDeg)
   const large = Math.abs(startDeg - endDeg) > 180 ? 1 : 0
-  // sweepFlag=0 → saat yönünün tersine (azalan açı = sağa doğru)
-  return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${large} 0 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`
+  // sweepFlag=1 → SVG'de saat yönü = yarım dairenin üst yarısından geç
+  return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`
 }
 
 // Score → gauge açısı (180°=sol/0puan → 0°=sağ/100puan)
@@ -159,11 +159,11 @@ export default function EGSScoreBar({
   const delta = previousScore !== undefined ? score - previousScore : null
   const isLastPhase = phase === 'klinik_onayli'
 
-  // Needle ucu ve kuyruğu
-  const needleTip = polar(CX, CY, R - 14, needleAngle)
-  const needleLeft = polar(CX, CY, 14, needleAngle + 90)
-  const needleRight = polar(CX, CY, 14, needleAngle - 90)
-  const needleTail = polar(CX, CY, 22, needleAngle + 180)
+  // Needle: scoreToAngle → 180°(sol/0puan)..0°(sağ/100puan)
+  const needleTip = polar(CX, CY, R - 12, needleAngle)
+  const needleLeft = polar(CX, CY, 10, needleAngle + 90)
+  const needleRight = polar(CX, CY, 10, needleAngle - 90)
+  const needleTail = polar(CX, CY, 18, needleAngle + 180)
 
   return (
     <div className="w-full select-none">
