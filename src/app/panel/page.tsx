@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import EGSScoreBar, { type EGSPhase } from '@/components/EGSScoreBar'
 
 const APT_STATUS_LABEL: Record<string, string> = {
   pending: 'Beklemede',
@@ -55,7 +56,17 @@ export default async function PanelPage() {
     .order('appointment_date', { ascending: false })
     .limit(5)
 
-  const latestScore = analyses?.[0]?.final_overall ?? analyses?.[0]?.temp_overall ?? analyses?.[0]?.web_overall ?? null
+  const latestAnalysis = analyses?.[0] ?? null
+  const latestScore = latestAnalysis?.final_overall ?? latestAnalysis?.temp_overall ?? latestAnalysis?.web_overall ?? null
+
+  // Mevcut EGS aşamasını belirle
+  function getCurrentPhase(): EGSPhase {
+    if (!latestAnalysis) return 'ai_analiz'
+    if (latestAnalysis.final_overall) return 'klinik_onayli'
+    if (latestAnalysis.temp_overall) return 'longevity_anketi'
+    return 'ai_analiz'
+  }
+  const currentPhase = getCurrentPhase()
 
   async function handleSignOut() {
     'use server'
@@ -99,40 +110,55 @@ export default async function PanelPage() {
           <p className="text-slate-400 mt-1">Cilt sağlığınızı takip edin</p>
         </div>
 
-        {/* Skor kartı */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="md:col-span-1 p-6 rounded-2xl border border-violet-500/30 bg-violet-500/10 backdrop-blur-sm">
-            <p className="text-slate-400 text-sm mb-2">Cilt Skorunuz</p>
+        {/* EGS Skor Kartı */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* EGS Bar — 2 kolon */}
+          <div className="lg:col-span-2 p-6 rounded-2xl border border-slate-700 bg-slate-800/50 backdrop-blur-sm">
             {latestScore !== null ? (
-              <>
-                <div className="text-6xl font-bold text-white mb-1">{latestScore}</div>
-                <div className="text-slate-400 text-sm">/ 100</div>
-              </>
+              <EGSScoreBar
+                score={latestScore}
+                phase={currentPhase}
+                animated={false}
+              />
             ) : (
-              <div className="text-slate-400 mt-2">Henüz analiz yapılmadı</div>
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+                <p className="text-white font-semibold mb-1">EGS Skorunuz Henüz Yok</p>
+                <p className="text-slate-400 text-sm mb-4">Selfie yükleyerek gençlik skorunuzu öğrenin</p>
+                <a href="/analiz" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity">
+                  Analizi Başlat →
+                </a>
+              </div>
             )}
           </div>
 
-          <a href="/analiz" className="group p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 backdrop-blur-sm hover:scale-[1.02] transition-all cursor-pointer">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-4 text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-bold text-white mb-1">Yeni Analiz</h3>
-            <p className="text-slate-400 text-sm">Selfie ile cilt yaşını öğren</p>
-          </a>
+          {/* Hızlı aksiyonlar */}
+          <div className="flex flex-col gap-4">
+            <a href="/analiz" className="flex-1 group p-5 rounded-2xl border border-violet-500/30 bg-violet-500/10 hover:bg-violet-500/20 hover:scale-[1.02] transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-3 text-white">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <h3 className="text-white font-bold mb-0.5">{latestScore ? 'Yeni Analiz' : 'Analizi Başlat'}</h3>
+              <p className="text-slate-400 text-xs">Skorunu güncelle</p>
+            </a>
 
-          <a href="/randevu" className="group p-6 rounded-2xl border border-slate-700 bg-slate-800/50 backdrop-blur-sm hover:scale-[1.02] transition-all cursor-pointer">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-4 text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-bold text-white mb-1">Randevu Al</h3>
-            <p className="text-slate-400 text-sm">Uzman doktora görün</p>
-          </a>
+            <a href="/randevu" className="flex-1 group p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 hover:scale-[1.02] transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-3 text-white">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-white font-bold mb-0.5">Randevu Al</h3>
+              <p className="text-slate-400 text-xs">Skoru klinikle onayla</p>
+            </a>
+          </div>
         </div>
 
         {/* Son analizler */}

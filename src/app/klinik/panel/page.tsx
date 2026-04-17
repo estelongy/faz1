@@ -74,6 +74,7 @@ export default async function KlinikPanelPage() {
 
   const today = new Date().toISOString().split('T')[0]
   const todayAppointments = appts.filter(a => a.appointment_date?.startsWith(today))
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
