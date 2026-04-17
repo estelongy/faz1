@@ -104,7 +104,7 @@ function getClinicMessage(score: number, previousScore?: number): string {
 }
 
 // Tick işaretleri
-const MAJOR_TICKS = [0, 25, 50, 75, 100]
+const MAJOR_TICKS = [0, 50, 75, 90, 100]
 const MINOR_TICKS = Array.from({ length: 21 }, (_, i) => i * 5)
 
 export default function EGSScoreBar({
