@@ -16,6 +16,7 @@ export default function KurumsalGirisPage() {
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [emailSent, setEmailSent] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -24,13 +25,36 @@ export default function KurumsalGirisPage() {
     const supabase = createClient()
 
     if (mode === 'giris') {
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password })
+      const { data: loginData, error: err } = await supabase.auth.signInWithPassword({ email, password })
       if (err) {
         setError('E-posta veya şifre hatalı.')
         setLoading(false)
         return
       }
-      router.push(accountType === 'klinik' ? '/klinik/panel' : '/panel')
+      const role = (loginData.user?.app_metadata as Record<string, string>)?.role
+      if (role === 'admin') { router.push('/admin'); router.refresh(); return }
+      if (role === 'vendor') { router.push('/satici/panel'); router.refresh(); return }
+      if (role === 'clinic') { router.push('/klinik/panel'); router.refresh(); return }
+
+      // role henüz set edilmemiş olabilir → clinics tablosunu kontrol et
+      if (accountType === 'klinik' && loginData.user) {
+        const { data: clinic } = await supabase
+          .from('clinics')
+          .select('approval_status')
+          .eq('user_id', loginData.user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        if (clinic?.approval_status === 'approved') {
+          router.push('/klinik/panel')
+          router.refresh()
+          return
+        }
+        router.push('/klinik/basvur')
+        router.refresh()
+        return
+      }
+      router.push(accountType === 'satici' ? '/satici/basvur' : '/panel')
       router.refresh()
     } else {
       if (password.length < 6) { setError('Şifre en az 6 karakter olmalıdır.'); setLoading(false); return }
@@ -40,8 +64,9 @@ export default function KurumsalGirisPage() {
       })
       if (err) { setError(err.message); setLoading(false); return }
       if (data.user && !data.session) {
-        setError(null)
-        router.push(accountType === 'klinik' ? '/klinik/basvur' : '/satici/basvur')
+        // E-posta doğrulanmadı — doğrulama mesajı göster, başvuruya yönlendirme
+        setEmailSent(true)
+        setLoading(false)
         return
       }
       router.push(accountType === 'klinik' ? '/klinik/basvur' : '/satici/basvur')
@@ -56,6 +81,27 @@ export default function KurumsalGirisPage() {
       options: { redirectTo: `${location.origin}/auth/callback?next=${accountType === 'klinik' ? '/klinik/basvur' : '/satici/basvur'}` },
     })
   }
+
+  if (emailSent) return (
+    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 text-center">
+          <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">E-postanızı doğrulayın</h2>
+          <p className="text-slate-400 mb-2"><span className="text-violet-400 font-medium">{email}</span> adresine doğrulama bağlantısı gönderdik.</p>
+          <p className="text-slate-500 text-sm mb-6">E-postanızı doğruladıktan sonra giriş yaparak başvurunuza devam edebilirsiniz.</p>
+          <button onClick={() => { setEmailSent(false); setMode('giris') }}
+            className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
+            Giriş Yap
+          </button>
+        </div>
+      </div>
+    </main>
+  )
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">

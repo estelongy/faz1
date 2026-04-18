@@ -1,13 +1,21 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+}
 
 export default async function AdminPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
+
+  const role = (user.app_metadata as Record<string, string>)?.role
+  if (role !== 'admin') redirect('/panel')
 
   // İstatistikler paralel çek
   const [
@@ -79,24 +87,38 @@ export default async function AdminPage() {
           { label: 'Satıcılar', value: totalVendors ?? 0, color: 'from-amber-500 to-orange-500', link: '/admin/saticilar', badge: pendingVendors ?? 0, icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
           )},
-          { label: 'Analizler', value: totalAnalyses ?? 0, color: 'from-emerald-500 to-teal-600', link: '#', icon: (
+          { label: 'Analizler', value: totalAnalyses ?? 0, color: 'from-emerald-500 to-teal-600', link: null, icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
           )},
-          { label: 'Randevular', value: totalAppointments ?? 0, color: 'from-amber-500 to-orange-600', link: '#', icon: (
+          { label: 'Randevular', value: totalAppointments ?? 0, color: 'from-amber-500 to-orange-600', link: null, icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
           )},
-        ].map(({ label, value, color, link, badge, icon }) => (
-          <Link key={label} href={link} className="relative p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all group">
-            {badge ? (
-              <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center font-bold">{badge}</span>
-            ) : null}
-            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white mb-3`}>
-              {icon}
+        ].map(({ label, value, color, link, badge, icon }) => {
+          const inner = (
+            <>
+              {badge ? (
+                <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center font-bold">{badge}</span>
+              ) : null}
+              {!link && (
+                <span className="absolute top-3 right-3 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-700 text-slate-500">yakında</span>
+              )}
+              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white mb-3`}>
+                {icon}
+              </div>
+              <div className="text-3xl font-bold text-white mb-0.5">{value.toLocaleString()}</div>
+              <div className="text-slate-500 text-sm">{label}</div>
+            </>
+          )
+          return link ? (
+            <Link key={label} href={link} className="relative p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all group">
+              {inner}
+            </Link>
+          ) : (
+            <div key={label} className="relative p-5 rounded-2xl bg-slate-900 border border-slate-800 cursor-default">
+              {inner}
             </div>
-            <div className="text-3xl font-bold text-white mb-0.5">{value.toLocaleString()}</div>
-            <div className="text-slate-500 text-sm">{label}</div>
-          </Link>
-        ))}
+          )
+        })}
       </div>
 
       {/* Son kayıt olan kullanıcılar */}

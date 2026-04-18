@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect } from 'react'
 
 export default function Error({
@@ -36,10 +37,10 @@ export default function Error({
             className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all">
             Tekrar Dene
           </button>
-          <a href="/"
+          <Link href="/"
             className="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold rounded-xl transition-all">
             Ana Sayfa
-          </a>
+          </Link>
         </div>
       </div>
     </main>

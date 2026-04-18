@@ -1,7 +1,12 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+
+export const metadata: Metadata = {
+  title: 'Klinikler',
+}
 
 type ApprovalStatus = 'pending' | 'approved' | 'rejected'
 
@@ -38,26 +43,37 @@ async function updateClinic(formData: FormData) {
   const status = formData.get('status') as ApprovalStatus
   const isActive = status === 'approved'
 
+  // Kliniğin user_id'sini al (rol güncellemesi için)
+  const { data: current } = await supabase
+    .from('clinics')
+    .select('user_id, approval_status, jeton_balance')
+    .eq('id', clinicId)
+    .single()
+
   // Starter jeton: ilk kez onaylanıyorsa 10 jeton ver
-  if (status === 'approved') {
-    const { data: current } = await supabase
-      .from('clinics')
-      .select('approval_status, jeton_balance')
-      .eq('id', clinicId)
-      .single()
-    if (current?.approval_status === 'pending' && (current?.jeton_balance ?? 0) === 0) {
-      await supabase.from('clinics').update({ approval_status: status, is_active: isActive, jeton_balance: 10 }).eq('id', clinicId)
-      await supabase.from('jeton_transactions').insert({
-        clinic_id: clinicId,
-        amount: 10,
-        type: 'manual',
-        description: 'Hoş geldiniz! Başlangıç jetonu (10 adet)',
-      })
-      redirect('/admin/klinikler')
+  if (status === 'approved' && current?.approval_status === 'pending' && (current?.jeton_balance ?? 0) === 0) {
+    await supabase.from('clinics').update({ approval_status: status, is_active: isActive, jeton_balance: 10 }).eq('id', clinicId)
+    await supabase.from('jeton_transactions').insert({
+      clinic_id: clinicId,
+      amount: 10,
+      type: 'manual',
+      description: 'Hoş geldiniz! Başlangıç jetonu (10 adet)',
+    })
+    // app_metadata.role güncelle
+    if (current?.user_id) {
+      await supabase.rpc('set_user_role', { target_user_id: current.user_id, new_role: 'clinic' })
     }
+    redirect('/admin/klinikler')
   }
 
   await supabase.from('clinics').update({ approval_status: status, is_active: isActive }).eq('id', clinicId)
+
+  // app_metadata.role güncelle: onaylandıysa 'clinic', reddedildiyse 'user'
+  if (current?.user_id) {
+    const newRole = status === 'approved' ? 'clinic' : status === 'rejected' ? 'user' : null
+    if (newRole) await supabase.rpc('set_user_role', { target_user_id: current.user_id, new_role: newRole })
+  }
+
   redirect('/admin/klinikler')
 }
 
@@ -89,6 +105,7 @@ export default async function KliniklerPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
+  if ((user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
 
   const { data: clinics } = await supabase
     .from('clinics')

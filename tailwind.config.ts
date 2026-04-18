@@ -8,6 +8,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        grow: {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' },
+        },
+      },
+      animation: {
+        grow: 'grow linear forwards',
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

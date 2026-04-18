@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 import { createClient } from '@/lib/supabase/server'
 import EGSScoreBar, { type EGSPhase } from '@/components/EGSScoreBar'
 import EGSScoreChart, { type ScorePoint } from '@/components/EGSScoreChart'
+import EGSFixedBadge from '@/components/EGSFixedBadge'
 
 const APT_STATUS_LABEL: Record<string, string> = {
   pending:     'Beklemede',
@@ -126,9 +127,9 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
             <div className="flex items-center gap-4">
               <span className="text-slate-400 text-sm hidden sm:block">{profile?.full_name ?? user.email}</span>
               {userClinic && (
-                <a href="/klinik/panel" className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors hidden sm:block">
+                <Link href="/klinik/panel" className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors hidden sm:block">
                   Klinik Paneli →
-                </a>
+                </Link>
               )}
               <form action={handleSignOut}>
                 <button type="submit" className="text-sm text-slate-400 hover:text-white transition-colors">
@@ -334,6 +335,9 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           </div>
         </div>
       </div>
+
+      {/* Sabit EGS Skoru — client component, her zaman güncel */}
+      <EGSFixedBadge />
     </main>
   )
 }

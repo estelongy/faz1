@@ -1,7 +1,12 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+
+export const metadata: Metadata = {
+  title: 'Satıcılar',
+}
 
 type ApprovalStatus = 'pending' | 'approved' | 'rejected'
 
@@ -30,6 +35,8 @@ const STATUS_LABEL: Record<ApprovalStatus, string> = {
 async function updateVendor(formData: FormData) {
   'use server'
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
   const vendorId = formData.get('vendorId') as string
   const status = formData.get('status') as ApprovalStatus
   const isActive = status === 'approved'

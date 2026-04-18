@@ -1,10 +1,15 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import EGSScoreBar, { type EGSPhase } from '@/components/EGSScoreBar'
 import EGSScoreChart, { type ScorePoint } from '@/components/EGSScoreChart'
+
+export const metadata: Metadata = {
+  title: 'Hasta Detayı',
+}
 
 const STATUS_LABEL: Record<string, string> = {
   pending:     'Beklemede',

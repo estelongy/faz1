@@ -363,7 +363,7 @@ export default function Home() {
             <Link href="/giris" className="hover:text-slate-400 transition-colors">Giriş</Link>
             <Link href="/kayit" className="hover:text-slate-400 transition-colors">Kayıt</Link>
           </div>
-          <p className="text-slate-700 text-xs">© 2025 Estelongy. Tüm hakları saklıdır.</p>
+          <p className="text-slate-700 text-xs">© 2026 Estelongy. Tüm hakları saklıdır.</p>
         </div>
       </footer>
     </main>
