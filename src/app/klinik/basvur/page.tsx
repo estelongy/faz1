@@ -1,8 +1,14 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Klinik Başvurusu',
+  description: 'Kliniğinizi Estelongy platformuna kaydedin. Hastaları kolayca yönetin.',
+}
 
 const SPECIALTIES = [
   'Cilt Bakımı', 'Lazer Tedavisi', 'Botoks & Dolgu', 'PRP Tedavisi',
@@ -38,17 +44,24 @@ async function submitApplication(formData: FormData) {
   redirect('/panel?basvuru=klinik')
 }
 
-export default async function KlinikBasvurPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+export default async function KlinikBasvurPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>
+}) {
+  const params = await searchParams
+  const hasError = params.error === '1'
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
-  const params = await searchParams
 
   const { data: existing } = await supabase
     .from('clinics')
     .select('id, approval_status')
     .eq('user_id', user.id)
-    .single()
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
   if (existing) {
     return (
@@ -105,9 +118,14 @@ export default async function KlinikBasvurPage({ searchParams }: { searchParams:
           <p className="text-slate-400 text-sm mt-1">Başvurunuz admin onayından sonra aktive edilir</p>
         </div>
 
-        {params?.error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-            Başvuru gönderilemedi. Lütfen tüm alanları kontrol edip tekrar deneyin.
+        {hasError && (
+          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
+            <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-red-400 text-sm">
+              Başvuru gönderilemedi. Zaten aktif bir başvurunuz olabilir veya bir hata oluştu. Lütfen tekrar deneyin.
+            </p>
           </div>
         )}
 

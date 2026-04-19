@@ -25,13 +25,36 @@ export default function KurumsalGirisPage() {
     const supabase = createClient()
 
     if (mode === 'giris') {
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password })
+      const { data: loginData, error: err } = await supabase.auth.signInWithPassword({ email, password })
       if (err) {
         setError('E-posta veya şifre hatalı.')
         setLoading(false)
         return
       }
-      router.push(accountType === 'klinik' ? '/klinik/panel' : '/panel')
+      const role = (loginData.user?.app_metadata as Record<string, string>)?.role
+      if (role === 'admin') { router.push('/admin'); router.refresh(); return }
+      if (role === 'vendor') { router.push('/satici/panel'); router.refresh(); return }
+      if (role === 'clinic') { router.push('/klinik/panel'); router.refresh(); return }
+
+      // role henüz set edilmemiş olabilir → clinics tablosunu kontrol et
+      if (accountType === 'klinik' && loginData.user) {
+        const { data: clinic } = await supabase
+          .from('clinics')
+          .select('approval_status')
+          .eq('user_id', loginData.user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        if (clinic?.approval_status === 'approved') {
+          router.push('/klinik/panel')
+          router.refresh()
+          return
+        }
+        router.push('/klinik/basvur')
+        router.refresh()
+        return
+      }
+      router.push(accountType === 'satici' ? '/satici/basvur' : '/panel')
       router.refresh()
     } else {
       if (password.length < 6) { setError('Şifre en az 6 karakter olmalıdır.'); setLoading(false); return }

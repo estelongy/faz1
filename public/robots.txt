@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Allow: /giris
+Allow: /kayit
+Allow: /kurumsal/giris
+Allow: /klinik/basvur
+
+# Admin ve özel sayfaları indeksleme
+Disallow: /admin/
+Disallow: /panel/
+Disallow: /klinik/panel/
+Disallow: /anket
+Disallow: /test-skor
+Disallow: /auth/
+
+Sitemap: https://estelongy.com/sitemap.xml
