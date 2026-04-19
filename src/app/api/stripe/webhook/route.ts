@@ -25,9 +25,8 @@ export async function POST(req: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
 
-    const clinicId = session.metadata?.clinic_id
-    const userId   = session.metadata?.user_id
-    const jetons   = parseInt(session.metadata?.jetons ?? '0', 10)
+    const clinicId  = session.metadata?.clinic_id
+    const jetons    = parseInt(session.metadata?.jetons ?? '0', 10)
     const packageId = session.metadata?.package_id
 
     if (!clinicId || !jetons) {
