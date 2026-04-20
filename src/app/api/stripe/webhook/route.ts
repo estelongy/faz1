@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -32,7 +31,7 @@ export async function POST(req: NextRequest) {
     const packageId = session.metadata?.package_id
 
     if (clinicId && jetons) {
-      const supabase = await createClient()
+      const supabase = createServiceClient()
       const { error } = await supabase.rpc('add_jeton', {
         p_clinic_id:      clinicId,
         p_amount:         jetons,
