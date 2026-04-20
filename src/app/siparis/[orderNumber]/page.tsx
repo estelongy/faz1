@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { IadeTalepForm } from './IadeTalepForm'
 
 export const metadata: Metadata = { title: 'Sipariş Takip' }
 
@@ -39,7 +40,7 @@ export default async function SiparisPage({
 
   const { data: order } = await supabase
     .from('orders')
-    .select('*, order_items(*, vendors(company_name, slug))')
+    .select('*, order_items(*, vendors(company_name, slug), returns(id, status, reason, description, created_at))')
     .eq('order_number', orderNumber)
     .eq('user_id', user.id)
     .single()
@@ -58,6 +59,7 @@ export default async function SiparisPage({
     tracking_number?: string | null
     tracking_carrier?: string | null
     vendors?: { company_name?: string } | null
+    returns?: { id: string; status: string; reason: string; description: string | null; created_at: string }[] | null
   }
 
   const itemsByVendor: Record<string, OrderItem[]> = {}
@@ -155,26 +157,38 @@ export default async function SiparisPage({
                 {items.map(item => {
                   const snap = item.product_snapshot as { name?: string; image?: string; slug?: string }
                   return (
-                    <div key={item.id} className="flex gap-4 p-4">
-                      <div className="shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-slate-900 border border-slate-700 flex items-center justify-center">
-                        {snap?.image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={snap.image} alt={snap.name ?? ''} className="w-full h-full object-cover" />
-                        ) : (
-                          <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                          </svg>
-                        )}
+                    <div key={item.id}>
+                      <div className="flex gap-4 p-4">
+                        <div className="shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-slate-900 border border-slate-700 flex items-center justify-center">
+                          {snap?.image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={snap.image} alt={snap.name ?? ''} className="w-full h-full object-cover" />
+                          ) : (
+                            <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-sm font-medium">{snap?.name ?? 'Ürün'}</p>
+                          <p className="text-slate-500 text-xs mt-0.5">
+                            {item.quantity} adet × ₺{Number(item.unit_price).toLocaleString('tr-TR')}
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-white font-bold text-sm">₺{Number(item.line_total).toLocaleString('tr-TR')}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm font-medium">{snap?.name ?? 'Ürün'}</p>
-                        <p className="text-slate-500 text-xs mt-0.5">
-                          {item.quantity} adet × ₺{Number(item.unit_price).toLocaleString('tr-TR')}
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-white font-bold text-sm">₺{Number(item.line_total).toLocaleString('tr-TR')}</p>
-                      </div>
+                      {order.payment_status === 'paid' && (
+                        <div className="px-4 pb-3">
+                          <IadeTalepForm
+                            orderItemId={item.id}
+                            productName={snap?.name ?? 'Ürün'}
+                            fulfillmentStatus={item.fulfillment_status ?? null}
+                            existingReturn={item.returns?.[0] ?? null}
+                          />
+                        </div>
+                      )}
                     </div>
                   )
                 })}

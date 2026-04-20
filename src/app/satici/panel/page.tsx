@@ -153,6 +153,14 @@ export default async function SaticiPanelPage() {
               <p className="text-slate-500 text-xs mt-0.5">Stripe · banka bilgileri</p>
             </div>
           </Link>
+          <Link href="/satici/panel/iadeler"
+            className="p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 rounded-2xl transition-all flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-xl">↩</div>
+            <div>
+              <p className="text-white font-bold text-sm">İade Talepleri</p>
+              <p className="text-slate-500 text-xs mt-0.5">Müşteri iade yönetimi</p>
+            </div>
+          </Link>
         </div>
 
         {/* Ödeme hesabı uyarı banner — henüz stripe_account_id yoksa */}

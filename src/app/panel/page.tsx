@@ -264,6 +264,12 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               <h3 className="text-white font-bold mb-0.5">Ürün Al</h3>
               <p className="text-slate-400 text-xs">Hekim puanlı ürünler</p>
             </Link>
+
+            <Link href="/panel/iadelerim" className="flex-1 group p-5 rounded-2xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 hover:scale-[1.02] transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center mb-3 text-slate-300 text-xl">↩</div>
+              <h3 className="text-white font-bold mb-0.5">İadelerim</h3>
+              <p className="text-slate-400 text-xs">İade taleplerim</p>
+            </Link>
           </div>
         </div>
 
