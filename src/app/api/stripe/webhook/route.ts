@@ -35,35 +35,18 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient()
 
-    // jeton_balance artır
-    const { data: clinic, error: clinicErr } = await supabase
-      .from('clinics')
-      .select('jeton_balance')
-      .eq('id', clinicId)
-      .single()
+    // Atomik jeton artışı — race condition yok
+    const { error } = await supabase.rpc('add_jeton', {
+      p_clinic_id:      clinicId,
+      p_amount:         jetons,
+      p_description:    `Stripe ödeme: ${packageId} (${session.id})`,
+      p_stripe_session: session.id,
+    })
 
-    if (clinicErr || !clinic) {
-      console.error('Clinic fetch error:', clinicErr)
-      return NextResponse.json({ error: 'Klinik bulunamadı' }, { status: 404 })
-    }
-
-    const { error: updateErr } = await supabase
-      .from('clinics')
-      .update({ jeton_balance: (clinic.jeton_balance ?? 0) + jetons })
-      .eq('id', clinicId)
-
-    if (updateErr) {
-      console.error('Jeton update error:', updateErr)
+    if (error) {
+      console.error('add_jeton RPC error:', error)
       return NextResponse.json({ error: 'Jeton güncellenemedi' }, { status: 500 })
     }
-
-    // İşlem kaydı
-    await supabase.from('jeton_transactions').insert({
-      clinic_id:   clinicId,
-      amount:      jetons,
-      type:        'purchase',
-      description: `Stripe ödeme: ${packageId} (${session.id})`,
-    })
   }
 
   return NextResponse.json({ received: true })

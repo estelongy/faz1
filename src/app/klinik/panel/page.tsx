@@ -223,24 +223,36 @@ export default async function KlinikPanelPage() {
         )}
 
         {clinic && (clinic.jeton_balance ?? 0) === 0 && (
-          <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
-            <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-red-400 text-sm flex-1">
-              <strong>Jeton bakiyeniz sıfır.</strong> Hasta kabul edebilmek için yöneticinizden jeton yüklemesini isteyin.
-            </p>
+          <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-red-400 text-sm">
+                <strong>Jeton bakiyeniz sıfır.</strong> Hasta kabul edebilmek için jeton satın alın.
+              </p>
+            </div>
+            <Link href="/klinik/panel/jeton"
+              className="shrink-0 px-3 py-1.5 bg-red-500 hover:bg-red-400 text-white text-xs font-bold rounded-lg transition-colors">
+              Jeton Al →
+            </Link>
           </div>
         )}
 
         {clinic && (clinic.jeton_balance ?? 0) > 0 && (clinic.jeton_balance ?? 0) <= 3 && (
-          <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
-            <svg className="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <p className="text-amber-400 text-sm">
-              Yalnızca <strong>{clinic.jeton_balance}</strong> jetonunuz kaldı. Yakında yenilemeniz gerekecek.
-            </p>
+          <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-amber-400 text-sm">
+                Yalnızca <strong>{clinic.jeton_balance}</strong> jetonunuz kaldı.
+              </p>
+            </div>
+            <Link href="/klinik/panel/jeton"
+              className="shrink-0 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-white text-xs font-bold rounded-lg transition-colors">
+              Jeton Al →
+            </Link>
           </div>
         )}
 
