@@ -42,7 +42,7 @@ export default async function AdminUrunlerPage() {
 
   const { data: products } = await supabase
     .from('products')
-    .select('id, name, category, treatment_type, price, description, ingredients, approval_status, is_active, created_at, vendors(company_name)')
+    .select('id, name, category, treatment_type, price, description, ingredients, images, approval_status, is_active, created_at, vendors(company_name)')
     .order('created_at', { ascending: false })
     .limit(100)
 
@@ -66,38 +66,58 @@ export default async function AdminUrunlerPage() {
             ⏳ Bekleyen ({pending.length})
           </h2>
           <div className="space-y-3">
-            {pending.map(p => (
-              <div key={p.id} className="p-5 bg-slate-800/50 border border-amber-500/20 rounded-2xl">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-white font-bold">{p.name}</span>
-                      {p.treatment_type === 'treatment' && (
-                        <span className="text-xs bg-violet-600/20 text-violet-400 px-2 py-0.5 rounded-full">Klinik İşlem</span>
+            {pending.map(p => {
+              const imgs = Array.isArray(p.images) ? p.images as string[] : []
+              return (
+                <div key={p.id} className="p-5 bg-slate-800/50 border border-amber-500/20 rounded-2xl">
+                  {/* Görsel galeri */}
+                  {imgs.length > 0 && (
+                    <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+                      {imgs.map((url, i) => (
+                        <a key={url} href={url} target="_blank" rel="noopener noreferrer"
+                          className="shrink-0 w-24 h-24 rounded-xl overflow-hidden border border-slate-700 hover:border-violet-500 transition-colors bg-slate-900">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={url} alt={`${p.name} ${i + 1}`} className="w-full h-full object-cover" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <span className="text-white font-bold">{p.name}</span>
+                        {p.treatment_type === 'treatment' && (
+                          <span className="text-xs bg-violet-600/20 text-violet-400 px-2 py-0.5 rounded-full">Klinik İşlem</span>
+                        )}
+                        {p.category && (
+                          <span className="text-xs bg-slate-700 text-slate-400 px-2 py-0.5 rounded-full">
+                            {CATEGORY_LABELS[p.category] ?? p.category}
+                          </span>
+                        )}
+                        {imgs.length === 0 && (
+                          <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">
+                            ⚠ Görsel yok
+                          </span>
+                        )}
+                      </div>
+                      {(p.vendors as VendorInfo)?.[0]?.company_name && (
+                        <p className="text-slate-500 text-xs mb-1">Satıcı: {(p.vendors as VendorInfo)?.[0]?.company_name}</p>
                       )}
-                      {p.category && (
-                        <span className="text-xs bg-slate-700 text-slate-400 px-2 py-0.5 rounded-full">
-                          {CATEGORY_LABELS[p.category] ?? p.category}
-                        </span>
+                      {p.description && <p className="text-slate-400 text-sm mb-2">{p.description}</p>}
+                      {p.price && <p className="text-slate-300 text-sm">₺{Number(p.price).toLocaleString('tr-TR')}</p>}
+                      {Array.isArray(p.ingredients) && p.ingredients.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {p.ingredients.map((ing: string) => (
+                            <span key={ing} className="text-xs bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">{ing}</span>
+                          ))}
+                        </div>
                       )}
                     </div>
-                    {(p.vendors as VendorInfo)?.[0]?.company_name && (
-                      <p className="text-slate-500 text-xs mb-1">Satıcı: {(p.vendors as VendorInfo)?.[0]?.company_name}</p>
-                    )}
-                    {p.description && <p className="text-slate-400 text-sm mb-2">{p.description}</p>}
-                    {p.price && <p className="text-slate-300 text-sm">₺{Number(p.price).toLocaleString('tr-TR')}</p>}
-                    {Array.isArray(p.ingredients) && p.ingredients.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {p.ingredients.map((ing: string) => (
-                          <span key={ing} className="text-xs bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">{ing}</span>
-                        ))}
-                      </div>
-                    )}
+                    <UrunOnayActions productId={p.id} action={urunOnayAction} />
                   </div>
-                  <UrunOnayActions productId={p.id} action={urunOnayAction} />
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}

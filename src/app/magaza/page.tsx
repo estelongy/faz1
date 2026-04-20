@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import SiralamaSelect from './SiralamaSelect'
+import CartButton from '@/components/CartButton'
+import AramaBar from './AramaBar'
 
 export const metadata: Metadata = { title: 'Mağaza — Estelongy' }
 
@@ -29,7 +31,7 @@ function ScoreBadge({ score }: { score: number | null }) {
 export default async function MagazaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ kategori?: string; siralama?: string }>
+  searchParams: Promise<{ kategori?: string; siralama?: string; q?: string }>
 }) {
   const params = await searchParams
   const supabase = await createClient()
@@ -41,6 +43,10 @@ export default async function MagazaPage({
     .eq('approval_status', 'approved')
 
   if (params.kategori) query = query.eq('category', params.kategori)
+  if (params.q && params.q.trim()) {
+    const term = params.q.trim().replace(/[%_]/g, '') // sql wildcard sanitize
+    query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`)
+  }
 
   if (params.siralama === 'puan') query = query.order('final_score', { ascending: false })
   else if (params.siralama === 'fiyat_asc') query = query.order('price', { ascending: true })
@@ -57,19 +63,32 @@ export default async function MagazaPage({
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="text-white font-black text-lg tracking-tight">ESTELONGY</Link>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link href="/analiz" className="text-slate-400 hover:text-white transition-colors">Analiz</Link>
-            <Link href="/randevu" className="text-slate-400 hover:text-white transition-colors">Randevu</Link>
-            <Link href="/panel" className="text-slate-400 hover:text-white transition-colors">Panelim</Link>
+          <nav className="flex items-center gap-2 text-sm">
+            <Link href="/analiz" className="hidden sm:inline text-slate-400 hover:text-white transition-colors px-3 py-2">Analiz</Link>
+            <Link href="/randevu" className="hidden sm:inline text-slate-400 hover:text-white transition-colors px-3 py-2">Randevu</Link>
+            <Link href="/panel" className="hidden sm:inline text-slate-400 hover:text-white transition-colors px-3 py-2">Panelim</Link>
+            <CartButton />
           </nav>
         </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-4 pt-24 pb-16">
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-3xl font-black text-white">Estelongy Mağazası</h1>
           <p className="text-slate-400 mt-1 text-sm">Bilimsel ve uzman onaylı estetik ürün & işlemler</p>
         </div>
+
+        {/* Arama */}
+        <div className="mb-5">
+          <AramaBar />
+        </div>
+
+        {params.q && (
+          <div className="mb-4 text-sm">
+            <span className="text-slate-500">Aranan:</span>{' '}
+            <span className="text-white font-medium">&ldquo;{params.q}&rdquo;</span>
+          </div>
+        )}
 
         {/* Filtreler */}
         <div className="flex flex-wrap gap-3 mb-8">

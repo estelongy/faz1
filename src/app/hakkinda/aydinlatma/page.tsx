@@ -11,13 +11,13 @@ export default function AydinlatmaPage() {
           ← Kayıt sayfasına dön
         </Link>
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">
-          <h1 className="text-2xl font-bold text-white mb-2">Hasta Aydınlatma Metni</h1>
-          <p className="text-slate-500 text-sm mb-8">KVKK Madde 10 kapsamında — Son güncelleme: Nisan 2026</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Aydınlatma Metni</h1>
+          <p className="text-slate-500 text-sm mb-8">KVKK (Türkiye) ve GDPR (AB) kapsamında — Son güncelleme: Nisan 2026</p>
 
           <div className="space-y-6 text-slate-300 text-sm leading-relaxed">
             <section>
               <h2 className="text-white font-semibold text-base mb-2">1. Veri Sorumlusu</h2>
-              <p>Kişisel verileriniz, 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında Estelongy tarafından işlenmektedir.</p>
+              <p>Kişisel verileriniz, 6698 sayılı KVKK ve AB Genel Veri Koruma Tüzüğü (GDPR) kapsamında, Estelongy platformunu işleten <strong>Vestoriq OÜ</strong> (Tallinn, Estonya) tarafından işlenmektedir.</p>
             </section>
             <section>
               <h2 className="text-white font-semibold text-base mb-2">2. İşlenen Kişisel Veriler</h2>
@@ -54,7 +54,8 @@ export default function AydinlatmaPage() {
             </section>
             <section>
               <h2 className="text-white font-semibold text-base mb-2">6. İletişim</h2>
-              <p>Haklarınızı kullanmak için: <span className="text-violet-400">estelongy@gmail.com</span></p>
+              <p>Haklarınızı kullanmak için: <a href="mailto:kvkk@estelongy.com" className="text-violet-400 hover:text-violet-300">kvkk@estelongy.com</a></p>
+              <p className="mt-2 text-xs text-slate-500">Vestoriq OÜ — Tallinn, Estonya</p>
             </section>
           </div>
         </div>

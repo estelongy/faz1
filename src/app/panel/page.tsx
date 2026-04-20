@@ -13,6 +13,7 @@ import { pathForRole } from '@/lib/auth-redirect'
 import EGSScoreBar, { type EGSPhase } from '@/components/EGSScoreBar'
 import EGSScoreChart, { type ScorePoint } from '@/components/EGSScoreChart'
 import EGSFixedBadge from '@/components/EGSFixedBadge'
+import PaylasModal from '@/components/PaylasModal'
 
 const APT_STATUS_LABEL: Record<string, string> = {
   pending:     'Beklemede',
@@ -178,11 +179,27 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           {/* EGS Bar — 2 kolon */}
           <div className="lg:col-span-2 p-6 rounded-2xl border border-slate-700 bg-slate-800/50 backdrop-blur-sm">
             {latestScore !== null ? (
-              <EGSScoreBar
-                score={latestScore}
-                phase={currentPhase}
-                animated={false}
-              />
+              <>
+                <EGSScoreBar
+                  score={latestScore}
+                  phase={currentPhase}
+                  animated={false}
+                />
+                {/* Klinik onaylı skor → paylaş butonu */}
+                {latestAnalysis?.final_overall != null && (
+                  <div className="mt-5 pt-5 border-t border-slate-700/50 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-emerald-400 text-xs font-bold mb-0.5">✦ KLİNİK ONAYLI EGS</p>
+                      <p className="text-slate-400 text-xs">Skorunu arkadaşlarınla paylaş</p>
+                    </div>
+                    <PaylasModal
+                      analysisId={latestAnalysis.id}
+                      score={latestAnalysis.final_overall}
+                      firstName={profile?.full_name?.split(' ')[0] ?? 'Kullanıcı'}
+                    />
+                  </div>
+                )}
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
@@ -237,6 +254,22 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               <h3 className="text-white font-bold mb-0.5">Randevu Al</h3>
               <p className="text-slate-400 text-xs">Skoru klinikle onayla</p>
             </Link>
+
+            <Link href="/magaza" className="flex-1 group p-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-3 text-white">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <h3 className="text-white font-bold mb-0.5">Ürün Al</h3>
+              <p className="text-slate-400 text-xs">Hekim puanlı ürünler</p>
+            </Link>
+
+            <Link href="/panel/iadelerim" className="flex-1 group p-5 rounded-2xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 hover:scale-[1.02] transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center mb-3 text-slate-300 text-xl">↩</div>
+              <h3 className="text-white font-bold mb-0.5">İadelerim</h3>
+              <p className="text-slate-400 text-xs">İade taleplerim</p>
+            </Link>
           </div>
         </div>
 
@@ -285,7 +318,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                         hasAnket ? 'bg-amber-500/20 text-amber-400' :
                         'bg-violet-500/20 text-violet-400'
                       }`}>
-                        {isClinicApproved ? 'Klinik Onaylı' : hasAnket ? 'Anket Yapıldı' : 'AI Analiz'}
+                        {isClinicApproved ? 'Klinik Onaylı' : hasAnket ? 'Anket Yapıldı' : 'Ön Analiz'}
                       </span>
                     </div>
                   )
