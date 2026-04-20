@@ -62,6 +62,8 @@ async function updateAppointmentStatus(formData: FormData) {
     .update({
       status,
       ...(status === 'completed' ? { completed_at: new Date().toISOString() } : {}),
+      ...(status === 'confirmed'  ? { confirmed_at: new Date().toISOString() } : {}),
+      ...(status === 'no_show'    ? { no_show_at:   new Date().toISOString() } : {}),
     })
     .eq('id', appointmentId)
     .eq('clinic_id', clinic.id)
@@ -191,6 +193,7 @@ export default async function KlinikPanelPage() {
                   {clinic.jeton_balance ?? 0} Jeton
                 </Link>
               )}
+              <Link href="/klinik/panel/takvim" className="text-sm text-slate-400 hover:text-white transition-colors">📅 Takvim</Link>
               <Link href="/panel" className="text-sm text-slate-400 hover:text-white transition-colors">Kullanıcı Paneli</Link>
               <form action={handleSignOut}>
                 <button type="submit" className="text-sm text-slate-400 hover:text-white transition-colors">Çıkış</button>
