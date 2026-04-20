@@ -12,7 +12,7 @@ const STEPS = [
     num: '01',
     color: 'from-violet-500 to-purple-600',
     title: 'Selfie Yükle',
-    desc: 'Tek bir fotoğraf yeterli. Yüzünüzdeki yaşlanma göstergelerinden ön analiz skorunuz üretilir.',
+    desc: 'Tek bir fotoğraf yeterli. Yüzünüzdeki yaşlanma göstergelerinden ön analiziniz üretilir.',
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}

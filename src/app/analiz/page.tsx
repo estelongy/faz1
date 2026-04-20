@@ -160,7 +160,7 @@ export default function AnalizPage() {
           <div>
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-white mb-2">Gençlik Skorunu Öğren</h1>
-              <p className="text-slate-400">Selfie ile ön analiz başlasın — ön skorun saniyeler içinde hazır. Kesin skor klinik muayenesiyle oluşur.</p>
+              <p className="text-slate-400">Selfie yükle, ön analizin saniyeler içinde hazır. Kesin skor klinik muayenesiyle oluşur.</p>
             </div>
 
             {!previewUrl ? (
@@ -274,7 +274,7 @@ export default function AnalizPage() {
                 </svg>
                 Ön Analiz · Tahmini Skor
               </div>
-              <h1 className="text-3xl font-bold text-white mb-2">Ön Gençlik Skorun Hazır</h1>
+              <h1 className="text-3xl font-bold text-white mb-2">Ön Analizin Hazır</h1>
               <p className="text-slate-400">Kesin skor klinik muayenesiyle oluşur — randevu al, <span className="text-emerald-400 font-semibold">Klinik Onaylı EGS</span> sertifikana ulaş</p>
             </div>
 
