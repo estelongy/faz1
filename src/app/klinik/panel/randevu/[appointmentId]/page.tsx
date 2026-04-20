@@ -15,34 +15,26 @@ async function kabulEt(apptId: string): Promise<{ ok: boolean; error?: string }>
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, jeton_balance')
+    .select('id')
     .eq('user_id', user.id)
     .single()
   if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
-  if ((clinic.jeton_balance ?? 0) < 1) return { ok: false, error: 'Yetersiz jeton bakiyesi. Lütfen jeton yükleyin.' }
 
-  // Atomik jeton düşme (race condition guard: .gte)
-  const { error: jetonErr } = await supabase
-    .from('clinics')
-    .update({ jeton_balance: clinic.jeton_balance - 1 })
-    .eq('id', clinic.id)
-    .gte('jeton_balance', 1)
-  if (jetonErr) return { ok: false, error: 'Jeton düşülemedi, tekrar deneyin.' }
+  // Atomik jeton düşme + transaction log (SECURITY DEFINER RPC)
+  const { data: result, error: jetonErr } = await supabase.rpc('consume_jeton', {
+    p_clinic_id: clinic.id,
+    p_appointment_id: apptId,
+    p_description: 'Hasta kabulü',
+  }).single()
+  if (jetonErr) return { ok: false, error: 'Jeton işlemi başarısız' }
+  const r = result as { ok: boolean; new_balance: number; err: string | null } | null
+  if (!r?.ok) return { ok: false, error: r?.err ?? 'Yetersiz jeton bakiyesi. Lütfen jeton yükleyin.' }
 
   // Randevu güncelle
   await supabase.from('appointments')
     .update({ status: 'in_progress' })
     .eq('id', apptId)
     .eq('clinic_id', clinic.id)
-
-  // İşlem logu
-  await supabase.from('jeton_transactions').insert({
-    clinic_id: clinic.id,
-    amount: -1,
-    type: 'usage',
-    description: 'Hasta kabulü',
-    appointment_id: apptId,
-  })
 
   return { ok: true }
 }
