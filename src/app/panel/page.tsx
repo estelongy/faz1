@@ -237,6 +237,16 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               <h3 className="text-white font-bold mb-0.5">Randevu Al</h3>
               <p className="text-slate-400 text-xs">Skoru klinikle onayla</p>
             </Link>
+
+            <Link href="/magaza" className="flex-1 group p-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-3 text-white">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <h3 className="text-white font-bold mb-0.5">Ürün Al</h3>
+              <p className="text-slate-400 text-xs">Hekim puanlı ürünler</p>
+            </Link>
           </div>
         </div>
 
