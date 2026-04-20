@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { pathForRole } from '@/lib/auth-redirect'
 
 export default function AuthConfirmPage() {
   const router = useRouter()
@@ -10,13 +11,10 @@ export default function AuthConfirmPage() {
   useEffect(() => {
     const supabase = createClient()
 
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         const role = session.user.app_metadata?.role
-        if (role === 'admin') router.replace('/admin')
-        else if (role === 'clinic') router.replace('/klinik/panel')
-        else if (role === 'vendor') router.replace('/satici/panel')
-        else router.replace('/panel')
+        router.replace(pathForRole(role))
       }
     })
 
@@ -24,12 +22,11 @@ export default function AuthConfirmPage() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         const role = session.user.app_metadata?.role
-        if (role === 'admin') router.replace('/admin')
-        else if (role === 'clinic') router.replace('/klinik/panel')
-        else if (role === 'vendor') router.replace('/satici/panel')
-        else router.replace('/panel')
+        router.replace(pathForRole(role))
       }
     })
+
+    return () => subscription.unsubscribe()
   }, [router])
 
   return (

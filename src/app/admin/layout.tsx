@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { pathForRole } from '@/lib/auth-redirect'
 import AdminNavLink from '@/components/AdminNavLink'
 
 export const dynamic = 'force-dynamic'
@@ -54,7 +55,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user) redirect('/giris')
 
   const role = (user.app_metadata as Record<string, string>)?.role
-  if (role !== 'admin') redirect('/panel')
+  if (role !== 'admin') redirect(pathForRole(role))
 
   return (
     <div className="min-h-screen bg-slate-950 flex">

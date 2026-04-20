@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { pathForRole } from '@/lib/auth-redirect'
 
 export const metadata: Metadata = {
   title: 'Klinik Paneli',
@@ -79,8 +80,7 @@ export default async function KlinikPanelPage() {
   if (!user) redirect('/giris')
 
   const role = (user.app_metadata as Record<string, string>)?.role
-  if (role === 'admin') redirect('/admin')
-  if (role === 'vendor') redirect('/satici/panel')
+  if (role === 'admin' || role === 'vendor') redirect(pathForRole(role))
 
   const { data: clinic } = await supabase
     .from('clinics')

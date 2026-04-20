@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { pathForRole } from '@/lib/auth-redirect'
 import UrunEkleForm from './UrunEkleForm'
 
 export const metadata: Metadata = { title: 'Satıcı Paneli — Estelongy' }
@@ -37,8 +38,7 @@ export default async function SaticiPanelPage() {
   if (!user) redirect('/giris')
 
   const role = (user.app_metadata as Record<string, string>)?.role
-  if (role === 'admin') redirect('/admin')
-  if (role === 'clinic') redirect('/klinik/panel')
+  if (role === 'admin' || role === 'clinic') redirect(pathForRole(role))
 
   // Satıcı kaydını bul
   const { data: vendor } = await supabase
@@ -133,7 +133,7 @@ export default async function SaticiPanelPage() {
         {/* Ürün Ekle Formu */}
         <div className="mb-10">
           <h2 className="text-white font-bold text-lg mb-4">Yeni Ürün / İşlem Ekle</h2>
-          <UrunEkleForm vendorId={vendor.id} />
+          <UrunEkleForm />
         </div>
 
         {/* Ürün Listesi */}

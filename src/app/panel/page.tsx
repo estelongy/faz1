@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   description: 'EGS skorunuzu takip edin, randevularınızı yönetin.',
 }
 import { createClient } from '@/lib/supabase/server'
+import { pathForRole } from '@/lib/auth-redirect'
 import EGSScoreBar, { type EGSPhase } from '@/components/EGSScoreBar'
 import EGSScoreChart, { type ScorePoint } from '@/components/EGSScoreChart'
 import EGSFixedBadge from '@/components/EGSFixedBadge'
@@ -52,11 +53,9 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
 
-  // Rol bazlı yönlendirme
+  // Rol bazlı yönlendirme — yalnızca user rolü bu sayfayı görür
   const role = (user.app_metadata as Record<string, string>)?.role
-  if (role === 'admin') redirect('/admin')
-  if (role === 'vendor') redirect('/satici/panel')
-  if (role === 'clinic') redirect('/klinik/panel')
+  if (role && role !== 'user') redirect(pathForRole(role))
 
   const { data: profile } = await supabase
     .from('profiles')
