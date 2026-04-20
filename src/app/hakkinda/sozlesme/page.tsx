@@ -17,7 +17,7 @@ export default function SozlesmePage() {
           <div className="space-y-6 text-slate-300 text-sm leading-relaxed">
             <section>
               <h2 className="text-white font-semibold text-base mb-2">1. Taraflar</h2>
-              <p>Bu sözleşme, Estelongy platformu ("Platform") ile platforma üye olan gerçek kişi ("Kullanıcı") arasında akdedilmektedir.</p>
+              <p>Bu sözleşme, Estelongy platformu (&ldquo;Platform&rdquo;) ile platforma üye olan gerçek kişi (&ldquo;Kullanıcı&rdquo;) arasında akdedilmektedir.</p>
             </section>
             <section>
               <h2 className="text-white font-semibold text-base mb-2">2. Hizmetin Kapsamı</h2>
