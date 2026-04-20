@@ -40,13 +40,18 @@ export default async function UrunDetayPage({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Slug veya ID ile bul
-  const { data: product } = await supabase
+  // Slug veya UUID ile bul (UUID ise id'den, değilse slug'tan)
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  const isUuid = uuidPattern.test(slug)
+
+  const query = supabase
     .from('products')
     .select('*, vendors(company_name)')
-    .or(`slug.eq.${slug},id.eq.${slug}`)
     .eq('is_active', true)
-    .single()
+
+  const { data: product } = isUuid
+    ? await query.eq('id', slug).single()
+    : await query.eq('slug', slug).single()
 
   if (!product) notFound()
 
