@@ -50,7 +50,7 @@ export default async function IadelerimPage() {
         ) : (
           <div className="space-y-4">
             {returns.map(ret => {
-              const item = ret.order_items as { product_snapshot?: { name?: string }; line_total?: number; orders?: { order_number?: string } } | null
+              const item = ret.order_items as unknown as { product_snapshot?: { name?: string }; line_total?: number; orders?: { order_number?: string } } | null
               const badge = STATUS_BADGE[ret.status] ?? { label: ret.status, color: 'bg-slate-700 text-slate-400' }
               return (
                 <div key={ret.id} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">

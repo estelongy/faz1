@@ -24,7 +24,7 @@ export async function iadeTalebiOlusturAction(input: IadeInput): Promise<{ ok: b
     .eq('id', input.orderItemId)
     .single()
 
-  const order = (item?.orders as { user_id: string; payment_status: string } | null)
+  const order = (item?.orders as unknown as { user_id: string; payment_status: string } | null)
   if (!item || !order || order.user_id !== user.id) {
     return { ok: false, error: 'Sipariş bulunamadı' }
   }
@@ -101,7 +101,7 @@ export async function iadeKararAction(
   if (!ret) return { ok: false, error: 'İade bulunamadı' }
   if (ret.status !== 'pending') return { ok: false, error: 'Bu iade zaten karara bağlanmış' }
 
-  const item = ret.order_items as { vendor_id?: string; line_total?: number; vendors?: { user_id?: string } } | null
+  const item = ret.order_items as unknown as { vendor_id?: string; line_total?: number; vendors?: { user_id?: string } } | null
   const isOwnerVendor = item?.vendors?.user_id === user.id
   if (!isAdmin && !isOwnerVendor) return { ok: false, error: 'Yetkisiz' }
 
