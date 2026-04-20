@@ -6,6 +6,72 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-03-25.dahlia',
 })
 
+// ── Resend e-posta gönderici ──────────────────────────────────────────
+async function sendEmail(to: string, subject: string, html: string) {
+  if (!process.env.RESEND_API_KEY) return // Henüz yapılandırılmamış
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: process.env.FROM_EMAIL ?? 'noreply@estelongy.com',
+      to,
+      subject,
+      html,
+    }),
+  })
+}
+
+// ── Düşük stok bildirimi ──────────────────────────────────────────────
+const LOW_STOCK_THRESHOLD = 5
+
+async function checkLowStock(admin: ReturnType<typeof createServiceClient>, productId: string) {
+  const { data: product } = await admin
+    .from('products')
+    .select('id, name, stock, vendor_id, vendors(user_id, company_name)')
+    .eq('id', productId)
+    .single()
+
+  if (!product) return
+  const stock = product.stock ?? 0
+  if (stock > LOW_STOCK_THRESHOLD) return
+
+  // Satıcı e-postasını auth.users'dan al
+  const vendorInfo = product.vendors as { user_id?: string; company_name?: string } | null
+  if (!vendorInfo?.user_id) return
+
+  const { data: userData } = await admin.auth.admin.getUserById(vendorInfo.user_id)
+  const vendorEmail = userData?.user?.email
+  if (!vendorEmail) return
+
+  const subject = stock === 0
+    ? `[Estelongy] Stok Bitti: ${product.name}`
+    : `[Estelongy] Düşük Stok Uyarısı: ${product.name}`
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:500px;margin:0 auto">
+      <h2 style="color:#7c3aed">${subject}</h2>
+      <p>Merhaba ${vendorInfo.company_name ?? 'Satıcı'},</p>
+      <p>
+        <strong>${product.name}</strong> ürününün stoğu
+        <strong style="color:${stock === 0 ? '#ef4444' : '#f59e0b'}">${stock} adet</strong>
+        kaldı.
+      </p>
+      ${stock === 0
+        ? '<p>Ürün artık satışta görünmüyor. Lütfen stoku güncelleyin.</p>'
+        : '<p>Müşteri kaybı yaşamamak için stoku güncellemenizi öneririz.</p>'}
+      <a href="https://estelongy-clean.vercel.app/satici/panel"
+         style="display:inline-block;margin-top:16px;padding:12px 24px;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none">
+        Satıcı Paneline Git
+      </a>
+    </div>
+  `
+
+  await sendEmail(vendorEmail, subject, html)
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.text()
   const sig  = req.headers.get('stripe-signature')
@@ -22,7 +88,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  // ─── Jeton Ödemesi (Checkout Session) ───────────────────────
+  // ─── Jeton Ödemesi (Checkout Session) ────────────────────────────
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
 
@@ -45,7 +111,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ─── Marketplace Sipariş Ödemesi (Payment Intent) ──────────
+  // ─── Marketplace Sipariş Ödemesi (Payment Intent) ────────────────
   if (event.type === 'payment_intent.succeeded') {
     const pi = event.data.object as Stripe.PaymentIntent
     if (pi.metadata?.kind === 'marketplace_order') {
@@ -55,7 +121,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Metadata eksik' }, { status: 400 })
       }
 
-      // Service client — RLS bypass (webhook'ta auth yok)
       const admin = createServiceClient()
 
       // İdempotent: zaten paid ise geç
@@ -82,19 +147,70 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', orderId)
 
-      // Stok düşüm — order_items'tan
+      // Stok düşüm + düşük stok bildirimi
       const { data: items } = await admin
         .from('order_items')
-        .select('product_id, quantity')
+        .select('id, product_id, quantity, vendor_id, vendor_payout, vendors(stripe_account_id, stripe_charges_enabled)')
         .eq('order_id', orderId)
+
       if (items) {
+        // Stok düşüm
         for (const it of items) {
           if (!it.product_id) continue
-          // RLS bypass + atomic decrement via SQL
           await admin.rpc('decrement_product_stock', {
             p_product_id: it.product_id,
             p_amount: it.quantity,
           })
+          // Düşük stok kontrolü (hata durumunda sessizce geç)
+          try {
+            await checkLowStock(admin, it.product_id)
+          } catch (e) {
+            console.error('Low stock check error:', e)
+          }
+        }
+
+        // ── Çoklu satıcı transferleri ────────────────────────────
+        // Destination charge kullanılmadıysa (çoklu satıcı / Connect aktif değil)
+        // platform hesabından her satıcıya manual transfer.
+        // Destination charge varsa (tek satıcı) Stripe bunu otomatik yapar.
+        const hasDestinationCharge = !!pi.transfer_data?.destination
+
+        if (!hasDestinationCharge) {
+          // Vendor → payout toplamı
+          const vendorPayouts: Record<string, { stripeAccountId: string; amount: number }> = {}
+          for (const it of items) {
+            const vendorInfo = it.vendors as {
+              stripe_account_id?: string | null
+              stripe_charges_enabled?: boolean | null
+            } | null
+            if (!vendorInfo?.stripe_account_id || !vendorInfo.stripe_charges_enabled) continue
+            const stripeAccId = vendorInfo.stripe_account_id
+            const payout = Math.round(Number(it.vendor_payout ?? 0) * 100) // kuruş
+
+            if (!vendorPayouts[stripeAccId]) {
+              vendorPayouts[stripeAccId] = { stripeAccountId: stripeAccId, amount: 0 }
+            }
+            vendorPayouts[stripeAccId].amount += payout
+          }
+
+          for (const [, v] of Object.entries(vendorPayouts)) {
+            if (v.amount <= 0) continue
+            try {
+              await stripe.transfers.create({
+                amount: v.amount,
+                currency: 'try',
+                destination: v.stripeAccountId,
+                source_transaction: pi.latest_charge as string,
+                metadata: {
+                  order_id: orderId,
+                  order_number: pi.metadata.order_number ?? '',
+                },
+              })
+            } catch (transferErr) {
+              console.error(`Transfer hatası (${v.stripeAccountId}):`, transferErr)
+              // Transfer başarısız — loglama yeterli, ödeme tamamlandı sayılır
+            }
+          }
         }
       }
 
@@ -113,7 +229,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ─── Connect Account Güncellendi ───────────────────────────
+  // ─── Connect Account Güncellendi ─────────────────────────────────
   if (event.type === 'account.updated') {
     const account = event.data.object as Stripe.Account
     const admin = createServiceClient()

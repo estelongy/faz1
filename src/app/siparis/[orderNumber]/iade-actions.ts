@@ -39,6 +39,16 @@ export async function iadeTalebiOlusturAction(input: IadeInput): Promise<{ ok: b
     return { ok: false, error: 'Kargoya verilmemiş ürünün iadesi için önce siparişi iptal etmelisin' }
   }
 
+  // 14 günlük iade süresi kontrolü
+  const RETURN_WINDOW_DAYS = 14
+  if (item.fulfillment_status === 'delivered' && item.delivered_at) {
+    const deliveredMs = new Date(item.delivered_at).getTime()
+    const daysSince = (Date.now() - deliveredMs) / (1000 * 60 * 60 * 24)
+    if (daysSince > RETURN_WINDOW_DAYS) {
+      return { ok: false, error: `${RETURN_WINDOW_DAYS} günlük iade süresi dolmuştur (Teslim: ${new Date(item.delivered_at).toLocaleDateString('tr-TR')})` }
+    }
+  }
+
   // Mevcut aktif iade talebi var mı
   const { data: existing } = await supabase
     .from('returns')
