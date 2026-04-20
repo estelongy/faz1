@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { urunEkleAction } from './urun-ekle-action'
+import ProductImageUploader from '@/components/ProductImageUploader'
 
 const CATEGORIES = [
   { value: 'botox',       label: 'Botoks' },
@@ -17,7 +18,7 @@ const CATEGORIES = [
   { value: 'other',       label: 'Diğer' },
 ]
 
-export default function UrunEkleForm() {
+export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
 
@@ -27,6 +28,7 @@ export default function UrunEkleForm() {
   const [description,   setDescription]   = useState('')
   const [price,         setPrice]         = useState('')
   const [ingredients,   setIngredients]   = useState('')
+  const [images,        setImages]        = useState<string[]>([])
 
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState<string | null>(null)
@@ -49,6 +51,7 @@ export default function UrunEkleForm() {
       description: description.trim(),
       price: price ? Number(price) : null,
       ingredients: ingsArr,
+      images,
     })
 
     if (!res.ok) {
@@ -59,7 +62,7 @@ export default function UrunEkleForm() {
 
     setSuccess(true)
     setLoading(false)
-    setName(''); setDescription(''); setPrice(''); setIngredients('')
+    setName(''); setDescription(''); setPrice(''); setIngredients(''); setImages([])
     router.refresh()
     setTimeout(() => { setSuccess(false); setOpen(false) }, 2000)
   }
@@ -156,6 +159,12 @@ export default function UrunEkleForm() {
           />
         </div>
       )}
+
+      {/* Görseller */}
+      <div>
+        <label className="block text-slate-400 text-xs mb-2">Görseller <span className="text-slate-600">(en az 1 önerilir)</span></label>
+        <ProductImageUploader vendorId={vendorId} initialImages={images} onChange={setImages} />
+      </div>
 
       <p className="text-slate-600 text-xs">* Eklenen ürünler admin onayından sonra mağazada yayınlanır.</p>
 

@@ -20,6 +20,7 @@ export type UrunEkleInput = {
   description?: string
   price?: number | null
   ingredients?: string[]
+  images?: string[]
 }
 
 export async function urunEkleAction(input: UrunEkleInput): Promise<{ ok: boolean; error?: string }> {
@@ -53,6 +54,7 @@ export async function urunEkleAction(input: UrunEkleInput): Promise<{ ok: boolea
     description:     input.description?.trim() || null,
     price:           input.price ?? null,
     ingredients:     input.ingredients && input.ingredients.length > 0 ? input.ingredients : null,
+    images:          input.images && input.images.length > 0 ? input.images : null,
     is_active:       false,
     approval_status: 'pending',
   })
