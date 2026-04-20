@@ -79,12 +79,13 @@ export default function IletisimPage() {
           <a href="mailto:kvkk@estelongy.com" className="text-violet-400 hover:text-violet-300 font-mono text-sm">kvkk@estelongy.com</a>
         </div>
 
-        {/* Şirket bilgisi placeholder */}
+        {/* Şirket bilgisi */}
         <div className="p-5 rounded-2xl bg-slate-900/50 border border-slate-800">
           <h3 className="text-white font-bold mb-3 text-sm">Şirket Bilgisi</h3>
           <div className="text-slate-400 text-xs space-y-1 leading-relaxed">
-            <p><span className="text-slate-500">Ünvan:</span> Estelongy Sağlık Teknolojileri A.Ş.</p>
-            <p><span className="text-slate-500">Adres:</span> İstanbul, Türkiye</p>
+            <p><span className="text-slate-500">Yasal Ünvan:</span> Vestoriq OÜ</p>
+            <p><span className="text-slate-500">Marka:</span> Estelongy</p>
+            <p><span className="text-slate-500">Merkez:</span> Tallinn, Estonya</p>
             <p><span className="text-slate-500">Web:</span> <Link href="/" className="text-violet-400 hover:text-violet-300">estelongy.com</Link></p>
           </div>
         </div>

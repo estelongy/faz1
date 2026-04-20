@@ -56,7 +56,7 @@ export default function Footer() {
 
         <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-slate-600 text-xs">
-            © {new Date().getFullYear()} Estelongy Sağlık Teknolojileri A.Ş. — Tüm hakları saklıdır.
+            © {new Date().getFullYear()} Vestoriq OÜ — Estelongy markası. Tüm hakları saklıdır.
           </p>
           <p className="text-slate-600 text-xs">
             Estelongy Gençlik Skoru, tıbbi teşhis aracı değildir.

@@ -122,6 +122,7 @@ export default function CerezPage() {
                 <a href="mailto:kvkk@estelongy.com" className="text-violet-400 hover:text-violet-300">kvkk@estelongy.com</a>{' '}
                 adresine yazabilirsiniz.
               </p>
+              <p className="mt-2 text-xs text-slate-500">Platform işleticisi: Vestoriq OÜ — Tallinn, Estonya</p>
             </section>
           </div>
         </div>
