@@ -52,6 +52,9 @@ Bu dosya her oturumda otomatik okunur.
 /admin/saticilar         → Satıcı yönetimi
 /admin/urunler           → Ürün yönetimi
 /admin/kuponlar          → Kupon oluşturma ve yönetimi
+/admin/iadeler           → İade arabulucu (satıcı-müşteri anlaşmazlıkları)
+/panel/leaderboard       → Anonim skor sıralaması
+/klinik/panel/rapor      → Aylık performans raporu
 ```
 
 ---
@@ -288,6 +291,10 @@ POST /api/analiz  (rate limit: IP başına 5/saat)
 - `src/app/panel/badge-actions.ts` — `checkAndAwardBadges()`, `updateStreak()`
 - Tablolar: `user_badges`, `user_activity_streaks`
 - Panel sayfasında rozet grid + streak göstergesi
+- **Anonim leaderboard:** `/panel/leaderboard` — top 20 klinik onaylı EGS, isimler A*** Y***
+- **Klinik aylık rapor:** `/klinik/panel/rapor` — 6 ay analitik, trend, skor artışı
+- **Hasta iletişim notları:** `clinic_patient_notes` tablosu, pinned+author
+- **Randevu QR:** `RandevuQRModal` — hasta klinikte QR gösterir, check-in
 
 ---
 
