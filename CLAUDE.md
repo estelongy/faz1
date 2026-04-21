@@ -514,6 +514,31 @@ Her biri için **bilimsel temelde EGP** hesaplanacak:
 
 **Saklama yeri (karar verilecek):** JSON katalog mı, Supabase `treatments`/`applications`/`devices` tabloları mı?
 
+### Ürün Felsefesi: Estelongy, Estetiğin IMDb'si
+
+**Analoji:** IMDb filmleri yapmıyor, satmıyor — sadece **puanlıyor ve referans oluyor**. Bu rolüyle film sektörünün kalite standardı oldu. Estelongy de estetik+longevity için aynısı.
+
+**Keşif arayüzü (yapılacak):**
+- **Gençlik Reçeteleri** sayfası (yeni) — EGP sıralı katalog
+- Filtre: Kategori (İşlem / Ürün / Protokol / Cihaz / Estelog)
+- Varsayılan sıralama: **EGP yüksekten düşüğe**
+- Her kalem detay sayfası: bilimsel özet + EGP (+ nasıl hesaplandı) + Estelog yorumları + hasta değerlendirmeleri + "Benzer öneriler"
+- **Estelongy Top listeleri** — "En yüksek EGP'li 10 işlem", "En yüksek EGP'li 10 Estelog" vb.
+
+**Gençlik Reçetesi konsepti:**
+Tek bir öğe değil — Estelog tarafından onaylanmış **kombinasyon paketi**. Her paket kendi EGP'sine sahip.
+
+```
+Reçete: "30'larda Koruma" · EGP 8.9
+├─ Günlük güneş koruyucu           EGP 8.5
+├─ HA dolgu (yılda 1, minimal)     EGP 9.2
+├─ D vit + omega-3 takviyesi       EGP 7.8
+└─ Yılda 2 klinik ziyaret          EGP 8.5
+```
+
+**Gelir modeli IMDb benzeri:**
+Platform doğrudan işlem yapmıyor — sadece **ölçü olduğu için** değerli. Reklam + sertifikasyon lisansı + premium katman + marketplace komisyonu.
+
 ---
 
 ## Manuel Yapılacaklar (Kod Gerektirmeyen)
