@@ -414,27 +414,57 @@ POST /api/analiz  (rate limit: IP başına 5/saat)
 - Klasik hekimden farkı: tek seferlik müdahale yerine **skor takibi ile uzun vadeli yol haritası**
 - Pazarlama açısı: "Senin hekimin değil, senin Estelog'un"
 
-### Estelongy Puanı — Sektör Standardı
+### Skor vs Puan — Temel Terminoloji
 
-**Ürünler için ölçü birimi.** SPF gibi, Nutri-Score gibi, enerji sınıfı gibi.
+**Türkçe dilsel ayrım — sabit, tutarlı kullanılacak:**
 
-> **Estelongy Puanı**, bir ürünün "gençliğe katkı" standardıdır (0–10).
+| | Kime/neye verilir | Aralık | Kısaltma |
+|--|--|--|--|
+| **Skor** | **kişi** (hasta) | 0–100 | — (açık yaz: "Estelongy Gençlik Skoru") |
+| **Puan** | **nesne** (ürün, işlem, klinik, vs.) | 0–10 | **EGP** (Estelongy Gençlik Puanı) |
 
-**Örnek:**
-> La Roche-Posay Anthelios SPF 50+ · **Estelongy Puanı: 9.2 / 10**
+- "EGS" kısaltması ❌ — kullanma
+- "EGP" kısaltması ✅ — yaygın kullanılabilir
+
+### EGP — Estelongy Gençlik Puanı
+
+**Estetik + longevity evreninin ortak ölçü birimi.** SPF gibi, Nutri-Score gibi, enerji sınıfı gibi.
+
+> **EGP**, bir nesnenin "gençliğe katkı" standardıdır (0–10).
+
+**Kapsam (estetik + longevity'ye dair HER ŞEY):**
+- **Ürünler** — serum, güneş koruyucu, vitamin, takviye, kozmetik
+- **İşlemler** — filler, botox, lazer, mezoterapi, PRP
+- **Klinikler** — tesis kalite puanı
+- **Esteloglar** — hekim puanı (hasta sonuçlarına dayalı)
+- **Cihazlar** — dermatoskop, UV kamera, cilt analiz cihazı
+- **Protokoller** — örn. "3 aylık anti-aging paketi"
+- **Gıdalar / takviyeler** — collagen, bone broth, omega-3
+- **Spa / bakım hizmetleri** — yüz bakımı, masaj, dermaroller
+- **Uygulamalar** — meditation, uyku takip, fitness
+
+**Örnek kullanım:**
+> La Roche-Posay Anthelios SPF 50+ · **EGP: 9.2**
+> Klinik X · **EGP: 8.7**
+> Dr. Ayşe Yılmaz (Estelog) · **EGP: 9.4**
+> "Yüz Dolgu Uygulaması" (genel) · **EGP: 6.5** (temkinli işlem)
 
 **Stratejik değeri:**
-1. **Standart** olmak — platform olmaktan çıkıp "ölçü birimi" olmak. SPF'nin sahibi yok ama marka hatırlanıyor; Estelongy Puanı senin.
-2. **Sertifikasyon geliri** — üretici ambalajda "Estelongy Puanı" kullanmak için lisans öder.
-3. **Tüketici için seçim** — 50 ürün arasından "en yüksek puanlı" net kriter.
-4. **Estelog için öneri dili** — "şunu kullan" değil "Estelongy Puanı 9+ olan her ürün".
-5. **Kalıcı moat** — standart bir kez oturursa, Estelongy dışında da değerini korur.
+1. **Standart** olmak — platform olmaktan çıkıp "ölçü birimi" olmak
+2. **Sertifikasyon geliri** — üretici/klinik ambalajında/web sitesinde "EGP" kullanmak için lisans öder
+3. **Tüketici için seçim kolaylığı** — kategori fark etmeksizin net kriter
+4. **Estelog için öneri dili** — "EGP 9+ olan herhangi bir X"
+5. **Kalıcı moat** — standart bir kez oturursa Estelongy dışında da değerini korur
 
-**İç entegrasyon:**
-- `products` tablosunda zaten `doctor_score`, `user_score`, `manufacturer_score` var
-- Bunların ağırlıklı birleşimi = Estelongy Puanı
-- Mağazada her ürün bu puanla sıralanır/filtrelenir
-- Ürün detayında "Puan nasıl hesaplandı?" açıklaması şeffaflık sağlar
+**İç entegrasyon (ürünler için):**
+- `products` tablosunda `doctor_score`, `user_score`, `manufacturer_score` var
+- Bunların ağırlıklı birleşimi = ürünün EGP'si
+- Mağazada EGP ile sıralama/filtreleme
+- Ürün detayında "EGP nasıl hesaplandı?" şeffaflığı
+
+**İç entegrasyon (klinik/hekim için — sonraki sprint):**
+- Klinik EGP: tamamlanan randevu başına skor artışı ortalaması + hasta memnuniyeti + işlem başarı oranı
+- Estelog EGP: kendi onayladığı skorların tutarlılığı + hasta sadakati + uzun vadeli sonuçlar
 
 ### Skor Bölgeleri (YENİ — ESKİ BAREM KULLANMA)
 
