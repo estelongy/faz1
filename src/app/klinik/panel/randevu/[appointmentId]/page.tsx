@@ -4,7 +4,9 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import KlinikAkisWizard from '@/components/KlinikAkisWizard'
-import { longevityToPoints, tetkikToPoints, sumComponents, finalApprovedScore } from '@/lib/egs'
+import { sumComponents, finalApprovedScore } from '@/lib/egs'
+import { klinikAnketPuani } from '@/lib/anket-sorular'
+import { scoreTetkikValues } from '@/lib/tetkik-params'
 import { enqueueNotification } from '@/lib/notifications'
 
 // ── Server Actions ─────────────────────────────────────────────────
@@ -85,7 +87,7 @@ async function saveAnket(apptId: string, analysisId: string, answers: Record<str
   if (!user) return
   const userId = await getUserIdFromAnalysis(supabase, analysisId)
   await supabase.from('analyses').update({
-    device_type: 'klinik_anketi',
+    device_type: 'klinik_anketi_10',
     device_raw_data: answers,
     device_scores: answers,
     device_overall: total,
@@ -95,13 +97,15 @@ async function saveAnket(apptId: string, analysisId: string, answers: Record<str
   const { data: a } = await supabase.from('analyses').select('web_overall, temp_overall').eq('id', analysisId).single()
   if (!clinic) return
 
-  const klinikPuan = longevityToPoints(answers)
-  // Hasta anketi puanını al (çift sayım önleme)
+  // Klinik anketi 10 soru üzerinden max 20 puan (aynı 5 + ek 5)
+  const klinikToplam = klinikAnketPuani(answers)
+  // Hasta anketi puanını al (çift sayım önleme — hasta anketinin 5 sorusu klinik anketinde replace edilir)
   const { data: onAnaliz } = await supabase
     .from('scores').select('hasta_anket_puani')
     .eq('user_id', userId).eq('analysis_id', analysisId).eq('score_type', 'on_analiz').maybeSingle()
   const hastaPuan = Number(onAnaliz?.hasta_anket_puani ?? 0)
-  const deltaKlinik = klinikPuan - hastaPuan
+  // Replace mantığı: klinik toplam puanından hasta puanı çıkarılır → net klinik katkısı
+  const deltaKlinik = klinikToplam - hastaPuan
 
   const c250 = Number(a?.web_overall ?? a?.temp_overall ?? 50)
   const total_score = sumComponents({
@@ -122,6 +126,47 @@ async function saveAnket(apptId: string, analysisId: string, answers: Record<str
   })
 }
 
+/**
+ * İleri analiz: c250_base'i replace eder.
+ * Şimdilik manuel bir skor değeri alınır (fotoğraf/cihaz entegrasyonu sonraki sprintte).
+ */
+async function saveIleriAnaliz(apptId: string, analysisId: string, yeniC250: number) {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  const { data: clinic } = await supabase.from('clinics').select('id').eq('user_id', user.id).single()
+  if (!clinic) return
+
+  // Mevcut skor satırını al
+  const { data: s } = await supabase
+    .from('scores')
+    .select('id, hasta_anket_puani, klinik_anket_puani, tetkik_puani, hekim_degerlendirme')
+    .eq('appointment_id', apptId).eq('score_type', 'klinik_onayli').maybeSingle()
+
+  if (!s) return
+
+  // c250_base'i replace et (ön analiz → ileri analiz)
+  const total = sumComponents({
+    c250_base: yeniC250,
+    hasta_anket_puani: Number(s.hasta_anket_puani ?? 0),
+    klinik_anket_puani: Number(s.klinik_anket_puani ?? 0),
+    tetkik_puani: Number(s.tetkik_puani ?? 0),
+    hekim_degerlendirme: Number(s.hekim_degerlendirme ?? 0),
+  })
+
+  await supabase.from('scores').update({
+    c250_base: yeniC250,
+    total_score: total,
+    overall_score: Math.round(total),
+  }).eq('id', s.id)
+
+  // Analyses'a ileri analiz notu
+  const { data: existing } = await supabase.from('analyses').select('doctor_approved_scores').eq('id', analysisId).single()
+  const merged = { ...(existing?.doctor_approved_scores ?? {}), ileri_analiz_c250: yeniC250 }
+  await supabase.from('analyses').update({ doctor_approved_scores: merged }).eq('id', analysisId)
+}
+
 async function saveTetkik(apptId: string, analysisId: string, data: Record<string, number>) {
   'use server'
   const supabase = await createClient()
@@ -137,7 +182,7 @@ async function saveTetkik(apptId: string, analysisId: string, data: Record<strin
     .eq('appointment_id', apptId).eq('score_type', 'klinik_onayli').maybeSingle()
 
   if (s) {
-    const tetkikPuan = tetkikToPoints(data)
+    const tetkikPuan = scoreTetkikValues(data)
     const total = sumComponents({
       c250_base: Number(s.c250_base ?? 0),
       hasta_anket_puani: Number(s.hasta_anket_puani ?? 0),
@@ -314,6 +359,22 @@ export default async function RandevuAkisPage({
 
   const analysis = analysisByAppt ?? analysisByUser ?? null
 
+  // Hasta anketi cevaplarını çek (varsa klinik anketinde önceden doldurulacak)
+  let hastaAnketCevaplari: Record<string, number> | null = null
+  if (analysis) {
+    const { data: survey } = await supabase
+      .from('longevity_surveys')
+      .select('answers')
+      .eq('user_id', appointment.user_id)
+      .eq('is_completed', true)
+      .order('completed_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (survey?.answers && typeof survey.answers === 'object') {
+      hastaAnketCevaplari = survey.answers as Record<string, number>
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
@@ -352,9 +413,11 @@ export default async function RandevuAkisPage({
           appointment={appointment as Parameters<typeof KlinikAkisWizard>[0]['appointment']}
           analysis={analysis as Parameters<typeof KlinikAkisWizard>[0]['analysis']}
           jetonBalance={(clinic as { jeton_balance?: number }).jeton_balance ?? 0}
+          hastaAnketCevaplari={hastaAnketCevaplari}
           onKabul={kabulEt}
           onSaveAnket={saveAnket}
           onSaveTetkik={saveTetkik}
+          onSaveIleriAnaliz={saveIleriAnaliz}
           onSaveHekim={saveHekim}
           onFinalOnay={finalOnay}
         />
