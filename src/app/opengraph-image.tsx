@@ -66,7 +66,7 @@ export default function OGImage() {
           textAlign: 'center',
           maxWidth: 600,
         }}>
-          Ön analiz · Longevity anketi · Klinik onay — tek platformda EGS
+          Ön analiz · Longevity anketi · Klinik onay — Estelongy Gençlik Skoru platformu
         </div>
 
         {/* Score zones */}

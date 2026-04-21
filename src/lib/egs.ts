@@ -3,7 +3,7 @@
 
 export type ScoreType = 'on_analiz' | 'klinik_onayli'
 
-export type ColorZone = 'red' | 'brown' | 'green' | 'blue'
+export type ColorZone = 'red' | 'orange' | 'amber' | 'green' | 'blue'
 
 export interface ScoreComponents {
   c250_base?: number
@@ -18,29 +18,32 @@ export interface ScoreComponents {
 /** Renk bölgesi kuralı (CLAUDE.md) */
 export function colorZone(score: number | null | undefined): ColorZone | null {
   if (score == null) return null
-  if (score < 50) return 'red'
-  if (score < 75) return 'brown'
-  if (score < 90) return 'green'
+  if (score < 56)  return 'red'
+  if (score < 66)  return 'orange'
+  if (score < 80)  return 'amber'
+  if (score < 90)  return 'green'
   return 'blue'
 }
 
 export function zoneLabel(zone: ColorZone | null): string {
   switch (zone) {
-    case 'red':   return 'Kritik'
-    case 'brown': return 'Normal'
-    case 'green': return 'Genç'
-    case 'blue':  return 'Premium'
-    default:      return '—'
+    case 'red':    return 'Çok Düşük'
+    case 'orange': return 'Düşük'
+    case 'amber':  return 'Normal'
+    case 'green':  return 'İyi'
+    case 'blue':   return 'Harika'
+    default:       return '—'
   }
 }
 
 export function zoneMeaning(zone: ColorZone | null): string {
   switch (zone) {
-    case 'red':   return 'Yaşından yaşlı görünüyor'
-    case 'brown': return 'Yaşında görünüyor'
-    case 'green': return 'Yaşından genç görünüyor'
-    case 'blue':  return 'Mükemmel gençlik skoru'
-    default:      return ''
+    case 'red':    return 'Gençlik Skoru çok düşük'
+    case 'orange': return 'Gençlik Skoru düşük'
+    case 'amber':  return 'Gençlik Skoru normal aralıkta'
+    case 'green':  return 'Gençlik Skoru iyi seviyede'
+    case 'blue':   return 'Olağanüstü Gençlik Skoru'
+    default:       return ''
   }
 }
 

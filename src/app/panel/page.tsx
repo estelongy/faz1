@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Panelim',
-  description: 'EGS skorunuzu takip edin, randevularınızı yönetin.',
+  description: 'Gençlik Skorunuzu takip edin, randevularınızı yönetin.',
 }
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
@@ -230,7 +230,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                 {latestAnalysis?.final_overall != null && (
                   <div className="mt-5 pt-5 border-t border-slate-700/50 flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-emerald-400 text-xs font-bold mb-0.5">✦ KLİNİK ONAYLI EGS</p>
+                      <p className="text-emerald-400 text-xs font-bold mb-0.5">✦ KLİNİK ONAYLI ESTELONGY GENÇLİK SKORU</p>
                       <p className="text-slate-400 text-xs">Skorunu arkadaşlarınla paylaş</p>
                     </div>
                     <PaylasModal
@@ -248,7 +248,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
                 </div>
-                <p className="text-white font-semibold mb-1">EGS Skorunuz Henüz Yok</p>
+                <p className="text-white font-semibold mb-1">Gençlik Skorunuz Henüz Yok</p>
                 <p className="text-slate-400 text-sm mb-4">Selfie yükleyerek gençlik skorunuzu öğrenin</p>
                 <Link href="/analiz" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity">
                   Analizi Başlat →
@@ -274,7 +274,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
             {latestAnalysis?.web_overall != null && !latestAnalysis?.temp_overall && (
               <Link href="/anket" className="flex-1 group p-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer relative overflow-hidden">
                 <div className="absolute top-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
-                  +10 EGS
+                  +10 Puan
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-3 text-white">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

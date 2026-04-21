@@ -399,7 +399,7 @@ export default async function KlinikPanelPage() {
                 <thead>
                   <tr className="border-b border-slate-800">
                     <th className="text-left px-4 py-3 text-slate-400 font-medium">Hasta</th>
-                    <th className="text-left px-4 py-3 text-slate-400 font-medium">EGS</th>
+                    <th className="text-left px-4 py-3 text-slate-400 font-medium">Gençlik Skoru</th>
                     <th className="text-left px-4 py-3 text-slate-400 font-medium">Tarih & Saat</th>
                     <th className="text-left px-4 py-3 text-slate-400 font-medium">Durum</th>
                     <th className="text-left px-4 py-3 text-slate-400 font-medium">İşlem</th>

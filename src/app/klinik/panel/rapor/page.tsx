@@ -211,7 +211,7 @@ export default async function KlinikRaporPage() {
         {/* Skor Metrikleri */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700">
-            <p className="text-slate-500 text-xs mb-1">Ortalama Klinik Onaylı EGS</p>
+            <p className="text-slate-500 text-xs mb-1">Ortalama Klinik Onaylı Gençlik Skoru</p>
             <p className="text-4xl font-black text-white">
               {current.avgFinalScore != null ? current.avgFinalScore.toFixed(1) : '—'}
             </p>
@@ -245,7 +245,7 @@ export default async function KlinikRaporPage() {
                   <th className="px-4 py-3 text-center">✕ İptal</th>
                   <th className="px-4 py-3 text-center">○ Gelmedi</th>
                   <th className="px-4 py-3 text-center">⏳ Aktif</th>
-                  <th className="px-4 py-3 text-right">Ort. EGS</th>
+                  <th className="px-4 py-3 text-right">Ort. Gençlik Skoru</th>
                   <th className="px-4 py-3 text-right">Jeton</th>
                 </tr>
               </thead>

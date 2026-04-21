@@ -2,10 +2,11 @@ import Link from 'next/link'
 import Footer from '@/components/Footer'
 
 const SCORE_ZONES = [
-  { label: 'Kritik',  range: '0 – 49',  color: '#ef4444', bg: 'bg-red-500/10',    border: 'border-red-500/20',    text: 'text-red-400',    desc: 'Yaşından yaşlı görünüyor' },
-  { label: 'Normal',  range: '50 – 74', color: '#f59e0b', bg: 'bg-amber-500/10',  border: 'border-amber-500/20',  text: 'text-amber-400',  desc: 'Yaşında görünüyor' },
-  { label: 'Genç',    range: '75 – 89', color: '#10b981', bg: 'bg-emerald-500/10',border: 'border-emerald-500/20',text: 'text-emerald-400',desc: 'Yaşından genç görünüyor' },
-  { label: 'Premium', range: '90 – 100',color: '#00d4ff', bg: 'bg-sky-500/10',    border: 'border-sky-500/20',    text: 'text-sky-400',    desc: 'Mükemmel gençlik skoru' },
+  { label: 'Çok Düşük', range: '0 – 55',  color: '#ef4444', bg: 'bg-red-500/10',     border: 'border-red-500/20',    text: 'text-red-400',    desc: 'Gençlik Skoru çok düşük' },
+  { label: 'Düşük',     range: '56 – 65', color: '#f97316', bg: 'bg-orange-500/10',  border: 'border-orange-500/20', text: 'text-orange-400', desc: 'Gençlik Skoru düşük' },
+  { label: 'Normal',    range: '66 – 79', color: '#f59e0b', bg: 'bg-amber-500/10',   border: 'border-amber-500/20',  text: 'text-amber-400',  desc: 'Normal aralıkta' },
+  { label: 'İyi',       range: '80 – 89', color: '#22c55e', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20',text: 'text-emerald-400',desc: 'Gençlik Skoru iyi' },
+  { label: 'Harika',    range: '90 – 100',color: '#00d4ff', bg: 'bg-sky-500/10',     border: 'border-sky-500/20',    text: 'text-sky-400',    desc: 'Olağanüstü Gençlik Skoru' },
 ]
 
 const STEPS = [
@@ -25,7 +26,7 @@ const STEPS = [
   {
     num: '02',
     color: 'from-amber-500 to-orange-500',
-    title: 'EGS Skorunu Al',
+    title: 'Gençlik Skorunu Al',
     desc: 'Cildinizin gerçek biyolojik yaşını gösteren 0-100 arası Estelongy Gençlik Skoru hesaplanır.',
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +51,7 @@ const STEPS = [
     num: '04',
     color: 'from-blue-500 to-cyan-600',
     title: 'Klinik Onayı',
-    desc: 'Uzman hekim tarafından doğrulanmış, damgalı "Klinik Onaylı EGS" kartınızı paylaşın.',
+    desc: 'Uzman hekim tarafından doğrulanmış, damgalı "Klinik Onaylı Estelongy Gençlik Skoru" kartınızı paylaşın.',
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -62,7 +63,7 @@ const STEPS = [
 
 const CLINIC_FEATURES = [
   { icon: '🎯', title: 'Sadece Gelen Müşteri', desc: 'Randevu başına değil, klinik kabul anında jeton düşer. No-show = sıfır maliyet.' },
-  { icon: '📊', title: 'Hasta EGS Takibi', desc: 'Her hastanın skor geçmişi, ön analiz detayları ve klinik notları tek ekranda.' },
+  { icon: '📊', title: 'Hasta Gençlik Skoru Takibi', desc: 'Her hastanın skor geçmişi, ön analiz detayları ve klinik notları tek ekranda.' },
   { icon: '🔬', title: 'Hekim Onay Sistemi', desc: 'Anket + tetkik + hekim değerlendirmesiyle bilimsel olarak doğrulanmış final skor.' },
   { icon: '⚡', title: 'Kolay Başlangıç', desc: 'Platform ücretsiz. Jeton paketi satın al, ilk hastanı kabul et. Dakikalar içinde hazır.' },
 ]
@@ -119,7 +120,7 @@ export default function Home() {
 
           <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
             Selfie ile ön analizini al, longevity anketi ve klinik muayenesiyle{' '}
-            <span className="text-emerald-400 font-semibold">Klinik Onaylı EGS</span>&apos;ye dönüştür.
+            <span className="text-emerald-400 font-semibold">Klinik Onaylı Estelongy Gençlik Skoru</span>&apos;na dönüştür.
           </p>
 
           <p className="text-slate-500 text-sm uppercase tracking-widest mb-8">Nereden başlamak istersin?</p>
@@ -144,7 +145,7 @@ export default function Home() {
                   Gençlik Skorunu<br />Öğren
                 </h3>
                 <p className="text-slate-400 text-sm leading-relaxed mb-5">
-                  Selfie ile ön Gençlik Skorunu (EGS) saniyeler içinde al.
+                  Selfie ile ön Gençlik Skorunu saniyeler içinde al.
                 </p>
                 <div className="flex items-center gap-2 text-violet-300 font-semibold text-sm group-hover:gap-3 transition-all">
                   <span>Analizi başlat</span>
@@ -262,11 +263,11 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-sm mb-6">
-                EGS — Estelongy Gençlik Skoru
+                Estelongy Gençlik Skoru
               </div>
               <h2 className="text-4xl font-black text-white mb-6">Gençlik Skorun 0–100 arası</h2>
               <p className="text-slate-400 leading-relaxed mb-6">
-                EGS (Estelongy Gençlik Skoru), C250 formülüne dayalı bir biyolojik gençlik göstergesidir.
+                Estelongy Gençlik Skoru, C250 formülüne dayalı bir biyolojik gençlik göstergesidir.
                 Cilt görseli, yaşam tarzı anketi, tetkik sonuçları ve hekim değerlendirmesi
                 birleştirilerek 0–100 arasında <strong>tek bir skor</strong> üretilir; klinik onayıyla kesinleşir.
               </p>
@@ -274,7 +275,7 @@ export default function Home() {
                 {[
                   { label: 'Ön Analiz', desc: 'Selfie ile anında, ücretsiz', badge: 'Herkese açık' },
                   { label: 'Longevity Anketi', desc: 'Yaşam tarzı katkısı +10 puan', badge: 'Ücretsiz' },
-                  { label: 'Klinik Onaylı EGS', desc: 'Hekim doğrulamalı sertifika', badge: 'Paylaşılabilir' },
+                  { label: 'Klinik Onaylı Gençlik Skoru', desc: 'Hekim doğrulamalı sertifika', badge: 'Paylaşılabilir' },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-3 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
                     <div className="w-2 h-2 rounded-full bg-violet-500 shrink-0" />
@@ -297,9 +298,10 @@ export default function Home() {
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black shrink-0"
                     style={{ backgroundColor: `${z.color}20`, color: z.color }}>
-                    {z.range.split('–')[1]?.trim().includes('100') ? '96' :
-                     z.range.split('–')[0]?.trim() === '75' ? '82' :
-                     z.range.split('–')[0]?.trim() === '50' ? '63' : '38'}
+                    {z.label === 'Harika' ? '95' :
+                     z.label === 'İyi'    ? '84' :
+                     z.label === 'Normal' ? '72' :
+                     z.label === 'Düşük'  ? '60' : '40'}
                   </div>
                   <div>
                     <div className={`font-black text-lg ${z.text}`}>{z.label}</div>
@@ -357,12 +359,12 @@ export default function Home() {
           <div className="space-y-4">
             {[
               {
-                q: 'EGS analizi gerçekten ücretsiz mi?',
-                a: 'Evet. Ön analiz, longevity anketi ve skor tahmini tamamen ücretsizdir. Klinik onaylı EGS sertifikası almak için bir kliniğe randevu almanız yeterli.',
+                q: 'Gençlik Skoru analizi gerçekten ücretsiz mi?',
+                a: 'Evet. Ön analiz, longevity anketi ve skor tahmini tamamen ücretsizdir. Klinik Onaylı Estelongy Gençlik Skoru sertifikası almak için bir kliniğe randevu almanız yeterli.',
               },
               {
-                q: 'Klinik Onaylı EGS ile Ön Analiz arasındaki fark nedir?',
-                a: 'Ön Analiz selfienizle anlık hesaplanan tahmini bir değerdir; yol göstermek içindir, tıbbi karar aracı değildir. Klinik Onaylı EGS ise uzman hekim tarafından anket, tetkik ve yüz yüze değerlendirmeyle doğrulanmış, paylaşılabilir sertifikalı skordur.',
+                q: 'Klinik Onaylı Gençlik Skoru ile Ön Analiz arasındaki fark nedir?',
+                a: 'Ön Analiz selfienizle anlık hesaplanan tahmini bir değerdir; yol göstermek içindir, tıbbi karar aracı değildir. Klinik Onaylı Estelongy Gençlik Skoru ise uzman hekim tarafından anket, tetkik ve yüz yüze değerlendirmeyle doğrulanmış, paylaşılabilir sertifikalı skordur.',
               },
               {
                 q: 'Fotoğrafım güvende mi?',

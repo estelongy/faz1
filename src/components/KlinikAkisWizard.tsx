@@ -553,7 +553,7 @@ export default function KlinikAkisWizard({
 
         <div className="p-4 rounded-xl border text-center"
           style={{ borderColor: `${scoreColor(finalSkor)}30`, background: `${scoreColor(finalSkor)}0d` }}>
-          <p className="text-slate-400 text-xs mb-1">Tahmini Final EGS</p>
+          <p className="text-slate-400 text-xs mb-1">Tahmini Final Gençlik Skoru</p>
           <p className="text-4xl font-black" style={{ color: scoreColor(finalSkor) }}>{finalSkor}</p>
           <p className="text-slate-500 text-xs mt-1">({araToplam.toFixed(1)} × 0.85) + ({hekimScore} × 0.15)</p>
         </div>
@@ -593,7 +593,7 @@ export default function KlinikAkisWizard({
       <div className="space-y-5">
         {publishedScore != null ? (
           <div className="text-center py-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
-            <p className="text-emerald-400 text-sm font-bold mb-2">✦ KLİNİK ONAYLI EGS YAYINLANDI ✦</p>
+            <p className="text-emerald-400 text-sm font-bold mb-2">✦ KLİNİK ONAYLI ESTELONGY GENÇLİK SKORU YAYINLANDI ✦</p>
             <p className="text-7xl font-black text-emerald-400">{publishedScore}</p>
             <p className="text-slate-400 text-sm mt-2 mb-4">Hasta panelinde görünüyor</p>
             {analysis && (
@@ -609,7 +609,7 @@ export default function KlinikAkisWizard({
         ) : (
           <>
             <div className="text-center py-6 bg-slate-800/60 border border-slate-700 rounded-2xl">
-              <p className="text-slate-400 text-sm mb-2">Yayınlanacak EGS Skoru</p>
+              <p className="text-slate-400 text-sm mb-2">Yayınlanacak Gençlik Skoru</p>
               <p className="text-7xl font-black" style={{ color: scoreColor(finalSkor) }}>{finalSkor}</p>
               <p className="text-slate-500 text-xs mt-2">
                 C250: {aktifC250} · Anket: {(hastaMevcutPuan + klinikNetKatki).toFixed(1)} · Tetkik: +{tetkikPuan.toFixed(1)} · Hekim: {hekimScore}
@@ -630,7 +630,7 @@ export default function KlinikAkisWizard({
               <div className="flex justify-between"><span className="text-slate-400">Tetkik</span><span className="text-emerald-400">+{tetkikPuan.toFixed(1)}</span></div>
               <div className="flex justify-between"><span className="text-slate-400">Ara Toplam</span><span className="text-white">{araToplam.toFixed(1)}</span></div>
               <div className="flex justify-between"><span className="text-slate-400">Hekim Değerlendirmesi</span><span style={{ color: scoreColor(hekimScore) }}>{hekimScore}</span></div>
-              <div className="flex justify-between border-t border-slate-700 pt-2"><span className="text-white font-bold">Final EGS</span><span className="text-xl font-black" style={{ color: scoreColor(finalSkor) }}>{finalSkor}</span></div>
+              <div className="flex justify-between border-t border-slate-700 pt-2"><span className="text-white font-bold">Final Gençlik Skoru</span><span className="text-xl font-black" style={{ color: scoreColor(finalSkor) }}>{finalSkor}</span></div>
             </div>
 
             <div>
@@ -651,7 +651,7 @@ export default function KlinikAkisWizard({
                   await onFinalOnay(appointment.id, analysis.id, araToplam, hekimScore, clinicNotes)
                 })}
                 className="flex-1 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 text-base">
-                {isPending ? 'Yayınlanıyor...' : '✦ Klinik Onaylı EGS Yayınla'}
+                {isPending ? 'Yayınlanıyor...' : '✦ Klinik Onaylı Gençlik Skoru Yayınla'}
               </button>
             </div>
           </>

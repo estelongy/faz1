@@ -159,7 +159,7 @@ export default function AnketPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-black text-white mb-2">Longevity Anketi</h1>
           <p className="text-slate-400">
-            Yaşam tarzı bilgileriniz EGS skorunuzu daha doğru hesaplamamızı sağlar.
+            Yaşam tarzı bilgileriniz Gençlik Skorunuzu daha doğru hesaplamamızı sağlar.
             Klinikte yüz yüze tekrar sorulacak — dürüst cevaplar en iyi sonucu verir.
           </p>
         </div>
@@ -194,7 +194,7 @@ export default function AnketPage() {
           </div>
           <p className="text-slate-600 text-xs mt-2 text-center">
             {/* TODO: C250 katkı faktörü onaylanacak */}
-            Anket katkısı: {anketToplam}/100 puan → +{katkı} EGS
+            Anket katkısı: {anketToplam}/100 puan → +{katkı} Gençlik Puanı
           </p>
         </div>
 
