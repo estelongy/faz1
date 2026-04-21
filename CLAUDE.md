@@ -385,6 +385,47 @@ POST /api/analiz  (rate limit: IP başına 5/saat)
 
 ---
 
+## Marka Dili & Adlandırma (ÖNEMLİ — RENAME GEREKLİ)
+
+**"EGS" kısaltması tamamen kaldırılacak.** Doğru kullanım:
+- İlk geçtiği yerde: **"Estelongy Gençlik Skoru ®"**
+- Devamında kısaca: **"Skor"**
+
+**Marka Tanımı** (sabit):
+> Estelongy, kişinin **sağlıklı bir şekilde daha genç görünmesini** sağlayan bir **sanat**tır.
+> Nihai amaç: estetik ihtiyacının minimize edilmesi, her işlemin **etkin, sürdürülebilir ve verimli** olması.
+
+**Pozisyon:**
+- "Genç görünmek" değil → **"Gençleşmek (görünümü)"**
+- Rakipler: tek seferlik müdahale, maskeleme (filler, botox)
+- Estelongy: protokol (foto + anket + tetkik + hekim + ürün) → ölçülebilir ilerleme
+- Paradoks: platform estetik işlem satıyor AMA amacı **"doğru işlem, doğru zaman"**
+
+### Skor Bölgeleri (YENİ — ESKİ BAREM KULLANMA)
+
+| Aralık | Etiket | Renk |
+|--------|--------|------|
+| < 55 | **Çok Düşük** | kırmızı |
+| 56–65 | **Düşük** | turuncu |
+| 66–79 | **Normal** | amber |
+| 80–89 | **İyi** | yeşil |
+| > 90 | **Harika** | cyan |
+
+**Eski barem (kullanılmayacak):** ~~Kritik / Normal / Genç / Premium~~
+
+### Rename Yapılacaklar (Yeni Session'da)
+- [ ] Tüm "EGS" geçişleri → "Skor" veya "Estelongy Gençlik Skoru ®"
+- [ ] `EGSScoreBar` → `ScoreBar` (komponent + import)
+- [ ] `EGSScoreChart` → `ScoreChart`
+- [ ] `EGSFixedBadge` → `ScoreFixedBadge`
+- [ ] `EGSPhase` type → `ScorePhase`
+- [ ] `ZONE_DEFS`, `getZone()`, `colorZone()`, `zoneLabel()` → 5 bölge
+- [ ] SEO meta, OG image altyazıları
+- [ ] PaylasModal, landing page metinleri
+- [ ] CLAUDE.md'deki her "EGS" referansı
+
+---
+
 ## Manuel Yapılacaklar (Kod Gerektirmeyen)
 
 - [ ] Supabase → Auth → Providers → Google OAuth etkinleştir
