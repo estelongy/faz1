@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
+import { rateLimitCheckout, rateLimitResponse } from '@/lib/ratelimit'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-03-25.dahlia' })
 
@@ -22,6 +23,10 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Oturum açık değil' }, { status: 401 })
+
+    // Rate limiting: kullanıcı başına 20 checkout / dakika
+    const rl = rateLimitCheckout(user.id)
+    if (!rl.success) return rateLimitResponse(rl)
 
     const body = (await req.json()) as Payload
     if (!body.items?.length) return NextResponse.json({ error: 'Sepet boş' }, { status: 400 })

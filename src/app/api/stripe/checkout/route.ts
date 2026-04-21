@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
+import { rateLimitCheckout, rateLimitResponse } from '@/lib/ratelimit'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-03-25.dahlia',
@@ -21,6 +22,10 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    // Rate limiting
+    const rl = rateLimitCheckout(user.id)
+    if (!rl.success) return rateLimitResponse(rl)
 
     const { packageId } = await req.json()
     const pkg = JETON_PACKAGES.find(p => p.id === packageId)

@@ -1,3 +1,5 @@
+import { withSentryConfig } from '@sentry/nextjs'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Görsel optimizasyonu: Supabase + Vercel blob'larına izin ver
@@ -45,4 +47,17 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  // Sentry organizasyon ve proje (env'den veya hardcode)
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // Source map'leri Sentry'ye yükle, build'dan sil
+  silent: true,
+  widenClientFileUpload: true,
+  hideSourceMaps: true,
+  disableLogger: true,
+
+  // Vercel'de otomatik araçlama
+  automaticVercelMonitors: true,
+})
