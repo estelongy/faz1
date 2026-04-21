@@ -214,6 +214,55 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // Kupon kullanım sayısı artır
+      const { data: paidOrder } = await admin
+        .from('orders')
+        .select('coupon_code, referral_code, user_id, total')
+        .eq('id', orderId)
+        .single()
+
+      if (paidOrder?.coupon_code) {
+        const { data: coup } = await admin
+          .from('coupons')
+          .select('used_count')
+          .eq('code', paidOrder.coupon_code)
+          .single()
+        if (coup) {
+          await admin.from('coupons')
+            .update({ used_count: (coup.used_count ?? 0) + 1 })
+            .eq('code', paidOrder.coupon_code)
+        }
+      }
+
+      // Referral komisyonu: first purchase için %5
+      if (paidOrder?.referral_code && paidOrder?.user_id) {
+        try {
+          const { data: refCode } = await admin
+            .from('referral_codes')
+            .select('id, user_id, total_uses, total_earnings')
+            .eq('code', paidOrder.referral_code)
+            .single()
+          if (refCode) {
+            const commission = Math.round(Number(paidOrder.total) * 0.05 * 100) / 100
+            // Yeni kullanım ekle (idempotent)
+            await admin.from('referral_uses').upsert({
+              referral_code_id: refCode.id,
+              referred_user_id: paidOrder.user_id,
+              order_id: orderId,
+              commission_amount: commission,
+              status: 'pending',
+            }, { onConflict: 'referral_code_id,referred_user_id', ignoreDuplicates: true })
+            // Toplam güncelle
+            await admin.from('referral_codes').update({
+              total_uses: (refCode.total_uses ?? 0) + 1,
+              total_earnings: Number(refCode.total_earnings ?? 0) + commission,
+            }).eq('id', refCode.id)
+          }
+        } catch (e) {
+          console.error('Referral tracking error:', e)
+        }
+      }
+
       console.log(`Sipariş ödendi: ${orderId} (${pi.metadata.order_number})`)
     }
   }

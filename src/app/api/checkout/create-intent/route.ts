@@ -13,6 +13,8 @@ interface CartLine {
 interface Payload {
   items: CartLine[]
   addressId: string
+  couponCode?: string
+  referralCode?: string
 }
 
 export async function POST(req: NextRequest) {
@@ -108,7 +110,33 @@ export async function POST(req: NextRequest) {
     }
 
     const shippingFee = 0 // Şimdilik; satıcı anlaşması sonrası hesaplanacak
-    const total = subtotal + shippingFee
+
+    // ── Kupon doğrulama ──────────────────────────────────────
+    let couponDiscount = 0
+    let validCouponCode: string | null = null
+    if (body.couponCode?.trim()) {
+      const { data: coupon } = await supabase
+        .from('coupons')
+        .select('id, discount_type, discount_value, min_order_amount, max_uses, used_count, valid_until, is_active')
+        .eq('code', body.couponCode.trim().toUpperCase())
+        .single()
+      if (coupon && coupon.is_active) {
+        const now = new Date()
+        const expired = coupon.valid_until && new Date(coupon.valid_until) < now
+        const exhausted = coupon.max_uses != null && coupon.used_count >= coupon.max_uses
+        const belowMin = subtotal < Number(coupon.min_order_amount ?? 0)
+        if (!expired && !exhausted && !belowMin) {
+          if (coupon.discount_type === 'percent') {
+            couponDiscount = Math.round(subtotal * Number(coupon.discount_value) / 100 * 100) / 100
+          } else {
+            couponDiscount = Math.min(Number(coupon.discount_value), subtotal)
+          }
+          validCouponCode = body.couponCode.trim().toUpperCase()
+        }
+      }
+    }
+
+    const total = Math.max(0, subtotal + shippingFee - couponDiscount)
 
     // Stripe platform EUR bazlı (Vestoriq OÜ / Estonya). Min işlem ≈ €0.50 → ~25 TL.
     // Platform güvenli marj için 30 TL alt limit.
@@ -138,6 +166,9 @@ export async function POST(req: NextRequest) {
         items:           body.items,
         total_amount:    total,
         status:          'pending',
+        coupon_code:     validCouponCode,
+        coupon_discount: couponDiscount,
+        referral_code:   body.referralCode?.trim().toUpperCase() || null,
       })
       .select('id, order_number')
       .single()
