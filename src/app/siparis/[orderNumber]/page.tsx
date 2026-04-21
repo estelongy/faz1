@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { IadeTalepForm } from './IadeTalepForm'
+import SiparisSuccessOverlay from '@/components/SiparisSuccessOverlay'
 
 export const metadata: Metadata = { title: 'Sipariş Takip' }
 
@@ -58,8 +59,20 @@ export default async function SiparisPage({
     fulfillment_status?: string | null
     tracking_number?: string | null
     tracking_carrier?: string | null
+    delivered_at?: string | null
     vendors?: { company_name?: string } | null
     returns?: { id: string; status: string; reason: string; description: string | null; created_at: string }[] | null
+  }
+
+  // 14 günlük iade penceresi hesabı
+  function returnDeadline(item: OrderItem): { canReturn: boolean; deadline: Date | null; daysLeft: number | null } {
+    if (item.fulfillment_status !== 'delivered' || !item.delivered_at) {
+      return { canReturn: false, deadline: null, daysLeft: null }
+    }
+    const deliveredAt = new Date(item.delivered_at)
+    const deadline = new Date(deliveredAt.getTime() + 14 * 24 * 60 * 60 * 1000)
+    const daysLeft = Math.ceil((deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    return { canReturn: daysLeft > 0, deadline, daysLeft: Math.max(0, daysLeft) }
   }
 
   const itemsByVendor: Record<string, OrderItem[]> = {}
@@ -71,6 +84,11 @@ export default async function SiparisPage({
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      {/* Celebration overlay — sadece ilk başarılı ödeme sonrası */}
+      {success === '1' && order.payment_status === 'paid' && (
+        <SiparisSuccessOverlay orderNumber={order.order_number} total={Number(order.total ?? order.total_amount ?? 0)} />
+      )}
+
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
           <Link href="/panel" className="text-slate-400 hover:text-white transition-colors text-sm">← Panelim</Link>
@@ -156,6 +174,7 @@ export default async function SiparisPage({
               <div className="divide-y divide-slate-700">
                 {items.map(item => {
                   const snap = item.product_snapshot as { name?: string; image?: string; slug?: string }
+                  const { canReturn, deadline, daysLeft } = returnDeadline(item)
                   return (
                     <div key={item.id}>
                       <div className="flex gap-4 p-4">
@@ -179,6 +198,22 @@ export default async function SiparisPage({
                           <p className="text-white font-bold text-sm">₺{Number(item.line_total).toLocaleString('tr-TR')}</p>
                         </div>
                       </div>
+                      {/* İade penceresi göstergesi */}
+                      {item.fulfillment_status === 'delivered' && deadline && (
+                        <div className={`mx-4 mb-2 px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 ${
+                          canReturn
+                            ? daysLeft! <= 3
+                              ? 'bg-amber-500/10 text-amber-400'
+                              : 'bg-slate-700/50 text-slate-400'
+                            : 'bg-red-500/10 text-red-400'
+                        }`}>
+                          <span>{canReturn ? '📅' : '⛔'}</span>
+                          {canReturn
+                            ? `İade hakkı: ${daysLeft} gün kaldı (${deadline.toLocaleDateString('tr-TR')})`
+                            : `İade süresi doldu (${deadline.toLocaleDateString('tr-TR')})`
+                          }
+                        </div>
+                      )}
                       {order.payment_status === 'paid' && (
                         <div className="px-4 pb-3">
                           <IadeTalepForm

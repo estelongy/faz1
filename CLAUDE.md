@@ -1,126 +1,58 @@
 # CLAUDE.md — Estelongy Proje Rehberi
 
-Bu dosya her oturumda otomatik okunur. Kaynaklar: EGS_V2final.pdf (teknik), EGS_V3final.pdf (strateji).
+Bu dosya her oturumda otomatik okunur.
 
 ---
 
-## Proje Nedir?
+## Proje Özeti
 
 **Estelongy** — Estetik sağlık alanında yapay zeka destekli klinik yönetim ve hasta takip platformu.
 
-**EGS (Estelongy Gençlik Skoru):** Hastanın fotoğrafından yüz yaşlanma analizini yapan, C250 formülüne dayalı AI skorlama sistemi.
-
-**Hedef kitle:** Estetik klinikler (B2B SaaS) + Bireysel hastalar (B2C)
-
-**Mimari felsefe:** "Gelişime Açık Mimari" — her bileşen bağımsız, API kontratları sabit, implementasyon değişebilir. 100 → 1M kullanıcı, mimari değişmeden.
-
----
-
-## Tam Kullanıcı Akışı
-
-### AŞAMA 1 — Hasta Tarafı (Ücretsiz)
-
-```
-1. AI Ön Analiz
-   → Fotoğraf yükle → GPT-4 Vision → C250 → EGS skoru oluşur
-   → Skor bar göstergesinde canlı görünür (kırmızı/kahverengi/yeşil/mavi)
-
-2. Randevu İsteği
-   → Hasta klinik seçer, tarih gönderir
-   → Klinik paneline direkt düşer, iletişim kurulur (ayrı onay adımı YOK)
-
-3. Longevity Anketi
-   → Hasta randevudan ÖNCE doldurur (uyku, stres, beslenme vs.)
-   → Skor canlı güncellenir (+puan eklenir)
-   → Bar göstergesinde anlık hareket görülür
-```
-
-### AŞAMA 2 — Klinik Tarafı (Jeton)
-
-```
-1. Hasta Kabulü
-   → Klinik panelde "Hastayı Kabul Et" → JETON DÜŞER (bu noktada)
-   → No-show = jeton yanmaz
-
-2. Klinik Anketi (Yüz Yüze)
-   → Aynı longevity soruları yüz yüze tekrar sorulur (iletişim başlangıcı)
-   → Ek klinik soruları da eklenir
-   → Hesaplama: önce hasta anketi puanı düşülür, sonra (hasta+klinik) toplam eklenir
-   → Çift sayım önlenir, skor HİÇ DÜŞMEZ sadece güncellenir
-
-3. İleri AI Analiz
-   → Anket + geçmiş verilerle derin analiz
-   → Skor güncellenir
-
-4. Tetkik Girişleri
-   → Kan, hormon vs. manuel giriş
-   → Skor güncellenir (+0-2)
-
-5. Hekim Değerlendirme
-   → Skora ±X manuel düzeltme
-   → Skor güncellenir
-
-6. Hekim Süreç Onayı
-   → Final formül: (Mevcut × 0.85) + (Hekim × 0.15)
-   → KLİNİK ONAYLI EGS oluşur
-```
-
-### Skor Sistemi Özeti
-- **AI Ön Analiz EGS:** Tahmini, anlık, "onaysız" — paylaşılabilir
-- **Klinik Onaylı EGS:** Doğrulanmış, damgalı, güvenilir — paylaşım kartı üretilir
-- Hasta anketi manipülasyonu riski: klinik yüz yüze tekrarlıyor + hekim onaylıyor → sistem kendi kendini doğruluyor
-
-### Renk Bölgeleri
-
-| Renk | Aralık | Anlam | Yönlendirme |
-|------|--------|-------|-------------|
-| Kırmızı | 0-49 | Yaşından yaşlı | Acil klinik |
-| Kahverengi | 50-74 | Yaşında | Klinik önerisi |
-| Yeşil | 75-89 | Yaşından genç | Koruma |
-| Mavi | 90-100 | Çok iyi | Premium koruma |
+**EGS (Estelongy Gençlik Skoru):** GPT-4 Vision + C250 formülüyle yüz yaşlanma analizi.  
+**Hedef kitle:** Estetik klinikler (B2B SaaS) + Bireysel hastalar (B2C)  
+**Branch:** `claude/priceless-ellis` → deploy: `estelongy-clean.vercel.app`
 
 ---
 
 ## Kullanıcı Rolleri
 
-| Rol | ID | Yetkiler | Özel |
-|-----|----|----------|------|
-| User | `role:user` | Analiz, Anket, Randevu, Sipariş, Yorum | Skor takibi, sosyal paylaşım |
-| Clinic | `role:clinic` | Hasta listesi, Analiz onay, Rapor, Takvim | AI öneri düzeltme, jeton harcama |
-| Vendor | `role:vendor` | Ürün, Stok, Sipariş, İade yönetimi | Komisyon takibi, mağaza ayarları |
-| Admin | `role:admin` | Tüm kaynaklar, Onaylar, Ayarlar | Bildirim kanalı, global parametreler |
+| Rol | Yetkiler |
+|-----|----------|
+| `user` | Analiz, Anket, Randevu, Sipariş, Yorum, Skor takibi |
+| `clinic` | Hasta listesi, Takvim, Analiz onay, Jeton harcama |
+| `vendor` | Ürün, Stok, Sipariş, İade, Komisyon takibi |
+| `admin` | Tüm kaynaklar, Klinik/Kullanıcı/Kupon yönetimi |
 
-> Not: Klinik ve Vendor başvuruları `pending` durumunda User yetkisiyle çalışır, onaylanınca rol yükselir.
+> Klinik ve Vendor başvuruları `pending` durumunda `user` yetkisiyle çalışır.
 
 ---
 
-## 3 Fazlı Yol Haritası
+## Sayfa Yapısı (Güncel)
 
-### Faz 1 — MVP (Şu an burada)
-- [x] Kullanıcı kayıt/giriş (Supabase Auth)
-- [x] Klinik başvuru sistemi
-- [x] Klinik paneli (randevu yönetimi)
-- [x] Hasta paneli (randevu alma, iptal)
-- [x] Mock AI analiz (fotoğraf yükleme → sahte EGS skoru)
-- [x] E-posta bildirimleri (Supabase Edge Function + Resend)
-- [x] Admin paneli (klinik/kullanıcı yönetimi)
-- [ ] **Gerçek AI entegrasyonu** (OpenAI GPT-4 Vision + C250 formülü)
-- [ ] **Jeton sistemi** (klinikler paket satın alır, randevu başına jeton)
-- [ ] Stripe ödeme entegrasyonu
-- [ ] EGS anket zinciri (hasta → klinik → testler → AI → doktor onayı)
-
-### Faz 2 — Büyüme (Hedef %)
-- Klinik paneli: %70 → %100 (takvim, ileri raporlama)
-- Satıcı/Mağaza: %60 → %100
-- Bildirim: %70 → %100 (Push/SMS → Smart)
-- Mobil App: React Native (%0 → %100)
-- Oyunlaştırma, affiliate sistemi
-
-### Faz 3 — Ölçeklendirme
-- AI eğitim altyapısı (fine-tuned kendi model)
-- API Platformu (3. parti entegrasyonlar)
-- Global/Çoklu dil (TR → EN → Çoklu)
-- AWS/GCP'ye taşıma
+```
+/                        → Landing page
+/giris                   → Giriş (email + Google OAuth)
+/kayit                   → Kayıt
+/panel                   → Hasta paneli (rozetler, analizler, siparişler)
+/panel/referral          → Referral kodu + komisyon takibi
+/analiz                  → EGS analiz (GPT-4 Vision + C250)
+/anket                   → Longevity anketi
+/randevu                 → Klinik seç + randevu al
+/magaza                  → Ürün listesi
+/magaza/[slug]           → Ürün detay + yorumlar
+/sepet                   → Sepet
+/siparis/[orderNumber]   → Sipariş detay + iade
+/klinik/basvur           → Klinik başvuru formu
+/klinik/panel            → Klinik yönetim paneli (randevular)
+/klinik/panel/takvim     → Aylık takvim görünümü
+/klinik/panel/musaitlik  → Haftalık müsaitlik ayarları
+/admin                   → Admin dashboard
+/admin/kullanicilar      → Kullanıcı yönetimi
+/admin/klinikler         → Klinik yönetimi
+/admin/saticilar         → Satıcı yönetimi
+/admin/urunler           → Ürün yönetimi
+/admin/kuponlar          → Kupon oluşturma ve yönetimi
+```
 
 ---
 
@@ -129,284 +61,356 @@ Bu dosya her oturumda otomatik okunur. Kaynaklar: EGS_V2final.pdf (teknik), EGS_
 | Katman | Teknoloji |
 |--------|-----------|
 | Frontend | Next.js 14 (App Router) |
-| Stil | Tailwind CSS + shadcn/ui |
+| Stil | Tailwind CSS |
 | Backend | Next.js API Routes + Supabase |
-| Database | Supabase PostgreSQL |
-| Cache | Upstash Redis (Faz 2) |
-| Storage | Supabase Storage → AWS S3 + Cloudflare R2 |
-| AI | OpenAI GPT-4 Vision (MVP), self-hosted (sonra) |
-| Edge Functions | Supabase (Deno runtime) |
+| Database | Supabase PostgreSQL (RLS aktif) |
+| AI | OpenAI GPT-4o Vision + C250 formülü ✅ |
 | E-posta | Resend API |
-| Ödeme | Stripe (henüz entegre değil) |
+| Ödeme | Stripe (Connect + jeton checkout) ✅ |
+| Hata İzleme | Sentry (`@sentry/nextjs`) ✅ |
+| Cron | Vercel Cron (`vercel.json`, saatlik) ✅ |
 | Deploy | Vercel |
-| Monitoring | Vercel Analytics, Sentry, LogRocket |
 
 ---
 
-## Supabase Bilgileri
+## Supabase
 
 - **Proje ID:** `dcmnxmqzimrgmholktid`
 - **URL:** `https://dcmnxmqzimrgmholktid.supabase.co`
 - **Edge Function:** `send-appointment-email` (deploy edildi)
-- **Webhook secret:** `whsec_estelongy_appt_2025`
 
-### Env Variables (.env.local)
+### Mevcut Tablolar (hepsi canlıda)
+
+`profiles` · `clinics` · `vendors` · `appointments` · `analyses` · `scores` · `longevity_surveys` · `products` · `orders` · `order_items` · `addresses` · `carts` · `cart_items` · `returns` · `transactions` · `jeton_transactions` · `reviews` · `notification_queue` · `audit_logs` · `clinic_availability` · `user_badges` · `user_activity_streaks` · `referral_codes` · `referral_uses` · `coupons`
+
+### Kritik Sütun Kısıtlamaları
+
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://dcmnxmqzimrgmholktid.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<mevcut key>
+scores.score_type    → CHECK IN ('web','device','doctor_approved','final')
+notification_queue.type → CHECK IN ('email','sms','push')
+analyses.web_ai_raw  → JSONB (GPT ham sonuç)
+analyses.web_scores  → JSONB (bileşen skorları)
+appointments.status  → ENUM (pending,confirmed,in_progress,completed,cancelled)
 ```
 
-### Supabase'de yapılması gerekenler
-- [ ] Google OAuth provider'ı etkinleştir (Dashboard → Auth → Providers)
-- [ ] `RESEND_API_KEY` Edge Function secret olarak ekle
-- [ ] `FROM_EMAIL` Edge Function secret olarak ekle (ör. `noreply@estelongy.com`)
+### Fonksiyonlar / RPC
+
+- `consume_jeton(p_clinic_id, p_appointment_id)` — SECURITY DEFINER, atomik jeton düşme
+- `generate_referral_code(p_user_id)` — referral kodu üretme
 
 ---
 
-## Veritabanı Şeması (Hedef / V2 Dokümanı)
+## Env Variables (Vercel'de tanımlı olmalı)
 
-Mevcut tablolar basit. Aşağıdaki şema tam hedef yapıdır.
-
-### `scores` tablosu (henüz implemente değil)
-```sql
-CREATE TABLE scores (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id),
-  score_type TEXT CHECK (score_type IN ('on_analiz', 'klinik_onayli')),
-  c250_base DECIMAL(5,2),
-  hasta_anket_puani DECIMAL(5,2) DEFAULT 0,
-  klinik_anket_puani DECIMAL(5,2) DEFAULT 0,
-  tetkik_puani DECIMAL(5,2) DEFAULT 0,
-  ileri_ai_puani DECIMAL(5,2) DEFAULT 0,
-  hekim_degerlendirme DECIMAL(5,2) DEFAULT 0,
-  hekim_onay_puani DECIMAL(5,2) DEFAULT 0,
-  total_score DECIMAL(5,2) NOT NULL,
-  color_zone TEXT GENERATED ALWAYS AS (
-    CASE
-      WHEN total_score < 50 THEN 'red'
-      WHEN total_score < 75 THEN 'brown'
-      WHEN total_score < 90 THEN 'green'
-      ELSE 'blue'
-    END
-  ) STORED,
-  clinic_id UUID REFERENCES clinics(id),
-  analysis_id UUID REFERENCES analyses(id),
-  created_at TIMESTAMPTZ DEFAULT NOW()
-) PARTITION BY RANGE (created_at);
 ```
-
-### `clinics` tablosuna eklenecek alanlar
-```sql
-slug TEXT UNIQUE,
-address JSONB,
-specialties TEXT[],
-images TEXT[],
-approval_documents TEXT[],
-jeton_balance INTEGER DEFAULT 0,
-jeton_settings JSONB DEFAULT '{}'
-```
-
-### `appointments` tablosuna eklenecek alanlar
-```sql
-duration_minutes INTEGER DEFAULT 30,
-status ... 'no_show' da eklenecek,
-initial_analysis_id UUID REFERENCES analyses(id),
-final_score_id UUID REFERENCES scores(id),
-clinic_notes TEXT,
-clinic_data JSONB,
-jeton_cost INTEGER
-```
-
-### Diğer tablolar (Faz 2+)
-- `vendors` — satıcılar (commission_rate: 0.15 default)
-- `products` — ürünler (score_contribution JSONB ile EGS katkısı)
-- `orders` — siparişler
-- `notification_queue` — push/sms/email kuyruğu (retry_count ile)
-- `audit_logs` — tüm CRUD işlemleri loglanır
-- `referral_codes` — affiliate sistemi (MVP'de pasif)
-
-### RLS Politikaları
-```sql
--- Skor: sahip veya ilgili klinik görebilir
-CREATE POLICY score_access ON scores FOR ALL USING (
-  auth.uid() = user_id
-  OR auth.uid() IN (SELECT user_id FROM clinics WHERE id = scores.clinic_id)
-);
-
--- Randevu: sahip veya ilgili klinik erişebilir
-CREATE POLICY appointment_access ON appointments FOR ALL USING (
-  auth.uid() = user_id
-  OR auth.uid() IN (SELECT user_id FROM clinics WHERE id = appointments.clinic_id)
-);
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+OPENAI_API_KEY                  ← GPT-4 Vision için
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+RESEND_API_KEY
+CRON_SECRET                     ← /api/notifications/process auth
+NEXT_PUBLIC_SENTRY_DSN          ← Sentry (opsiyonel, prod'da aktif)
+SENTRY_ORG                      ← Sentry (opsiyonel)
+SENTRY_PROJECT                  ← Sentry (opsiyonel)
 ```
 
 ---
 
-## AI Mimarisi
+## Klinik Akış & Skor Hesaplama (Implemente edildi)
 
-### Ön Analiz (OpenAI GPT-4 Vision)
-```
-Girdi: Selfie (JPEG/PNG, max 5MB)
-  ↓
-Ön İşleme: Yüz tespiti, kırpma, normalize (512x512)
-  ↓
-GPT-4 Vision Prompt:
-"Analyze this facial image for skin aging indicators.
-Score 0-100 for: wrinkles, pigmentation, hydration, tone_uniformity, under_eye.
-Provide brief explanation for each.
-Return JSON only."
-  ↓
-C250 Hesaplama: Ham skor → yaş faktörü → EGS
-  ↓
-Çıktı: EGS, renk bölgesi, bileşen skorları, açıklama
-Fallback: AI down → retry queue
-```
+### UI Konumu
+- **Giriş:** `/klinik/panel/randevu/[appointmentId]` → `KlinikAkisWizard` bileşeni
+- **6 adım:** Kabul → Klinik Anketi → Tetkik → İleri Analiz → Hekim → Onay
 
-### API Response Yapısı
-```json
-{
-  "result_score": 77.5,
-  "color_zone": "brown",
-  "c250_details": {
-    "raw_score": 85,
-    "age_factor": 0.96,
-    "c250_result": 77.5,
-    "explanation": "35 yaş için normal aralık"
-  },
-  "component_scores": {
-    "wrinkles": 75,
-    "pigmentation": 82,
-    "hydration": 78,
-    "tone_uniformity": 80,
-    "under_eye": 72
-  }
-}
+### Kod Referansları
+- `src/components/KlinikAkisWizard.tsx` — 6 adımlı wizard
+- `src/lib/anket-sorular.ts` — HASTA_ANKET_SORULARI (5) + KLINIK_EK_SORULARI (5) + puan fonksiyonları
+- `src/lib/tetkik-params.ts` — TETKIK_PARAMS (8 sabit parametre) + scoreTetkikValues
+- `src/lib/egs.ts` — sumComponents + finalApprovedScore
+- `src/app/klinik/panel/randevu/[appointmentId]/page.tsx` — server actions (kabulEt, saveAnket, saveTetkik, saveIleriAnaliz, saveHekim, finalOnay)
+
+### Tam Akış
+
+```
+1. Ön Analiz (zorunlu)        → c250_base (fotoğraf → GPT-4 → C250)
+2. Hasta Anketi (opsiyonel)   → hasta_anket_puani (5 soru, randevudan sonra, evden)
+3. Klinik Anketi (opsiyonel)  → klinik_anket_puani (aynı 5 soru replace + 5 yeni soru)
+4. Tetkik Girişi (opsiyonel)  → tetkik_puani (5-10 sabit parametre, referans aralığıyla)
+5. İleri Analiz (opsiyonel)   → c250_base replace (fotoğraf veya cihaz → GPT-4 → C250)
+6. Hekim Onayı (zorunlu)      → final = (toplam × 0.85) + (hekim_puani × 0.15)
+                              → KLİNİK ONAYLI EGS ✅
 ```
 
-### İleri Analiz (Klinik aşaması)
-- Girdi: Klinik anketi + Tetkik sonuçları (JSON)
-- Model: OpenAI GPT-4 (MVP), sonra fine-tuned
-- Çıktı: Hekim ekranında gösterilir, düzenleme imkanı var
-- Hekim onayı: `(Mevcut × 0.85) + (Hekim × 0.15)`
+### Skor Hesaplama Kuralları
+
+- **Atlanan her basamak skora sıfır etki** — akış devam eder
+- **Hekim atlanamaz** — tüm puanları görür, onaylamadan "Klinik Onaylı EGS" oluşmaz
+- **İleri analiz** ön analizin c250_base'ini **replace eder** (üstüne eklenmez)
+- **Klinik anketi** hasta anketinin aynı 5 sorusunu **replace eder** (çift sayım önleme) + 5 yeni soru ekler
+- **AI analizleri bağımsız** — anket/tetkik puanlarına dokunmaz, sadece c250_base'i etkiler
+
+### Skor Durumları
+
+| Durum | Açıklama |
+|-------|----------|
+| `tahmini` | Sadece ön analiz var (GPT-4 + C250) |
+| `güncelleniyor` | Hasta anketi doldu veya klinik süreci devam ediyor |
+| `klinik_onaylı` | Hekim onayladı, final skor sabitlendi |
+
+### Örnek Hesaplama
+
+```
+c250_ön_analiz     = 75   → ileri analiz gelince 82 ile replace edilir
+hasta_anket        = +1
+klinik_anket       = -1 (replace) + 5 (toplam) = +4
+tetkik             = 0
+c250_ileri_analiz  = 82   (75'in yerini aldı)
+─────────────────────────
+ara toplam         = 82 + 1 - 1 + 5 + 0 = 87
+
+× 0.85             = 73.95
+hekim (78) × 0.15  = 11.7
+─────────────────────────
+KLİNİK ONAYLI EGS  = 85.65
+```
+
+### Anket Yapısı
+
+| | Kim | Nerede | Sorular |
+|--|--|--|--|
+| Hasta Anketi | Hasta | Telefondan, randevu sonrası | 5 soru (A,B,C,D,E) |
+| Klinik Anketi | Klinik personeli | Yüz yüze | Aynı 5 (A-E replace) + 5 yeni |
+
+### Tetkik
+
+- 5-10 **sabit** parametre (kan, hormon vs.)
+- Klinik değerleri girer, sistem referans aralığına göre puanı hesaplar
+
+### İleri Analiz
+
+- Ön analizle aynı C250 formülü çalışır
+- Girdi: fotoğraf **veya** cihaz verisi (henüz karar verilmedi)
+- Ücretli/premium versiyon
+- Sonuç ön analizin c250_base'ini replace eder
+
+### Önemli Not
+
+Görünüm yaşı subjektif bir ölçüm — bu sistemin handikabı.
+Ama skorun bilimsel dayanağı var (sonraki session'da konuşulacak).
+Tetkik verileri + hekim onayı skoru savunulabilir kılıyor.
 
 ---
 
-## Jeton Sistemi (Henüz İmplemente Değil)
+## AI — GPT-4 Vision + C250
 
-### İş Modeli
-- **Platform aboneliği: ÜCRETSİZ** (klinikler için sıfır giriş engeli)
-- **Ücretlendirme:** Sadece gerçekleşen hasta ziyaretinde jeton düşer
-- **Jeton:** Klinik önceden satın alır (prepaid) → fatura karmaşıklığı yok
-- **Değer önerisi:** "Sadece gelen müşteri için öde" — fake hesaplara %30-40 yerine çok ucuz
+### Akış
 
-### İş Kuralları
-| Aksiyon | Jeton Değişimi | Koşul |
-|---------|----------------|-------|
-| Paket satın alma | +X jeton | Stripe ödeme başarılı |
-| Hasta kabulü | -1 jeton | Klinik "Kabul Et" tıkladığında |
-| Randevu oluşturma | Jeton düşmez | Sadece kabul anında düşer |
-| No-show | Jeton yanmaz | Hasta gelmedi = kabul yapılmadı |
+```
+POST /api/analiz  (rate limit: IP başına 5/saat)
+  → Base64 görsel → GPT-4o (detail: low)
+  → 5 bileşen: wrinkles, pigmentation, hydration, tone_uniformity, under_eye
+  → C250 ağırlıklı hesap → yaş faktörü → EGS skoru
+  → DB: analyses.web_overall + web_ai_raw + web_scores
+  →     scores.c250_base + total_score + color_zone
+  → Fallback: AI down → tahmini skor (confidence: 0.3)
+```
 
-### Stripe Akışı
-`Checkout Session → Webhook → jeton_balance artır`
+### C250 Ağırlıkları
+
+| Bileşen | Ağırlık | Yön |
+|---------|---------|-----|
+| hydration | 0.25 | yüksek = iyi |
+| tone_uniformity | 0.25 | yüksek = iyi |
+| wrinkles | 0.25 | ters (100-değer) |
+| pigmentation | 0.15 | ters (100-değer) |
+| under_eye | 0.10 | yüksek = iyi |
+
+### Yaş Faktörü
+
+| Yaş | Faktör |
+|-----|--------|
+| ≤25 | 1.02 |
+| ≤35 | 1.00 |
+| ≤45 | 0.97 |
+| ≤55 | 0.93 |
+| 56+ | 0.88 |
+
+### EGS Renk Bölgeleri
+
+| Renk | Aralık | Anlam |
+|------|--------|-------|
+| Kırmızı | 0-49 | Yaşından yaşlı |
+| Kahverengi | 50-74 | Yaşında |
+| Yeşil | 75-89 | Yaşından genç |
+| Mavi | 90-100 | Premium |
 
 ---
 
-## Bildirim Altyapısı (Hedef)
+## Jeton Sistemi
 
-```
-Tetikleyici (Skor güncellendi, Randevu yaklaştı)
-  ↓
-Kural Motoru (Admin ayarlarına göre kanal seçimi)
-  ↓
-Kuyruk (Bull + Redis)
-  ↓
-Push: Firebase Cloud Messaging
-SMS: Twilio / Netgsm
-Email: Resend (şu an aktif)
-  ↓
-Gönderim + Loglama (retry: 3 kez)
-```
-
-### Admin Bildirim Kanalları
-```json
-{
-  "score_update": "push",
-  "appointment_reminder_24h": "sms",
-  "appointment_reminder_1h": "push",
-  "monthly_care": "push",
-  "score_expiry_6m": "push"
-}
-```
+- `clinics.jeton_balance` — prepaid bakiye
+- Paket satın alma: `/api/stripe/checkout` → Stripe Checkout → webhook → `jeton_balance++`
+- Hasta kabulü: `consume_jeton()` RPC (atomik, -1 jeton)
+- No-show: jeton yanmaz (kabul yapılmadıysa)
+- Paketler: 10/25/50/100 jeton (EUR)
 
 ---
 
-## Sayfa Yapısı
+## Bildirim Altyapısı
 
-```
-/                    → Landing page
-/giris               → Kullanıcı giriş
-/kayit               → Kullanıcı kayıt
-/panel               → Hasta paneli (randevular, analiz geçmişi)
-/analiz              → EGS analiz sayfası (fotoğraf yükle)
-/randevu             → Klinik seç + randevu al
-/kurumsal/giris      → Klinik giriş
-/klinik/basvur       → Klinik başvuru formu
-/klinik/panel        → Klinik yönetim paneli
-/admin               → Admin ana sayfa
-/admin/klinikler     → Klinik yönetimi
-/admin/kullanicilar  → Kullanıcı yönetimi
-```
+- Tablo: `notification_queue` (status: pending/sent/failed/cancelled)
+- Cron: `GET /api/notifications/process` — saatlik, `Authorization: Bearer CRON_SECRET`
+- Kanallar: `email` (Resend aktif), `sms`/`push` (altyapı hazır, provider eklenmeli)
+- Şablonlar: `appointment_confirmed`, `appointment_reminder_24h`, `appointment_reminder_1h`, `score_update`
+- `src/lib/notifications.ts` — `enqueueNotification()`, `sendEmail()`, template fonksiyonları
 
 ---
 
-## Viral Paylaşım Kartı
+## Rate Limiting
 
-- **Tetikleyici:** Klinik Onaylı EGS oluştuğunda paylaşım kartı üretilir
-- **Format:** `@vercel/og` ile sunucu taraflı görsel üretimi
-- **İçerik:** Büyük skor + renk bölgesi + "Klinik Onaylı" damgası + Estelongy CTA
-- **Kanallar:** WhatsApp, Instagram, Facebook (Web Share API mobilde), masaüstünde ayrı butonlar
-- **TikTok:** Direkt API yok, link paylaşımı
-- **Viral döngü:** Paylaşım → arkadaş görür → kart sayfasında "Senin skorun ne? Ücretsiz öğren" → yeni kullanıcı
-- **Önemli:** Paylaşım aktif olarak teşvik edilmeli (skor aldıktan sonra otomatik prompt)
+`src/lib/ratelimit.ts` — bellek içi sliding window (pod yeniden başlarsa sıfırlanır)
+
+| Endpoint | Limit |
+|----------|-------|
+| `/api/analiz` | IP başına 5/saat |
+| `/api/checkout/*` | Kullanıcı başına 20/dk |
+| Genel API | IP başına 100/dk |
+| Auth | IP başına 10/15dk |
 
 ---
 
-## Bilinen Açık Sorunlar / Yapılacaklar
+## Oyunlaştırma
 
-### Kritik (Faz 1 tamamlamak için)
-- [ ] Gerçek AI: OpenAI GPT-4 Vision + C250 formülü (mock → gerçek)
-- [ ] Jeton sistemi: `jeton_balance` klinik tablosuna + bakiye kontrolü + Stripe
-- [ ] `RESEND_API_KEY` Supabase secrets'e ekle
+- `src/lib/badges.ts` — 8 rozet tipi
+- `src/app/panel/badge-actions.ts` — `checkAndAwardBadges()`, `updateStreak()`
+- Tablolar: `user_badges`, `user_activity_streaks`
+- Panel sayfasında rozet grid + streak göstergesi
 
-### Orta Öncelik
-- [ ] Google OAuth (Supabase Dashboard + Google Cloud Console)
-- [ ] Klinik panelinde takvim görünümü + müsaitlik slotları
-- [ ] `scores` tablosu tam şema ile yeniden migrate et
-- [ ] Randevu `no_show` statüsü ekle
+---
 
-### Düşük Öncelik (Faz 2)
-- [ ] Vendor/Mağaza sistemi
-- [ ] Notification queue (Bull + Redis)
-- [ ] Audit logs
-- [ ] Referral/Affiliate sistemi
-- [ ] Profil fotoğrafı, klinik logosu/galeri
+## Affiliate / Referral / Kupon
+
+- Referral: `referral_codes` + `referral_uses` (5% komisyon)
+- Kupon: `coupons` tablosu (percent/fixed, min_order, max_uses, valid_until)
+- Admin kupon yönetimi: `/admin/kuponlar`
+- Checkout'ta kupon doğrulama: `POST /api/checkout/create-intent`
+- RPC: `generate_referral_code(user_id)`
+
+---
+
+## Marketplace
+
+- Çoklu satıcı: tek ödeme → vendor başına `stripe.transfers.create()`
+- Tek satıcı: Stripe destination charge
+- İade: 14 günlük pencere (`order_items.delivered_at`)
+- Satıcı `stripe_account_id` yoksa veya `stripe_charges_enabled=false` → transfer yapılmaz
+- Stok uyarısı: stok ≤ 5 → satıcıya Resend email
+- Yorumlar: satın alıp teslim/iade edene `is_verified: true`
+
+---
+
+## Güvenlik & Altyapı
+
+- `next.config.mjs`: `withSentryConfig` + güvenlik başlıkları (HSTS, XSS, X-Frame)
+- `src/instrumentation.ts`: Next.js 14 Sentry kaydı (nodejs + edge)
+- Google OAuth: `supabase.auth.signInWithOAuth({ provider: 'google' })`
+  - Supabase Dashboard → Auth → Providers → Google (manuel etkinleştirme gerekli)
+- `server action` ownership: her zaman `user.id` ile kontrol
+- Admin kontrolü: hem `layout.tsx` hem `page.tsx`/`action` katmanında (defense-in-depth)
 
 ---
 
 ## Geliştirme Kuralları
 
-- `'use client'` bileşenlerinde `export const dynamic = 'force-dynamic'` KULLANILAMAZ
-- Server action'larda her zaman `user.id` ile ownership kontrolü yap
-- `router.refresh()` → Supabase insert/update sonrası Next.js cache temizler
-- Auth callback'te open redirect koruması: `next` param sadece `/` ile başlıyorsa geçerli
-- Admin kontrolü hem layout hem page/action katmanında olmalı (defense-in-depth)
-- AI servis down → kullanıcıya hata göster + retry queue'ya ekle (silent fail yok)
+- `'use client'` bileşenlerinde `export const dynamic = 'force-dynamic'` **KULLANILAMAZ**
+- `router.refresh()` → insert/update sonrası Next.js cache temizler
+- Auth callback `next` param: sadece `/` ile başlıyorsa geçerli (open redirect koruması)
+- AI servisi down → fallback skor göster, sessiz başarısızlık yok
+- Server action'larda `redirect()` try/catch dışında olmalı (Next.js fırlatır)
 
 ---
 
-## Commit Geçmişi (Önemli)
+## Faz Durumu
 
-- `433ee57` — Unused variable fix (klinik/panel/page.tsx)
-- E-posta Edge Function deploy edildi (Supabase dashboard'dan kontrol et)
-- DB migration: `enable_pg_net_appointment_webhook` (pg_net + trigger)
+### Faz 1 — MVP ✅ Tamamlandı
+- [x] Auth (email + Google OAuth)
+- [x] Klinik başvuru + panel
+- [x] Hasta paneli (randevu, analiz)
+- [x] GPT-4 Vision + C250 AI analizi
+- [x] Jeton sistemi (Stripe + consume_jeton RPC)
+- [x] Admin paneli
+- [x] E-posta bildirimleri (Resend)
+
+### Faz 2 — Büyüme ✅ Tamamlandı
+- [x] F2-1: Marketplace (çoklu satıcı, yorumlar, iade penceresi, stok uyarı)
+- [x] F2-2: Klinik takvim + müsaitlik yönetimi
+- [x] F2-3: EGS skor zinciri (`src/lib/egs.ts`)
+- [x] F2-4: Bildirim altyapısı (notification_queue + Vercel cron)
+- [x] F2-5: Oyunlaştırma (rozetler + streak)
+- [x] F2-6: Affiliate + referral + kupon
+- [x] F2-8: Altyapı (Google OAuth, güvenlik başlıkları, Sentry, rate limiting, admin kuponlar)
+- [x] AI Entegrasyon: GPT-4 Vision + C250 gerçek skorlama
+
+### Faz 3 — Bekleyen
+- [ ] Mobil App (React Native / Expo)
+- [ ] Stripe live mode (KYC tamamlama)
+- [ ] AI fine-tuning (kendi modelimiz)
+- [ ] Redis (Upstash) — rate limiting prod için
+- [ ] Push/SMS provider (Firebase FCM / Netgsm)
+- [ ] API Platformu (3. parti entegrasyon)
+- [ ] Çoklu dil (EN)
+
+---
+
+## Manuel Yapılacaklar (Kod Gerektirmeyen)
+
+- [ ] Supabase → Auth → Providers → Google OAuth etkinleştir
+- [ ] Vercel → Settings → Env → `OPENAI_API_KEY` ekle
+- [ ] Vercel → Settings → Env → `CRON_SECRET` ekle
+- [ ] Vercel → Settings → Env → `RESEND_API_KEY` ekle
+- [ ] Sentry proje oluştur → DSN'leri Vercel'e ekle
+- [ ] Stripe Dashboard → live mode → KYC tamamla
+
+---
+
+## Ürün Deneyimi İyileştirmeleri (Son Oturum)
+
+### Skor Durumu Etiketi
+- `src/lib/skor-durum.ts` — 3 durum tespiti
+  - `tahmini` (amber) — yalnızca ön analiz
+  - `guncelleniyor` (violet, pulse) — randevu/anket süreci aktif
+  - `klinik_onayli` (emerald) — hekim onayı verildi
+- Hasta panelinde EGSScoreBar üstünde durum badge'i
+
+### Alışveriş Deneyimi
+- **Kupon kodu:** `/api/checkout/validate-coupon` + OdemeFlow UI (Uygula/Kaldır)
+- **Kargo:** ₺200 üstü ücretsiz, altı ₺29 (UI ve API tutarlı)
+- **Ücretsiz kargo progress bar:** "₺X daha ekle, ücretsiz"
+- **Sepet özetinde ürün görselleri**
+- **Stok uyarıları (mağaza):**
+  - `stock = 0` → "Tükendi" badge
+  - `stock ≤ 5` → "Son X adet" amber pulse badge
+- **Sipariş başarı celebration:** `SiparisSuccessOverlay` — 24 renkli confetti + scale-in kart, 3.5s auto fade-out
+
+---
+
+## Önemli Commit'ler
+
+```
+219269c  feat(alisveris): stok uyarısı + sipariş başarı celebration overlay
+34c3f2a  feat(odeme): kupon kodu girişi + gerçek kargo ücreti + sepet özeti
+6ff48b8  feat(panel): skor durumu etiketi (tahmini/güncelleniyor/klinik_onaylı)
+a05eb64  feat(klinik): 6 adımlı klinik akış + 10 soru + 8 tetkik + ileri analiz
+a7c2cc6  feat(AI): GPT-4 Vision + C250 formülü ile gerçek EGS skorlama
+4c1a6db  feat(F2-8): Sentry hata izleme + API rate limiting
+a9167cb  feat(F2-8): altyapı — Google OAuth, güvenlik başlıkları, admin kupon
+6a3e235  feat(F2-6): affiliate + referral + kupon sistemi
+b483978  feat(F2-5): oyunlaştırma — rozetler + streak sistemi
+290f43b  feat(F2-4): bildirim altyapısı — notification_queue, Resend, Vercel cron
+e84be9e  feat(F2-2): klinik takvim + müsaitlik ayarları
+039fec5  feat(F2-1): marketplace olgunlaşma
+434bd0e  feat(egs): Faz2 Sprint F2-3 - EGS Skor Zinciri
+```

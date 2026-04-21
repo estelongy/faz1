@@ -1,47 +1,47 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { submitReviewAction } from './review-actions'
 
 export default function ReviewForm({ productId }: { productId: string }) {
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
   const [rating, setRating]   = useState<number>(8)
   const [title, setTitle]     = useState('')
   const [body, setBody]       = useState('')
-  const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
   const [open, setOpen]       = useState(false)
+  const [done, setDone]       = useState(false)
+  const [verified, setVerified] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    setLoading(true)
-
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setError('Giriş yapmalısınız.'); setLoading(false); return }
-
-    const { error: insertErr } = await supabase.from('reviews').insert({
-      product_id: productId,
-      user_id:    user.id,
-      rating:     rating,
-      title:      title.trim() || null,
-      body:       body.trim() || null,
+    startTransition(async () => {
+      const res = await submitReviewAction({ productId, rating, title, body })
+      if (!res.ok) {
+        setError(res.error ?? 'Bir hata oluştu')
+        return
+      }
+      setVerified(!!res.isVerified)
+      setDone(true)
+      router.refresh()
     })
-
-    if (insertErr) {
-      setError(insertErr.message)
-      setLoading(false)
-      return
-    }
-
-    router.refresh()
-    setOpen(false)
-    setLoading(false)
   }
 
   const ratingColor = rating >= 9 ? 'text-emerald-400' : rating >= 7 ? 'text-amber-400' : 'text-red-400'
+
+  if (done) {
+    return (
+      <div className="p-5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl mb-6 text-center">
+        <p className="text-emerald-400 font-bold mb-1">Yorumun paylaşıldı!</p>
+        {verified && (
+          <p className="text-emerald-300 text-sm">✓ Satın alma doğrulandı — yorumun &quot;Doğrulanmış&quot; olarak işaretlendi.</p>
+        )}
+      </div>
+    )
+  }
 
   if (!open) {
     return (
@@ -108,9 +108,9 @@ export default function ReviewForm({ productId }: { productId: string }) {
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={isPending}
         className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
-        {loading ? 'Gönderiliyor...' : 'Paylaş'}
+        {isPending ? 'Gönderiliyor...' : 'Paylaş'}
       </button>
     </form>
   )

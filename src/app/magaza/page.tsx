@@ -38,7 +38,7 @@ export default async function MagazaPage({
 
   let query = supabase
     .from('products')
-    .select('id, name, slug, description, category, price, final_score, doctor_score, user_score, preference_count, treatment_type, images')
+    .select('id, name, slug, description, category, price, final_score, doctor_score, user_score, preference_count, treatment_type, images, stock')
     .eq('is_active', true)
     .eq('approval_status', 'approved')
 
@@ -127,6 +127,17 @@ export default async function MagazaPage({
                   {product.treatment_type === 'treatment' && (
                     <span className="absolute top-3 left-3 bg-violet-600/90 text-white text-xs font-bold px-2 py-1 rounded-lg">
                       KLİNİK İŞLEM
+                    </span>
+                  )}
+                  {/* Stok uyarısı */}
+                  {product.stock != null && product.stock === 0 && (
+                    <span className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-sm border border-slate-700 text-slate-400 text-xs font-bold px-2 py-1 rounded-lg">
+                      TÜKENDİ
+                    </span>
+                  )}
+                  {product.stock != null && product.stock > 0 && product.stock <= 5 && (
+                    <span className="absolute bottom-3 left-3 bg-amber-500/90 text-white text-xs font-bold px-2 py-1 rounded-lg animate-pulse">
+                      Son {product.stock} adet
                     </span>
                   )}
                   <div className="absolute top-3 right-3 bg-slate-900/90 backdrop-blur-sm rounded-xl px-3 py-1.5 text-center">
