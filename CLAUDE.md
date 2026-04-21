@@ -414,6 +414,28 @@ POST /api/analiz  (rate limit: IP başına 5/saat)
 - Klasik hekimden farkı: tek seferlik müdahale yerine **skor takibi ile uzun vadeli yol haritası**
 - Pazarlama açısı: "Senin hekimin değil, senin Estelog'un"
 
+### Estelongy Puanı — Sektör Standardı
+
+**Ürünler için ölçü birimi.** SPF gibi, Nutri-Score gibi, enerji sınıfı gibi.
+
+> **Estelongy Puanı**, bir ürünün "gençliğe katkı" standardıdır (0–10).
+
+**Örnek:**
+> La Roche-Posay Anthelios SPF 50+ · **Estelongy Puanı: 9.2 / 10**
+
+**Stratejik değeri:**
+1. **Standart** olmak — platform olmaktan çıkıp "ölçü birimi" olmak. SPF'nin sahibi yok ama marka hatırlanıyor; Estelongy Puanı senin.
+2. **Sertifikasyon geliri** — üretici ambalajda "Estelongy Puanı" kullanmak için lisans öder.
+3. **Tüketici için seçim** — 50 ürün arasından "en yüksek puanlı" net kriter.
+4. **Estelog için öneri dili** — "şunu kullan" değil "Estelongy Puanı 9+ olan her ürün".
+5. **Kalıcı moat** — standart bir kez oturursa, Estelongy dışında da değerini korur.
+
+**İç entegrasyon:**
+- `products` tablosunda zaten `doctor_score`, `user_score`, `manufacturer_score` var
+- Bunların ağırlıklı birleşimi = Estelongy Puanı
+- Mağazada her ürün bu puanla sıralanır/filtrelenir
+- Ürün detayında "Puan nasıl hesaplandı?" açıklaması şeffaflık sağlar
+
 ### Skor Bölgeleri (YENİ — ESKİ BAREM KULLANMA)
 
 | Aralık | Etiket | Renk |
