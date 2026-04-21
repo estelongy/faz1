@@ -489,6 +489,31 @@ POST /api/analiz  (rate limit: IP başına 5/saat)
 - [ ] PaylasModal, landing page metinleri
 - [ ] CLAUDE.md'deki her "EGS" referansı
 
+### EGP Kataloğu — 4 Kategori Belirlenecek
+
+Her biri için **bilimsel temelde EGP** hesaplanacak:
+
+1. **İşlemler** (botoks, HA dolgu, lazer, mezoterapi, altın iğne, PRP...)
+2. **Ürünler** (serum, güneş koruyucu, krem, takviye, kozmetik...)
+3. **Uygulamalar / Protokoller** (3 aylık anti-aging paketi, detox programı...)
+4. **Cihazlar** (dermatoskop, UV kamera, cilt analiz cihazı, radyofrekans...)
+
+**Dinamik puanlama** — her birinin **temel EGP** değeri olacak, **dinamik faktörlerle** gerçek uygulama için uyarlanacak:
+- İşlem için: endikasyon, doz, Estelog becerisi, hastanın geçmişi, komplikasyon
+- Ürün için: cilt uyumu, günlük kullanım, formül kalitesi
+- Protokol için: tamamlanma oranı, skor artışı, hasta bağlılığı
+- Cihaz için: kalibrasyon, klinik kullanım yaygınlığı, sonuç tutarlılığı
+
+**İlk değerlendirilen 4 kalem (başlangıç noktası):**
+```
+[İşlem] Hyalüronik Asit Dolgu · Temel EGP: 9.2
+[Ürün]  Güneş Koruyucu (kategori) · Temel EGP: 8.5
+[İşlem] Botoks · Temel EGP: 7.0
+[İşlem] Altın İğne · Temel EGP: 6.5
+```
+
+**Saklama yeri (karar verilecek):** JSON katalog mı, Supabase `treatments`/`applications`/`devices` tabloları mı?
+
 ---
 
 ## Manuel Yapılacaklar (Kod Gerektirmeyen)
