@@ -376,12 +376,37 @@ POST /api/analiz  (rate limit: IP başına 5/saat)
 
 ---
 
+## Ürün Deneyimi İyileştirmeleri (Son Oturum)
+
+### Skor Durumu Etiketi
+- `src/lib/skor-durum.ts` — 3 durum tespiti
+  - `tahmini` (amber) — yalnızca ön analiz
+  - `guncelleniyor` (violet, pulse) — randevu/anket süreci aktif
+  - `klinik_onayli` (emerald) — hekim onayı verildi
+- Hasta panelinde EGSScoreBar üstünde durum badge'i
+
+### Alışveriş Deneyimi
+- **Kupon kodu:** `/api/checkout/validate-coupon` + OdemeFlow UI (Uygula/Kaldır)
+- **Kargo:** ₺200 üstü ücretsiz, altı ₺29 (UI ve API tutarlı)
+- **Ücretsiz kargo progress bar:** "₺X daha ekle, ücretsiz"
+- **Sepet özetinde ürün görselleri**
+- **Stok uyarıları (mağaza):**
+  - `stock = 0` → "Tükendi" badge
+  - `stock ≤ 5` → "Son X adet" amber pulse badge
+- **Sipariş başarı celebration:** `SiparisSuccessOverlay` — 24 renkli confetti + scale-in kart, 3.5s auto fade-out
+
+---
+
 ## Önemli Commit'ler
 
 ```
+219269c  feat(alisveris): stok uyarısı + sipariş başarı celebration overlay
+34c3f2a  feat(odeme): kupon kodu girişi + gerçek kargo ücreti + sepet özeti
+6ff48b8  feat(panel): skor durumu etiketi (tahmini/güncelleniyor/klinik_onaylı)
+a05eb64  feat(klinik): 6 adımlı klinik akış + 10 soru + 8 tetkik + ileri analiz
 a7c2cc6  feat(AI): GPT-4 Vision + C250 formülü ile gerçek EGS skorlama
 4c1a6db  feat(F2-8): Sentry hata izleme + API rate limiting
-a9167cb  feat(F2-8): altyapı — Google OAuth, güvenlik başlıkları, admin kupon yönetimi
+a9167cb  feat(F2-8): altyapı — Google OAuth, güvenlik başlıkları, admin kupon
 6a3e235  feat(F2-6): affiliate + referral + kupon sistemi
 b483978  feat(F2-5): oyunlaştırma — rozetler + streak sistemi
 290f43b  feat(F2-4): bildirim altyapısı — notification_queue, Resend, Vercel cron
