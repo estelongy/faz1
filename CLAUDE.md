@@ -514,6 +514,44 @@ Her biri için **bilimsel temelde EGP** hesaplanacak:
 
 **Saklama yeri (karar verilecek):** JSON katalog mı, Supabase `treatments`/`applications`/`devices` tabloları mı?
 
+### EGP Hesaplama Formülü (Dinamik)
+
+EGP iki katmanlı: **teorik** (Estelog paneli verir) + **saha verisi** (kullanıcı + sonuç) → ağırlıklı ortalama.
+
+İlaç sektöründen analoji:
+- **Efficacy** (baseline) — ideal koşulda etki (klinik panel, bilimsel literatür)
+- **Effectiveness** (saha) — rutin kullanımda gerçek etki
+
+```
+EGP = w1 × baseline_EGP        (Estelog paneli)
+    + w2 × tercih_oranı        (kullanım sıklığı)
+    + w3 × yorum_ortalaması    (memnuniyet + yan etki)
+    + w4 × uzun_vadeli_skor    (6 ay sonra hasta skorunda delta)
+```
+
+**Ağırlıklar zamanla evrimleşir (veri olgunlaştıkça):**
+
+| Bileşen | Yeni item (ilk 100 vaka) | Olgun item (10k+ vaka) |
+|--|--|--|
+| baseline | 0.70 | 0.20 |
+| tercih | 0.10 | 0.15 |
+| yorum | 0.10 | 0.25 |
+| uzun vadeli skor | 0.10 | **0.40** |
+
+**Örnek: "Cilt bakımı rutini"**
+- Teorik baseline: 5.0 (tek başına minor etki)
+- Sahada: compliance yüksek + psikolojik etki + kümülatif skor artışı
+- Olgun EGP: 7.1 → teoriden yukarı çekildi (sahada işe yarıyor)
+
+**Karşı örnek: "Aşırı seans lazer"**
+- Teorik baseline: 8.0 (makine güçlü)
+- Sahada: yan etki, memnuniyetsizlik, skor kaybı
+- Olgun EGP: 5.4 → teoriden aşağı çekildi (sahada yaralıyor)
+
+**Sonuç:** EGP kendi kendini rafine eder. Sahtekarlık zorlaşır, hak eden ürün/işlem üste çıkar.
+
+---
+
 ### Ürün Felsefesi: Estelongy, Estetiğin IMDb'si
 
 **Analoji:** IMDb filmleri yapmıyor, satmıyor — sadece **puanlıyor ve referans oluyor**. Bu rolüyle film sektörünün kalite standardı oldu. Estelongy de estetik+longevity için aynısı.
