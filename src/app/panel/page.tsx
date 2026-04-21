@@ -16,6 +16,7 @@ import EGSScoreChart, { type ScorePoint } from '@/components/EGSScoreChart'
 import EGSFixedBadge from '@/components/EGSFixedBadge'
 import PaylasModal from '@/components/PaylasModal'
 import UserBadges from '@/components/UserBadges'
+import RandevuQRModal from '@/components/RandevuQRModal'
 import { checkAndAwardBadges, updateStreak } from './badge-actions'
 
 const APT_STATUS_LABEL: Record<string, string> = {
@@ -417,14 +418,21 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                         {APT_STATUS_LABEL[apt.status] ?? apt.status}
                       </span>
                       {(apt.status === 'pending' || apt.status === 'confirmed') && (
-                        <form action={cancelAppointment}>
-                          <input type="hidden" name="appointmentId" value={apt.id} />
-                          <button type="submit" className="text-slate-500 hover:text-red-400 transition-colors" title="İptal et">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </form>
+                        <>
+                          <RandevuQRModal
+                            appointmentId={apt.id}
+                            clinicName={apt.clinics?.name ?? 'Klinik'}
+                            appointmentDate={apt.appointment_date}
+                          />
+                          <form action={cancelAppointment}>
+                            <input type="hidden" name="appointmentId" value={apt.id} />
+                            <button type="submit" className="text-slate-500 hover:text-red-400 transition-colors" title="İptal et">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </form>
+                        </>
                       )}
                     </div>
                   </div>
