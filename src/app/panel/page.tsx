@@ -14,6 +14,8 @@ import EGSScoreBar, { type EGSPhase } from '@/components/EGSScoreBar'
 import EGSScoreChart, { type ScorePoint } from '@/components/EGSScoreChart'
 import EGSFixedBadge from '@/components/EGSFixedBadge'
 import PaylasModal from '@/components/PaylasModal'
+import UserBadges from '@/components/UserBadges'
+import { checkAndAwardBadges, updateStreak } from './badge-actions'
 
 const APT_STATUS_LABEL: Record<string, string> = {
   pending:     'Beklemede',
@@ -89,6 +91,12 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     .eq('user_id', user.id)
     .order('appointment_date', { ascending: false })
     .limit(5)
+
+  // Rozet + streak (hata durumunda sessizce geç)
+  const [badgeKeys, streak] = await Promise.all([
+    checkAndAwardBadges().catch(() => [] as string[]),
+    updateStreak().catch(() => ({ current: 0, longest: 0 })),
+  ])
 
   // Kullanıcının kliniği var mı? (klinik paneli linki için)
   const { data: userClinic } = await supabase
@@ -287,6 +295,16 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               <span className="text-xs text-slate-500">{chartPoints.length} veri noktası</span>
             </div>
             <EGSScoreChart points={chartPoints} />
+          </div>
+        )}
+
+        {/* Rozetler + Streak */}
+        {(badgeKeys.length > 0 || (streak?.current ?? 0) > 0) && (
+          <div className="mb-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+            <UserBadges
+              badgeKeys={badgeKeys as import('@/lib/badges').BadgeKey[]}
+              streak={streak}
+            />
           </div>
         )}
 
