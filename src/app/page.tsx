@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import ScoreBar from '@/components/ScoreBar'
 
 const SCORE_ZONES = [
   { label: 'Çok Düşük', range: '0 – 55',  color: '#ef4444', bg: 'bg-red-500/10',     border: 'border-red-500/20',    text: 'text-red-400',    desc: 'Gençlik Skoru çok düşük' },
@@ -266,16 +267,23 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* 04 — nasıl görünür linki */}
+                  {/* 04 — hover önizleme */}
                   {step.num === '04' && (
-                    <a href="/preview-skor" target="_blank" rel="noopener"
-                      className="mt-3 inline-flex items-center gap-1.5 self-start text-xs text-amber-400/70 hover:text-amber-400 transition-colors">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                      </svg>
-                      nasıl görünür?
-                    </a>
+                    <div className="relative group mt-3 self-start inline-block">
+                      <span className="inline-flex items-center gap-1.5 text-xs text-amber-400/70 group-hover:text-amber-400 transition-colors cursor-default select-none">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        nasıl görünür?
+                      </span>
+                      {/* Hover popup */}
+                      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-56 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-50 scale-95 group-hover:scale-100">
+                        <div className="bg-[#0f172a] border border-amber-400/40 rounded-2xl p-4 shadow-2xl">
+                          <ScoreBar score={92} phase="klinik_onayli" animated={false} />
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
