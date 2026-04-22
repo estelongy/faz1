@@ -1,7 +1,7 @@
 'use client'
 
-import EGSScoreBar from '@/components/EGSScoreBar'
-import EGSScoreChart from '@/components/EGSScoreChart'
+import ScoreBar from '@/components/ScoreBar'
+import ScoreChart from '@/components/ScoreChart'
 import { useState } from 'react'
 
 const PHASES = [
@@ -89,13 +89,13 @@ export default function TestSkorPage() {
 
         {/* GAUGE */}
         <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
-          <EGSScoreBar score={score} phase={phase} isClinicView={isClinic} animated />
+          <ScoreBar score={score} phase={phase} isClinicView={isClinic} animated />
         </div>
 
         {/* CHART */}
         <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
           <h2 className="text-white font-bold mb-4">Skor Geçmişi Grafiği</h2>
-          <EGSScoreChart points={TEST_POINTS} />
+          <ScoreChart points={TEST_POINTS} />
         </div>
 
       </div>
