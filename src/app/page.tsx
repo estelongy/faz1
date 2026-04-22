@@ -38,8 +38,8 @@ const STEPS = [
   {
     num: '03',
     color: 'from-emerald-500 to-teal-600',
-    title: 'Longevity Anketi',
-    desc: 'Uyku, beslenme ve stres alışkanlıklarınızı girerek skorunuzu +10 puana kadar artırın.',
+    title: 'Yaşam Tarzı Anketi',
+    desc: 'Uyku, beslenme ve stres alışkanlıklarınızı girerek skorunuzu artırın.',
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -245,7 +245,11 @@ export default function Home() {
                 {i < STEPS.length - 1 && (
                   <div className="hidden lg:block absolute top-10 left-[calc(100%-12px)] w-6 h-px bg-gradient-to-r from-slate-700 to-slate-800 z-10" />
                 )}
-                <div className="p-6 rounded-2xl bg-slate-800/50 border border-slate-700 hover:border-slate-600 transition-all h-full">
+                <div className={`p-6 rounded-2xl border transition-all h-full flex flex-col ${
+                  step.num === '04'
+                    ? 'bg-slate-800/80 border-amber-400/60 shadow-[0_0_22px_rgba(251,191,36,0.12)] hover:shadow-[0_0_32px_rgba(251,191,36,0.22)] hover:border-amber-400/80'
+                    : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'
+                }`}>
                   <div className="flex items-center gap-3 mb-4">
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white shrink-0`}>
                       {step.icon}
@@ -254,6 +258,25 @@ export default function Home() {
                   </div>
                   <h3 className="text-white font-bold text-lg mb-2">{step.title}</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
+
+                  {/* 03 — +10 puan highlight */}
+                  {step.num === '03' && (
+                    <div className="mt-3 inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                      ✦ +10 puana kadar artır
+                    </div>
+                  )}
+
+                  {/* 04 — nasıl görünür linki */}
+                  {step.num === '04' && (
+                    <a href="/preview-skor" target="_blank" rel="noopener"
+                      className="mt-3 inline-flex items-center gap-1.5 self-start text-xs text-amber-400/70 hover:text-amber-400 transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                      nasıl görünür?
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
@@ -278,7 +301,7 @@ export default function Home() {
               <div className="space-y-3">
                 {[
                   { label: 'Ön Analiz', desc: 'Selfie ile anında, ücretsiz', badge: 'Herkese açık' },
-                  { label: 'Longevity Anketi', desc: 'Yaşam tarzı katkısı +10 puan', badge: 'Ücretsiz' },
+                  { label: 'Yaşam Tarzı Anketi', desc: 'Yaşam tarzı katkısı +10 puan', badge: 'Ücretsiz' },
                   { label: 'Klinik Onaylı Gençlik Skoru', desc: 'Hekim doğrulamalı sertifika', badge: 'Paylaşılabilir' },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-3 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
