@@ -10,12 +10,12 @@ export const metadata: Metadata = {
     default: 'Estelongy — Gençlik Skoru Platformu',
     template: '%s | Estelongy',
   },
-  description: 'Gençlik Skorunu (EGS) öğren. Selfie ön analizi, longevity anketi, tetkikler ve hekim değerlendirmesiyle Klinik Onaylı Gençlik Skoru sertifikası.',
-  keywords: ['gençlik skoru', 'EGS', 'Estelongy Gençlik Skoru', 'klinik onaylı', 'longevity', 'biyolojik yaş', 'estetik klinik'],
+  description: 'Estelongy Gençlik Skoru öğren. Selfie ön analizi, longevity anketi, tetkikler ve hekim değerlendirmesiyle Klinik Onaylı Estelongy Gençlik Skoru sertifikası.',
+  keywords: ['gençlik skoru', 'Estelongy Gençlik Skoru', 'klinik onaylı', 'longevity', 'biyolojik yaş', 'estetik klinik'],
   metadataBase: new URL('https://estelongy.com'),
   openGraph: {
     title: 'Estelongy — Gençlik Skorunu Öğren',
-    description: 'Gençlik Skorunu (EGS) öğren. Ön analiz, longevity anketi ve klinik değerlendirmesiyle Klinik Onaylı Gençlik Skoru.',
+    description: 'Estelongy Gençlik Skorunu öğren. Ön analiz, longevity anketi ve klinik değerlendirmesiyle Klinik Onaylı Estelongy Gençlik Skoru.',
     url: 'https://estelongy.com',
     siteName: 'Estelongy',
     locale: 'tr_TR',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Estelongy — Gençlik Skorunu Öğren',
-    description: 'Klinik Onaylı Gençlik Skoru (EGS). Ön analiz, anket, tetkik ve hekim değerlendirmesi.',
+    description: 'Klinik Onaylı Estelongy Gençlik Skoru. Ön analiz, anket, tetkik ve hekim değerlendirmesi.',
   },
   robots: {
     index: true,

@@ -119,18 +119,18 @@ export function tmplScoreUpdate(payload: {
   const colorMap = (s: number) => s >= 90 ? '#00d4ff' : s >= 75 ? '#22c55e' : s >= 50 ? '#f59e0b' : '#ef4444'
   return {
     subject: isKlinik
-      ? `[Estelongy] Klinik Onaylı EGS Skorunuz: ${payload.score}`
-      : `[Estelongy] EGS Ön Analiz Skorunuz: ${payload.score}`,
+      ? `[Estelongy] Klinik Onaylı Gençlik Skorunuz: ${payload.score}`
+      : `[Estelongy] Ön Analiz Gençlik Skorunuz: ${payload.score}`,
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#0f172a;color:#e2e8f0;padding:32px;border-radius:16px">
         <div style="margin-bottom:24px">
           <span style="font-weight:900;font-size:22px;background:linear-gradient(90deg,#7c3aed,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Estelongy</span>
         </div>
-        <h2 style="color:#fff;margin:0 0 8px">${isKlinik ? '✦ Klinik Onaylı EGS Skorunuz' : 'EGS Ön Analiz Skorunuz'}</h2>
+        <h2 style="color:#fff;margin:0 0 8px">${isKlinik ? '✦ Klinik Onaylı Gençlik Skorunuz' : 'Ön Analiz Gençlik Skorunuz'}</h2>
         <p style="color:#94a3b8;margin:0 0 24px">Merhaba ${payload.patientName},</p>
         <div style="text-align:center;padding:32px;background:#1e293b;border-radius:16px;margin-bottom:24px">
           <div style="font-size:72px;font-weight:900;color:${colorMap(payload.score)}">${payload.score}</div>
-          <div style="color:#64748b;font-size:14px;margin-top:4px">${isKlinik ? 'Klinik Onaylı EGS' : 'Ön Analiz EGS'}</div>
+          <div style="color:#64748b;font-size:14px;margin-top:4px">${isKlinik ? 'Klinik Onaylı Gençlik Skoru' : 'Ön Analiz Gençlik Skoru'}</div>
         </div>
         <a href="https://estelongy-clean.vercel.app/panel" style="display:inline-block;padding:12px 28px;background:linear-gradient(90deg,#7c3aed,#9333ea);color:#fff;border-radius:10px;text-decoration:none;font-weight:700">Detayları Gör →</a>
       </div>

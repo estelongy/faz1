@@ -2,15 +2,16 @@ import { ImageResponse } from 'next/og'
 import { createClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
-export const alt = 'Estelongy — Klinik Onaylı EGS Skoru'
+export const alt = 'Estelongy — Klinik Onaylı Gençlik Skoru'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 function zoneFromScore(s: number) {
-  if (s >= 90) return { name: 'Premium', color: '#00d4ff', label: 'Çok iyi' }
-  if (s >= 75) return { name: 'Genç',    color: '#22c55e', label: 'Yaşından genç' }
-  if (s >= 50) return { name: 'Normal',  color: '#f59e0b', label: 'Yaşında' }
-  return          { name: 'Kritik',      color: '#ef4444', label: 'Yaşından yaşlı' }
+  if (s >= 90) return { name: 'Harika',    color: '#00d4ff', label: 'Olağanüstü Gençlik Skoru' }
+  if (s >= 80) return { name: 'İyi',       color: '#22c55e', label: 'Gençlik Skoru iyi seviyede' }
+  if (s >= 66) return { name: 'Normal',    color: '#f59e0b', label: 'Normal aralıkta' }
+  if (s >= 56) return { name: 'Düşük',     color: '#f97316', label: 'Gençlik Skoru düşük' }
+  return          { name: 'Çok Düşük',     color: '#ef4444', label: 'Gençlik Skoru çok düşük' }
 }
 
 export default async function ShareOGImage({ params }: { params: { analysisId: string } }) {

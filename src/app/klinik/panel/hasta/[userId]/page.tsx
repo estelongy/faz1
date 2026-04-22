@@ -180,7 +180,7 @@ export default async function HastaDetayPage({
                   </svg>
                 </div>
                 <div>
-                  <p className="text-slate-400 font-medium text-sm">EGS skoru yok</p>
+                  <p className="text-slate-400 font-medium text-sm">Estelongy Gençlik Skoru yok</p>
                   <p className="text-slate-600 text-xs mt-0.5">Hasta henüz analiz yapmamış</p>
                 </div>
               </div>

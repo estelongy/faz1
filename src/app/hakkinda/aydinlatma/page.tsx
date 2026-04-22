@@ -24,7 +24,7 @@ export default function AydinlatmaPage() {
               <ul className="list-disc list-inside space-y-1 text-slate-400">
                 <li>Kimlik bilgileri (ad, soyad)</li>
                 <li>İletişim bilgileri (e-posta, telefon)</li>
-                <li>Fotoğraf ve biyometrik veriler (EGS analizi için)</li>
+                <li>Fotoğraf ve biyometrik veriler (Gençlik Skoru analizi için)</li>
                 <li>Sağlık verileri (longevity anketi yanıtları)</li>
                 <li>İşlem ve randevu geçmişi</li>
               </ul>
@@ -32,7 +32,7 @@ export default function AydinlatmaPage() {
             <section>
               <h2 className="text-white font-semibold text-base mb-2">3. İşleme Amaçları</h2>
               <ul className="list-disc list-inside space-y-1 text-slate-400">
-                <li>EGS (Estelongy Gençlik Skoru) analizi yapılması</li>
+                <li>Estelongy Gençlik Skoru analizi yapılması</li>
                 <li>Klinik randevu süreçlerinin yönetilmesi</li>
                 <li>Hizmet kalitesinin iyileştirilmesi</li>
                 <li>Yasal yükümlülüklerin yerine getirilmesi</li>

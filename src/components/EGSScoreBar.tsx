@@ -42,10 +42,11 @@ function polar(cx: number, cy: number, r: number, deg: number) {
 
 // ── Renk bölgeleri ──────────────────────────────────────────────
 const ZONE_DEFS = [
-  { pct: 0.49, color: '#ef4444', name: 'Kritik',    range: '0–49'  },
-  { pct: 0.25, color: '#f59e0b', name: 'Gelişmeli', range: '50–74' },
-  { pct: 0.15, color: '#22c55e', name: 'İyi',       range: '75–89' },
-  { pct: 0.11, color: '#00d4ff', name: 'Mükemmel',  range: '90–100'},
+  { pct: 0.55, color: '#ef4444', name: 'Çok Düşük', range: '0–55'   },
+  { pct: 0.10, color: '#f97316', name: 'Düşük',     range: '56–65'  },
+  { pct: 0.14, color: '#f59e0b', name: 'Normal',    range: '66–79'  },
+  { pct: 0.10, color: '#22c55e', name: 'İyi',       range: '80–89'  },
+  { pct: 0.11, color: '#00d4ff', name: 'Harika',    range: '90–100' },
 ]
 
 // Her bölge için dasharray + dashoffset hesapla
@@ -63,15 +64,16 @@ const ZONES = ZONE_DEFS.map(z => {
 })
 
 function getZone(score: number) {
-  if (score >= 90) return ZONES[3]
-  if (score >= 75) return ZONES[2]
-  if (score >= 50) return ZONES[1]
+  if (score >= 90) return ZONES[4]
+  if (score >= 80) return ZONES[3]
+  if (score >= 66) return ZONES[2]
+  if (score >= 56) return ZONES[1]
   return ZONES[0]
 }
 
 // ── Tick işaretleri: sadece bölge sınırları, 0 ve 100 YOK ───────
-const MAJOR_TICKS = [50, 75, 90]
-const MINOR_TICKS = [10, 20, 30, 40, 60, 70, 80]
+const MAJOR_TICKS = [56, 66, 80, 90]
+const MINOR_TICKS = [10, 20, 30, 40, 70]
 
 // ── Aşamalar ────────────────────────────────────────────────────
 const PHASES = [
@@ -83,7 +85,7 @@ const PHASES = [
   { key: 'ileri_ai',            label: 'İleri Analiz'},
   { key: 'tetkik',              label: 'Tetkik'      },
   { key: 'hekim_degerlendirme', label: 'Hekim'       },
-  { key: 'klinik_onayli',       label: 'Onaylı EGS'  },
+  { key: 'klinik_onayli',       label: 'Klinik Onaylı' },
 ]
 
 // ── Mesajlar ─────────────────────────────────────────────────────

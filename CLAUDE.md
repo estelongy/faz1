@@ -385,6 +385,218 @@ POST /api/analiz  (rate limit: IP başına 5/saat)
 
 ---
 
+## Marka Dili & Adlandırma (ÖNEMLİ — RENAME GEREKLİ)
+
+**"EGS" kısaltması tamamen kaldırılacak.** Doğru kullanım:
+- İlk geçtiği yerde: **"Estelongy Gençlik Skoru ®"**
+- Devamında kısaca: **"Skor"**
+
+**Marka Tanımı** (sabit):
+> Estelongy, kişinin **sağlıklı bir şekilde daha genç görünmesini** sağlayan bir **sanat**tır.
+> Nihai amaç: estetik ihtiyacının minimize edilmesi, her işlemin **etkin, sürdürülebilir ve verimli** olması.
+
+**Skor Felsefesi** (motto):
+> **"Skor, estetiğin sayısal halidir."**
+> Fotoğraf + yaşam tarzı + biyomarker + hekim gözü → **objektif, savunulabilir, tekrarlanabilir** rakam.
+> Estetik sektörünün açığını kapatır: **ortak ölçü standardı yoktu, artık var.**
+
+**Pozisyon:**
+- "Genç görünmek" değil → **"Gençleşmek (görünümü)"**
+- Rakipler: tek seferlik müdahale, maskeleme (filler, botox)
+- Estelongy: protokol (foto + anket + tetkik + hekim + ürün) → ölçülebilir ilerleme
+- Paradoks: platform estetik işlem satıyor AMA amacı **"doğru işlem, doğru zaman"**
+- **Yeni dil, yeni kuram** — sadece ürün değil, bir disiplin
+
+### Hekim Kimliği: Estelog
+
+- Klasik estetik hekimi → **Estelog** (yeni meslek tanımı)
+- Estelog = Skor bazlı çalışan, estetiği sağlıkla birleştiren, protokol odaklı hekim
+- Klasik hekimden farkı: tek seferlik müdahale yerine **skor takibi ile uzun vadeli yol haritası**
+- Pazarlama açısı: "Senin hekimin değil, senin Estelog'un"
+
+### Skor vs Puan — Temel Terminoloji
+
+**Türkçe dilsel ayrım — sabit, tutarlı kullanılacak:**
+
+| | Kime/neye verilir | Aralık | Kısaltma |
+|--|--|--|--|
+| **Skor** | **kişi** (hasta) | 0–100 | — (açık yaz: "Estelongy Gençlik Skoru") |
+| **Puan** | **nesne** (ürün, işlem, klinik, vs.) | 0–10 | **EGP** (Estelongy Gençlik Puanı) |
+
+- "EGS" kısaltması ❌ — kullanma
+- "EGP" kısaltması ✅ — yaygın kullanılabilir
+
+### EGP — Estelongy Gençlik Puanı
+
+**Estetik + longevity evreninin ortak ölçü birimi.** SPF gibi, Nutri-Score gibi, enerji sınıfı gibi.
+
+> **EGP**, bir nesnenin "gençliğe katkı" standardıdır (0–10).
+
+**Kapsam (estetik + longevity'ye dair HER ŞEY):**
+- **Ürünler** — serum, güneş koruyucu, vitamin, takviye, kozmetik
+- **İşlemler** — filler, botox, lazer, mezoterapi, PRP
+- **Klinikler** — tesis kalite puanı
+- **Esteloglar** — hekim puanı (hasta sonuçlarına dayalı)
+- **Cihazlar** — dermatoskop, UV kamera, cilt analiz cihazı
+- **Protokoller** — örn. "3 aylık anti-aging paketi"
+- **Gıdalar / takviyeler** — collagen, bone broth, omega-3
+- **Spa / bakım hizmetleri** — yüz bakımı, masaj, dermaroller
+- **Uygulamalar** — meditation, uyku takip, fitness
+
+**Örnek kullanım:**
+> La Roche-Posay Anthelios SPF 50+ · **EGP: 9.2**
+> Klinik X · **EGP: 8.7**
+> Dr. Ayşe Yılmaz (Estelog) · **EGP: 9.4**
+> "Yüz Dolgu Uygulaması" (genel) · **EGP: 6.5** (temkinli işlem)
+
+**Stratejik değeri:**
+1. **Standart** olmak — platform olmaktan çıkıp "ölçü birimi" olmak
+2. **Sertifikasyon geliri** — üretici/klinik ambalajında/web sitesinde "EGP" kullanmak için lisans öder
+3. **Tüketici için seçim kolaylığı** — kategori fark etmeksizin net kriter
+4. **Estelog için öneri dili** — "EGP 9+ olan herhangi bir X"
+5. **Kalıcı moat** — standart bir kez oturursa Estelongy dışında da değerini korur
+
+**İç entegrasyon (ürünler için):**
+- `products` tablosunda `doctor_score`, `user_score`, `manufacturer_score` var
+- Bunların ağırlıklı birleşimi = ürünün EGP'si
+- Mağazada EGP ile sıralama/filtreleme
+- Ürün detayında "EGP nasıl hesaplandı?" şeffaflığı
+
+**İç entegrasyon (klinik/hekim için — sonraki sprint):**
+- Klinik EGP: tamamlanan randevu başına skor artışı ortalaması + hasta memnuniyeti + işlem başarı oranı
+- Estelog EGP: kendi onayladığı skorların tutarlılığı + hasta sadakati + uzun vadeli sonuçlar
+
+### Skor Bölgeleri (YENİ — ESKİ BAREM KULLANMA)
+
+| Aralık | Etiket | Renk |
+|--------|--------|------|
+| < 55 | **Çok Düşük** | kırmızı |
+| 56–65 | **Düşük** | turuncu |
+| 66–79 | **Normal** | amber |
+| 80–89 | **İyi** | yeşil |
+| > 90 | **Harika** | cyan |
+
+**Eski barem (kullanılmayacak):** ~~Kritik / Normal / Genç / Premium~~
+
+### Rename Yapılacaklar (Yeni Session'da)
+- [ ] Tüm "EGS" geçişleri → "Skor" veya "Estelongy Gençlik Skoru ®"
+- [ ] `EGSScoreBar` → `ScoreBar` (komponent + import)
+- [ ] `EGSScoreChart` → `ScoreChart`
+- [ ] `EGSFixedBadge` → `ScoreFixedBadge`
+- [ ] `EGSPhase` type → `ScorePhase`
+- [ ] `ZONE_DEFS`, `getZone()`, `colorZone()`, `zoneLabel()` → 5 bölge
+- [ ] SEO meta, OG image altyazıları
+- [ ] PaylasModal, landing page metinleri
+- [ ] CLAUDE.md'deki her "EGS" referansı
+
+### EGP Kataloğu — 4 Kategori Belirlenecek
+
+Her biri için **bilimsel temelde EGP** hesaplanacak:
+
+1. **İşlemler** (botoks, HA dolgu, lazer, mezoterapi, altın iğne, PRP...)
+2. **Ürünler** (serum, güneş koruyucu, krem, takviye, kozmetik...)
+3. **Uygulamalar / Protokoller** (3 aylık anti-aging paketi, detox programı...)
+4. **Cihazlar** (dermatoskop, UV kamera, cilt analiz cihazı, radyofrekans...)
+
+**Dinamik puanlama** — her birinin **temel EGP** değeri olacak, **dinamik faktörlerle** gerçek uygulama için uyarlanacak:
+- İşlem için: endikasyon, doz, Estelog becerisi, hastanın geçmişi, komplikasyon
+- Ürün için: cilt uyumu, günlük kullanım, formül kalitesi
+- Protokol için: tamamlanma oranı, skor artışı, hasta bağlılığı
+- Cihaz için: kalibrasyon, klinik kullanım yaygınlığı, sonuç tutarlılığı
+
+**İlk değerlendirilen 4 kalem (başlangıç noktası):**
+```
+[İşlem] Hyalüronik Asit Dolgu · Temel EGP: 9.2
+[Ürün]  Güneş Koruyucu (kategori) · Temel EGP: 8.5
+[İşlem] Botoks · Temel EGP: 7.0
+[İşlem] Altın İğne · Temel EGP: 6.5
+```
+
+**Saklama yeri (karar verilecek):** JSON katalog mı, Supabase `treatments`/`applications`/`devices` tabloları mı?
+
+### Kısmi Başlangıç (Faz 3'e bırakılan ama erken yapılabilir)
+
+Tam ekosistem kurulumu Faz 3 — ama **ürünler için EGP**'yi şimdi de başlatabiliriz:
+
+**Asgari MVP (hazır ol, erken olabilir):**
+1. EGP hesap formülü: `doctor × 0.4 + user × 0.35 + manufacturer × 0.15 + scientific × 0.10`
+2. Review geldiğinde otomatik güncelleme (review-actions.ts'e ekle)
+3. Mağaza ürün kartında EGP rozeti
+4. Default sıralama: EGP yüksekten düşüğe
+5. Ürün detay: büyük EGP + "Nasıl hesaplandı?" şeffaflık
+
+**Altyapı zaten hazır:**
+- `products.manufacturer_score`, `doctor_score`, `user_score`, `scientific_score` kolonları mevcut
+- `reviews` tablosu otomatik `user_score` güncelliyor
+- Sadece EGP formülü + UI rozetleri eklenecek
+
+**Karar bekliyor:** konsept olgunlaşsın (dinamik ağırlıklar, uzun vadeli skor delta vb.) sonra kod. Erken başlarsa ölü kod.
+
+### EGP Hesaplama Formülü (Dinamik)
+
+EGP iki katmanlı: **teorik** (Estelog paneli verir) + **saha verisi** (kullanıcı + sonuç) → ağırlıklı ortalama.
+
+İlaç sektöründen analoji:
+- **Efficacy** (baseline) — ideal koşulda etki (klinik panel, bilimsel literatür)
+- **Effectiveness** (saha) — rutin kullanımda gerçek etki
+
+```
+EGP = w1 × baseline_EGP        (Estelog paneli)
+    + w2 × tercih_oranı        (kullanım sıklığı)
+    + w3 × yorum_ortalaması    (memnuniyet + yan etki)
+    + w4 × uzun_vadeli_skor    (6 ay sonra hasta skorunda delta)
+```
+
+**Ağırlıklar zamanla evrimleşir (veri olgunlaştıkça):**
+
+| Bileşen | Yeni item (ilk 100 vaka) | Olgun item (10k+ vaka) |
+|--|--|--|
+| baseline | 0.70 | 0.20 |
+| tercih | 0.10 | 0.15 |
+| yorum | 0.10 | 0.25 |
+| uzun vadeli skor | 0.10 | **0.40** |
+
+**Örnek: "Cilt bakımı rutini"**
+- Teorik baseline: 5.0 (tek başına minor etki)
+- Sahada: compliance yüksek + psikolojik etki + kümülatif skor artışı
+- Olgun EGP: 7.1 → teoriden yukarı çekildi (sahada işe yarıyor)
+
+**Karşı örnek: "Aşırı seans lazer"**
+- Teorik baseline: 8.0 (makine güçlü)
+- Sahada: yan etki, memnuniyetsizlik, skor kaybı
+- Olgun EGP: 5.4 → teoriden aşağı çekildi (sahada yaralıyor)
+
+**Sonuç:** EGP kendi kendini rafine eder. Sahtekarlık zorlaşır, hak eden ürün/işlem üste çıkar.
+
+---
+
+### Ürün Felsefesi: Estelongy, Estetiğin IMDb'si
+
+**Analoji:** IMDb filmleri yapmıyor, satmıyor — sadece **puanlıyor ve referans oluyor**. Bu rolüyle film sektörünün kalite standardı oldu. Estelongy de estetik+longevity için aynısı.
+
+**Keşif arayüzü (yapılacak):**
+- **Gençlik Reçeteleri** sayfası (yeni) — EGP sıralı katalog
+- Filtre: Kategori (İşlem / Ürün / Protokol / Cihaz / Estelog)
+- Varsayılan sıralama: **EGP yüksekten düşüğe**
+- Her kalem detay sayfası: bilimsel özet + EGP (+ nasıl hesaplandı) + Estelog yorumları + hasta değerlendirmeleri + "Benzer öneriler"
+- **Estelongy Top listeleri** — "En yüksek EGP'li 10 işlem", "En yüksek EGP'li 10 Estelog" vb.
+
+**Gençlik Reçetesi konsepti:**
+Tek bir öğe değil — Estelog tarafından onaylanmış **kombinasyon paketi**. Her paket kendi EGP'sine sahip.
+
+```
+Reçete: "30'larda Koruma" · EGP 8.9
+├─ Günlük güneş koruyucu           EGP 8.5
+├─ HA dolgu (yılda 1, minimal)     EGP 9.2
+├─ D vit + omega-3 takviyesi       EGP 7.8
+└─ Yılda 2 klinik ziyaret          EGP 8.5
+```
+
+**Gelir modeli IMDb benzeri:**
+Platform doğrudan işlem yapmıyor — sadece **ölçü olduğu için** değerli. Reklam + sertifikasyon lisansı + premium katman + marketplace komisyonu.
+
+---
+
 ## Manuel Yapılacaklar (Kod Gerektirmeyen)
 
 - [ ] Supabase → Auth → Providers → Google OAuth etkinleştir

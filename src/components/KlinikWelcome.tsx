@@ -99,7 +99,7 @@ export default function KlinikWelcome({ clinicName, clinicId, jetonBalance }: Pr
           <h3 className="text-white font-bold mb-1">İlk Randevunuzu Bekleyin</h3>
           <p className="text-slate-400 text-xs leading-relaxed">
             Hasta randevu talebi gönderdiğinde burada anlık olarak görünür.
-            Kabul ettiğinizde 5 adımlık klinik akışıyla Klinik Onaylı EGS sertifikası üretirsiniz.
+            Kabul ettiğinizde 5 adımlık klinik akışıyla Klinik Onaylı Estelongy Gençlik Skoru sertifikası üretirsiniz.
           </p>
           <div className="mt-4 flex items-center gap-2 text-amber-400/70 text-[11px]">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
@@ -168,7 +168,7 @@ export default function KlinikWelcome({ clinicName, clinicId, jetonBalance }: Pr
           </svg>
           <div className="text-xs text-slate-400 leading-relaxed">
             <strong className="text-white">İpucu:</strong> Nihai skor kararı hekimdedir.
-            Ön analiz ve anket sadece yol göstericidir. Klinik Onaylı EGS formülü:
+            Ön analiz ve anket sadece yol göstericidir. Klinik Onaylı Gençlik Skoru formülü:
             <span className="font-mono text-violet-300 ml-1">(Ön + Anket) × 0.85 + Hekim × 0.15</span>
           </div>
         </div>

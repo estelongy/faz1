@@ -16,7 +16,7 @@ export default function Footer() {
               <span className="text-lg font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">Estelongy</span>
             </Link>
             <p className="text-slate-500 text-xs leading-relaxed">
-              Gençlik Skoru (EGS) platformu. Ön analiz, longevity anketi ve klinik onayıyla biyolojik gençliğinizi öğrenin.
+              Estelongy Gençlik Skoru platformu. Ön analiz, longevity anketi ve klinik onayıyla biyolojik gençliğinizi öğrenin.
             </p>
           </div>
 
@@ -28,6 +28,7 @@ export default function Footer() {
               <li><Link href="/randevu" className="text-slate-400 hover:text-white transition-colors">Klinik Randevu</Link></li>
               <li><Link href="/magaza" className="text-slate-400 hover:text-white transition-colors">Mağaza</Link></li>
               <li><Link href="/panel" className="text-slate-400 hover:text-white transition-colors">Panelim</Link></li>
+              <li><Link href="/rehber" className="text-slate-400 hover:text-white transition-colors">Rehber</Link></li>
             </ul>
           </div>
 

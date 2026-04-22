@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Sık Sorulan Sorular',
-  description: 'Estelongy Gençlik Skoru (EGS), klinik akışı, jeton sistemi ve satıcı süreçleri hakkında sık sorulan sorular.',
+  description: 'Estelongy Gençlik Skoru, klinik akışı, jeton sistemi ve satıcı süreçleri hakkında sık sorulan sorular.',
 }
 
 interface FAQ {
@@ -19,28 +19,28 @@ interface FAQGroup {
 
 const GROUPS: FAQGroup[] = [
   {
-    title: 'Gençlik Skoru (EGS)',
+    title: 'Estelongy Gençlik Skoru',
     icon: '✦',
     items: [
       {
-        q: 'EGS nedir?',
-        a: 'EGS (Estelongy Gençlik Skoru), 0-100 arasında bir biyolojik gençlik göstergesidir. Ön analiz, longevity anketi, tetkik sonuçları ve hekim değerlendirmesi — bu girdilerin birleşimiyle hesaplanır. Tek bir rakam, durumunuzu net özetler.',
+        q: 'Estelongy Gençlik Skoru nedir?',
+        a: 'Estelongy Gençlik Skoru, 0-100 arasında bir biyolojik gençlik göstergesidir. Ön analiz, longevity anketi, tetkik sonuçları ve hekim değerlendirmesi — bu girdilerin birleşimiyle hesaplanır. Tek bir rakam, durumunuzu net özetler.',
       },
       {
         q: 'Skor nasıl yükseltilir?',
-        a: 'Dört yolu var: (1) Longevity anketini doldurun — uyku, beslenme, stres ve cilt rutini puanınıza +10\'a kadar katkı sağlar. (2) Klinik randevusu alın — hekim değerlendirmesiyle Klinik Onaylı EGS\'ye ulaşın. (3) Bakım rutininize uyun. (4) 6 ayda bir yeniden ölçün, ilerlemenizi takip edin.',
+        a: 'Dört yolu var: (1) Longevity anketini doldurun — uyku, beslenme, stres ve cilt rutini Gençlik Puanınıza +10\'a kadar katkı sağlar. (2) Klinik randevusu alın — hekim değerlendirmesiyle Klinik Onaylı Gençlik Skoru\'na ulaşın. (3) Bakım rutininize uyun. (4) 6 ayda bir yeniden ölçün, ilerlemenizi takip edin.',
       },
       {
-        q: 'Ön Analiz ile Klinik Onaylı EGS arasındaki fark nedir?',
-        a: 'Ön Analiz; selfienizle anlık hesaplanan tahmini bir başlangıç değeridir, yol göstericidir. Klinik Onaylı EGS ise uzman hekim tarafından anket, tetkik ve yüz yüze değerlendirmeyle doğrulanmış, damgalı sertifikalı skordur — paylaşılabilir.',
+        q: 'Ön Analiz ile Klinik Onaylı Gençlik Skoru arasındaki fark nedir?',
+        a: 'Ön Analiz; selfienizle anlık hesaplanan tahmini bir başlangıç değeridir, yol göstericidir. Klinik Onaylı Estelongy Gençlik Skoru ise uzman hekim tarafından anket, tetkik ve yüz yüze değerlendirmeyle doğrulanmış, damgalı sertifikalı skordur — paylaşılabilir.',
       },
       {
         q: 'Renk bölgeleri ne anlama geliyor?',
-        a: 'Kırmızı (0-49): Yaşından yaşlı görünüm — klinik önerilir. Kahverengi/Amber (50-74): Yaşında. Yeşil (75-89): Yaşından genç — koruma aşamasında. Mavi (90-100): Premium gençlik — çok iyi durum.',
+        a: 'Kırmızı (0-55): Çok Düşük — klinik önerilir. Turuncu (56-65): Düşük. Amber (66-79): Normal aralıkta. Yeşil (80-89): İyi — koruma aşamasında. Mavi (90-100): Harika — olağanüstü Gençlik Skoru.',
       },
       {
         q: 'Skor düşerse ne olur?',
-        a: 'Klinik Onaylı EGS hiçbir zaman otomatik düşmez. Yalnızca yeni bir klinik ölçümünde güncellenir. Ön Analiz skoru ise her yeni selfie yüklemede güncellenir — bu değişim sizin takibiniz içindir.',
+        a: 'Klinik Onaylı Gençlik Skoru hiçbir zaman otomatik düşmez. Yalnızca yeni bir klinik ölçümünde güncellenir. Ön Analiz Gençlik Skoru ise her yeni selfie yüklemede güncellenir — bu değişim sizin takibiniz içindir.',
       },
     ],
   },
@@ -49,7 +49,7 @@ const GROUPS: FAQGroup[] = [
     icon: '📅',
     items: [
       {
-        q: 'EGS Analizi ücretsiz mi?',
+        q: 'Gençlik Skoru analizi ücretsiz mi?',
         a: 'Evet. Selfie ön analizi, longevity anketi, skor takibi ve paylaşım — hepsi ücretsizdir. Klinik onaylı sertifika almak için bir kliniğe randevu almanız yeterli; klinik muayene ücreti kliniğe göre değişir.',
       },
       {
@@ -84,7 +84,7 @@ const GROUPS: FAQGroup[] = [
       },
       {
         q: 'Hekim olarak karar verme yetkim tam mı?',
-        a: 'Evet. Ön analiz ve longevity anketi yalnızca yol göstericidir. Final Klinik Onaylı EGS skoru, sizin yüz yüze değerlendirmenizle oluşur. Formül: (Ön analiz+anket) × 0.85 + (Hekim değerlendirmesi) × 0.15. Nihai karar hekime aittir.',
+        a: 'Evet. Ön analiz ve longevity anketi yalnızca yol göstericidir. Final Klinik Onaylı Gençlik Skoru, sizin yüz yüze değerlendirmenizle oluşur. Formül: (Ön analiz+anket) × 0.85 + (Hekim değerlendirmesi) × 0.15. Nihai karar hekime aittir.',
       },
       {
         q: 'Hasta verilerine nasıl erişirim?',

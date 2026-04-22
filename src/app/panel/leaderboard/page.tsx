@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   title: 'Sıralama — Estelongy',
-  description: 'Klinik onaylı EGS skorları sıralaması',
+  description: 'Klinik onaylı Gençlik Skoru sıralaması',
 }
 
 /** "Ahmet Yılmaz" → "A*** Y***" */
@@ -92,7 +92,7 @@ export default async function LeaderboardPage() {
 
       <div className="max-w-3xl mx-auto px-4 pt-24 pb-16">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-black text-white mb-2">Klinik Onaylı EGS Sıralaması</h1>
+          <h1 className="text-3xl font-black text-white mb-2">Klinik Onaylı Estelongy Gençlik Skoru Sıralaması</h1>
           <p className="text-slate-400 text-sm">
             Hekim onaylı skorların top 20&apos;si · Anonim olarak gösterilir
           </p>
@@ -209,7 +209,7 @@ export default async function LeaderboardPage() {
             </li>
             <li className="flex gap-2">
               <span className="text-violet-400">4.</span>
-              <span>Tetkik + hekim onayı ile Klinik Onaylı EGS&apos;ye ulaş</span>
+              <span>Tetkik + hekim onayı ile Klinik Onaylı Gençlik Skoru&apos;na ulaş</span>
             </li>
           </ul>
           <Link href="/randevu"
