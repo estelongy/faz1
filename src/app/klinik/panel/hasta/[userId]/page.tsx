@@ -4,8 +4,8 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import EGSScoreBar, { type EGSPhase } from '@/components/EGSScoreBar'
-import EGSScoreChart, { type ScorePoint } from '@/components/EGSScoreChart'
+import ScoreBar, { type ScorePhase } from '@/components/ScoreBar'
+import ScoreChart, { type ScorePoint } from '@/components/ScoreChart'
 import KlinikNotlar, { type ClinicNote } from './KlinikNotlar'
 
 export const metadata: Metadata = {
@@ -72,7 +72,7 @@ export default async function HastaDetayPage({
     ?? latestAnalysis?.web_overall
     ?? null
 
-  function getCurrentPhase(): EGSPhase {
+  function getCurrentPhase(): ScorePhase {
     if (!latestAnalysis) return 'ai_analiz'
     if (latestAnalysis.final_overall) return 'klinik_onayli'
     if (latestAnalysis.temp_overall)  return 'longevity_anketi'
@@ -171,7 +171,7 @@ export default async function HastaDetayPage({
           {/* Gauge */}
           <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
             {latestScore !== null ? (
-              <EGSScoreBar score={latestScore} phase={getCurrentPhase()} animated={false} isClinicView />
+              <ScoreBar score={latestScore} phase={getCurrentPhase()} animated={false} isClinicView />
             ) : (
               <div className="flex flex-col items-center justify-center py-10 text-center gap-3">
                 <div className="w-14 h-14 rounded-2xl bg-slate-700/50 flex items-center justify-center">
@@ -191,7 +191,7 @@ export default async function HastaDetayPage({
           <div className="lg:col-span-2 bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
             <h2 className="text-white font-bold mb-4">Skor Geçmişi</h2>
             {chartPoints.length > 0 ? (
-              <EGSScoreChart points={chartPoints} />
+              <ScoreChart points={chartPoints} />
             ) : (
               <div className="flex items-center justify-center h-32 text-slate-600 text-sm">
                 Henüz analiz verisi yok
