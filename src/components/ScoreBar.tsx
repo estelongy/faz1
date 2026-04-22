@@ -2,14 +2,14 @@
 
 import { useEffect, useState, useRef } from 'react'
 
-export type EGSPhase =
+export type ScorePhase =
   | 'ai_analiz' | 'longevity_anketi' | 'randevu' | 'klinik_kabul'
   | 'klinik_anketi' | 'ileri_ai' | 'tetkik' | 'hekim_degerlendirme' | 'klinik_onayli'
 
-interface EGSScoreBarProps {
+interface ScoreBarProps {
   score: number
   previousScore?: number
-  phase: EGSPhase
+  phase: ScorePhase
   age?: number
   isClinicView?: boolean
   animated?: boolean
@@ -113,9 +113,9 @@ function getMsg(score: number, isClinic: boolean, age?: number, prev?: number): 
 }
 
 // ── Bileşen ──────────────────────────────────────────────────────
-export default function EGSScoreBar({
+export default function ScoreBar({
   score, previousScore, phase, age, isClinicView = false, animated = true,
-}: EGSScoreBarProps) {
+}: ScoreBarProps) {
   const [disp, setDisp] = useState(animated ? 0 : score)
   const [ang,  setAng]  = useState(animated ? START_MATH : scoreToMathAngle(score))
   const [showDelta, setShowDelta] = useState(false)
@@ -194,7 +194,7 @@ export default function EGSScoreBar({
             strokeLinecap="butt"
             transform={`rotate(${ROT},${CX},${CY})`} />
 
-          {/* 2. Renk bölgesi yayları — hiç break yok */}
+          {/* 2. Renk bölgesi yayları */}
           {ZONES.map((z, i) => (
             <circle key={i} cx={CX} cy={CY} r={R} fill="none"
               stroke={z.color} strokeWidth={SW}
@@ -205,7 +205,7 @@ export default function EGSScoreBar({
               opacity={0.88} />
           ))}
 
-          {/* 3. Yuvarlatılmış başlangıç ucu (kırmızı başlangıcı) */}
+          {/* 3. Yuvarlatılmış başlangıç ucu */}
           <circle cx={CX} cy={CY} r={R} fill="none"
             stroke="#ef4444" strokeWidth={SW}
             strokeDasharray={`1 ${CIRC - 1}`}
@@ -213,7 +213,7 @@ export default function EGSScoreBar({
             strokeLinecap="round"
             transform={`rotate(${ROT},${CX},${CY})`} />
 
-          {/* 4. Yuvarlatılmış bitiş ucu (mavi sonu) */}
+          {/* 4. Yuvarlatılmış bitiş ucu */}
           <circle cx={CX} cy={CY} r={R} fill="none"
             stroke="#00d4ff" strokeWidth={SW}
             strokeDasharray={`1 ${CIRC - 1}`}
@@ -221,7 +221,7 @@ export default function EGSScoreBar({
             strokeLinecap="round"
             transform={`rotate(${ROT},${CX},${CY})`} />
 
-          {/* 5. Aktif skor glow (ibrenin konumuna kadar) */}
+          {/* 5. Aktif skor glow */}
           {disp > 0 && (
             <circle cx={CX} cy={CY} r={R} fill="none"
               stroke={zone.color} strokeWidth={SW - 10}
@@ -233,7 +233,7 @@ export default function EGSScoreBar({
               style={{ filter: 'blur(4px)' }} />
           )}
 
-          {/* 6. Major tick çizgileri (bölge sınırları) */}
+          {/* 6. Major tick çizgileri */}
           {MAJOR_TICKS.map(ts => {
             const a    = scoreToMathAngle(ts)
             const inn  = polar(CX, CY, R - SW / 2 - 12, a)

@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import EGSScoreBar from '@/components/EGSScoreBar'
+import ScoreBar from '@/components/ScoreBar'
 import type { AnalizResult } from '@/app/api/analiz/route'
 
 type Step = 'upload' | 'processing' | 'result'
@@ -314,7 +314,7 @@ export default function AnalizPage() {
 
             {/* EGS Canlı Skor Barı */}
             <div className="p-6 rounded-2xl bg-slate-800/50 border border-slate-700/60 mb-6">
-              <EGSScoreBar
+              <ScoreBar
                 score={result.overall}
                 phase="ai_analiz"
                 animated={true}

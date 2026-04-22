@@ -8,7 +8,7 @@ interface ScoreData {
   approved: boolean
 }
 
-export default function EGSFixedBadge() {
+export default function ScoreFixedBadge() {
   const [data, setData] = useState<ScoreData | null>(null)
 
   useEffect(() => {

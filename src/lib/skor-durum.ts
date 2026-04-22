@@ -7,7 +7,7 @@
  *  - 'klinik_onayli' → hekim onayladı, skor sabitlendi
  */
 
-import type { EGSPhase } from '@/components/EGSScoreBar'
+import type { ScorePhase } from '@/components/ScoreBar'
 
 export type SkorDurum = 'tahmini' | 'guncelleniyor' | 'klinik_onayli'
 
@@ -81,14 +81,14 @@ export function getSkorDurumuColor(durum: SkorDurum): { fg: string; bg: string; 
 }
 
 /**
- * Aktif EGSPhase — skor zincirinde nerede olduğunu belirler.
+ * Aktif ScorePhase — skor zincirinde nerede olduğunu belirler.
  * Hasta panelindeki aşama yolculuğunda kullanılır.
  */
-export function getEGSPhase(
+export function getScorePhase(
   analysis: AnalysisLite | null,
   scoreRow: ScoreRowLite | null,
   activeAppt: AppointmentLite | null
-): EGSPhase {
+): ScorePhase {
   if (!analysis) return 'ai_analiz'
   if (analysis.final_overall != null) return 'klinik_onayli'
   if (scoreRow?.hekim_onay_puani != null) return 'klinik_onayli'

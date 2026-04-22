@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 }
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
-import EGSScoreBar from '@/components/EGSScoreBar'
-import { getSkorDurumu, getEGSPhase, getSkorDurumuLabel, getSkorDurumuColor } from '@/lib/skor-durum'
-import EGSScoreChart, { type ScorePoint } from '@/components/EGSScoreChart'
-import EGSFixedBadge from '@/components/EGSFixedBadge'
+import ScoreBar from '@/components/ScoreBar'
+import { getSkorDurumu, getScorePhase, getSkorDurumuLabel, getSkorDurumuColor } from '@/lib/skor-durum'
+import ScoreChart, { type ScorePoint } from '@/components/ScoreChart'
+import ScoreFixedBadge from '@/components/ScoreFixedBadge'
 import PaylasModal from '@/components/PaylasModal'
 import UserBadges from '@/components/UserBadges'
 import RandevuQRModal from '@/components/RandevuQRModal'
@@ -129,7 +129,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
   const skorDurumu = getSkorDurumu(latestAnalysis, latestScoreRow, activeAppt)
   const skorDurumLabel = getSkorDurumuLabel(skorDurumu)
   const skorDurumColors = getSkorDurumuColor(skorDurumu)
-  const currentPhase = getEGSPhase(latestAnalysis, latestScoreRow, activeAppt)
+  const currentPhase = getScorePhase(latestAnalysis, latestScoreRow, activeAppt)
 
   async function handleSignOut() {
     'use server'
@@ -221,7 +221,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                   </div>
                 </div>
 
-                <EGSScoreBar
+                <ScoreBar
                   score={latestScore}
                   phase={currentPhase}
                   animated={false}
@@ -339,7 +339,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               <h2 className="text-lg font-bold text-white">Skor Geçmişi</h2>
               <span className="text-xs text-slate-500">{chartPoints.length} veri noktası</span>
             </div>
-            <EGSScoreChart points={chartPoints} />
+            <ScoreChart points={chartPoints} />
           </div>
         )}
 
@@ -451,7 +451,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
       </div>
 
       {/* Sabit EGS Skoru — client component, her zaman güncel */}
-      <EGSFixedBadge />
+      <ScoreFixedBadge />
     </main>
   )
 }
