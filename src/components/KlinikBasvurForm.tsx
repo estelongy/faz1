@@ -28,9 +28,10 @@ export default function KlinikBasvurForm({ action, hasError, isLoggedIn }: Props
   const treatments = clinicType ? (TREATMENTS_BY_BRANCH[clinicType] ?? []) : []
 
   // OTP state
-  const [otpStep, setOtpStep]         = useState(false)   // OTP ekranı göster
-  const [otpPhone, setOtpPhone]       = useState('')       // doğrulanan numara
-  const [otpVerified, setOtpVerified] = useState(false)    // doğrulama tamamlandı
+  const [otpStep, setOtpStep]         = useState(false)
+  const [otpPhone, setOtpPhone]       = useState('')
+  const [otpVerified, setOtpVerified] = useState(false)
+  const otpVerifiedRef                = useRef(false)   // sync ref — state async olduğu için
   const [otpCode, setOtpCode]         = useState('')
   const [otpLoading, setOtpLoading]   = useState(false)
   const [otpError, setOtpError]       = useState('')
@@ -56,9 +57,10 @@ export default function KlinikBasvurForm({ action, hasError, isLoggedIn }: Props
   // Form submit → OTP gönder
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (otpVerified) {
+    if (otpVerifiedRef.current) {
       // Doğrulama tamam, server action'a gönder
-      formRef.current?.requestSubmit()
+      const formData = new FormData(formRef.current!)
+      await action(formData)
       return
     }
     const phoneInput = (formRef.current?.elements.namedItem('phone') as HTMLInputElement)?.value
@@ -93,10 +95,12 @@ export default function KlinikBasvurForm({ action, hasError, isLoggedIn }: Props
       setOtpError('Kod hatalı veya süresi dolmuş.')
       return
     }
+    otpVerifiedRef.current = true
     setOtpVerified(true)
     setOtpStep(false)
-    // Gerçek submit
-    formRef.current?.requestSubmit()
+    // Gerçek submit — ref üzerinden kontrol edilecek
+    const formData = new FormData(formRef.current!)
+    await action(formData)
   }
 
   // Tekrar gönder
