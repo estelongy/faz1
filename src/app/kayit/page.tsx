@@ -82,7 +82,6 @@ export default function KayitPage() {
 
     // OTP kapalı → direkt API ile hesap oluştur
     setLoading(true)
-    const birthYearNum = parseInt(birthYear)
     const res = await fetch('/api/kayit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
