@@ -107,7 +107,7 @@ export default async function SharePage(
 
         {/* Skor + animasyonlu bar */}
         <div className="mb-6 w-full">
-          <p className="text-lg font-black bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent tracking-wide">
+          <p className="text-lg font-black tracking-wide" style={{ color: '#a78bfa' }}>
             ESTELONGY®
           </p>
           <p className="text-slate-400 text-sm mb-4">Gençlik Skorun</p>
