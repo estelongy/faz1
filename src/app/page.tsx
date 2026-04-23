@@ -376,8 +376,8 @@ export default function Home() {
               </span>
             </h2>
 
-            {/* Uzmanlık alanı pill'leri */}
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {/* Uzmanlık alanı pill'leri — tıklanabilir filtre */}
+            <div className="flex flex-wrap justify-center gap-2 mb-7">
               {[
                 'Dermatoloji',
                 'Plastik & Estetik Cerrahi',
@@ -385,16 +385,19 @@ export default function Home() {
                 'Fonksiyonel Tıp · Longevity',
                 'K.B.B. Uzmanı',
               ].map(alan => (
-                <span key={alan}
-                  className="px-3.5 py-1.5 rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300 text-xs font-medium tracking-wide">
+                <Link
+                  key={alan}
+                  href={`/randevu?tip=${encodeURIComponent(alan)}`}
+                  className="px-3.5 py-1.5 rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300 text-xs font-medium tracking-wide hover:border-blue-400/60 hover:bg-blue-500/20 hover:text-white transition-all">
                   {alan}
-                </span>
+                </Link>
               ))}
             </div>
 
-            <p className="text-slate-400 max-w-lg mx-auto leading-relaxed">
-              Özel Hastaneler, Tıp Merkezleri, Klinikler ve Muayenehaneler için.<br />
-              Cilt analizini tamamlamış hastalar doğrudan randevunuzu alsın.
+            <p className="text-slate-300 max-w-xl mx-auto leading-relaxed text-base">
+              Estelongy yalnızca <span className="text-white font-semibold">seçkin kliniklere</span> açıktır.
+              Ön analizini tamamlamış, uzman değerlendirmesine hazır hastalar —
+              doğrudan <span className="text-cyan-400 font-semibold">randevu takviminizde</span>.
             </p>
           </div>
 
