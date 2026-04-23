@@ -38,11 +38,12 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Giriş yapılmamış → korumalı sayfaya erişim → /giris'e yönlendir
+  // Giriş yapılmamış → korumalı sayfaya erişim → /giris?next=<path>'e yönlendir
   const isProtected = PROTECTED.some(p => pathname.startsWith(p))
   if (!session && isProtected) {
     const url = request.nextUrl.clone()
     url.pathname = '/giris'
+    url.searchParams.set('next', pathname)
     return NextResponse.redirect(url)
   }
 
