@@ -412,7 +412,7 @@ export default function Home() {
           <div className="text-center">
             <Link href="/klinik/basvur"
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/25 text-base">
-              Kliniğimi Kaydet — Ücretsiz Hasta Kabulüne Başla
+              Kliniğini Kaydet — Ücretsiz Hasta Kabulüne Başla
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
