@@ -47,15 +47,15 @@ export function zoneMeaning(zone: ColorZone | null): string {
   }
 }
 
-/** Bileşenler toplamı (ön analiz + klinik adımları, hekim onayı hariç) */
+/** Bileşenler toplamı (ön analiz + klinik adımları, hekim değerlendirmesi HARİÇ)
+ *  Hekim değerlendirmesi final formülde %15 ağırlıkla ayrıca çarpılır, burada toplama eklenmez. */
 export function sumComponents(c: ScoreComponents): number {
   const s =
     (c.c250_base ?? 0) +
     (c.hasta_anket_puani ?? 0) +
     (c.klinik_anket_puani ?? 0) +
     (c.tetkik_puani ?? 0) +
-    (c.ileri_ai_puani ?? 0) +
-    (c.hekim_degerlendirme ?? 0)
+    (c.ileri_ai_puani ?? 0)
   return clamp(s)
 }
 
