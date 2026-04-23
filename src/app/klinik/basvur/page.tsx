@@ -10,6 +10,14 @@ export const metadata: Metadata = {
   description: 'Kliniğinizi Estelongy platformuna kaydedin. Hastaları kolayca yönetin.',
 }
 
+const CLINIC_TYPES = [
+  'Dermatoloji',
+  'Plastik & Estetik Cerrahi',
+  'Medikal Estetik',
+  'Fonksiyonel Tıp · Longevity',
+  'K.B.B. Uzmanı',
+]
+
 const SPECIALTIES = [
   'Cilt Bakımı', 'Lazer Tedavisi', 'Botoks & Dolgu', 'PRP Tedavisi',
   'Kimyasal Peeling', 'Mezoterapi', 'Leke Tedavisi', 'Akne Tedavisi',
@@ -25,6 +33,7 @@ async function submitApplication(formData: FormData) {
   const name = formData.get('name') as string
   const location = formData.get('location') as string
   const bio = formData.get('bio') as string
+  const clinic_type = formData.get('clinic_type') as string
   const specialties = formData.getAll('specialties') as string[]
 
   const { error } = await supabase.from('clinics').insert({
@@ -32,6 +41,7 @@ async function submitApplication(formData: FormData) {
     name,
     location: location || null,
     bio: bio || null,
+    clinic_type: clinic_type || null,
     specialties: specialties.length > 0 ? specialties : null,
     approval_status: 'pending',
     is_active: false,
@@ -141,6 +151,19 @@ export default async function KlinikBasvurPage({
             <label className="block text-sm text-slate-400 mb-2">Konum</label>
             <input type="text" name="location" placeholder="İstanbul, Kadıköy"
               className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+          </div>
+
+          <div>
+            <label className="block text-sm text-slate-400 mb-2">
+              Klinik Tipi <span className="text-red-400">*</span>
+            </label>
+            <select name="clinic_type" required
+              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer">
+              <option value="" disabled selected>Uzmanlık alanınızı seçin...</option>
+              {CLINIC_TYPES.map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
           </div>
 
           <div>

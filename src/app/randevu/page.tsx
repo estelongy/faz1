@@ -11,6 +11,7 @@ interface Clinic {
   location: string | null
   bio: string | null
   specialties: string[] | null
+  clinic_type: string | null
 }
 
 interface Availability {
@@ -62,6 +63,7 @@ export default function RandevuPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const preselectedClinicId = searchParams.get('k')
+  const preselectedTip = searchParams.get('tip')
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [clinics, setClinics] = useState<Clinic[]>([])
   const [loading, setLoading] = useState(true)
@@ -77,6 +79,7 @@ export default function RandevuPage() {
   const [searchText, setSearchText] = useState('')
   const [filterLocation, setFilterLocation] = useState<string>('')
   const [filterSpecialty, setFilterSpecialty] = useState<string>('')
+  const [filterType, setFilterType] = useState<string>(preselectedTip ?? '')
 
   // Müsaitlik + dolu saatler
   const [availability, setAvailability] = useState<Availability[]>([])
@@ -147,9 +150,11 @@ export default function RandevuPage() {
       }
       // Uzmanlık filtresi
       if (filterSpecialty && !(c.specialties?.includes(filterSpecialty))) return false
+      // Klinik tipi filtresi (?tip= parametresinden)
+      if (filterType && c.clinic_type !== filterType) return false
       return true
     })
-  }, [clinics, searchText, filterLocation, filterSpecialty])
+  }, [clinics, searchText, filterLocation, filterSpecialty, filterType])
 
   useEffect(() => {
     const supabase = createClient()
@@ -160,7 +165,7 @@ export default function RandevuPage() {
     // Klinik listesi çek
     supabase
       .from('clinics')
-      .select('id, name, location, bio, specialties')
+      .select('id, name, location, bio, specialties, clinic_type')
       .eq('approval_status', 'approved')
       .eq('is_active', true)
       .then(({ data }) => {
@@ -319,12 +324,13 @@ export default function RandevuPage() {
                   </select>
                 </div>
 
-                {(searchText || filterLocation || filterSpecialty) && (
+                {(searchText || filterLocation || filterSpecialty || filterType) && (
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500">
+                    <span className="text-slate-500 flex items-center gap-2">
                       {filteredClinics.length} klinik bulundu
+                      {filterType && <span className="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/25">{filterType}</span>}
                     </span>
-                    <button onClick={() => { setSearchText(''); setFilterLocation(''); setFilterSpecialty('') }}
+                    <button onClick={() => { setSearchText(''); setFilterLocation(''); setFilterSpecialty(''); setFilterType('') }}
                       className="text-violet-400 hover:text-violet-300 transition-colors">
                       Filtreleri temizle
                     </button>
@@ -353,7 +359,7 @@ export default function RandevuPage() {
                   </svg>
                 </div>
                 <p className="text-slate-400">Arama kriterlerinize uygun klinik bulunamadı.</p>
-                <button onClick={() => { setSearchText(''); setFilterLocation(''); setFilterSpecialty('') }}
+                <button onClick={() => { setSearchText(''); setFilterLocation(''); setFilterSpecialty(''); setFilterType('') }}
                   className="mt-3 text-violet-400 hover:text-violet-300 text-sm transition-colors">
                   Filtreleri temizle
                 </button>
