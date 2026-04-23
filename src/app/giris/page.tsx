@@ -39,7 +39,9 @@ function GirisInner() {
       return
     }
     const role = (data.user?.app_metadata as Record<string, string>)?.role
-    router.push(pathForRole(role))
+    const next = searchParams.get('next')
+    const dest = (next && next.startsWith('/')) ? next : pathForRole(role)
+    router.push(dest)
     router.refresh()
   }
 
