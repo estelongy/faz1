@@ -105,11 +105,11 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <Link href="/rehber"
                 className="hidden sm:block text-slate-400 hover:text-white text-sm transition-colors">
-                Rehber
+                Gençlik Rehberi
               </Link>
               <Link href="/klinik/basvur"
                 className="hidden md:block text-slate-400 hover:text-white text-sm transition-colors">
-                Klinik Başvurusu
+                Sağlık Profesyoneli Başvurusu
               </Link>
               <Link href="/giris" className="text-slate-400 hover:text-white text-sm transition-colors">
                 Giriş Yap
@@ -373,7 +373,7 @@ export default function Home() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
-              Özel Hastaneler, Tıp Merkezleri ve Klinikler için
+              Özel Hastaneler, Tıp Merkezleri, Klinikler ve Muayenehaneler için
             </div>
             <h2 className="text-4xl font-black text-white mb-4">
               Sizi arayan hastalar,{' '}
