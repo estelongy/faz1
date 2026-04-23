@@ -107,7 +107,10 @@ export default async function SharePage(
 
         {/* Skor + animasyonlu bar */}
         <div className="mb-6 w-full">
-          <p className="text-slate-500 text-xs mb-4 uppercase tracking-wider">Gençlik Skoru</p>
+          <p className="text-lg font-black bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent tracking-wide">
+            ESTELONGY®
+          </p>
+          <p className="text-slate-400 text-sm mb-4">Gençlik Skorun</p>
           <ShareScoreBar score={card.score} color={zone.color} />
         </div>
 
