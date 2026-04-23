@@ -157,9 +157,9 @@ export default async function KlinikBasvurPage({
             <label className="block text-sm text-slate-400 mb-2">
               Klinik Tipi <span className="text-red-400">*</span>
             </label>
-            <select name="clinic_type" required
+            <select name="clinic_type" required defaultValue=""
               className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer">
-              <option value="" disabled selected>Uzmanlık alanınızı seçin...</option>
+              <option value="" disabled>Uzmanlık alanınızı seçin...</option>
               {CLINIC_TYPES.map(t => (
                 <option key={t} value={t}>{t}</option>
               ))}
