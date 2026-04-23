@@ -154,6 +154,12 @@ Final = (toplam × 0.85) + (hekim_puanı × 0.15)
 - [ ] Sentry proje → DSN'leri Vercel'e ekle
 - [ ] Stripe live mode → KYC tamamla
 
+### Bildirim Sistemi (Yapılacak)
+- [ ] Randevu alınınca hastaya e-posta gönder (şu an sadece kuyruğa yazılıyor, cron tetiklenmiyor)
+- [ ] Randevu onaylanınca hastaya e-posta gönder — `/api/notifications/process` cron bağlantısı kurulacak
+- [ ] `RESEND_API_KEY` Vercel'e eklenmeli (Manuel)
+- [ ] SMS bildirimi — Netgsm veya benzeri provider (Faz 3)
+
 ### Faz 3
 - [ ] Mobil App (React Native / Expo)
 - [ ] Redis (Upstash) — rate limiting prod
