@@ -611,14 +611,14 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
   const progress = ((currentIdx + (value !== undefined ? 1 : 0)) / total) * 100
 
   return (
-    <div className="py-4 sm:py-8">
+    <div className="py-2">
       {/* Progress bar */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-slate-400 text-sm font-semibold">Soru {currentIdx + 1} / {total}</span>
-          <span className="text-violet-400 text-xs font-bold">+{tahminiBonus.toFixed(1)} puan</span>
+      <div className="mb-5">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-slate-300 text-sm font-semibold">Soru {currentIdx + 1} / {total}</span>
+          <span className="text-violet-400 text-sm font-bold">+{tahminiBonus.toFixed(1)} puan</span>
         </div>
-        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500"
             style={{ width: `${progress}%` }}
@@ -626,20 +626,20 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
         </div>
       </div>
 
-      {/* Soru */}
-      <div className="text-center mb-8">
-        <div className="text-7xl mb-4">{soru.emoji}</div>
-        <h2 className="text-white text-2xl sm:text-3xl font-bold mb-3">{soru.label}</h2>
-        <p className="text-slate-400 text-base max-w-md mx-auto">{soru.desc}</p>
+      {/* Soru başlığı */}
+      <div className="text-center mb-5">
+        <div className="text-5xl mb-2">{soru.emoji}</div>
+        <h2 className="text-white text-2xl font-bold mb-1">{soru.label}</h2>
+        <p className="text-slate-400 text-sm max-w-md mx-auto">{soru.desc}</p>
       </div>
 
       {/* Slider */}
-      <div className="max-w-xl mx-auto mb-10 px-2">
-        <div className="text-center mb-4">
-          <span className={`text-5xl font-black ${value !== undefined ? 'text-violet-400' : 'text-slate-600'}`}>
+      <div className="max-w-xl mx-auto mb-5 px-2">
+        <div className="text-center mb-3">
+          <span className={`text-4xl font-black ${value !== undefined ? 'text-violet-400' : 'text-slate-600'}`}>
             {value ?? '—'}
           </span>
-          <span className="text-slate-500 text-lg ml-2">/ {soru.max ?? 20}</span>
+          <span className="text-slate-500 text-base ml-2">/ {soru.max ?? 20}</span>
         </div>
         <input
           type="range"
@@ -649,13 +649,10 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
           onChange={e => setCevap(soru.key, parseInt(e.target.value))}
           className="w-full h-3 accent-violet-500 cursor-pointer"
         />
-        <div className="flex justify-between mt-3 text-sm">
+        <div className="flex justify-between mt-2 text-sm">
           <span className="text-slate-400">{soru.low}</span>
           <span className="text-slate-400">{soru.high}</span>
         </div>
-        {value === undefined && (
-          <p className="text-center text-slate-500 text-xs mt-4">↑ Sürükleyerek değerlendir</p>
-        )}
       </div>
 
       {/* Navigasyon */}
@@ -663,7 +660,7 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
         <button
           onClick={onPrev}
           disabled={currentIdx === 0}
-          className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border border-slate-700 text-slate-300 font-semibold rounded-xl transition-colors"
+          className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border border-slate-700 text-slate-300 font-semibold rounded-xl transition-colors"
         >
           ← Geri
         </button>
@@ -671,7 +668,7 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
           <button
             onClick={onSubmit}
             disabled={submitting || !allAnswered}
-            className="flex-[2] py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-xl transition-all"
+            className="flex-[2] py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-xl transition-all"
           >
             {submitting ? 'Kaydediliyor…' : `Anketi Tamamla · +${tahminiBonus.toFixed(1)} puan`}
           </button>
@@ -679,7 +676,7 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
           <button
             onClick={onNext}
             disabled={value === undefined}
-            className="flex-[2] py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-xl transition-all"
+            className="flex-[2] py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-xl transition-all"
           >
             İleri →
           </button>
@@ -687,16 +684,16 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
       </div>
 
       {/* Soru noktaları (mini progress) */}
-      <div className="flex items-center justify-center gap-1.5 mt-8">
+      <div className="flex items-center justify-center gap-1.5 mt-4">
         {HASTA_ANKET_SORULARI.map((s, i) => (
           <div
             key={s.key}
-            className={`w-2 h-2 rounded-full transition-all ${
+            className={`h-2 rounded-full transition-all ${
               i === currentIdx
                 ? 'bg-violet-400 w-6'
                 : cevap[s.key] !== undefined
-                  ? 'bg-emerald-500'
-                  : 'bg-slate-700'
+                  ? 'bg-emerald-500 w-2'
+                  : 'bg-slate-700 w-2'
             }`}
           />
         ))}
