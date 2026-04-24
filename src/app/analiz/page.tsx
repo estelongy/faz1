@@ -27,6 +27,15 @@ const STAGES: ProcessingStage[] = [
 const scoreColor = (score: number) =>
   score >= 80 ? 'text-emerald-400' : score >= 60 ? 'text-amber-400' : 'text-red-400'
 
+/**
+ * PLACEHOLDER — gerçek algoritma henüz tanımlanmadı.
+ * Skor → görünüm yaşı tahmini (fake, değiştirilecek)
+ * 100 → ~18 · 50 → ~55
+ */
+function scoreToApparentAge(score: number): number {
+  return Math.round(Math.max(18, 18 + (100 - score) * 0.74))
+}
+
 const scoreBarColor = (score: number) =>
   score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-amber-500' : 'bg-red-500'
 
@@ -54,6 +63,7 @@ export default function AnalizPage() {
 
   // Doğum yılı kontrolü
   const [hasBirthYear, setHasBirthYear] = useState<boolean | null>(null)
+  const [birthYearValue, setBirthYearValue] = useState<number | null>(null)
   const [byInput, setByInput]           = useState('')
   const [bySaving, setBySaving]         = useState(false)
   const [byError, setByError]           = useState<string | null>(null)
@@ -63,7 +73,10 @@ export default function AnalizPage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
       supabase.from('profiles').select('birth_year').eq('id', user.id).single()
-        .then(({ data }) => setHasBirthYear(!!data?.birth_year))
+        .then(({ data }) => {
+          setHasBirthYear(!!data?.birth_year)
+          if (data?.birth_year) setBirthYearValue(data.birth_year)
+        })
     })
   }, [])
 
@@ -83,6 +96,7 @@ export default function AnalizPage() {
       const { error: upErr } = await supabase.from('profiles').update({ birth_year: by }).eq('id', user.id)
       if (upErr) throw upErr
       setHasBirthYear(true)
+      setBirthYearValue(by)
     } catch {
       setByError('Kaydedilemedi, tekrar deneyin')
     } finally {
@@ -410,6 +424,46 @@ export default function AnalizPage() {
               </div>
             </div>
 
+
+            {/* Biyolojik Yaş Kartı */}
+            {birthYearValue && (() => {
+              const gercekYas = new Date().getFullYear() - birthYearValue
+              const gorunumYas = scoreToApparentAge(result.overall)
+              const fark = gercekYas - gorunumYas
+              const pozitif = fark > 0
+              return (
+                <div className="p-5 rounded-2xl bg-gradient-to-r from-violet-900/30 to-purple-900/20 border border-violet-500/30 mb-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-lg">🧬</span>
+                    <span className="text-white font-semibold text-sm">Biyolojik Yaş Analizi</span>
+                    <span className="ml-auto text-[10px] text-slate-500 italic">placeholder · yakında güncellenir</span>
+                  </div>
+                  <div className="flex items-center justify-around">
+                    <div className="text-center">
+                      <p className="text-slate-400 text-xs mb-1">Gerçek Yaşınız</p>
+                      <p className="text-white text-3xl font-bold">{gercekYas}</p>
+                    </div>
+                    <div className="text-slate-600 text-2xl">→</div>
+                    <div className="text-center">
+                      <p className="text-slate-400 text-xs mb-1">Görünüm Yaşınız</p>
+                      <p className={`text-3xl font-bold ${pozitif ? 'text-emerald-400' : fark < 0 ? 'text-amber-400' : 'text-white'}`}>
+                        {gorunumYas}
+                      </p>
+                    </div>
+                  </div>
+                  {fark !== 0 && (
+                    <p className={`text-center text-sm font-semibold mt-4 ${pozitif ? 'text-emerald-400' : 'text-amber-400'}`}>
+                      {pozitif
+                        ? `${fark} yıl daha genç görünüyorsunuz ✨`
+                        : `${Math.abs(fark)} yıl daha yaşlı görünüyorsunuz`}
+                    </p>
+                  )}
+                  {fark === 0 && (
+                    <p className="text-center text-sm font-semibold mt-4 text-slate-300">Yaşınıza tam uyum ✓</p>
+                  )}
+                </div>
+              )
+            })()}
 
             {/* Bileşen Metrikleri */}
             <div className="grid grid-cols-2 gap-4 mb-6">
