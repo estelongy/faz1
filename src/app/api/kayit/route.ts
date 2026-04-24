@@ -4,7 +4,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email, password, phone, first_name, last_name, birth_year } = body
+    const { email, password, phone, first_name, last_name, birth_year, phone_verified } = body
 
     if (!email || !password || !phone || !first_name) {
       return NextResponse.json({ error: 'Eksik alanlar.' }, { status: 400 })
@@ -33,8 +33,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: msg }, { status: 400 })
     }
 
-    if (birth_year) {
-      await admin.from('profiles').update({ birth_year }).eq('id', data.user.id)
+    // Profile'a ek alanları yaz (birth_year + phone + phone_verified)
+    const profileUpdate: Record<string, unknown> = { phone }
+    if (birth_year) profileUpdate.birth_year = birth_year
+    if (phone_verified === true) profileUpdate.phone_verified = true
+    await admin.from('profiles').update(profileUpdate).eq('id', data.user.id)
+
+    // Welcome email (opsiyonel) — role göre panel linki
+    try {
+      const { sendWelcomeEmail } = await import('@/lib/welcome-email')
+      await sendWelcomeEmail({ to: email, firstName: first_name, role: 'user' })
+    } catch (mailErr) {
+      console.error('[Kayıt] Welcome email hatası:', mailErr)
     }
 
     return NextResponse.json({ success: true, user_id: data.user.id })

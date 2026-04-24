@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import PhoneOtpStep from '@/components/PhoneOtpStep'
 
 type Step = 'form' | 'otp' | 'verify'
 
@@ -22,10 +23,8 @@ export default function KayitPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
 
-  // OTP state
-  const [otpCode, setOtpCode]   = useState('')
+  // OTP state — sadece doğrulanacak telefon
   const [otpPhone, setOtpPhone] = useState('')
-  const [otpResent, setOtpResent] = useState(false)
 
   function formatPhone(raw: string) {
     const d = raw.replace(/\D/g, '')
@@ -40,6 +39,10 @@ export default function KayitPage() {
 
     if (!firstName.trim() || !lastName.trim()) {
       setError('Ad ve soyad zorunludur.')
+      return
+    }
+    if (!email.trim()) {
+      setError('E-posta adresi zorunludur.')
       return
     }
     const birthYearNum = parseInt(birthYear)
@@ -61,27 +64,18 @@ export default function KayitPage() {
       return
     }
 
-    // SMS OTP geçici olarak devre dışı (Twilio provider hazır olunca açılacak)
-    const OTP_ENABLED = false
+    // Phone OTP adımına geç — PhoneOtpStep component autoSend ile SMS atar
+    setOtpPhone(formatPhone(phone))
+    setStep('otp')
+  }
+
+  // OTP doğrulandıktan SONRA hesap oluştur, giriş yap, panele at
+  async function handleOtpVerified() {
+    setError(null)
+    setLoading(true)
+    const birthYearNum = parseInt(birthYear)
     const e164 = formatPhone(phone)
 
-    if (OTP_ENABLED) {
-      setLoading(true)
-      const supabase = createClient()
-      const { error: otpErr } = await supabase.auth.signInWithOtp({ phone: e164 })
-      setLoading(false)
-      if (otpErr) {
-        setError('SMS gönderilemedi: ' + otpErr.message)
-        return
-      }
-      setOtpPhone(e164)
-      setStep('otp')
-      setOtpResent(false)
-      return
-    }
-
-    // OTP kapalı → direkt API ile hesap oluştur
-    setLoading(true)
     const res = await fetch('/api/kayit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -92,12 +86,14 @@ export default function KayitPage() {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         birth_year: birthYearNum,
+        phone_verified: true,
       }),
     })
     const result = await res.json()
     if (!res.ok) {
       setError(result.error || 'Hesap oluşturulamadı.')
       setLoading(false)
+      setStep('form')
       return
     }
     const supabase = createClient()
@@ -106,63 +102,6 @@ export default function KayitPage() {
     if (signInErr) { setStep('verify'); return }
     router.push('/panel')
     router.refresh()
-  }
-
-  async function handleVerifyOtp() {
-    if (otpCode.length !== 6) return
-    setLoading(true)
-    setError(null)
-    const supabase = createClient()
-    const { error: verErr } = await supabase.auth.verifyOtp({ phone: otpPhone, token: otpCode, type: 'sms' })
-    if (verErr) {
-      setError('Kod hatalı veya süresi dolmuş.')
-      setLoading(false)
-      return
-    }
-
-    // OTP doğrulandı → telefonla oluşan anonim session'u temizle
-    await supabase.auth.signOut()
-
-    // Admin API ile telefon + e-posta + şifre birlikte kayıt
-    const birthYearNum = parseInt(birthYear)
-    const res = await fetch('/api/kayit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        password,
-        phone: otpPhone,
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
-        birth_year: birthYearNum,
-      }),
-    })
-    const result = await res.json()
-
-    if (!res.ok) {
-      setError(result.error || 'Hesap oluşturulamadı.')
-      setLoading(false)
-      return
-    }
-
-    // Oluşan kullanıcıyla oturum aç
-    const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password })
-    setLoading(false)
-    if (signInErr) { setStep('verify'); return }
-
-    router.push('/panel')
-    router.refresh()
-  }
-
-  async function handleResendOtp() {
-    setLoading(true)
-    setError(null)
-    const supabase = createClient()
-    const { error: err } = await supabase.auth.signInWithOtp({ phone: otpPhone })
-    setLoading(false)
-    if (err) { setError('Tekrar gönderilemedi.'); return }
-    setOtpResent(true)
-    setOtpCode('')
   }
 
   async function handleResendEmail() {
@@ -179,49 +118,17 @@ export default function KayitPage() {
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">
-          <div className="w-14 h-14 mx-auto rounded-xl bg-blue-500/20 flex items-center justify-center mb-5">
-            <svg className="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold text-white text-center mb-1">Telefon Doğrulama</h2>
-          <p className="text-slate-400 text-sm text-center mb-5">
-            <span className="text-white font-medium">{otpPhone}</span> numarasına 6 haneli kod gönderdik.
-          </p>
-
-          <input
-            type="text"
-            inputMode="numeric"
-            maxLength={6}
-            value={otpCode}
-            onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
-            placeholder="_ _ _ _ _ _"
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-center text-2xl tracking-widest placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors mb-3"
-            autoFocus
+          <PhoneOtpStep
+            phone={otpPhone}
+            onVerified={handleOtpVerified}
+            onBack={() => { setStep('form'); setError(null) }}
           />
-
           {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm mb-3">{error}</div>
+            <p className="text-red-400 text-sm text-center mt-4">{error}</p>
           )}
-          {otpResent && !error && (
-            <p className="text-emerald-400 text-sm text-center mb-3">Kod tekrar gönderildi.</p>
+          {loading && (
+            <p className="text-slate-400 text-sm text-center mt-4">Hesap oluşturuluyor…</p>
           )}
-
-          <button onClick={handleVerifyOtp} disabled={otpCode.length !== 6 || loading}
-            className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all mb-3">
-            {loading ? 'Doğrulanıyor...' : 'Doğrula ve Kayıt Ol'}
-          </button>
-
-          <div className="flex gap-2">
-            <button onClick={handleResendOtp} disabled={loading}
-              className="flex-1 py-2 text-slate-400 hover:text-white text-sm transition-colors">
-              Tekrar Gönder
-            </button>
-            <button onClick={() => { setStep('form'); setOtpCode(''); setError(null) }}
-              className="flex-1 py-2 text-slate-400 hover:text-white text-sm transition-colors">
-              Geri
-            </button>
-          </div>
         </div>
       </div>
     </main>

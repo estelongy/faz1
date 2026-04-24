@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { redis } from '@/lib/redis'
 import { normalizePhone } from '@/lib/netgsm'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * OTP kodu doğrula.
@@ -72,7 +73,20 @@ export async function POST(req: NextRequest) {
     await redis.del(codeKey)
     await redis.del(attemptsKey)
 
-    // TODO: Supabase'de profiles.phone_verified=true ve phone=normalized yap
+    // Oturum açıksa profile'i güncelle (phone + phone_verified=true)
+    try {
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase
+          .from('profiles')
+          .update({ phone: normalized, phone_verified: true })
+          .eq('id', user.id)
+      }
+    } catch (profileErr) {
+      // Profile update hatası akışı durdurmaz
+      console.error('[OTP Verify] Profile update error:', profileErr)
+    }
 
     return NextResponse.json({ success: true, phone: normalized })
   } catch (err) {

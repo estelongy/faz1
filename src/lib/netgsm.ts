@@ -88,8 +88,8 @@ export async function sendOtpSms(phone: string, code: string): Promise<NetgsmRes
     return { success: false, error: 'Netgsm env degiskenleri tanimli degil' }
   }
 
-  // Türkçe karaktersiz mesaj
-  const msg = `Estelongy dogrulama kodunuz: ${code}. Kod 5 dakika gecerlidir.`
+  // Türkçe karaktersiz mesaj (OTP endpoint Türkçe karakter desteklemiyor)
+  const msg = `ESTELONGY ile Genclik yolculuguna hos geldiniz! Dogrulama kodunuz: ${code}`
 
   if (msg.length > 155) {
     return { success: false, error: 'Mesaj 155 karakteri asiyor' }
