@@ -303,7 +303,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
         {/* EGS Skor Kartı */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* EGS Bar — 2 kolon */}
-          <div className="lg:col-span-2 p-6 rounded-2xl border border-slate-700 bg-slate-800/50 backdrop-blur-sm relative">
+          <div className="lg:col-span-2 p-5 rounded-2xl border border-slate-700 bg-slate-800/50 backdrop-blur-sm relative">
             {/* Güncel Analiz pill — sol üst köşe */}
             {latestAnalysis != null && (
               <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-white text-xs font-bold">
@@ -331,11 +331,13 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                   </div>
                 </div>
 
-                <ScoreBar
-                  score={latestScore}
-                  phase={currentPhase}
-                  animated={false}
-                />
+                <div className="scale-90 origin-top">
+                  <ScoreBar
+                    score={latestScore}
+                    phase={currentPhase}
+                    animated={false}
+                  />
+                </div>
                 {/* Paylaş butonu — klinik onaylı veya ön analiz */}
                 {latestAnalysis != null && latestScore != null && (
                   <div className="mt-5 pt-5 border-t border-slate-700/50 flex items-center justify-between gap-3">
@@ -357,6 +359,18 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                       score={latestScore}
                       firstName={profile?.full_name?.split(' ')[0] ?? 'Kullanıcı'}
                     />
+                  </div>
+                )}
+
+                {/* Önceki Analizler — skor kartının içinde, Paylaş altında */}
+                {analyses.length > 1 && (
+                  <div className="mt-5 pt-5 border-t border-slate-700/50">
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className="w-1.5 h-5 rounded-full bg-gradient-to-b from-slate-600 to-slate-500" />
+                      <h2 className="text-base font-bold text-white">Önceki Analizler</h2>
+                      <Link href="/analiz" className="ml-auto text-xs text-violet-400 hover:text-violet-300 transition-colors">+ Yeni Analiz</Link>
+                    </div>
+                    <OncekiAnalizler analyses={(analyses.slice(1, 4) as OncekiAnaliz[])} />
                   </div>
                 )}
               </>
@@ -472,17 +486,8 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           </div>
         )}
 
-        {/* Önceki Analizler + Randevularım grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <div className="mb-3 flex items-center gap-2">
-              <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-slate-600 to-slate-500" />
-              <h2 className="text-xl font-bold text-white">Önceki Analizler</h2>
-              <Link href="/analiz" className="ml-auto text-xs text-violet-400 hover:text-violet-300 transition-colors">+ Yeni Analiz</Link>
-            </div>
-            <OncekiAnalizler analyses={(analyses.slice(1, 4) as OncekiAnaliz[])} />
-          </div>
-
+        {/* Randevularım */}
+        <div>
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-white">Randevularım</h2>
