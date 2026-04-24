@@ -324,7 +324,7 @@ export default function SkorMerkeziPage() {
           </div>
 
           {/* ───── SAĞ — 3 Dikey Aksiyon Kartı ───────────────────────── */}
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4 lg:h-full">
 
           {/* ANKET KARTI — Wizard */}
           <ActionCard
@@ -556,12 +556,12 @@ interface ActionCardProps {
 
 function ActionCard({ icon, title, subtitle, preview, children, isExpanded, onToggle }: ActionCardProps) {
   return (
-    <div className={`rounded-2xl border transition-all ${
+    <div className={`rounded-2xl border transition-all flex flex-col ${
       isExpanded
         ? 'bg-slate-800 border-violet-500/50 lg:absolute lg:inset-x-0 lg:top-0 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:shadow-2xl lg:shadow-violet-900/40 z-40'
-        : 'bg-slate-800/50 border-slate-700/60 hover:border-slate-600 cursor-pointer'
+        : 'bg-slate-800/50 border-slate-700/60 hover:border-slate-600 cursor-pointer lg:flex-1 lg:min-h-0'
     }`}>
-      <button onClick={onToggle} className="w-full text-left p-5 lg:sticky lg:top-0 lg:bg-slate-800 lg:z-10 lg:rounded-t-2xl">
+      <button onClick={onToggle} className="w-full text-left p-5 lg:sticky lg:top-0 lg:bg-slate-800 lg:z-10 lg:rounded-t-2xl flex-1 flex flex-col">
         <div className="flex items-start justify-between mb-3">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -580,7 +580,7 @@ function ActionCard({ icon, title, subtitle, preview, children, isExpanded, onTo
             </svg>
           )}
         </div>
-        {!isExpanded && preview}
+        {!isExpanded && <div className="flex-1 flex items-center">{preview}</div>}
       </button>
       {isExpanded && (
         <div className="px-5 pb-5">
