@@ -262,47 +262,42 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           </div>
         )}
 
-        {/* Hoşgeldin + Skor Rozeti (ortada, sticky) + Tarih */}
-        <div className="sticky top-16 z-40 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 mb-6 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-            {/* SOL — Hoşgeldin (tek satır) */}
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                Merhaba,{' '}
-                <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-                  {profile?.full_name?.split(' ')[0] ?? 'Kullanıcı'}
-                </span>{' '}
-                <span>👋</span>
-              </h1>
-              <p className="text-slate-400 text-sm">Cilt sağlığınızı takip edin</p>
+        {/* Skor Rozeti — SADECE bu fixed, ekran üstünde ortada kalır */}
+        {latestScore !== null && (() => {
+          const s = latestScore
+          const label = s >= 90 ? 'Çok İyi' : s >= 80 ? 'İyi' : s >= 66 ? 'Normal' : s >= 56 ? 'Düşük' : 'Çok Düşük'
+          const ring  = s >= 90 ? 'border-blue-500/40 bg-blue-500/10' : s >= 80 ? 'border-emerald-500/40 bg-emerald-500/10' : s >= 66 ? 'border-amber-500/40 bg-amber-500/10' : s >= 56 ? 'border-orange-500/40 bg-orange-500/10' : 'border-red-500/40 bg-red-500/10'
+          const dot   = s >= 90 ? 'bg-blue-400' : s >= 80 ? 'bg-emerald-400' : s >= 66 ? 'bg-amber-400' : s >= 56 ? 'bg-orange-400' : 'bg-red-400'
+          const num   = s >= 90 ? 'text-blue-300' : s >= 80 ? 'text-emerald-300' : s >= 66 ? 'text-amber-300' : s >= 56 ? 'text-orange-300' : 'text-red-300'
+          const pill  = s >= 90 ? 'bg-blue-500/20 text-blue-300' : s >= 80 ? 'bg-emerald-500/20 text-emerald-300' : s >= 66 ? 'bg-amber-500/20 text-amber-300' : s >= 56 ? 'bg-orange-500/20 text-orange-300' : 'bg-red-500/20 text-red-300'
+          return (
+            <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4 py-2 rounded-2xl border shadow-2xl backdrop-blur-md ${ring}`}>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${dot}`} />
+              <span className="text-slate-300 text-sm font-medium">Gençlik Skoru</span>
+              <span className={`text-2xl font-black ${num}`}>{s}</span>
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${pill}`}>{label}</span>
+              {latestAnalysis?.final_overall != null && <span className="text-emerald-400 text-xs font-medium">✦ Onaylı</span>}
             </div>
+          )
+        })()}
 
-            {/* ORTA — Skor rozeti (latestScore ile senkron) */}
-            {latestScore !== null ? (() => {
-              const s = latestScore
-              const label = s >= 90 ? 'Çok İyi' : s >= 80 ? 'İyi' : s >= 66 ? 'Normal' : s >= 56 ? 'Düşük' : 'Çok Düşük'
-              const ring  = s >= 90 ? 'border-blue-500/40 bg-blue-500/10' : s >= 80 ? 'border-emerald-500/40 bg-emerald-500/10' : s >= 66 ? 'border-amber-500/40 bg-amber-500/10' : s >= 56 ? 'border-orange-500/40 bg-orange-500/10' : 'border-red-500/40 bg-red-500/10'
-              const dot   = s >= 90 ? 'bg-blue-400' : s >= 80 ? 'bg-emerald-400' : s >= 66 ? 'bg-amber-400' : s >= 56 ? 'bg-orange-400' : 'bg-red-400'
-              const num   = s >= 90 ? 'text-blue-300' : s >= 80 ? 'text-emerald-300' : s >= 66 ? 'text-amber-300' : s >= 56 ? 'text-orange-300' : 'text-red-300'
-              const pill  = s >= 90 ? 'bg-blue-500/20 text-blue-300' : s >= 80 ? 'bg-emerald-500/20 text-emerald-300' : s >= 66 ? 'bg-amber-500/20 text-amber-300' : s >= 56 ? 'bg-orange-500/20 text-orange-300' : 'bg-red-500/20 text-red-300'
-              return (
-                <div className={`flex items-center gap-3 px-4 py-2 rounded-2xl border shadow-2xl ${ring}`}>
-                  <div className={`w-2 h-2 rounded-full animate-pulse ${dot}`} />
-                  <span className="text-slate-300 text-sm font-medium">Gençlik Skoru</span>
-                  <span className={`text-2xl font-black ${num}`}>{s}</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${pill}`}>{label}</span>
-                  {latestAnalysis?.final_overall != null && <span className="text-emerald-400 text-xs font-medium">✦ Onaylı</span>}
-                </div>
-              )
-            })() : <div />}
-
-            {/* SAĞ — Tarih */}
-            {latestAnalysis != null ? (
-              <span className="text-slate-500 text-sm whitespace-nowrap text-right">
-                {new Date(latestAnalysis.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
-              </span>
-            ) : <div />}
+        {/* Hoşgeldin satırı (normal akış, scroll'da kaybolur) */}
+        <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">
+              Merhaba,{' '}
+              <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+                {profile?.full_name?.split(' ')[0] ?? 'Kullanıcı'}
+              </span>{' '}
+              <span>👋</span>
+            </h1>
+            <p className="text-slate-400 text-sm">Cilt sağlığınızı takip edin</p>
           </div>
+          {latestAnalysis != null && (
+            <span className="text-slate-500 text-sm whitespace-nowrap">
+              {new Date(latestAnalysis.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </span>
+          )}
         </div>
 
         {/* EGS Skor Kartı */}
