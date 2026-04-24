@@ -407,9 +407,24 @@ export default function SkorMerkeziPage() {
                 </div>
                 <Link
                   href="/randevu"
-                  className="block w-full mt-4 py-2.5 text-center text-sm text-slate-400 hover:text-white border border-slate-700 hover:border-slate-600 rounded-xl transition-colors"
+                  className="group flex items-center gap-4 w-full mt-6 p-4 rounded-2xl bg-slate-900/50 border border-slate-700 hover:border-violet-500/50 hover:bg-slate-900 transition-all"
                 >
-                  Filtre ile detaylı ara →
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-bold text-base sm:text-lg leading-tight">
+                      Başka bir klinik arıyorum
+                    </p>
+                    <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                      Branş, konum, tedavi türüne göre filtrele
+                    </p>
+                  </div>
+                  <svg className="w-5 h-5 text-slate-500 group-hover:text-violet-400 group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </div>
             )}
@@ -472,9 +487,24 @@ export default function SkorMerkeziPage() {
               </div>
               <Link
                 href="/magaza"
-                className="block w-full mt-4 py-2.5 text-center text-sm text-slate-400 hover:text-white border border-slate-700 hover:border-slate-600 rounded-xl transition-colors"
+                className="group flex items-center gap-4 w-full mt-6 p-4 rounded-2xl bg-slate-900/50 border border-slate-700 hover:border-violet-500/50 hover:bg-slate-900 transition-all"
               >
-                Tüm ürünleri gör →
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-bold text-base sm:text-lg leading-tight">
+                    Mağazaya göz atmak istiyorum
+                  </p>
+                  <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                    Kategori, marka ve EGP skoruna göre keşfet
+                  </p>
+                </div>
+                <svg className="w-5 h-5 text-slate-500 group-hover:text-violet-400 group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </Link>
             </div>
           </ActionCard>
