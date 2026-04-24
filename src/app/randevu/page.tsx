@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { FilterInput } from '@/components/FilterInput'
 import { BRANCHES, ALL_TREATMENTS, LOCATIONS, branchMatches, locationMatches } from '@/lib/randevu-filters'
+import RandevuOnayModal, { type RandevuTaslak } from '@/components/RandevuOnayModal'
 
 interface Clinic {
   id: string
@@ -76,6 +77,8 @@ export default function RandevuPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [taslak, setTaslak] = useState<RandevuTaslak | null>(null)
 
   // Arama filtreleri
   const [filterUzman, setFilterUzman] = useState<string>('')
@@ -137,10 +140,7 @@ export default function RandevuPage() {
 
   useEffect(() => {
     const supabase = createClient()
-    // Auth kontrolü
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.replace('/giris?next=/randevu'); return }
-    })
+    // Auth kontrolü yok — /randevu herkese açık. Girişsiz kullanıcı saat seçince OTP modal'ı açılır.
     // Klinik listesi çek
     supabase
       .from('clinics')
@@ -207,14 +207,30 @@ export default function RandevuPage() {
     if (!selectedClinic || !selectedDay || !selectedTime) return
     setSaving(true)
     setError(null)
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push('/giris'); return }
 
     const [h, m] = selectedTime.split(':').map(Number)
     const dt = new Date(selectedDay)
     dt.setHours(h, m, 0, 0)
 
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Girişsiz: OTP modal'ını aç
+    if (!user) {
+      setTaslak({
+        clinicId: selectedClinic.id,
+        clinicName: selectedClinic.name,
+        dateTime: dt.toISOString(),
+        dayLabel: selectedDay.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
+        timeLabel: selectedTime,
+        notes: notes,
+      })
+      setShowOtpModal(true)
+      setSaving(false)
+      return
+    }
+
+    // Girişli: direkt oluştur
     const { error: err } = await supabase.from('appointments').insert({
       user_id: user.id,
       clinic_id: selectedClinic.id,
@@ -519,6 +535,14 @@ export default function RandevuPage() {
           </div>
         )}
       </div>
+
+      {showOtpModal && taslak && (
+        <RandevuOnayModal
+          taslak={taslak}
+          onClose={() => { setShowOtpModal(false); setTaslak(null) }}
+          onSuccess={() => { setShowOtpModal(false); setSuccess(true) }}
+        />
+      )}
     </main>
   )
 }
