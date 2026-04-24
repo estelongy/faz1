@@ -18,6 +18,7 @@ import PaylasModal from '@/components/PaylasModal'
 import UserBadges from '@/components/UserBadges'
 import RandevuQRModal from '@/components/RandevuQRModal'
 import ZiyaretKarti, { type ZiyaretItem, type ZiyaretAnalysis } from '@/components/ZiyaretKarti'
+import OncekiAnalizler, { type OncekiAnaliz } from '@/components/OncekiAnalizler'
 import { checkAndAwardBadges, updateStreak } from './badge-actions'
 
 const APT_STATUS_LABEL: Record<string, string> = {
@@ -270,6 +271,17 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           <p className="text-slate-400 mt-1">Cilt sağlığınızı takip edin</p>
         </div>
 
+        {/* Güncel Analiz başlığı */}
+        {latestAnalysis != null && (
+          <div className="mb-3 flex items-center gap-2">
+            <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-violet-500 to-purple-600" />
+            <h2 className="text-xl font-bold text-white">Güncel Analiz</h2>
+            <span className="text-slate-500 text-xs ml-auto">
+              {new Date(latestAnalysis.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </span>
+          </div>
+        )}
+
         {/* EGS Skor Kartı */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* EGS Bar — 2 kolon */}
@@ -436,49 +448,15 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           </div>
         )}
 
-        {/* Son analizler */}
+        {/* Önceki Analizler + Randevularım grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-white">Son Analizler</h2>
-              <Link href="/analiz" className="text-xs text-violet-400 hover:text-violet-300 transition-colors">+ Yeni Analiz</Link>
+          <div>
+            <div className="mb-3 flex items-center gap-2">
+              <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-slate-600 to-slate-500" />
+              <h2 className="text-xl font-bold text-white">Önceki Analizler</h2>
+              <Link href="/analiz" className="ml-auto text-xs text-violet-400 hover:text-violet-300 transition-colors">+ Yeni Analiz</Link>
             </div>
-            {analyses && analyses.length > 0 ? (
-              <div className="space-y-3">
-                {analyses.map(a => {
-                  const score = a.final_overall ?? a.temp_overall ?? a.web_overall
-                  const isClinicApproved = a.final_overall != null
-                  const hasAnket = a.temp_overall != null
-                  return (
-                    <div key={a.id} className="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-white text-sm font-bold">
-                            {score ?? '—'}
-                          </span>
-                          {isClinicApproved && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">✦ Klinik Onaylı</span>
-                          )}
-                        </div>
-                        <div className="text-slate-500 text-xs mt-0.5">
-                          {new Date(a.created_at).toLocaleDateString('tr-TR')}
-                          {hasAnket && !isClinicApproved && <span className="ml-2 text-amber-400/70">· Anket ✓</span>}
-                        </div>
-                      </div>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        isClinicApproved ? 'bg-emerald-500/20 text-emerald-400' :
-                        hasAnket ? 'bg-amber-500/20 text-amber-400' :
-                        'bg-violet-500/20 text-violet-400'
-                      }`}>
-                        {isClinicApproved ? 'Klinik Onaylı' : hasAnket ? 'Anket Yapıldı' : 'Ön Analiz'}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <p className="text-slate-500 text-sm">Henüz analiz yok. <Link href="/analiz" className="text-violet-400 hover:text-violet-300">İlk analizini yap →</Link></p>
-            )}
+            <OncekiAnalizler analyses={(analyses.slice(1, 4) as OncekiAnaliz[])} />
           </div>
 
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">

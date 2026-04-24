@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import ScoreBar from '@/components/ScoreBar'
@@ -71,6 +71,8 @@ function metricBar(value: number, invert = false) {
 // ─── Ana Component ───────────────────────────────────────────────────────────
 export default function SkorMerkeziPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const requestedAnalysisId = searchParams.get('analysisId')
   const supabase = useMemo(() => createClient(), [])
 
   const [loading, setLoading]       = useState(true)
@@ -100,15 +102,25 @@ export default function SkorMerkeziPage() {
         return
       }
 
+      // Analiz sorgusu: id verilmişse onu, yoksa en son analiz
+      const analysisQuery = requestedAnalysisId
+        ? supabase
+            .from('analyses')
+            .select('id, web_overall, web_scores, web_ai_raw, created_at')
+            .eq('id', requestedAnalysisId)
+            .eq('user_id', user.id)
+            .maybeSingle()
+        : supabase
+            .from('analyses')
+            .select('id, web_overall, web_scores, web_ai_raw, created_at')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
       // Paralel fetch
       const [analysisRes, profileRes, clinicsRes, productsRes] = await Promise.all([
-        supabase
-          .from('analyses')
-          .select('id, web_overall, web_scores, web_ai_raw, created_at')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle(),
+        analysisQuery,
         supabase
           .from('profiles')
           .select('birth_year')
@@ -144,7 +156,7 @@ export default function SkorMerkeziPage() {
     }
     load()
     return () => { cancelled = true }
-  }, [supabase, router])
+  }, [supabase, router, requestedAnalysisId])
 
   // ── Anket cevap güncelle (canlı skor için) ────────────────────────────────
   function setCevap(key: string, value: number) {
