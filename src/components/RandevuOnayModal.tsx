@@ -27,6 +27,7 @@ export default function RandevuOnayModal({ taslak, onClose, onSuccess }: Props) 
   const [lastName, setLastName]   = useState('')
   const [phone, setPhone]         = useState('')
   const [otpCode, setOtpCode]     = useState('')
+  const [birthYear, setBirthYear] = useState('')
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string | null>(null)
   const [userExists, setUserExists] = useState<boolean | null>(null)
@@ -70,6 +71,12 @@ export default function RandevuOnayModal({ taslak, onClose, onSuccess }: Props) 
   // ── Kayıt adımı sonrası OTP gönder ─────────────────────────
   async function submitSignup() {
     if (!firstName.trim()) { setError('Ad gerekli'); return }
+    const currentYear = new Date().getFullYear()
+    const by = parseInt(birthYear)
+    if (!birthYear || isNaN(by) || by < 1900 || by > currentYear - 18) {
+      setError('Geçerli bir doğum yılı girin (18 yaş ve üzeri)')
+      return
+    }
     await sendOtp(true)
   }
 
@@ -113,6 +120,14 @@ export default function RandevuOnayModal({ taslak, onClose, onSuccess }: Props) 
         type: 'email',
       })
       if (verErr) throw new Error('Kod hatalı veya süresi dolmuş')
+
+      // Yeni kayıt ise doğum yılını profile kaydet
+      if (userExists === false && birthYear) {
+        const { data: { user: newUser } } = await supabase.auth.getUser()
+        if (newUser) {
+          await supabase.from('profiles').update({ birth_year: parseInt(birthYear) }).eq('id', newUser.id)
+        }
+      }
 
       setStep('creating')
 
@@ -206,15 +221,22 @@ export default function RandevuOnayModal({ taslak, onClose, onSuccess }: Props) 
                 placeholder="Soyad"
                 className="px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500" />
             </div>
-            <input
-              type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-              placeholder="Telefon (isteğe bağlı)"
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 mb-3" />
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <input
+                type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+                placeholder="Telefon (isteğe bağlı)"
+                className="px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500" />
+              <input
+                type="number" value={birthYear} onChange={e => setBirthYear(e.target.value)}
+                placeholder="Doğum yılı *"
+                min={1900} max={new Date().getFullYear() - 18}
+                className="px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500" />
+            </div>
 
             {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
             <button
               onClick={submitSignup}
-              disabled={loading || !firstName.trim()}
+              disabled={loading || !firstName.trim() || !birthYear}
               className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl disabled:opacity-50 mb-2">
               {loading ? 'Kod gönderiliyor…' : 'Kaydol ve Randevunu Onayla'}
             </button>

@@ -197,9 +197,13 @@ export async function POST(req: NextRequest) {
       .select('birth_year')
       .eq('id', user.id)
       .single()
-    const actualAge = profile?.birth_year
-      ? new Date().getFullYear() - profile.birth_year
-      : null
+    if (!profile?.birth_year) {
+      return NextResponse.json(
+        { error: 'NO_BIRTH_YEAR', message: 'Doğum yılı eksik. Lütfen profilinizi güncelleyin.' },
+        { status: 400 }
+      )
+    }
+    const actualAge = new Date().getFullYear() - profile.birth_year
 
     // Rate limiting: IP başına 5 analiz / saat
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? req.headers.get('x-real-ip') ?? 'unknown'

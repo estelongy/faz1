@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ScoreBar from '@/components/ScoreBar'
 import type { AnalizResult } from '@/app/api/analiz/route'
+import { createClient } from '@/lib/supabase/client'
 
 type Step = 'upload' | 'processing' | 'result'
 
@@ -50,6 +51,44 @@ export default function AnalizPage() {
   const [error, setError]         = useState<string | null>(null)
   const [stageIdx, setStageIdx]   = useState(0)
   const [usedFallback, setUsedFallback] = useState(false)
+
+  // Doğum yılı kontrolü
+  const [hasBirthYear, setHasBirthYear] = useState<boolean | null>(null)
+  const [byInput, setByInput]           = useState('')
+  const [bySaving, setBySaving]         = useState(false)
+  const [byError, setByError]           = useState<string | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase.from('profiles').select('birth_year').eq('id', user.id).single()
+        .then(({ data }) => setHasBirthYear(!!data?.birth_year))
+    })
+  }, [])
+
+  async function saveBirthYear() {
+    const currentYear = new Date().getFullYear()
+    const by = parseInt(byInput)
+    if (!byInput || isNaN(by) || by < 1900 || by > currentYear - 18) {
+      setByError('Geçerli bir doğum yılı girin (18 yaş ve üzeri)')
+      return
+    }
+    setBySaving(true)
+    setByError(null)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { error: upErr } = await supabase.from('profiles').update({ birth_year: by }).eq('id', user.id)
+      if (upErr) throw upErr
+      setHasBirthYear(true)
+    } catch {
+      setByError('Kaydedilemedi, tekrar deneyin')
+    } finally {
+      setBySaving(false)
+    }
+  }
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -169,6 +208,43 @@ export default function AnalizPage() {
           ))}
         </div>
 
+        {/* Doğum yılı uyarı banner'ı */}
+        {hasBirthYear === false && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+            <div className="flex items-start gap-3">
+              <svg className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-amber-300 text-sm font-semibold mb-1">Doğum yılı gerekli</p>
+                <p className="text-slate-400 text-xs mb-3">
+                  C250 skoru yaşa göre normalize edilir. Analiz yapabilmek için doğum yılınızı girmeniz gerekiyor.
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    value={byInput}
+                    onChange={e => setByInput(e.target.value)}
+                    placeholder={`örn. ${new Date().getFullYear() - 30}`}
+                    min={1900}
+                    max={new Date().getFullYear() - 18}
+                    onKeyDown={e => e.key === 'Enter' && saveBirthYear()}
+                    className="flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded-xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                  />
+                  <button
+                    onClick={saveBirthYear}
+                    disabled={bySaving || !byInput}
+                    className="px-4 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-900 text-sm font-semibold rounded-xl transition-colors"
+                  >
+                    {bySaving ? '…' : 'Kaydet'}
+                  </button>
+                </div>
+                {byError && <p className="text-red-400 text-xs mt-2">{byError}</p>}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ADIM 1 — Fotoğraf Yükle */}
         {step === 'upload' && (
           <div>
@@ -247,10 +323,10 @@ export default function AnalizPage() {
 
             <button
               onClick={startAnalysis}
-              disabled={!previewUrl}
+              disabled={!previewUrl || hasBirthYear === false}
               className="w-full mt-6 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all text-lg"
             >
-              Analizi Başlat
+              {hasBirthYear === false ? 'Önce doğum yılını girin ↑' : 'Analizi Başlat'}
             </button>
           </div>
         )}
