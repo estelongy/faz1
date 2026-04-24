@@ -40,13 +40,34 @@ async function updateVendor(formData: FormData) {
   const vendorId = formData.get('vendorId') as string
   const status = formData.get('status') as ApprovalStatus
   const isActive = status === 'approved'
+
+  // Önceki durumu al (idempotent welcome email için)
+  const { data: prev } = await supabase.from('vendors').select('user_id, approval_status').eq('id', vendorId).single()
+
   await supabase.from('vendors').update({ approval_status: status, is_active: isActive }).eq('id', vendorId)
 
   // Onaylandıysa kullanıcıya vendor rolü ata, reddedildiyse user'a döndür
-  const { data: vendor } = await supabase.from('vendors').select('user_id').eq('id', vendorId).single()
-  if (vendor?.user_id) {
+  if (prev?.user_id) {
     const newRole = status === 'approved' ? 'vendor' : 'user'
-    await supabase.rpc('set_user_role', { target_user_id: vendor.user_id, new_role: newRole })
+    await supabase.rpc('set_user_role', { target_user_id: prev.user_id, new_role: newRole })
+  }
+
+  // Welcome email: ilk kez onaylanıyorsa
+  if (status === 'approved' && prev?.approval_status !== 'approved' && prev?.user_id) {
+    try {
+      const { createServiceClient } = await import('@/lib/supabase/service')
+      const { sendWelcomeEmail } = await import('@/lib/welcome-email')
+      const admin = createServiceClient()
+      const { data: userRes } = await admin.auth.admin.getUserById(prev.user_id)
+      const email = userRes?.user?.email
+      const { data: profile } = await admin.from('profiles').select('full_name').eq('id', prev.user_id).single()
+      const firstName = profile?.full_name?.split(' ')[0] ?? 'Değerli satıcımız'
+      if (email) {
+        await sendWelcomeEmail({ to: email, firstName, role: 'vendor' })
+      }
+    } catch (e) {
+      console.error('[admin/saticilar] welcome email gönderilemedi:', e)
+    }
   }
 
   redirect('/admin/saticilar')

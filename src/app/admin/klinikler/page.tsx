@@ -46,9 +46,30 @@ async function updateClinic(formData: FormData) {
   // Kliniğin user_id'sini al (rol güncellemesi için)
   const { data: current } = await supabase
     .from('clinics')
-    .select('user_id, approval_status, jeton_balance')
+    .select('user_id, approval_status, jeton_balance, name')
     .eq('id', clinicId)
     .single()
+
+  // Onay anında hatırlanacak: welcome email tetikleme
+  // (aşağıda approved dallarında çağrılıyor)
+  async function triggerWelcomeIfApproved() {
+    if (status !== 'approved' || current?.approval_status === 'approved') return
+    if (!current?.user_id) return
+    try {
+      const { createServiceClient } = await import('@/lib/supabase/service')
+      const { sendWelcomeEmail } = await import('@/lib/welcome-email')
+      const admin = createServiceClient()
+      const { data: userRes } = await admin.auth.admin.getUserById(current.user_id)
+      const email = userRes?.user?.email
+      const { data: profile } = await admin.from('profiles').select('full_name').eq('id', current.user_id).single()
+      const firstName = profile?.full_name?.split(' ')[0] ?? 'Değerli klinik sahibi'
+      if (email) {
+        await sendWelcomeEmail({ to: email, firstName, role: 'clinic' })
+      }
+    } catch (e) {
+      console.error('[admin/klinikler] welcome email gönderilemedi:', e)
+    }
+  }
 
   // Starter jeton: ilk kez onaylanıyorsa 10 jeton ver
   if (status === 'approved' && current?.approval_status === 'pending' && (current?.jeton_balance ?? 0) === 0) {
@@ -63,6 +84,7 @@ async function updateClinic(formData: FormData) {
     if (current?.user_id) {
       await supabase.rpc('set_user_role', { target_user_id: current.user_id, new_role: 'clinic' })
     }
+    await triggerWelcomeIfApproved()
     redirect('/admin/klinikler')
   }
 
@@ -74,6 +96,7 @@ async function updateClinic(formData: FormData) {
     if (newRole) await supabase.rpc('set_user_role', { target_user_id: current.user_id, new_role: newRole })
   }
 
+  await triggerWelcomeIfApproved()
   redirect('/admin/klinikler')
 }
 
