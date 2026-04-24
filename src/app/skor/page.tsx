@@ -32,7 +32,9 @@ interface Analysis {
 interface Clinic {
   id: string
   name: string
-  city?: string | null
+  location: string | null
+  specialties: string[] | null
+  clinic_type: string | null
 }
 
 interface Product {
@@ -42,6 +44,7 @@ interface Product {
   category: string | null
   final_score: number | null
   images: string[] | null
+  price: number | null
 }
 
 // ─── Yardımcılar ─────────────────────────────────────────────────────────────
@@ -79,6 +82,9 @@ export default function SkorMerkeziPage() {
   const [anketCevap, setAnketCevap] = useState<Record<string, number>>({})
   const [anketSubmitting, setAnketSubmitting] = useState(false)
 
+  // Hızlı randevu: bir klinik seçilince RandevuFlow'u o klinikle başlat
+  const [hizliKlinikId, setHizliKlinikId] = useState<string | null>(null)
+
   // Önizleme verileri
   const [clinics, setClinics]       = useState<Clinic[]>([])
   const [products, setProducts]     = useState<Product[]>([])
@@ -109,15 +115,16 @@ export default function SkorMerkeziPage() {
           .single(),
         supabase
           .from('clinics')
-          .select('id, name, city')
-          .eq('status', 'approved')
+          .select('id, name, location, specialties, clinic_type')
+          .eq('approval_status', 'approved')
+          .eq('is_active', true)
           .limit(20),
         supabase
           .from('products')
-          .select('id, slug, name, category, final_score, images')
+          .select('id, slug, name, category, final_score, images, price')
           .eq('status', 'active')
           .order('final_score', { ascending: false, nullsFirst: false })
-          .limit(3),
+          .limit(8),
       ])
 
       if (cancelled) return
@@ -344,81 +351,135 @@ export default function SkorMerkeziPage() {
             </div>
           </ActionCard>
 
-          {/* RANDEVU KARTI */}
+          {/* RANDEVU KARTI — Hızlı Vitrin */}
           <ActionCard
             id="randevu"
             icon="📅"
-            title="Uzman Randevusu"
-            subtitle="Klinik onaylı skor için"
+            title="Hızlı Randevu Al"
+            subtitle="Sana özel klinik önerileri"
             isExpanded={expanded === 'randevu'}
-            onToggle={() => setExpanded(expanded === 'randevu' ? null : 'randevu')}
+            onToggle={() => {
+              setExpanded(expanded === 'randevu' ? null : 'randevu')
+              setHizliKlinikId(null)
+            }}
             preview={
-              <div>
-                {clinics.length > 0 ? (
-                  <>
-                    <p className="text-slate-300 text-sm mb-1">📍 {clinics[0].name}</p>
-                    <p className="text-slate-500 text-xs">{clinics.length} klinik müsait · gün ve saat seç</p>
-                  </>
-                ) : (
-                  <p className="text-slate-500 text-xs">Klinik seçimi…</p>
-                )}
+              <div className="grid grid-cols-2 gap-2">
+                {clinics.slice(0, 4).map(c => (
+                  <div key={c.id} className="p-2 rounded-lg bg-slate-900/50 border border-slate-700 text-center">
+                    <p className="text-white text-[11px] font-semibold truncate">{c.name}</p>
+                    {c.location && <p className="text-slate-500 text-[10px] truncate">📍 {c.location}</p>}
+                  </div>
+                ))}
               </div>
             }
           >
-            <RandevuFlow embedded onSuccess={() => setExpanded(null)} />
+            {hizliKlinikId ? (
+              <div>
+                <button
+                  onClick={() => setHizliKlinikId(null)}
+                  className="flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-4 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                  Tüm klinikler
+                </button>
+                <RandevuFlow
+                  embedded
+                  preselectedClinicId={hizliKlinikId}
+                  onSuccess={() => { setExpanded(null); setHizliKlinikId(null) }}
+                />
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-white text-xl font-bold mb-1">Klinik Seç</h2>
+                <p className="text-slate-400 text-sm mb-4">Tıkladığında gün ve saat seçimi açılır</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {clinics.slice(0, 8).map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => setHizliKlinikId(c.id)}
+                      className="text-left p-4 rounded-xl bg-slate-900/50 border border-slate-700 hover:border-violet-500/50 hover:scale-[1.02] transition-all"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white mb-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                      </div>
+                      <p className="text-white text-sm font-bold leading-tight mb-1 line-clamp-2">{c.name}</p>
+                      {c.location && <p className="text-slate-500 text-[11px] truncate">📍 {c.location}</p>}
+                      {c.specialties && c.specialties.length > 0 && (
+                        <p className="text-violet-400 text-[10px] mt-1 truncate">{c.specialties.slice(0, 2).join(' · ')}</p>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                <Link
+                  href="/randevu"
+                  className="block w-full mt-4 py-2.5 text-center text-sm text-slate-400 hover:text-white border border-slate-700 hover:border-slate-600 rounded-xl transition-colors"
+                >
+                  Filtre ile detaylı ara →
+                </Link>
+              </div>
+            )}
           </ActionCard>
 
-          {/* ÜRÜN KARTI */}
+          {/* ÜRÜN KARTI — Hızlı Vitrin */}
           <ActionCard
             id="urun"
             icon="🛍️"
-            title="Önerilen Ürünler"
+            title="Hızlı Ürün Al"
             subtitle="Skoruna göre seçildi"
             isExpanded={expanded === 'urun'}
             onToggle={() => setExpanded(expanded === 'urun' ? null : 'urun')}
             preview={
-              <div className="flex gap-2">
-                {products.slice(0, 2).map(p => (
-                  <div key={p.id} className="flex-1 aspect-square rounded-lg bg-slate-800 overflow-hidden">
+              <div className="grid grid-cols-4 gap-1.5">
+                {products.slice(0, 4).map(p => (
+                  <div key={p.id} className="aspect-square rounded-lg bg-slate-800 overflow-hidden">
                     {p.images?.[0] ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-600 text-2xl">📦</div>
+                      <div className="w-full h-full flex items-center justify-center text-slate-600 text-xl">📦</div>
                     )}
                   </div>
                 ))}
               </div>
             }
           >
-            <div className="space-y-3">
-              {products.map(p => (
-                <Link
-                  key={p.id}
-                  href={`/magaza/${p.slug ?? p.id}`}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-violet-500/50 transition-colors"
-                >
-                  <div className="w-12 h-12 rounded-lg bg-slate-900 overflow-hidden shrink-0">
-                    {p.images?.[0] ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-600">📦</div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-semibold truncate">{p.name}</p>
-                    {p.final_score && (
-                      <p className="text-violet-400 text-xs">EGP {p.final_score.toFixed(1)}/10</p>
-                    )}
-                  </div>
-                </Link>
-              ))}
+            <div>
+              <h2 className="text-white text-xl font-bold mb-1">Önerilen Ürünler</h2>
+              <p className="text-slate-400 text-sm mb-4">Cilt skoruna ve klinik analizine göre seçildi</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {products.slice(0, 8).map(p => (
+                  <Link
+                    key={p.id}
+                    href={`/magaza/${p.slug ?? p.id}`}
+                    className="group rounded-xl bg-slate-900/50 border border-slate-700 hover:border-violet-500/50 hover:scale-[1.02] transition-all overflow-hidden"
+                  >
+                    <div className="aspect-square bg-slate-800 overflow-hidden">
+                      {p.images?.[0] ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-600 text-3xl">📦</div>
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <p className="text-white text-xs font-semibold leading-tight mb-1 line-clamp-2 min-h-[2.4em]">{p.name}</p>
+                      <div className="flex items-center justify-between">
+                        {p.price !== null && (
+                          <span className="text-white text-sm font-bold">₺{p.price.toLocaleString('tr-TR')}</span>
+                        )}
+                        {p.final_score && (
+                          <span className="text-violet-400 text-[10px] font-semibold">EGP {p.final_score.toFixed(1)}</span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
               <Link
                 href="/magaza"
-                className="block w-full py-3 text-center bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl"
+                className="block w-full mt-4 py-2.5 text-center text-sm text-slate-400 hover:text-white border border-slate-700 hover:border-slate-600 rounded-xl transition-colors"
               >
-                Mağazaya Git →
+                Tüm ürünleri gör →
               </Link>
             </div>
           </ActionCard>
