@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import ScoreBar from '@/components/ScoreBar'
-import { HASTA_ANKET_SORULARI, hastaAnketPuani, type AnketSoru } from '@/lib/anket-sorular'
+import { HASTA_ANKET_SORULARI, hastaAnketPuani } from '@/lib/anket-sorular'
 import RandevuFlow from '@/components/RandevuFlow'
 
 // ─── Tipler ──────────────────────────────────────────────────────────────────
@@ -81,6 +81,7 @@ export default function SkorMerkeziPage() {
   // Anket state
   const [anketCevap, setAnketCevap] = useState<Record<string, number>>({})
   const [anketSubmitting, setAnketSubmitting] = useState(false)
+  const [anketIdx, setAnketIdx] = useState(0)  // mevcut soru index
 
   // Hızlı randevu: bir klinik seçilince RandevuFlow'u o klinikle başlat
   const [hizliKlinikId, setHizliKlinikId] = useState<string | null>(null)
@@ -313,14 +314,17 @@ export default function SkorMerkeziPage() {
           {/* ───── SAĞ — 3 Dikey Aksiyon Kartı ───────────────────────── */}
           <div className="space-y-4">
 
-          {/* ANKET KARTI */}
+          {/* ANKET KARTI — Wizard */}
           <ActionCard
             id="anket"
             icon="📋"
             title="Longevity Anketi"
-            subtitle={`+${(10).toFixed(0)} puan kazanabilirsin`}
+            subtitle="+10 puan kazanabilirsin"
             isExpanded={expanded === 'anket'}
-            onToggle={() => setExpanded(expanded === 'anket' ? null : 'anket')}
+            onToggle={() => {
+              setExpanded(expanded === 'anket' ? null : 'anket')
+              setAnketIdx(0)
+            }}
             preview={
               <div className="relative">
                 <p className="text-slate-300 text-sm mb-2">{HASTA_ANKET_SORULARI[0].emoji} {HASTA_ANKET_SORULARI[0].label}</p>
@@ -330,25 +334,16 @@ export default function SkorMerkeziPage() {
               </div>
             }
           >
-            {/* Tam anket (expand olunca) */}
-            <div className="space-y-5">
-              {HASTA_ANKET_SORULARI.map((s, idx) => (
-                <SoruBlok
-                  key={s.key}
-                  soru={s}
-                  index={idx}
-                  value={anketCevap[s.key]}
-                  onChange={v => setCevap(s.key, v)}
-                />
-              ))}
-              <button
-                onClick={submitAnket}
-                disabled={anketSubmitting || Object.keys(anketCevap).length < HASTA_ANKET_SORULARI.length}
-                className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 disabled:opacity-40 text-white font-semibold rounded-xl"
-              >
-                {anketSubmitting ? 'Kaydediliyor…' : `Anketi Tamamla (+${tahminiSkorBonusu.toFixed(1)} puan)`}
-              </button>
-            </div>
+            <AnketWizard
+              currentIdx={anketIdx}
+              onPrev={() => setAnketIdx(Math.max(0, anketIdx - 1))}
+              onNext={() => setAnketIdx(Math.min(HASTA_ANKET_SORULARI.length - 1, anketIdx + 1))}
+              cevap={anketCevap}
+              setCevap={setCevap}
+              onSubmit={submitAnket}
+              submitting={anketSubmitting}
+              tahminiBonus={tahminiSkorBonusu}
+            />
           </ActionCard>
 
           {/* RANDEVU KARTI — Hızlı Vitrin */}
@@ -555,29 +550,115 @@ function ActionCard({ icon, title, subtitle, preview, children, isExpanded, onTo
 }
 
 
-function SoruBlok({ soru, index, value, onChange }: { soru: AnketSoru; index: number; value: number | undefined; onChange: (v: number) => void }) {
+interface AnketWizardProps {
+  currentIdx: number
+  onPrev: () => void
+  onNext: () => void
+  cevap: Record<string, number>
+  setCevap: (key: string, value: number) => void
+  onSubmit: () => void
+  submitting: boolean
+  tahminiBonus: number
+}
+
+function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, submitting, tahminiBonus }: AnketWizardProps) {
+  const total = HASTA_ANKET_SORULARI.length
+  const soru = HASTA_ANKET_SORULARI[currentIdx]
+  const value = cevap[soru.key]
+  const isLast = currentIdx === total - 1
+  const allAnswered = HASTA_ANKET_SORULARI.every(s => typeof cevap[s.key] === 'number')
+  const progress = ((currentIdx + (value !== undefined ? 1 : 0)) / total) * 100
+
   return (
-    <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-700">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-xs text-slate-500">{index + 1}/{HASTA_ANKET_SORULARI.length}</span>
-        <span className="text-lg">{soru.emoji}</span>
-        <span className="text-white text-sm font-semibold">{soru.label}</span>
+    <div className="py-4 sm:py-8">
+      {/* Progress bar */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-slate-400 text-sm font-semibold">Soru {currentIdx + 1} / {total}</span>
+          <span className="text-violet-400 text-xs font-bold">+{tahminiBonus.toFixed(1)} puan</span>
+        </div>
+        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </div>
-      <p className="text-slate-400 text-xs mb-3">{soru.desc}</p>
-      <input
-        type="range"
-        min={soru.min ?? 0}
-        max={soru.max ?? 20}
-        value={value ?? 10}
-        onChange={e => onChange(parseInt(e.target.value))}
-        className="w-full accent-violet-500"
-      />
-      <div className="flex justify-between text-[10px] text-slate-500 mt-1">
-        <span>{soru.low}</span>
-        <span className={`font-bold text-sm ${value !== undefined ? 'text-violet-400' : 'text-slate-600'}`}>
-          {value ?? '—'}
-        </span>
-        <span>{soru.high}</span>
+
+      {/* Soru */}
+      <div className="text-center mb-8">
+        <div className="text-7xl mb-4">{soru.emoji}</div>
+        <h2 className="text-white text-2xl sm:text-3xl font-bold mb-3">{soru.label}</h2>
+        <p className="text-slate-400 text-base max-w-md mx-auto">{soru.desc}</p>
+      </div>
+
+      {/* Slider */}
+      <div className="max-w-xl mx-auto mb-10 px-2">
+        <div className="text-center mb-4">
+          <span className={`text-5xl font-black ${value !== undefined ? 'text-violet-400' : 'text-slate-600'}`}>
+            {value ?? '—'}
+          </span>
+          <span className="text-slate-500 text-lg ml-2">/ {soru.max ?? 20}</span>
+        </div>
+        <input
+          type="range"
+          min={soru.min ?? 0}
+          max={soru.max ?? 20}
+          value={value ?? Math.floor(((soru.max ?? 20) + (soru.min ?? 0)) / 2)}
+          onChange={e => setCevap(soru.key, parseInt(e.target.value))}
+          className="w-full h-3 accent-violet-500 cursor-pointer"
+        />
+        <div className="flex justify-between mt-3 text-sm">
+          <span className="text-slate-400">{soru.low}</span>
+          <span className="text-slate-400">{soru.high}</span>
+        </div>
+        {value === undefined && (
+          <p className="text-center text-slate-500 text-xs mt-4">↑ Sürükleyerek değerlendir</p>
+        )}
+      </div>
+
+      {/* Navigasyon */}
+      <div className="max-w-xl mx-auto flex items-center gap-3">
+        <button
+          onClick={onPrev}
+          disabled={currentIdx === 0}
+          className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border border-slate-700 text-slate-300 font-semibold rounded-xl transition-colors"
+        >
+          ← Geri
+        </button>
+        {isLast ? (
+          <button
+            onClick={onSubmit}
+            disabled={submitting || !allAnswered}
+            className="flex-[2] py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-xl transition-all"
+          >
+            {submitting ? 'Kaydediliyor…' : `Anketi Tamamla · +${tahminiBonus.toFixed(1)} puan`}
+          </button>
+        ) : (
+          <button
+            onClick={onNext}
+            disabled={value === undefined}
+            className="flex-[2] py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-xl transition-all"
+          >
+            İleri →
+          </button>
+        )}
+      </div>
+
+      {/* Soru noktaları (mini progress) */}
+      <div className="flex items-center justify-center gap-1.5 mt-8">
+        {HASTA_ANKET_SORULARI.map((s, i) => (
+          <div
+            key={s.key}
+            className={`w-2 h-2 rounded-full transition-all ${
+              i === currentIdx
+                ? 'bg-violet-400 w-6'
+                : cevap[s.key] !== undefined
+                  ? 'bg-emerald-500'
+                  : 'bg-slate-700'
+            }`}
+          />
+        ))}
       </div>
     </div>
   )
