@@ -318,7 +318,7 @@ export default function Home() {
               </div>
               <h2 className="text-4xl font-black text-white mb-6">Gençlik Skorun 0–100 arası</h2>
               <p className="text-slate-400 leading-relaxed mb-6">
-                Estelongy Gençlik Skoru, C250 formülüne dayalı bir biyolojik gençlik göstergesidir.
+                Estelongy Gençlik Skoru, Estelongy Algoritmasına dayalı bir biyolojik gençlik göstergesidir.
                 Cilt görseli, yaşam tarzı anketi, tetkik sonuçları ve hekim değerlendirmesi
                 birleştirilerek 0–100 arasında <strong>tek bir skor</strong> üretilir; klinik onayıyla kesinleşir.
               </p>

@@ -320,7 +320,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, saveVisit
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.keys(ws).length > 0 && (
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-800">
-                <h3 className="text-violet-400 font-semibold text-xs uppercase tracking-wider mb-3">Ön Analiz (C250)</h3>
+                <h3 className="text-violet-400 font-semibold text-xs uppercase tracking-wider mb-3">Ön Analiz</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {C250_LABELS.map(([k, label]) => ws[k] != null && (
                     <div key={k} className="flex justify-between">

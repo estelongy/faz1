@@ -12,7 +12,7 @@ interface SaveInput {
 
 /**
  * Hasta longevity anketini kaydet ve scores tablosuna 'on_analiz' satırı yaz.
- * - C250 base = analyses.web_overall ?? temp_overall
+ * - Algoritma skoru = analyses.web_overall ?? temp_overall
  * - hasta_anket_puani = ortalama × kuralı (longevityToPoints)
  * - total = sumComponents
  */

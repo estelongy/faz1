@@ -1,7 +1,7 @@
 /**
  * Skor zone bazlı işlem ve ürün önerileri.
  *
- * Mantık: kullanıcının C250 skoru 5 zone'dan birine düşer,
+ * Mantık: kullanıcının Gençlik Skoru 5 zone'dan birine düşer,
  * o zone'a tanımlı işlem ve ürün anahtarları döner.
  * Klinik eşleştirme sonra: clinic.specialties içinde önerilen işlem
  * anahtarlarını arayıp filtreleriz.

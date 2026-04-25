@@ -13,14 +13,14 @@ type ProcessingStage =
   | 'Fotoğraf yükleniyor'
   | 'Yüz tespiti yapılıyor'
   | 'Cilt dokusu analiz ediliyor'
-  | 'C250 formülü hesaplanıyor'
+  | 'Estelongy Algoritması hesaplanıyor'
   | 'Bakım önerileri hazırlanıyor'
 
 const STAGES: ProcessingStage[] = [
   'Fotoğraf yükleniyor',
   'Yüz tespiti yapılıyor',
   'Cilt dokusu analiz ediliyor',
-  'C250 formülü hesaplanıyor',
+  'Estelongy Algoritması hesaplanıyor',
   'Bakım önerileri hazırlanıyor',
 ]
 
@@ -233,7 +233,7 @@ export default function AnalizPage() {
               <div className="flex-1">
                 <p className="text-amber-300 text-sm font-semibold mb-1">Doğum yılı gerekli</p>
                 <p className="text-slate-400 text-xs mb-3">
-                  C250 skoru yaşa göre normalize edilir. Analiz yapabilmek için doğum yılınızı girmeniz gerekiyor.
+                  Skor yaşa göre normalize edilir. Analiz yapabilmek için doğum yılınızı girmeniz gerekiyor.
                 </p>
                 <div className="flex gap-2">
                   <input
@@ -330,7 +330,7 @@ export default function AnalizPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 <div>
-                  <p className="text-white text-sm font-medium">GPT-4 Vision + C250 Formülü</p>
+                  <p className="text-white text-sm font-medium">GPT-4 Vision + Estelongy Algoritması</p>
                   <p className="text-slate-500 text-xs mt-0.5">Bileşen skorları: nem, kırışıklık, pigmentasyon, ton ve göz altı analizi.</p>
                 </div>
               </div>
@@ -359,7 +359,7 @@ export default function AnalizPage() {
               </div>
             </div>
             <h2 className="text-2xl font-bold text-white mb-3">Fotoğrafın İşleniyor</h2>
-            <p className="text-slate-400 mb-8">GPT-4 Vision analiz ediyor, C250 formülü hesaplanıyor...</p>
+            <p className="text-slate-400 mb-8">GPT-4 Vision analiz ediyor, Estelongy Algoritması hesaplanıyor...</p>
             <div className="space-y-3 text-left max-w-xs mx-auto">
               {STAGES.map((label, i) => (
                 <div key={label} className="flex items-center gap-3">
@@ -394,7 +394,7 @@ export default function AnalizPage() {
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                {usedFallback ? 'Ön Analiz · Tahmini Skor (AI servisi geçici kapalı)' : 'GPT-4 Vision · C250 Ön Analiz'}
+                {usedFallback ? 'Ön Analiz · Tahmini Skor (AI servisi geçici kapalı)' : 'GPT-4 Vision · Estelongy Algoritması'}
               </div>
               <h1 className="text-3xl font-bold text-white mb-2">Ön Analiz Skorunuz <span className="text-violet-400 text-4xl">{result.overall}</span></h1>
               <p className="text-slate-400">

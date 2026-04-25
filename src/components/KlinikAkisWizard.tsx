@@ -112,7 +112,7 @@ export default function KlinikAkisWizard({
   // Tetkik state
   const [tetkik, setTetkik] = useState<Record<string, string>>({})
 
-  // İleri analiz state — manuel c250 skoru girişi
+  // İleri analiz state — manuel skor girişi
   const [ileriSkor, setIleriSkor] = useState<string>('')
 
   // Hekim state
@@ -146,7 +146,7 @@ export default function KlinikAkisWizard({
   const ileriC250Num = ileriSkor !== '' ? Number(ileriSkor) : null
   const aktifC250 = ileriC250Num != null && !Number.isNaN(ileriC250Num) ? ileriC250Num : mevcutC250
 
-  // Ara toplam: c250 + hasta + klinik_net + tetkik
+  // Ara toplam: ea + hasta + klinik_net + tetkik
   const araToplam = Math.min(100, Math.max(0,
     aktifC250 + hastaMevcutPuan + klinikNetKatki + tetkikPuan
   ))
@@ -445,7 +445,7 @@ export default function KlinikAkisWizard({
             <span>⚡</span> İleri Analiz (Ücretli)
           </h3>
           <p className="text-slate-400 text-sm">
-            Daha yüksek hassasiyetli fotoğraf analizi veya cihaz entegrasyonu ile C250 skoru yeniden hesaplanır.
+            Daha yüksek hassasiyetli fotoğraf analizi veya cihaz entegrasyonu ile Skor yeniden hesaplanır.
             Ön analizdeki skoru <strong>replace eder</strong>.
           </p>
           <p className="text-slate-500 text-xs mt-2">
@@ -455,7 +455,7 @@ export default function KlinikAkisWizard({
 
         <div className="p-5 bg-slate-800/60 rounded-2xl border border-slate-700">
           <label className="text-white font-medium text-sm block mb-2">
-            İleri Analiz C250 Skoru (0-100)
+            İleri Analiz Skoru (0-100)
           </label>
           <input
             type="number" min={0} max={100} step="0.1"
@@ -510,7 +510,7 @@ export default function KlinikAkisWizard({
       <div className="space-y-5">
         <div className="p-5 bg-slate-800/60 rounded-2xl border border-slate-700 space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-400">C250 (aktif)</span>
+            <span className="text-slate-400">Algoritma Skoru (aktif)</span>
             <span className="font-bold" style={{ color: scoreColor(aktifC250) }}>{aktifC250}</span>
           </div>
           {hastaMevcutPuan > 0 && (
@@ -612,13 +612,13 @@ export default function KlinikAkisWizard({
               <p className="text-slate-400 text-sm mb-2">Yayınlanacak Gençlik Skoru</p>
               <p className="text-7xl font-black" style={{ color: scoreColor(finalSkor) }}>{finalSkor}</p>
               <p className="text-slate-500 text-xs mt-2">
-                C250: {aktifC250} · Anket: {(hastaMevcutPuan + klinikNetKatki).toFixed(1)} · Tetkik: +{tetkikPuan.toFixed(1)} · Hekim: {hekimScore}
+                Alg: {aktifC250} · Anket: {(hastaMevcutPuan + klinikNetKatki).toFixed(1)} · Tetkik: +{tetkikPuan.toFixed(1)} · Hekim: {hekimScore}
               </p>
             </div>
 
             <div className="space-y-2 p-4 bg-slate-800/40 rounded-xl border border-slate-700 text-sm">
               <div className="flex justify-between"><span className="text-slate-400">Hasta</span><span className="text-white">{appointment.profiles?.full_name}</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">C250 (aktif)</span><span style={{ color: scoreColor(aktifC250) }}>{aktifC250}</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Algoritma Skoru (aktif)</span><span style={{ color: scoreColor(aktifC250) }}>{aktifC250}</span></div>
               {hastaMevcutPuan > 0 && (
                 <div className="flex justify-between"><span className="text-slate-400">Hasta Anketi</span><span className="text-emerald-400">+{hastaMevcutPuan.toFixed(1)}</span></div>
               )}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { saveLongevityAnket } from './anket-actions'
 
-// TODO: Soru metinleri ve skor katkısı C250 formülüne göre güncellenecek
+// TODO: Soru metinleri ve skor katkısı Estelongy Algoritmasına göre güncellenecek
 const SORULAR = [
   {
     key: 'uyku',
@@ -49,7 +49,7 @@ const SORULAR = [
   },
 ]
 
-// TODO: C250 katkı katsayısı onaylanacak — şu an max +10 puan
+// TODO: Algoritma katkı katsayısı onaylanacak — şu an max +10 puan
 const ANKET_MAX_KATKISI = 10
 
 function scoreColor(s: number) {
@@ -193,7 +193,7 @@ export default function AnketPage() {
             />
           </div>
           <p className="text-slate-600 text-xs mt-2 text-center">
-            {/* TODO: C250 katkı faktörü onaylanacak */}
+            {/* TODO: Algoritma katkı faktörü onaylanacak */}
             Anket katkısı: {anketToplam}/100 puan → +{katkı} Gençlik Puanı
           </p>
         </div>

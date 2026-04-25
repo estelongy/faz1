@@ -6,12 +6,12 @@ import { createClient } from '@/lib/supabase/server'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Estelongy Gençlik Skoru Nasıl Hesaplanır? C250 Formülü ve Metodoloji | Estelongy',
-  description: 'C250 formülünün 5 bileşeni, yaş faktörü, longevity anketi katkısı, tetkik parametreleri ve klinik onay süreci. Estelongy Gençlik Skoru metodolojisi şeffaf biçimde açıklanıyor.',
-  keywords: ['gençlik skoru hesaplama', 'C250 formülü', 'biyolojik yaş skoru', 'estelongy metodoloji', 'klinik onaylı skor', 'wrinkle score', 'hydration score'],
+  title: 'Estelongy Gençlik Skoru Nasıl Hesaplanır? Estelongy Algoritması ve Metodoloji | Estelongy',
+  description: 'Estelongy Algoritmasının 5 bileşeni, yaş faktörü, longevity anketi katkısı, tetkik parametreleri ve klinik onay süreci. Estelongy Gençlik Skoru metodolojisi şeffaf biçimde açıklanıyor.',
+  keywords: ['gençlik skoru hesaplama', 'Estelongy Algoritması', 'biyolojik yaş skoru', 'estelongy metodoloji', 'klinik onaylı skor', 'wrinkle score', 'hydration score'],
   openGraph: {
-    title: 'Gençlik Skoru Nasıl Hesaplanır? C250 Formülü | Estelongy',
-    description: 'C250 formülünün 5 bileşeni ve klinik onay süreci — Gençlik Skoru metodolojisi şeffaf biçimde.',
+    title: 'Gençlik Skoru Nasıl Hesaplanır? Estelongy Algoritması | Estelongy',
+    description: 'Estelongy Algoritmasının 5 bileşeni ve klinik onay süreci — Gençlik Skoru metodolojisi şeffaf biçimde.',
     url: 'https://estelongy.com/rehber/genclik-skoru-nasil-hesaplanir',
   },
   alternates: { canonical: 'https://estelongy.com/rehber/genclik-skoru-nasil-hesaplanir' },
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'Estelongy Gençlik Skoru Nasıl Hesaplanır? C250 Formülü ve Metodoloji',
-  description: 'C250 formülünün 5 bileşeni, yaş faktörü ve klinik onay sürecinin kapsamlı açıklaması.',
+  headline: 'Estelongy Gençlik Skoru Nasıl Hesaplanır? Estelongy Algoritması ve Metodoloji',
+  description: 'Estelongy Algoritmasının 5 bileşeni, yaş faktörü ve klinik onay sürecinin kapsamlı açıklaması.',
   author: { '@type': 'Organization', name: 'Estelongy' },
   publisher: { '@type': 'Organization', name: 'Estelongy', url: 'https://estelongy.com' },
   url: 'https://estelongy.com/rehber/genclik-skoru-nasil-hesaplanir',
@@ -99,7 +99,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
             <div className="space-y-3">
               {[
                 { step: '01', label: 'GPT-4 Vision Analizi', color: '#a78bfa', desc: 'Yüklenen selfie; GPT-4o Vision modeline gönderilir. Model 5 cilt bileşenini 0–100 arasında skorlar.' },
-                { step: '02', label: 'C250 Formülü', color: '#60a5fa', desc: 'Bileşen skorları ağırlıklı olarak birleştirilerek ham C250 skoru hesaplanır.' },
+                { step: '02', label: 'Estelongy Algoritması', color: '#60a5fa', desc: 'Bileşen skorları ağırlıklı olarak birleştirilerek ham skor hesaplanır.' },
                 { step: '03', label: 'Yaş Faktörü Düzeltmesi', color: '#34d399', desc: 'Kronolojik yaşa göre beklenti düzeltmesi yapılır. 25 yaş altı hafif avantaj, 55 yaş üstü hafif dezavantaj.' },
                 { step: '04', label: 'Longevity Anketi Katkısı (opsiyonel)', color: '#fbbf24', desc: 'Yaşam tarzı soruları tamamlanmışsa 0–10 puana kadar katkı eklenir.' },
                 { step: '05', label: 'Klinik Akış (opsiyonel)', color: '#f97316', desc: 'Klinik anketi ve tetkik verileri skoru rafine eder. Hekim tüm bileşenleri görüp onaylar.' },
@@ -118,11 +118,11 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
             </div>
           </section>
 
-          {/* C250 formülü */}
-          <section className="mb-10" id="c250">
-            <h2 className="text-white font-black text-2xl mb-2">C250 Formülü: 5 Bileşen</h2>
+          {/* Estelongy Algoritması */}
+          <section className="mb-10" id="algoritma">
+            <h2 className="text-white font-black text-2xl mb-2">Estelongy Algoritması: 5 Bileşen</h2>
             <p className="text-slate-400 text-sm mb-6">
-              C250; Estelongy&apos;nin geliştirdiği ağırlıklı bileşik skor formülüdür.
+              Estelongy Algoritması; Estelongy&apos;nin geliştirdiği ağırlıklı bileşik skor formülüdür.
               Ağırlıklar cilt yaşlanma araştırmalarından elde edilen görece önem sırasına göre belirlenmiştir.
             </p>
 
@@ -165,9 +165,9 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
 
             {/* Formül kutusu */}
             <div className="mt-6 p-5 rounded-2xl bg-slate-900 border border-slate-700 font-mono text-sm">
-              <p className="text-slate-500 text-xs mb-3">C250 Ham Skor Formülü</p>
+              <p className="text-slate-500 text-xs mb-3">Algoritma Ham Skor Formülü</p>
               <p className="text-white leading-relaxed">
-                C250 = (hydration × <span className="text-blue-400">0.25</span>)<br />
+                Skor = (hydration × <span className="text-blue-400">0.25</span>)<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (tone_uniformity × <span className="text-violet-400">0.25</span>)<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ ((100 − wrinkles) × <span className="text-red-400">0.25</span>)<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ ((100 − pigmentation) × <span className="text-amber-400">0.15</span>)<br />
@@ -210,8 +210,8 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
 
             <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 font-mono text-xs space-y-2">
               <p className="text-slate-500">{'// Örnek hesaplama'}</p>
-              <p><span className="text-blue-400">c250_ön</span>       = <span className="text-white">75</span>  <span className="text-slate-600">{'// GPT-4 Vision sonucu'}</span></p>
-              <p><span className="text-violet-400">c250_ileri</span>   = <span className="text-white">82</span>  <span className="text-slate-600">{'// Klinikteki yeniden analiz (75\'in yerini alır)'}</span></p>
+              <p><span className="text-blue-400">ea_on</span>       = <span className="text-white">75</span>  <span className="text-slate-600">{'// GPT-4 Vision sonucu'}</span></p>
+              <p><span className="text-violet-400">ea_ileri</span>   = <span className="text-white">82</span>  <span className="text-slate-600">{'// Klinikteki yeniden analiz (75\'in yerini alır)'}</span></p>
               <p><span className="text-amber-400">hasta_anket</span>   = <span className="text-white">+1</span></p>
               <p><span className="text-orange-400">klinik_anket</span> = <span className="text-white">+5</span>  <span className="text-slate-600">{'// hasta anketini replace eder'}</span></p>
               <p><span className="text-emerald-400">tetkik</span>      = <span className="text-white">+0</span>  <span className="text-slate-600">{'// atlandı'}</span></p>
@@ -270,7 +270,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
               Kendi Gençlik Skorunuzu Öğrenin
             </h2>
             <p className="text-slate-400 text-sm mb-5">
-              Ücretsiz Ön Analiz ile C250 formülü cildinizdeki yaşlanma göstergelerini anında puanlar.
+              Ücretsiz Ön Analiz ile Estelongy Algoritması cildinizdeki yaşlanma göstergelerini anında puanlar.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/kayit?next=/analiz" className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity">

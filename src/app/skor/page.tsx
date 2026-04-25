@@ -24,7 +24,7 @@ interface Analysis {
   web_ai_raw: {
     actual_age?: number
     estimated_skin_age?: number
-    c250Details?: { rawScore?: number; ageFactor?: number; explanation?: string }
+    eaDetails?: { rawScore?: number; ageFactor?: number; explanation?: string }
   } | null
   created_at: string
 }

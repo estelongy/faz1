@@ -29,10 +29,10 @@ export interface AnalizResult {
   pores: number             // yapay (GPT'den gelmez, türetilir)
   skinAge: number
   confidence: number
-  c250Details: {
+  eaDetails: {
     rawScore: number
     ageFactor: number
-    c250Result: number
+    eaResult: number
     explanation: string
   }
   colorZone: string | null
@@ -40,10 +40,10 @@ export interface AnalizResult {
   isAI: true
 }
 
-// ─── C250 Formülü ──────────────────────────────────────────────────────────
+// ─── Estelongy Algoritması ─────────────────────────────────────────────────
 
 /**
- * C250 formülü: GPT bileşen skorlarından ham EGS hesaplar
+ * Estelongy Algoritması: GPT bileşen skorlarından ham Gençlik Skoru hesaplar
  *
  * Ağırlıklar (toplam 1.0):
  *  hydration:       0.25
@@ -52,7 +52,7 @@ export interface AnalizResult {
  *  pigmentation:    0.15 (ters: 100-pigmentation)
  *  under_eye:       0.10
  */
-function applyC250(scores: GPTComponentScores): number {
+function applyEA(scores: GPTComponentScores): number {
   const hydration    = clamp(scores.hydration, 0, 100)
   const toneUniform  = clamp(scores.tone_uniformity, 0, 100)
   const wrinkleGood  = clamp(100 - scores.wrinkles, 0, 100)
@@ -228,29 +228,29 @@ export async function POST(req: NextRequest) {
       usedFallback = true
     }
 
-    // C250 hesaplama
+    // Estelongy Algoritması hesaplama
     // Yaş faktörü: önce gerçek yaş (profilden), yoksa GPT tahmini
-    const rawScore  = applyC250(gptData.component_scores)
+    const rawScore  = applyEA(gptData.component_scores)
     const ageForFactor = actualAge ?? gptData.estimated_skin_age
     const af        = ageFactor(ageForFactor)
-    const c250Score = clamp(rawScore * af)
+    const eaScore   = clamp(rawScore * af)
 
     const result: AnalizResult = {
-      overall:   c250Score,
+      overall:   eaScore,
       moisture:  gptData.component_scores.hydration,
       wrinkles:  gptData.component_scores.wrinkles,
       spots:     gptData.component_scores.pigmentation,
       pores:     clamp(100 - gptData.component_scores.tone_uniformity),
       skinAge:   gptData.estimated_skin_age,
       confidence: gptData.confidence,
-      c250Details: {
+      eaDetails: {
         rawScore,
         ageFactor: af,
-        c250Result: c250Score,
+        eaResult:  eaScore,
         explanation: gptData.brief_explanation,
       },
-      colorZone: colorZone(c250Score),
-      recommendations: buildRecommendations(gptData.component_scores, c250Score),
+      colorZone: colorZone(eaScore),
+      recommendations: buildRecommendations(gptData.component_scores, eaScore),
       isAI: true,
     }
 
@@ -260,10 +260,10 @@ export async function POST(req: NextRequest) {
         .from('analyses')
         .insert({
           user_id:     user.id,
-          web_overall: Math.round(c250Score),
+          web_overall: Math.round(eaScore),
           status:      'completed',
           web_ai_raw: {
-            c250Details:   result.c250Details,
+            eaDetails:     result.eaDetails,
             confidence:    gptData.confidence,
             usedFallback,
             actual_age:    actualAge,
@@ -285,10 +285,10 @@ export async function POST(req: NextRequest) {
         await supabase.from('scores').insert({
           user_id:     user.id,
           score_type:  'web',
-          c250_base:   c250Score,
-          total_score: c250Score,
-          overall_score: Math.round(c250Score),
-          color_zone:  colorZone(c250Score),
+          c250_base:   eaScore,
+          total_score: eaScore,
+          overall_score: Math.round(eaScore),
+          color_zone:  colorZone(eaScore),
           analysis_id: analysisRow.id,
         }).select()
       }
