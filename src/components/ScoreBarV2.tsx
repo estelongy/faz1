@@ -29,8 +29,10 @@ const START_MATH = 225
 
 // ── Non-lineer mapping: 80 puan tepe noktasında (12 hizası) ────
 // Frac sınırları: 80 → 0.5625 (240° arkın yarısı + offset = 12 hizası)
-const SCORE_BOUNDS = [0, 56, 66, 80, 90, 100]
-const FRAC_BOUNDS  = [0, 0.25, 0.38, 0.5625, 0.75, 1.0]
+// Sol yarı (0→80) = arc'ın %56.25'i: kırmızı %35, mor %25, sarı %40
+// Sağ yarı (80→100) = arc'ın %43.75'i: yeşil %70, cyan %30
+const SCORE_BOUNDS = [0,      56,        66,        80,      90,        100]
+const FRAC_BOUNDS  = [0, 0.19688, 0.33750, 0.5625, 0.86875, 1.0]
 
 function scoreToFrac(s: number) {
   s = Math.min(Math.max(s, 0), 100)
@@ -54,11 +56,11 @@ function polar(cx: number, cy: number, r: number, deg: number) {
 
 // ── Renk bölgeleri (yeni oranlar) ──────────────────────────────
 const ZONE_DEFS = [
-  { pct: 0.25,    color: '#ef4444', name: 'Çok Düşük', range: '0–55'   },
-  { pct: 0.13,    color: '#a855f7', name: 'Düşük',     range: '56–65'  },
-  { pct: 0.1825,  color: '#eab308', name: 'Normal',    range: '66–79'  },
-  { pct: 0.1875,  color: '#22c55e', name: 'İyi',       range: '80–89'  },
-  { pct: 0.25,    color: '#3b82f6', name: 'Çok İyi',   range: '90–100' },
+  { pct: 0.19688, color: '#ef4444', name: 'Çok Düşük', range: '0–55'   },
+  { pct: 0.14063, color: '#a855f7', name: 'Düşük',     range: '56–65'  },
+  { pct: 0.22500, color: '#eab308', name: 'Normal',    range: '66–79'  },
+  { pct: 0.30625, color: '#22c55e', name: 'İyi',       range: '80–89'  },
+  { pct: 0.13125, color: '#3b82f6', name: 'Çok İyi',   range: '90–100' },
 ]
 
 let cumLen = 0
