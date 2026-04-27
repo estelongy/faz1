@@ -257,8 +257,10 @@ export async function POST(req: NextRequest) {
     let usedFallback = false
     try {
       gptData = await callGPT4Vision(base64, mimeType)
-    } catch (err) {
-      console.error('[AI Analiz] GPT-4 Vision hatası, fallback kullanılıyor:', err)
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err)
+      const errStatus = (err as { status?: number })?.status
+      console.error('[AI Analiz] GPT hatası:', errStatus ?? '', errMsg)
       gptData = generateFallback(actualAge)
       usedFallback = true
     }
