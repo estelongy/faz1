@@ -25,6 +25,7 @@ interface Analysis {
     actual_age?: number
     estimated_skin_age?: number
     eaDetails?: { rawScore?: number; ageFactor?: number; explanation?: string }
+    usedFallback?: boolean
   } | null
   created_at: string
 }
@@ -275,6 +276,7 @@ function SkorMerkeziInner() {
                 previousScore={isUpdating ? baseScore : undefined}
                 phase="ai_analiz"
                 animated
+                aiActive={analysis?.web_ai_raw?.usedFallback === false}
               />
               {isUpdating && (
                 <div className="mt-3 text-center">

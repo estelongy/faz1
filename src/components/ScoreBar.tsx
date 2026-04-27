@@ -13,6 +13,8 @@ interface ScoreBarProps {
   age?: number
   isClinicView?: boolean
   animated?: boolean
+  /** GPT gerçekten çalıştıysa true (fallback değil) — sağ üstte DNA + checklist ikonu gösterir */
+  aiActive?: boolean
 }
 
 // ── Gauge sabitler ──────────────────────────────────────────────
@@ -125,7 +127,7 @@ function getMsg(score: number, isClinic: boolean, age?: number, prev?: number): 
 
 // ── Bileşen ──────────────────────────────────────────────────────
 export default function ScoreBar({
-  score, previousScore, phase, age, isClinicView = false, animated = true,
+  score, previousScore, phase, age, isClinicView = false, animated = true, aiActive = false,
 }: ScoreBarProps) {
   const [disp, setDisp] = useState(animated ? 0 : score)
   const [ang,  setAng]  = useState(animated ? START_MATH : scoreToMathAngle(score))
@@ -166,7 +168,25 @@ export default function ScoreBar({
   const glowLen = scoreToFrac(disp) * ARC_LEN
 
   return (
-    <div className="w-full select-none">
+    <div className="w-full select-none relative">
+
+      {/* ── AI/Algoritma Onay İkonları (sağ üst) ── */}
+      {aiActive && (
+        <div className="absolute top-0 right-0 flex items-center gap-1.5 z-10" title="AI Analizi · Estelongy Algoritması">
+          {/* DNA — AI çalıştı */}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
+            <path d="M4 2c0 4 4 4 4 8s-4 4-4 8 4 4 4 8" />
+            <path d="M20 2c0 4-4 4-4 8s4 4 4 8-4 4-4 8" />
+            <line x1="6" y1="6" x2="18" y2="6" />
+            <line x1="6" y1="18" x2="18" y2="18" />
+          </svg>
+          {/* Checklist — Algoritma çalıştı */}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
+            <polyline points="9 11 12 14 22 4" />
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+          </svg>
+        </div>
+      )}
 
       {/* ── Başlık ── */}
       <div className="text-center mb-1">

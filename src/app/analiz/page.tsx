@@ -409,6 +409,7 @@ export default function AnalizPage() {
                 score={result.overall}
                 phase="ai_analiz"
                 animated={true}
+                aiActive={!usedFallback}
               />
               {/* Güven skoru */}
               <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
