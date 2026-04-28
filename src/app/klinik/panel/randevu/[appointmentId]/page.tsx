@@ -97,7 +97,7 @@ async function saveAnket(apptId: string, analysisId: string, answers: Record<str
   const { data: a } = await supabase.from('analyses').select('web_overall, temp_overall').eq('id', analysisId).single()
   if (!clinic) return
 
-  // Klinik anketi 10 soru üzerinden max 20 puan (aynı 5 + ek 5)
+  // Klinik anketi 10 soru ağırlıklı katkı (max 7.2 — hasta 3.6 + ek 3.6)
   const klinikToplam = klinikAnketPuani(answers)
   // Hasta anketi puanını al (çift sayım önleme — hasta anketinin 5 sorusu klinik anketinde replace edilir)
   const { data: onAnaliz } = await supabase

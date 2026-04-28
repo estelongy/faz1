@@ -109,6 +109,7 @@ export const KLINIK_EK_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Yoğun kullanıcı', high: 'Hiç içmedim',
+    maxKatki: 1.1,
   },
   {
     key: 'alkol',
@@ -118,6 +119,7 @@ export const KLINIK_EK_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Çok sık', high: 'Hiç',
+    maxKatki: 0.5,
   },
   {
     key: 'aile_gecmisi',
@@ -127,6 +129,7 @@ export const KLINIK_EK_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Yoğun öykü', high: 'Temiz geçmiş',
+    maxKatki: 0.4,
   },
   {
     key: 'kronik_hastalik',
@@ -136,6 +139,7 @@ export const KLINIK_EK_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Çoklu tanı', high: 'Sağlıklı',
+    maxKatki: 0.6,
   },
   {
     key: 'gunes_maruziyeti',
@@ -145,8 +149,14 @@ export const KLINIK_EK_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Korunmasız yoğun', high: 'Düzenli korunma',
+    maxKatki: 1.0,
   },
 ]
+
+/** Klinik EK 5 sorunun max toplam katkısı (3.6) */
+export const KLINIK_EK_MAX_TOPLAM = KLINIK_EK_SORULARI.reduce(
+  (s, q) => s + (q.maxKatki ?? 0), 0
+)
 
 // ─── Klinik Anketi Tam Listesi (10 soru) ────────────────────────────────────
 // Hasta anketinin aynı 5 sorusu + ek 5 klinik sorusu.
@@ -178,18 +188,21 @@ export function hastaAnketPuani(cevaplar: Record<string, number>): number {
   return Math.max(0, Math.min(HASTA_ANKET_MAX_TOPLAM, total))
 }
 
+/** Klinik anketi tam toplam max (hasta + ek = 3.6 + 3.6 = 7.2) */
+export const KLINIK_ANKET_MAX_TOPLAM = HASTA_ANKET_MAX_TOPLAM + KLINIK_EK_MAX_TOPLAM
+
 /**
- * Klinik anketi puanı: max +20 puan katkı (10 soru, her biri 0..100).
+ * Klinik anketi puanı: ağırlıklı katkı (10 soru = hasta 5 + klinik ek 5).
+ * Her soru kendi maxKatki'si ile çarpılır.
  * Input: cevap sözlüğü (key → 0..100)
- * Output: 0..20 arası puan
- *
- * NOT: Soru başına ağırlık şu an eşit. Sonra tek tek belirlenecek.
+ * Output: 0..KLINIK_ANKET_MAX_TOPLAM arası puan (şu an 0..7.2)
  */
 export function klinikAnketPuani(cevaplar: Record<string, number>): number {
-  const total = KLINIK_ANKET_SORULARI.reduce((sum, s) => {
+  let total = 0
+  for (const s of KLINIK_ANKET_SORULARI) {
     const v = cevaplar[s.key]
-    return sum + (typeof v === 'number' ? v : 0)
-  }, 0)
-  // 10 soru × 100 = max 1000 → 0..20
-  return Math.max(0, Math.min(20, total / 50))
+    if (typeof v !== 'number' || s.maxKatki == null) continue
+    total += (v / 100) * s.maxKatki
+  }
+  return Math.max(0, Math.min(KLINIK_ANKET_MAX_TOPLAM, total))
 }

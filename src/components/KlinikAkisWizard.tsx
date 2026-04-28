@@ -94,17 +94,17 @@ export default function KlinikAkisWizard({
 
   // Klinik anketi state — hasta anketi cevapları varsa önceden doldur
   const [anket, setAnket] = useState<Record<string, number>>(() => {
-    // Analysis'te kayıtlı cevap varsa onu al, yoksa hasta anketinden, yoksa varsayılan (10)
+    // Analysis'te kayıtlı cevap varsa onu al, yoksa hasta anketinden, yoksa varsayılan (50, 0-100 ölçek)
     if (analysis?.device_raw_data && Object.keys(analysis.device_raw_data).length > 0) {
       const defaults: Record<string, number> = {}
       for (const q of KLINIK_ANKET_SORULARI) {
-        defaults[q.key] = analysis.device_raw_data[q.key] ?? 10
+        defaults[q.key] = analysis.device_raw_data[q.key] ?? 50
       }
       return defaults
     }
     const defaults: Record<string, number> = {}
     for (const q of KLINIK_ANKET_SORULARI) {
-      defaults[q.key] = hastaAnketCevaplari?.[q.key] ?? 10
+      defaults[q.key] = hastaAnketCevaplari?.[q.key] ?? 50
     }
     return defaults
   })
@@ -126,9 +126,9 @@ export default function KlinikAkisWizard({
   // ── Skor hesaplamaları ────────────────────────────────────────────
   const mevcutC250 = analysis?.temp_overall ?? analysis?.web_overall ?? 50
 
-  // Klinik anketi toplam puanı (10 soru üzerinden, max 20)
+  // Klinik anketi ağırlıklı puan (10 soru, max 7.2)
   const klinikAnketToplamPuan = klinikAnketPuani(anket)
-  const klinikAnketToplam = Object.values(anket).reduce((a, b) => a + b, 0) // 0..200 UI için
+  const klinikAnketToplam = Object.values(anket).reduce((a, b) => a + b, 0) // 0..1000 UI için
 
   // Hasta anketi puanı (varsa)
   const hastaMevcutPuan = hastaAnketCevaplari ? hastaAnketPuani(hastaAnketCevaplari) : 0
@@ -278,7 +278,7 @@ export default function KlinikAkisWizard({
                     <span className="text-lg">{q.emoji}</span>
                     <span className="text-white font-medium text-sm">{q.label}</span>
                   </div>
-                  <span className="text-2xl font-black" style={{ color: scoreColor(anket[q.key] * 5) }}>
+                  <span className="text-2xl font-black" style={{ color: scoreColor(anket[q.key]) }}>
                     {anket[q.key]}
                   </span>
                 </div>
@@ -288,7 +288,7 @@ export default function KlinikAkisWizard({
                   </p>
                 )}
                 <input
-                  type="range" min={0} max={20} value={anket[q.key]}
+                  type="range" min={q.min ?? 0} max={q.max ?? 100} value={anket[q.key]}
                   onChange={e => setAnket(prev => ({ ...prev, [q.key]: Number(e.target.value) }))}
                   className="w-full accent-violet-500 cursor-pointer" />
                 <div className="flex justify-between text-xs text-slate-600 mt-1">
@@ -325,11 +325,11 @@ export default function KlinikAkisWizard({
           <div className="flex items-center justify-between">
             <span className="text-slate-400 text-sm">Klinik Anket Toplamı</span>
             <span className="text-xl font-black" style={{ color: scoreColor(klinikAnketToplam / 2) }}>
-              {klinikAnketToplam}<span className="text-slate-500 text-sm font-normal"> / 200</span>
+              {klinikAnketToplam}<span className="text-slate-500 text-sm font-normal"> / 1000</span>
             </span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500">Puan Katkısı (max +20)</span>
+            <span className="text-slate-500">Puan Katkısı (max +7.2)</span>
             <span className="font-bold text-emerald-400">+{klinikAnketToplamPuan.toFixed(1)}</span>
           </div>
           {hastaAnketCevaplari && (

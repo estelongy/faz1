@@ -130,20 +130,37 @@ Response: `{ ok, result, usedFallback, analysisId }` — analysisId frontend'de 
 **Hasta Anketi (5 soru, sıra: beslenme → cilt → uyku → stres → aktivite):**
 - Slider 0-100 ölçek
 - Tüm sorular "20 yaşınızdan bu yana ... 0-100 arasında puanlayın" formatında
-- Skor katkısı: max +10 puan (`hastaAnketPuani` fonksiyonu — `/lib/anket-sorular.ts`)
 - Wizard adımları: -1 (intro) → 0..4 (sorular) → submit
+- **Ağırlıklı katkı (max +3.6 puan):**
+
+| # | Soru | maxKatki |
+|---|------|----------|
+| 1 | 🥗 Beslenme | 0.9 |
+| 2 | ✨ Cilt | 1.0 |
+| 3 | 😴 Uyku | 0.7 |
+| 4 | 🧘 Stres | 0.5 |
+| 5 | 🏃 Aktivite | 0.5 |
+
+`katki = (cevap/100) × maxKatki` — sabit `HASTA_ANKET_MAX_TOPLAM = 3.6`
 
 **Klinik Ek Anketi (5 soru, klinik akışında):**
 - sigara · alkol · aile_gecmisi · kronik_hastalik · gunes_maruziyeti
-- Aynı 0-100 ölçek
-- Klinik anketi toplamı (10 soru): max +20 puan (`klinikAnketPuani`)
+- Aynı 0-100 ölçek, ağırlıklı (max +3.6 — geçici, kullanıcı düzeltecek):
+
+| # | Soru | maxKatki |
+|---|------|----------|
+| 1 | 🚭 Sigara | 1.1 |
+| 2 | 🍷 Alkol | 0.5 |
+| 3 | 👨‍👩‍👧 Aile geçmişi | 0.4 |
+| 4 | 🏥 Kronik hastalık | 0.6 |
+| 5 | ☀️ Güneş maruziyeti | 1.0 |
+
+**Toplam klinik anketi (10 soru) max katkı: +7.2** (`klinikAnketPuani`, sabit `KLINIK_ANKET_MAX_TOPLAM`)
 
 **Skor mantığı:**
 - Hasta anketi dolmuşsa ve klinik anketinde aynı 5 soru yeniden cevaplanırsa hasta anket puanı düşülür, klinik toplamı eklenir
 - Hasta anketi boşsa klinik anketi direkt eklenir
 - Ek 5 klinik sorusu her zaman ek olarak eklenir
-
-> **Soru başına ağırlık:** Şu an eşit. Soru bazlı ağırlık ayarı **TODO** — bkz. "Skor Algoritması İnce Ayar".
 
 ---
 
@@ -232,9 +249,10 @@ Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel`) tarafında ziya
 ## Bekleyen Görevler
 
 ### Skor Algoritması İnce Ayar (Sıradaki) ⏳
-- [ ] Hasta anketi 5 sorusunun **soru başına ağırlığı** belirlenecek (şu an eşit, max +10 puan)
-- [ ] Klinik ek anketi 5 sorusunun ağırlığı (şu an eşit, max +20 puan)
-- [ ] Soru bazlı katkı kuralları `src/lib/anket-sorular.ts` içinde fonksiyonlara dökülecek
+- [x] Hasta anketi 5 sorusunun ağırlığı (max +3.6 puan, soru bazında: 0.9/1.0/0.7/0.5/0.5)
+- [x] Klinik ek anketi 5 sorusunun ağırlığı (max +3.6 puan, geçici: 1.1/0.5/0.4/0.6/1.0)
+- [x] Soru bazlı katkı `maxKatki` alanı olarak `AnketSoru` interface'inde
+- [ ] **Klinik ek soruları ağırlığı bilimsel araştırma ile finalize edilecek** (kullanıcı düzeltecek)
 - [ ] Tetkik puanlarının skora yansıması (parametre bazlı)
 - [ ] Hekim onayı %15 ağırlık (mevcut kural — değişmeyecek)
 
