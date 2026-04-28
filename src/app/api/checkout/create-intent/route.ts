@@ -182,7 +182,11 @@ export async function POST(req: NextRequest) {
       .single()
     if (orderErr || !order) {
       console.error('Sipariş oluşturulamadı:', orderErr)
-      return NextResponse.json({ error: 'Sipariş oluşturulamadı' }, { status: 500 })
+      return NextResponse.json({
+        error: `Sipariş oluşturulamadı: ${orderErr?.message ?? 'bilinmeyen DB hatası'}`,
+        code: orderErr?.code,
+        details: orderErr?.details,
+      }, { status: 500 })
     }
 
     // Order items kaydı

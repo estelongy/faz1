@@ -32,15 +32,29 @@ export async function adresKaydetAction(input: AdresInput): Promise<{ ok: boolea
     return { ok: false, error: 'Zorunlu alanlar eksik.' }
   }
 
+  // İçerik validasyonu (sunucu tarafında da kontrol — client'a güvenme)
+  const fnTrim   = input.full_name.trim()
+  const phoneRaw = input.phone.replace(/\D/g, '')
+  const cityTrim = input.city.trim()
+  const distTrim = input.district.trim()
+  const addrTrim = input.address_line.trim()
+
+  if (fnTrim.length < 3)                         return { ok: false, error: 'Ad soyad en az 3 karakter olmalı.' }
+  if (!/^[\p{L} .'-]+$/u.test(fnTrim))           return { ok: false, error: 'Ad soyad sadece harf içerebilir.' }
+  if (phoneRaw.length < 10)                      return { ok: false, error: 'Geçerli bir telefon numarası girin.' }
+  if (cityTrim.length < 2)                       return { ok: false, error: 'İl en az 2 karakter olmalı.' }
+  if (distTrim.length < 2)                       return { ok: false, error: 'İlçe en az 2 karakter olmalı.' }
+  if (addrTrim.length < 10)                      return { ok: false, error: 'Açık adres en az 10 karakter olmalı.' }
+
   const patch = {
     user_id:      user.id,
     title:        input.title.trim(),
-    full_name:    input.full_name.trim(),
-    phone:        input.phone.trim(),
-    city:         input.city.trim(),
-    district:     input.district.trim(),
+    full_name:    fnTrim,
+    phone:        phoneRaw,
+    city:         cityTrim,
+    district:     distTrim,
     neighborhood: input.neighborhood?.trim() || null,
-    address_line: input.address_line.trim(),
+    address_line: addrTrim,
     postal_code:  input.postal_code?.trim() || null,
     is_default:   input.is_default ?? false,
   }

@@ -42,12 +42,26 @@ export default function AdresForm({ initial, onClose, onSaved }: Props) {
     e.preventDefault()
     setError(null)
 
+    // ── İçerik validasyonu (required attribute yetmiyor — boş ol diye girilebilir gerçek dolu ama anlamsız) ──
+    const fnTrim   = fullName.trim()
+    const phoneRaw = phone.replace(/\D/g, '')
+    const cityTrim = city.trim()
+    const distTrim = district.trim()
+    const addrTrim = addr.trim()
+
+    if (fnTrim.length < 3) { setError('Ad soyad en az 3 karakter olmalı.'); return }
+    if (!/^[\p{L} .'-]+$/u.test(fnTrim)) { setError('Ad soyad sadece harf içerebilir.'); return }
+    if (phoneRaw.length < 10) { setError('Geçerli bir telefon numarası girin (en az 10 hane).'); return }
+    if (cityTrim.length < 2) { setError('İl en az 2 karakter olmalı.'); return }
+    if (distTrim.length < 2) { setError('İlçe en az 2 karakter olmalı.'); return }
+    if (addrTrim.length < 10) { setError('Açık adres en az 10 karakter olmalı (sokak/no/daire belirtin).'); return }
+
     startTransition(async () => {
       const res = await adresKaydetAction({
         id: initial?.id,
-        title, full_name: fullName, phone,
-        city, district, neighborhood: hood,
-        address_line: addr, postal_code: postal,
+        title: title.trim(), full_name: fnTrim, phone: phoneRaw,
+        city: cityTrim, district: distTrim, neighborhood: hood.trim(),
+        address_line: addrTrim, postal_code: postal.trim(),
         is_default: isDefault,
       })
       if (!res.ok) {
