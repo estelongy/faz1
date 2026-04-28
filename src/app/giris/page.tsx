@@ -27,6 +27,22 @@ function GirisInner() {
     }
   }, [searchParams])
 
+  // Zaten girişli kullanıcı: next varsa oraya, yoksa rolüne göre
+  useEffect(() => {
+    let cancelled = false
+    async function checkAuth() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (cancelled || !user) return
+      const role = (user.app_metadata as Record<string, string>)?.role
+      const next = searchParams.get('next')
+      const dest = (next && next.startsWith('/')) ? next : pathForRole(role)
+      router.replace(dest)
+    }
+    checkAuth()
+    return () => { cancelled = true }
+  }, [router, searchParams])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
