@@ -5,28 +5,35 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { saveLongevityAnket } from './anket-actions'
 
-// TODO: Soru metinleri ve skor katkısı C250 formülüne göre güncellenecek
 const SORULAR = [
-  {
-    key: 'uyku',
-    label: 'Uyku kalitesi',
-    desc: 'Son 1 ayda uyku süreniz ve kalitesini değerlendirin',
-    low: 'Çok kötü',
-    high: 'Mükemmel',
-    emoji: '😴',
-  },
   {
     key: 'beslenme',
     label: 'Beslenme düzeni',
-    desc: 'Günlük beslenme alışkanlıklarınız (sebze, meyve, işlenmiş gıda dengesi)',
+    desc: '20 yaşınızdan bu yana beslenme düzeninizi, sebze-meyve tüketiminizi ve işlenmiş gıdadan kaçınma alışkanlığınızı 0-100 arasında puanlayın.',
     low: 'Çok kötü',
     high: 'Mükemmel',
     emoji: '🥗',
   },
   {
+    key: 'cilt',
+    label: 'Cilt koruma rutini',
+    desc: '20 yaşınızdan bu yana güneş koruması, nemlendirme ve cilt bakım rutininizi 0-100 arasında puanlayın.',
+    low: 'Hiç yok',
+    high: 'Günlük ve düzenli',
+    emoji: '✨',
+  },
+  {
+    key: 'uyku',
+    label: 'Uyku kalitesi',
+    desc: '20 yaşınızdan bu yana uyku sürenizi, uyku kalitenizi ve dinlendirme kapasitesini 0-100 arasında puanlayın.',
+    low: 'Çok kötü',
+    high: 'Mükemmel',
+    emoji: '😴',
+  },
+  {
     key: 'stres',
     label: 'Stres yönetimi',
-    desc: 'Son 1 ayda stres seviyeniz ve başa çıkma yetkiniz',
+    desc: '20 yaşınızdan bu yana hayatın stres faktörlerine karşı psikolojik dayanıklılığınızı ve iç huzurunuzu koruma kapasitenizi 0-100 arasında puanlayın.',
     low: 'Sürekli stresli',
     high: 'Tamamen rahat',
     emoji: '🧘',
@@ -34,18 +41,10 @@ const SORULAR = [
   {
     key: 'aktivite',
     label: 'Fiziksel aktivite',
-    desc: 'Haftalık egzersiz ve günlük hareket miktarınız',
+    desc: '20 yaşınızdan bu yana kas kütlenizi korumak ve metabolizmanızı canlı tutmak için sergilediğiniz fiziksel aktivite düzeyini 0-100 arasında puanlayın.',
     low: 'Hareketsiz',
     high: 'Çok aktif',
     emoji: '🏃',
-  },
-  {
-    key: 'cilt',
-    label: 'Cilt koruma rutini',
-    desc: 'Günlük cilt bakımı, güneş koruması ve nemlendirme düzeniniz',
-    low: 'Hiç yok',
-    high: 'Günlük ve düzenli',
-    emoji: '✨',
   },
 ]
 
