@@ -129,8 +129,8 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     if (latestAnalysis.web_overall != null) {
       return {
         emoji: '📋',
-        title: 'Anketinizi doldurun, +10 puan kazanın',
-        desc: '5 soru, 3-5 dakika',
+        title: 'Anketinizi doldurun, ek puan kazanın',
+        desc: '5 soru, 3-5 dakika · maks +3.6 puan',
         href: `/skor?analysisId=${latestAnalysis.id}&open=anket`,
         cta: 'Anketi Aç →',
         gradient: 'from-amber-600 to-orange-600',

@@ -29,12 +29,15 @@ export interface AnketSoru {
   high?: string
   /** true ise: yüksek değer = kötü (örn. stres, sigara) */
   ters?: boolean
+  /** Cevap max'a (100) eşitse skora eklenecek puan. Ağırlıklı katkı için. */
+  maxKatki?: number
 }
 
 // ─── Hasta Anketi (5 soru) ──────────────────────────────────────────────────
 // Her soru 0–20 arası. Toplam 0–100.
 
 // Sıra: beslenme → cilt → uyku → stres → aktivite (kullanıcı kararı)
+// maxKatki: cevap 100/100 olduğunda skora eklenecek puan
 export const HASTA_ANKET_SORULARI: AnketSoru[] = [
   {
     key: 'beslenme',
@@ -44,6 +47,7 @@ export const HASTA_ANKET_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Çok kötü', high: 'Mükemmel',
+    maxKatki: 0.9,
   },
   {
     key: 'cilt',
@@ -53,6 +57,7 @@ export const HASTA_ANKET_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Hiç yok', high: 'Günlük ve düzenli',
+    maxKatki: 1.0,
   },
   {
     key: 'uyku',
@@ -62,6 +67,7 @@ export const HASTA_ANKET_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Çok kötü', high: 'Mükemmel',
+    maxKatki: 0.7,
   },
   {
     key: 'stres',
@@ -71,6 +77,7 @@ export const HASTA_ANKET_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Sürekli stresli', high: 'Tamamen rahat',
+    maxKatki: 0.5,
   },
   {
     key: 'aktivite',
@@ -80,8 +87,14 @@ export const HASTA_ANKET_SORULARI: AnketSoru[] = [
     tip: 'scale',
     min: 0, max: 100,
     low: 'Hareketsiz', high: 'Çok aktif',
+    maxKatki: 0.5,
   },
 ]
+
+/** Hasta anketi max toplam katkı = sum(maxKatki) — şu an 3.6 */
+export const HASTA_ANKET_MAX_TOPLAM = HASTA_ANKET_SORULARI.reduce(
+  (s, q) => s + (q.maxKatki ?? 0), 0
+)
 
 // ─── Klinik Ek Anketi (5 soru) ──────────────────────────────────────────────
 // Yüz yüze seansta sorulur, daha objektif/klinik odaklı sorular.
@@ -147,19 +160,22 @@ export const KLINIK_ANKET_SORULARI: AnketSoru[] = [
 // ─── Skor Katkı Kuralları ───────────────────────────────────────────────────
 
 /**
- * Hasta anketi puanı: max +10 puan katkı.
+ * Hasta anketi puanı: ağırlıklı katkı.
+ * Her soru kendi maxKatki'si ile çarpılır: katki = (cevap/100) × maxKatki
  * Input: cevap sözlüğü (key → 0..100)
- * Output: 0..10 arası puan
+ * Output: 0..HASTA_ANKET_MAX_TOPLAM arası puan (şu an 0..3.6)
  *
- * NOT: Soru başına ağırlık şu an eşit. Sonra tek tek belirlenecek.
+ * Ağırlıklar (sıra: beslenme→cilt→uyku→stres→aktivite):
+ *   0.9 + 1.0 + 0.7 + 0.5 + 0.5 = 3.6 max
  */
 export function hastaAnketPuani(cevaplar: Record<string, number>): number {
-  const total = HASTA_ANKET_SORULARI.reduce((sum, s) => {
+  let total = 0
+  for (const s of HASTA_ANKET_SORULARI) {
     const v = cevaplar[s.key]
-    return sum + (typeof v === 'number' ? v : 0)
-  }, 0)
-  // 5 soru × 100 = max 500 → 0..10
-  return Math.max(0, Math.min(10, total / 50))
+    if (typeof v !== 'number' || s.maxKatki == null) continue
+    total += (v / 100) * s.maxKatki
+  }
+  return Math.max(0, Math.min(HASTA_ANKET_MAX_TOPLAM, total))
 }
 
 /**

@@ -196,20 +196,30 @@ function SkorMerkeziInner() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      // 1) Anket cevaplarını kaydet
       await supabase.from('longevity_surveys').insert({
         user_id: user.id,
-        responses: anketCevap,
-        score: tahminiSkorBonusu,
+        answers: anketCevap,
+        calculated_score: Math.round(tahminiSkorBonusu * 10) / 10,
+        is_completed: true,
+        completed_at: new Date().toISOString(),
       })
-      // Skoru güncelle: web_overall + bonus
+      // 2) Yeni skor satırı yaz (c250_base + hasta_anket_puani ayrı kolonlarda)
       const yeniSkor = Math.round(liveScore)
       await supabase.from('scores').insert({
         user_id: user.id,
         score_type: 'web',
+        c250_base: baseScore,
+        hasta_anket_puani: Math.round(tahminiSkorBonusu * 10) / 10,
         total_score: yeniSkor,
         overall_score: yeniSkor,
         analysis_id: analysis.id,
       })
+      // 3) analyses.temp_overall ve temp_longevity_score'u da güncelle (panel'deki "Anket ✓" rozeti için)
+      await supabase.from('analyses').update({
+        temp_overall: yeniSkor,
+        temp_longevity_score: Math.round(tahminiSkorBonusu * 10) / 10,
+      }).eq('id', analysis.id)
       router.refresh()
       setExpanded(null)
     } catch (err) {
@@ -337,7 +347,7 @@ function SkorMerkeziInner() {
             id="anket"
             icon="📋"
             title="Longevity Anketi"
-            subtitle="+10 puan kazanabilirsin"
+            subtitle="Maks +3.6 puan kazanabilirsin"
             isExpanded={expanded === 'anket'}
             onToggle={() => {
               setExpanded(expanded === 'anket' ? null : 'anket')
@@ -686,7 +696,7 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
           <span className="w-px h-4 bg-slate-700" />
           <span>📋 5 soru</span>
           <span className="w-px h-4 bg-slate-700" />
-          <span className="text-amber-400 font-semibold">+10 puan</span>
+          <span className="text-amber-400 font-semibold">+3.6 puan</span>
         </div>
 
         {/* CTA */}
