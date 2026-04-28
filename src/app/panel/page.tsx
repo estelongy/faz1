@@ -12,45 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import ScoreBar from '@/components/ScoreBar'
 import { getSkorDurumu, getScorePhase, getSkorDurumuLabel, getSkorDurumuColor } from '@/lib/skor-durum'
-import ScoreChart, { type ScorePoint } from '@/components/ScoreChart'
 import PaylasModal from '@/components/PaylasModal'
-import UserBadges from '@/components/UserBadges'
-import RandevuQRModal from '@/components/RandevuQRModal'
-import ZiyaretKarti, { type ZiyaretItem, type ZiyaretAnalysis } from '@/components/ZiyaretKarti'
-import OncekiAnalizler, { type OncekiAnaliz } from '@/components/OncekiAnalizler'
-import { checkAndAwardBadges, updateStreak } from './badge-actions'
-
-const APT_STATUS_LABEL: Record<string, string> = {
-  pending:     'Beklemede',
-  confirmed:   'Onaylandı',
-  in_progress: 'Görüşmede',
-  completed:   'Tamamlandı',
-  cancelled:   'İptal',
-  no_show:     'Gelmedi',
-}
-
-const APT_STATUS_COLOR: Record<string, string> = {
-  pending:     'bg-amber-500/20 text-amber-400',
-  confirmed:   'bg-blue-500/20 text-blue-400',
-  in_progress: 'bg-violet-500/20 text-violet-400',
-  completed:   'bg-emerald-500/20 text-emerald-400',
-  cancelled:   'bg-red-500/20 text-red-400',
-  no_show:     'bg-slate-500/20 text-slate-400',
-}
-
-async function cancelAppointment(formData: FormData) {
-  'use server'
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris')
-  const appointmentId = formData.get('appointmentId') as string
-  // Ownership kontrolü: yalnızca kendi randevusunu iptal edebilir
-  await supabase.from('appointments')
-    .update({ status: 'cancelled' })
-    .eq('id', appointmentId)
-    .eq('user_id', user.id)
-  redirect('/panel')
-}
 
 export default async function PanelPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const params = await searchParams
@@ -65,49 +27,28 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select('full_name, birth_year')
     .eq('id', user.id)
     .single()
 
-  const { data: allAnalysesRaw } = await supabase
+  // Sadece en son analiz (panel sade kalsın)
+  const { data: latestAnalysis } = await supabase
     .from('analyses')
-    .select('id, web_overall, temp_overall, final_overall, status, created_at, doctor_notes, doctor_approved_scores, web_scores, appointment_id')
+    .select('id, web_overall, temp_overall, final_overall, status, created_at')
     .eq('user_id', user.id)
-    .order('created_at', { ascending: true })
-    .limit(30)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-  // Son 5'i (azalan) liste için
-  const analyses = [...(allAnalysesRaw ?? [])].reverse().slice(0, 5)
-
-  // Grafik için tüm skor noktaları
-  const chartPoints: ScorePoint[] = (allAnalysesRaw ?? []).flatMap(a => {
-    const pts: ScorePoint[] = []
-    const aiScore = a.web_overall ?? a.temp_overall
-    if (aiScore != null) pts.push({ date: a.created_at, score: aiScore, type: 'ai_analiz' })
-    if (a.final_overall != null) pts.push({ date: a.created_at, score: a.final_overall, type: 'klinik_onayli' })
-    return pts
-  })
-
-  const { data: appointments } = await supabase
+  // Aktif randevu (en son pending/confirmed/in_progress)
+  const { data: activeAppt } = await supabase
     .from('appointments')
     .select('id, appointment_date, status, clinics(name)')
     .eq('user_id', user.id)
+    .in('status', ['pending', 'confirmed', 'in_progress'])
     .order('appointment_date', { ascending: false })
-    .limit(5)
-
-  // Timeline için tüm geçmiş ziyaretler
-  const { data: allAppointmentsRaw } = await supabase
-    .from('appointments')
-    .select('id, appointment_date, status, notes, clinic_notes, procedure_notes, recommendations, created_at, clinics(name)')
-    .eq('user_id', user.id)
-    .order('appointment_date', { ascending: false })
-    .limit(30)
-
-  // Rozet + streak (hata durumunda sessizce geç)
-  const [badgeKeys, streak] = await Promise.all([
-    checkAndAwardBadges().catch(() => [] as string[]),
-    updateStreak().catch(() => ({ current: 0, longest: 0 })),
-  ])
+    .limit(1)
+    .maybeSingle()
 
   // Kullanıcının kliniği var mı? (klinik paneli linki için)
   const { data: userClinic } = await supabase
@@ -116,7 +57,6 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     .eq('user_id', user.id)
     .maybeSingle()
 
-  const latestAnalysis = analyses[0] ?? null
   const latestScore = latestAnalysis?.final_overall ?? latestAnalysis?.temp_overall ?? latestAnalysis?.web_overall ?? null
 
   // En son skor satırını çek (durumu hesaplamak için)
@@ -130,80 +70,82 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
         .maybeSingle()
     : { data: null }
 
-  // Aktif randevu (en son pending/confirmed/in_progress)
-  const activeAppt = appointments?.find(a =>
-    a.status === 'pending' || a.status === 'confirmed' || a.status === 'in_progress'
-  ) ?? null
-
-  // ── Ziyaret zaman çizelgesi ─────────────────────────────────
-  const analysesByAppt = new Map<string, NonNullable<typeof allAnalysesRaw>[number]>()
-  const looseAnalyses: NonNullable<typeof allAnalysesRaw> = []
-  ;(allAnalysesRaw ?? []).forEach(a => {
-    if (a.appointment_id) analysesByAppt.set(a.appointment_id, a)
-    else looseAnalyses.push(a)
-  })
-  type RawA = NonNullable<typeof allAnalysesRaw>[number]
-  const toZA = (a: RawA): ZiyaretAnalysis => ({
-    id: a.id,
-    web_overall: a.web_overall,
-    temp_overall: a.temp_overall,
-    final_overall: a.final_overall,
-    status: a.status,
-    created_at: a.created_at,
-    doctor_notes: a.doctor_notes,
-    doctor_approved_scores: (a.doctor_approved_scores ?? null) as ZiyaretAnalysis['doctor_approved_scores'],
-    web_scores: (a.web_scores ?? null) as Record<string, number> | null,
-  })
-  const visitItems: ZiyaretItem[] = (allAppointmentsRaw ?? []).map(apt => {
-    const a = analysesByAppt.get(apt.id) ?? null
-    return {
-      kind: 'visit',
-      id: apt.id,
-      date: apt.appointment_date ?? apt.created_at,
-      status: apt.status,
-      reasonNote: apt.notes ?? null,
-      clinicNote: apt.clinic_notes ?? null,
-      procedureNotes: apt.procedure_notes ?? null,
-      recommendations: apt.recommendations ?? null,
-      analysis: a ? toZA(a) : null,
-      scoreDelta: null,
-      appointmentId: apt.id,
-      isActive: ['pending', 'confirmed', 'in_progress'].includes(apt.status),
-      userId: user.id,
-    }
-  })
-  const selfItems: ZiyaretItem[] = looseAnalyses.map(a => ({
-    kind: 'self_analysis',
-    id: a.id,
-    date: a.created_at,
-    status: a.status ?? '',
-    reasonNote: null,
-    clinicNote: null,
-    procedureNotes: null,
-    recommendations: null,
-    analysis: toZA(a),
-    scoreDelta: null,
-    appointmentId: null,
-    isActive: false,
-    userId: user.id,
-  }))
-  const timeline: ZiyaretItem[] = [...visitItems, ...selfItems].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  )
-  // Skor farkı: kronolojik (eski→yeni) üzerinden hesap
-  {
-    let prevFinal: number | null = null
-    for (const it of [...timeline].reverse()) {
-      const cur = it.analysis?.final_overall ?? it.analysis?.web_overall ?? it.analysis?.temp_overall ?? null
-      if (prevFinal != null && cur != null) it.scoreDelta = Math.round((cur - prevFinal) * 10) / 10
-      if (cur != null) prevFinal = cur
-    }
-  }
-
-  const skorDurumu = getSkorDurumu(latestAnalysis, latestScoreRow, activeAppt)
+  const skorDurumu = getSkorDurumu(latestAnalysis, latestScoreRow, activeAppt as { status: string } | null)
   const skorDurumLabel = getSkorDurumuLabel(skorDurumu)
   const skorDurumColors = getSkorDurumuColor(skorDurumu)
-  const currentPhase = getScorePhase(latestAnalysis, latestScoreRow, activeAppt)
+  const currentPhase = getScorePhase(latestAnalysis, latestScoreRow, activeAppt as { status: string } | null)
+
+  // ── Sıradaki Adım CTA — faza göre dinamik ──────────────────────────────
+  const nextAction = (() => {
+    // 1) Hiç analiz yok → ilk analiz
+    if (!latestAnalysis) {
+      return {
+        emoji: '📸',
+        title: 'İlk analizinizi yapın',
+        desc: 'Selfie ile gençlik skorunuzu öğrenin',
+        href: '/analiz',
+        cta: 'Analizi Başlat →',
+        gradient: 'from-violet-600 to-purple-600',
+      }
+    }
+    // 2) Klinik onaylı → paylaş + 6 ay sonra yenile
+    if (latestAnalysis.final_overall != null) {
+      return {
+        emoji: '🎉',
+        title: 'Klinik onaylı skorun hazır',
+        desc: 'Skorunuzu paylaşın veya 6 ay sonra yeniden ölçün',
+        href: '/analiz',
+        cta: 'Yeni Analiz Yap →',
+        gradient: 'from-emerald-600 to-teal-600',
+      }
+    }
+    // 3) Aktif randevu var → randevu detayına git
+    if (activeAppt) {
+      const apt = activeAppt as unknown as { id: string; appointment_date: string | null; status: string; clinics: { name: string } | null }
+      const dateStr = apt.appointment_date
+        ? new Date(apt.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+        : '—'
+      return {
+        emoji: '📅',
+        title: `Randevunuz var: ${dateStr}`,
+        desc: apt.clinics?.name ?? 'Klinik',
+        href: '/panel/randevularim',
+        cta: 'Randevuya Git →',
+        gradient: 'from-blue-600 to-cyan-600',
+      }
+    }
+    // 4) Anket dolduruldu, randevu yok → randevu al
+    if (latestAnalysis.temp_overall != null) {
+      return {
+        emoji: '🏥',
+        title: 'Klinik randevusu alın',
+        desc: 'Hekim muayenesiyle skorunuzu kesinleştirin',
+        href: '/randevu',
+        cta: 'Randevu Al →',
+        gradient: 'from-blue-600 to-cyan-600',
+      }
+    }
+    // 5) Ön analiz var, anket yok → anket doldur
+    if (latestAnalysis.web_overall != null) {
+      return {
+        emoji: '📋',
+        title: 'Anketinizi doldurun, +10 puan kazanın',
+        desc: '5 soru, 3-5 dakika',
+        href: `/skor?analysisId=${latestAnalysis.id}&open=anket`,
+        cta: 'Anketi Aç →',
+        gradient: 'from-amber-600 to-orange-600',
+      }
+    }
+    // Fallback
+    return {
+      emoji: '📸',
+      title: 'Yeni analiz yap',
+      desc: 'Skorunuzu güncelleyin',
+      href: '/analiz',
+      cta: 'Analize Git →',
+      gradient: 'from-violet-600 to-purple-600',
+    }
+  })()
 
   async function handleSignOut() {
     'use server'
@@ -216,7 +158,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -243,11 +185,11 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 space-y-6">
 
         {/* Başvuru başarı mesajı */}
         {basvuruSuccess && (
-          <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
+          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
             <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -262,304 +204,122 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           </div>
         )}
 
-        {/* Skor Rozeti — SADECE bu fixed, ekran üstünde ortada kalır */}
-        {latestScore !== null && (() => {
-          const s = latestScore
-          const label = s >= 90 ? 'Çok İyi' : s >= 80 ? 'İyi' : s >= 66 ? 'Normal' : s >= 56 ? 'Düşük' : 'Çok Düşük'
-          const ring  = s >= 90 ? 'border-blue-500/40 bg-blue-500/10' : s >= 80 ? 'border-emerald-500/40 bg-emerald-500/10' : s >= 66 ? 'border-amber-500/40 bg-amber-500/10' : s >= 56 ? 'border-orange-500/40 bg-orange-500/10' : 'border-red-500/40 bg-red-500/10'
-          const dot   = s >= 90 ? 'bg-blue-400' : s >= 80 ? 'bg-emerald-400' : s >= 66 ? 'bg-amber-400' : s >= 56 ? 'bg-orange-400' : 'bg-red-400'
-          const num   = s >= 90 ? 'text-blue-300' : s >= 80 ? 'text-emerald-300' : s >= 66 ? 'text-amber-300' : s >= 56 ? 'text-orange-300' : 'text-red-300'
-          const pill  = s >= 90 ? 'bg-blue-500/20 text-blue-300' : s >= 80 ? 'bg-emerald-500/20 text-emerald-300' : s >= 66 ? 'bg-amber-500/20 text-amber-300' : s >= 56 ? 'bg-orange-500/20 text-orange-300' : 'bg-red-500/20 text-red-300'
-          return (
-            <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4 py-2 rounded-2xl border shadow-2xl backdrop-blur-md ${ring}`}>
-              <div className={`w-2 h-2 rounded-full animate-pulse ${dot}`} />
-              <span className="text-slate-300 text-sm font-medium">Gençlik Skoru</span>
-              <span className={`text-2xl font-black ${num}`}>{s}</span>
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${pill}`}>{label}</span>
-              {latestAnalysis?.final_overall != null && <span className="text-emerald-400 text-xs font-medium">✦ Onaylı</span>}
-            </div>
-          )
-        })()}
-
-        {/* Hoşgeldin satırı (normal akış, scroll'da kaybolur) */}
-        <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">
-              Merhaba,{' '}
-              <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-                {profile?.full_name?.split(' ')[0] ?? 'Kullanıcı'}
-              </span>{' '}
-              <span>👋</span>
-            </h1>
-            <p className="text-slate-400 text-sm">Cilt sağlığınızı takip edin</p>
-          </div>
-          {latestAnalysis != null && (
-            <span className="text-slate-500 text-sm whitespace-nowrap">
-              {new Date(latestAnalysis.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </span>
-          )}
+        {/* Hoşgeldin */}
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
+            Merhaba,{' '}
+            <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+              {profile?.full_name?.split(' ')[0] ?? 'Kullanıcı'}
+            </span>{' '}
+            <span>👋</span>
+          </h1>
+          <p className="text-slate-400 text-sm">Cilt sağlığınızı takip edin</p>
         </div>
 
-        {/* EGS Skor Kartı */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* EGS Bar — 2 kolon */}
-          <div className="lg:col-span-2 p-5 rounded-2xl border border-slate-700 bg-slate-800/50 backdrop-blur-sm relative">
-            {/* Güncel Analiz pill — sol üst köşe */}
-            {latestAnalysis != null && (
-              <div className="absolute -top-3 left-5 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-white text-xs font-bold">
-                Güncel Analiz
-              </div>
-            )}
-            {latestScore !== null ? (
-              <>
-                {/* Skor Durumu Etiketi */}
-                <div className="flex justify-center mb-3">
-                  <div
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border"
-                    style={{
-                      color: skorDurumColors.fg,
-                      background: skorDurumColors.bg,
-                      borderColor: skorDurumColors.border,
-                    }}
-                  >
-                    {skorDurumu === 'klinik_onayli' && <span>✦</span>}
-                    {skorDurumu === 'guncelleniyor' && (
-                      <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: skorDurumColors.fg }} />
-                    )}
-                    {skorDurumu === 'tahmini' && <span>ℹ</span>}
-                    <span>{skorDurumLabel.toUpperCase()}</span>
-                  </div>
+        {/* ─── BÖLGE 1: SKOR DURUMU ─────────────────────────────── */}
+        <section className="p-6 rounded-2xl border border-slate-700 bg-slate-800/50 backdrop-blur-sm">
+          {latestScore !== null && latestAnalysis ? (
+            <>
+              {/* Faz rozeti */}
+              <div className="flex justify-center mb-3">
+                <div
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border"
+                  style={{
+                    color: skorDurumColors.fg,
+                    background: skorDurumColors.bg,
+                    borderColor: skorDurumColors.border,
+                  }}
+                >
+                  {skorDurumu === 'klinik_onayli' && <span>✦</span>}
+                  {skorDurumu === 'guncelleniyor' && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: skorDurumColors.fg }} />}
+                  {skorDurumu === 'tahmini' && <span>ℹ</span>}
+                  <span>{skorDurumLabel.toUpperCase()}</span>
                 </div>
+              </div>
 
-                <div className="scale-90 origin-top">
-                  <ScoreBar
+              {/* Skor barı */}
+              <ScoreBar score={latestScore} phase={currentPhase} animated={false} />
+
+              {/* Aksiyon satırı */}
+              <div className="mt-5 pt-5 border-t border-slate-700/50 flex flex-wrap items-center gap-3 justify-between">
+                <div>
+                  <p className="text-slate-500 text-xs">
+                    {new Date(latestAnalysis.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/skor?analysisId=${latestAnalysis.id}`}
+                    className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors"
+                  >
+                    Skor Detayı →
+                  </Link>
+                  <PaylasModal
+                    analysisId={latestAnalysis.id}
                     score={latestScore}
-                    phase={currentPhase}
-                    animated={false}
+                    firstName={profile?.full_name?.split(' ')[0] ?? 'Kullanıcı'}
                   />
                 </div>
-                {/* Paylaş butonu — klinik onaylı veya ön analiz */}
-                {latestAnalysis != null && latestScore != null && (
-                  <div className="mt-5 pt-5 border-t border-slate-700/50 flex items-center justify-between gap-3">
-                    <div>
-                      {latestAnalysis.final_overall != null ? (
-                        <>
-                          <p className="text-emerald-400 text-xs font-bold mb-0.5">✦ KLİNİK ONAYLI ESTELONGY GENÇLİK SKORU</p>
-                          <p className="text-slate-400 text-xs">Skorunu arkadaşlarınla paylaş</p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="text-violet-400 text-xs font-bold mb-0.5">Estelongy Gençlik Skorum ✦</p>
-                          <p className="text-slate-400 text-xs">Ön analiz skorunu paylaş</p>
-                        </>
-                      )}
-                    </div>
-                    <PaylasModal
-                      analysisId={latestAnalysis.id}
-                      score={latestScore}
-                      firstName={profile?.full_name?.split(' ')[0] ?? 'Kullanıcı'}
-                    />
-                  </div>
-                )}
-
-                {/* Önceki Analizler — skor kartının içinde, Paylaş altında */}
-                {analyses.length > 1 && (
-                  <div className="mt-5 pt-5 border-t border-slate-700/50">
-                    <div className="mb-3 flex items-center gap-2">
-                      <div className="w-1.5 h-5 rounded-full bg-gradient-to-b from-slate-600 to-slate-500" />
-                      <h2 className="text-base font-bold text-white">Önceki Analizler</h2>
-                      <Link href="/analiz" className="ml-auto text-xs text-violet-400 hover:text-violet-300 transition-colors">+ Yeni Analiz</Link>
-                    </div>
-                    <OncekiAnalizler analyses={(analyses.slice(1, 4) as OncekiAnaliz[])} />
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                </div>
-                <p className="text-white font-semibold mb-1">Gençlik Skorunuz Henüz Yok</p>
-                <p className="text-slate-400 text-sm mb-4">Selfie yükleyerek gençlik skorunuzu öğrenin</p>
-                <Link href="/analiz" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity">
-                  Analizi Başlat →
-                </Link>
               </div>
-            )}
-          </div>
-
-          {/* Hızlı aksiyonlar */}
-          <div className="flex flex-col gap-4">
-            <Link href="/analiz" className="flex-1 group p-5 rounded-2xl border border-violet-500/30 bg-violet-500/10 hover:bg-violet-500/20 hover:scale-[1.02] transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-3 text-white">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
               </div>
-              <h3 className="text-white font-bold mb-0.5">{latestScore ? 'Yeni Analiz' : 'Analizi Başlat'}</h3>
-              <p className="text-slate-400 text-xs">Skorunu güncelle</p>
-            </Link>
-
-            {/* Longevity Anketi — sadece AI skoru var ama anket doldurmamışsa göster */}
-            {latestAnalysis?.web_overall != null && !latestAnalysis?.temp_overall && (
-              <Link href={`/skor?analysisId=${latestAnalysis.id}&open=anket`} className="flex-1 group p-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer relative overflow-hidden">
-                <div className="absolute top-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
-                  +10 Puan
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-3 text-white">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-bold mb-0.5">Longevity Anketi</h3>
-                <p className="text-slate-400 text-xs">Yaşam tarzı → skor artır</p>
-              </Link>
-            )}
-
-            <Link href="/randevu" className="flex-1 group p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 hover:scale-[1.02] transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-3 text-white">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-white font-bold mb-0.5">Randevu Al</h3>
-              <p className="text-slate-400 text-xs">Skoru klinikle onayla</p>
-            </Link>
-
-            <Link href="/magaza" className="flex-1 group p-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-3 text-white">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </div>
-              <h3 className="text-white font-bold mb-0.5">Ürün Al</h3>
-              <p className="text-slate-400 text-xs">Hekim puanlı ürünler</p>
-            </Link>
-
-            <Link href="/panel/siparislerim" className="flex-1 group p-5 rounded-2xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 hover:scale-[1.02] transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-3 text-white text-xl">📦</div>
-              <h3 className="text-white font-bold mb-0.5">Siparişlerim</h3>
-              <p className="text-slate-400 text-xs">Sipariş takibi</p>
-            </Link>
-
-            <Link href="/panel/iadelerim" className="flex-1 group p-5 rounded-2xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 hover:scale-[1.02] transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center mb-3 text-slate-300 text-xl">↩</div>
-              <h3 className="text-white font-bold mb-0.5">İadelerim</h3>
-              <p className="text-slate-400 text-xs">İade taleplerim</p>
-            </Link>
-
-            <Link href="/panel/referral" className="flex-1 group p-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 hover:scale-[1.02] transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center mb-3 text-white text-xl">🎁</div>
-              <h3 className="text-white font-bold mb-0.5">Davet & Kazan</h3>
-              <p className="text-slate-400 text-xs">Referans kodum</p>
-            </Link>
-
-            <Link href="/panel/leaderboard" className="flex-1 group p-5 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 hover:bg-yellow-500/20 hover:scale-[1.02] transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center mb-3 text-white text-xl">🏆</div>
-              <h3 className="text-white font-bold mb-0.5">Sıralama</h3>
-              <p className="text-slate-400 text-xs">Klinik onaylı skorlar</p>
-            </Link>
-          </div>
-        </div>
-
-        {/* EGS Skor Geçmişi */}
-        {chartPoints.length > 0 && (
-          <div className="mb-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-white">Skor Geçmişi</h2>
-              <span className="text-xs text-slate-500">{chartPoints.length} veri noktası</span>
+              <p className="text-white font-semibold mb-1">Gençlik Skorunuz Henüz Yok</p>
+              <p className="text-slate-400 text-sm">Aşağıdaki butona tıklayarak ilk analizinizi yapın</p>
             </div>
-            <ScoreChart points={chartPoints} />
-          </div>
-        )}
+          )}
+        </section>
 
-        {/* Rozetler + Streak */}
-        {(badgeKeys.length > 0 || (streak?.current ?? 0) > 0) && (
-          <div className="mb-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
-            <UserBadges
-              badgeKeys={badgeKeys as import('@/lib/badges').BadgeKey[]}
-              streak={streak}
-            />
-          </div>
-        )}
-
-        {/* Randevularım */}
-        <div>
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-white">Randevularım</h2>
-              <Link href="/randevu" className="text-xs text-violet-400 hover:text-violet-300 transition-colors">+ Yeni Randevu</Link>
-            </div>
-            {appointments && appointments.length > 0 ? (
-              <div className="space-y-3">
-                {(appointments as unknown as Array<{id: string; appointment_date: string | null; status: string; clinics: {name: string} | null}>).map((apt) => (
-                  <div key={apt.id} className="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl">
-                    <div className="min-w-0 flex-1">
-                      <div className="text-white text-sm font-medium">{apt.clinics?.name ?? 'Klinik'}</div>
-                      <div className="text-slate-500 text-xs mt-0.5">
-                        {apt.appointment_date ? new Date(apt.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '—'}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0 ml-2">
-                      <span className={`text-xs px-2 py-1 rounded-full ${APT_STATUS_COLOR[apt.status] ?? APT_STATUS_COLOR.pending}`}>
-                        {APT_STATUS_LABEL[apt.status] ?? apt.status}
-                      </span>
-                      {(apt.status === 'pending' || apt.status === 'confirmed') && (
-                        <>
-                          <RandevuQRModal
-                            appointmentId={apt.id}
-                            clinicName={apt.clinics?.name ?? 'Klinik'}
-                            appointmentDate={apt.appointment_date}
-                          />
-                          <form action={cancelAppointment}>
-                            <input type="hidden" name="appointmentId" value={apt.id} />
-                            <button type="submit" className="text-slate-500 hover:text-red-400 transition-colors" title="İptal et">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </form>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ))}
+        {/* ─── BÖLGE 2: SIRADAKİ ADIM ───────────────────────────── */}
+        <section>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 px-1">Sıradaki Adım</p>
+          <Link
+            href={nextAction.href}
+            className={`block p-6 rounded-2xl bg-gradient-to-r ${nextAction.gradient} hover:opacity-95 hover:scale-[1.005] transition-all shadow-lg`}
+          >
+            <div className="flex items-center gap-4">
+              <span className="text-4xl shrink-0">{nextAction.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-white font-bold text-lg leading-tight mb-1">{nextAction.title}</h3>
+                <p className="text-white/80 text-sm">{nextAction.desc}</p>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-slate-500 text-sm mb-3">Henüz randevunuz yok.</p>
-                <Link href="/randevu" className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-xl transition-colors">
-                  Randevu Al →
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ── Ziyaret & Analiz Zaman Çizelgesi ── */}
-        {timeline.length > 0 && (
-          <section className="mt-8 space-y-4">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-white font-bold text-lg">Ziyaret & Ölçüm Geçmişi</h2>
-              <span className="text-slate-500 text-xs">{timeline.length} kayıt</span>
+              <span className="text-white font-semibold text-sm hidden sm:block shrink-0">{nextAction.cta}</span>
             </div>
-            <p className="text-slate-500 text-sm px-1 -mt-2">
-              Klinik ziyaretleriniz, yapılan işlemler, hekim önerileri ve her ziyarette alınan ölçüm sonuçları
-            </p>
-            {timeline.map(item => (
-              <ZiyaretKarti
-                key={`${item.kind}-${item.id}`}
-                item={item}
-                editable={false}
-              />
-            ))}
-          </section>
-        )}
+          </Link>
+        </section>
+
+        {/* ─── BÖLGE 3: YÖNETİM GRID ───────────────────────────── */}
+        <section>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 px-1">Yönetim</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <YonetimKarti href="/panel/hesabim"      icon="👤" label="Hesabım" />
+            <YonetimKarti href="/panel/analizlerim"  icon="📊" label="Analizlerim" />
+            <YonetimKarti href="/panel/randevularim" icon="📅" label="Randevularım" />
+            <YonetimKarti href="/panel/siparislerim" icon="📦" label="Siparişlerim" />
+            <YonetimKarti href="/panel/iadelerim"    icon="↩" label="İadelerim" />
+            <YonetimKarti href="/panel/adreslerim"   icon="📍" label="Adreslerim" />
+            <YonetimKarti href="/panel/referral"     icon="🎁" label="Davet & Kazan" />
+            <YonetimKarti href="/panel/leaderboard"  icon="🏆" label="Sıralama" />
+          </div>
+        </section>
       </div>
-
     </main>
+  )
+}
+
+function YonetimKarti({ href, icon, label }: { href: string; icon: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="p-4 rounded-2xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 hover:border-slate-600 hover:scale-[1.02] transition-all flex flex-col items-center text-center gap-2"
+    >
+      <span className="text-3xl">{icon}</span>
+      <span className="text-white text-sm font-semibold leading-tight">{label}</span>
+    </Link>
   )
 }
