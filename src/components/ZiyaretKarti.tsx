@@ -60,6 +60,8 @@ interface Props {
   editable: boolean
   /** Sadece klinik tarafı için; aktif randevuya giden link */
   klinikAkisLink?: boolean
+  /** Kart varsayılan açık mı? (klinik tarafı için true) */
+  defaultOpen?: boolean
   saveVisitNotes?: (
     appointmentId: string,
     userId: string,
@@ -99,13 +101,15 @@ function formatDate(iso: string) {
   })
 }
 
-export default function ZiyaretKarti({ item, editable, klinikAkisLink, saveVisitNotes }: Props) {
+export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOpen, saveVisitNotes }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [edit, setEdit] = useState(false)
   const [procedure, setProcedure] = useState(item.procedureNotes ?? '')
   const [advice, setAdvice]       = useState(item.recommendations ?? '')
   const [err, setErr]             = useState<string | null>(null)
+  // Collapsible: klinik tarafı (editable) ya da defaultOpen ise açık başla
+  const [open, setOpen] = useState<boolean>(defaultOpen ?? editable ?? false)
 
   const a   = item.analysis
   const das = a?.doctor_approved_scores ?? null
@@ -142,8 +146,13 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, saveVisit
 
   return (
     <div className={`bg-slate-900 rounded-2xl border ${accent} overflow-hidden`}>
-      {/* Başlık çubuğu */}
-      <div className="px-6 py-4 border-b border-slate-800 flex flex-wrap items-center gap-3 justify-between">
+      {/* Başlık çubuğu (tıklanabilir) */}
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className={`w-full px-6 py-4 ${open ? 'border-b border-slate-800' : ''} flex flex-wrap items-center gap-3 justify-between text-left hover:bg-slate-800/30 transition-colors`}
+        aria-expanded={open}
+      >
         <div className="flex items-center gap-3">
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
             item.kind === 'self_analysis'
@@ -200,13 +209,21 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, saveVisit
           {klinikAkisLink && item.isActive && item.appointmentId && (
             <Link
               href={`/klinik/panel/randevu/${item.appointmentId}`}
+              onClick={e => e.stopPropagation()}
               className="text-xs px-3 py-1.5 rounded-lg bg-violet-600/20 text-violet-400 hover:bg-violet-600/30 transition-colors font-medium">
               {item.status === 'in_progress' ? 'Devam Et →' : 'Başlat →'}
             </Link>
           )}
+          <svg
+            className={`w-5 h-5 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`}
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
-      </div>
+      </button>
 
+      {open && (
       <div className="p-6 space-y-5">
 
         {/* Geliş sebebi & klinik notu */}
@@ -394,6 +411,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, saveVisit
           <p className="text-slate-600 text-sm italic">Bu ziyaret için henüz kayıt yok.</p>
         )}
       </div>
+      )}
     </div>
   )
 }
