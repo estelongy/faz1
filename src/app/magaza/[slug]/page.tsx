@@ -8,12 +8,67 @@ import ReviewForm from './ReviewForm'
 import AddToCartButton from '@/components/AddToCartButton'
 import CartButton from '@/components/CartButton'
 
-export const metadata: Metadata = { title: 'Ürün Detayı — Estelongy' }
+const SITE_URL = 'https://estelongy.com'
 
 const CATEGORY_LABELS: Record<string, string> = {
   botox: 'Botoks', filler: 'Dolgu', mezo: 'Mezoterapi', laser: 'Lazer',
   gold_needle: 'Altın İğne', peeling: 'Peeling', serum: 'Serum',
   supplement: 'Takviye', device: 'Cihaz', other: 'Diğer',
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const supabase = await createClient()
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  const isUuid = uuidPattern.test(slug)
+
+  const q = supabase
+    .from('products')
+    .select('name, description, slug, images, category, final_score, vendors(company_name)')
+    .eq('is_active', true)
+    .eq('approval_status', 'approved')
+
+  const { data: p } = isUuid
+    ? await q.eq('id', slug).single()
+    : await q.eq('slug', slug).single()
+
+  if (!p) {
+    return { title: 'Ürün Bulunamadı', robots: { index: false, follow: false } }
+  }
+
+  const cat = p.category ? CATEGORY_LABELS[p.category] : null
+  const vendor = (p.vendors as { company_name?: string } | null)?.company_name
+  const titleSuffix = cat ? ` (${cat})` : ''
+  const title = `${p.name}${titleSuffix}`
+  const baseDesc = p.description?.trim() ?? ''
+  const truncated = baseDesc.length > 155 ? `${baseDesc.slice(0, 152)}...` : baseDesc
+  const description = truncated || `${p.name} — ${cat ?? 'estetik ürün'}${vendor ? ` · ${vendor}` : ''}. Estelongy Gençlik Puanı (EGP) ${p.final_score?.toFixed(1) ?? '—'}/10.`
+
+  const canonical = `/magaza/${p.slug ?? slug}`
+  const image = p.images?.[0]
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: `${title} | Estelongy`,
+      description,
+      url: `${SITE_URL}${canonical}`,
+      type: 'website',
+      ...(image ? { images: [{ url: image, width: 1200, height: 630, alt: p.name }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | Estelongy`,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
+  }
 }
 
 function PuanBar({ label, value }: { label: string; value: number | null }) {
@@ -70,8 +125,96 @@ export default async function UrunDetayPage({
     ? reviews.reduce((s, r) => s + Number(r.rating), 0) / reviews.length
     : null
 
+  // ── Product JSON-LD ──────────────────────────────────────────────
+  // Estelongy puanları 0-10 ölçek; Schema.org Review için 0-10 best/worst rating
+  const isTreatment = product.treatment_type === 'treatment'
+  const productJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': isTreatment ? 'Service' : 'Product',
+    name: product.name,
+    description: product.description ?? undefined,
+    url: `${SITE_URL}/magaza/${product.slug ?? product.id}`,
+    ...(product.images?.length ? { image: product.images } : {}),
+    ...(product.category ? { category: CATEGORY_LABELS[product.category] ?? product.category } : {}),
+    ...(product.vendors?.company_name ? {
+      brand: { '@type': 'Brand', name: product.vendors.company_name },
+    } : {}),
+  }
+
+  if (!isTreatment && product.price) {
+    productJsonLd.offers = {
+      '@type': 'Offer',
+      url: `${SITE_URL}/magaza/${product.slug ?? product.id}`,
+      priceCurrency: 'TRY',
+      price: Number(product.price),
+      availability: product.stock != null && product.stock > 0
+        ? 'https://schema.org/InStock'
+        : product.stock === 0
+          ? 'https://schema.org/OutOfStock'
+          : 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
+    }
+  }
+
+  // AggregateRating sadece gerçek kullanıcı yorumu varsa (Google Rich Results şartı)
+  if (avgUserScore && reviews && reviews.length > 0) {
+    productJsonLd.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: avgUserScore.toFixed(1),
+      reviewCount: reviews.length,
+      bestRating: 10,
+      worstRating: 0,
+    }
+    productJsonLd.review = reviews.slice(0, 5).map(r => ({
+      '@type': 'Review',
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: Number(r.rating),
+        bestRating: 10,
+        worstRating: 0,
+      },
+      author: {
+        '@type': 'Person',
+        name: (r.profiles as { full_name?: string } | null)?.full_name ?? 'Anonim',
+      },
+      datePublished: r.created_at,
+      ...(r.title ? { name: r.title } : {}),
+      ...(r.body ? { reviewBody: r.body } : {}),
+    }))
+  }
+
+  // BreadcrumbList — kategori varsa ara seviye ekle
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Mağaza', item: `${SITE_URL}/magaza` },
+      ...(product.category ? [{
+        '@type': 'ListItem',
+        position: 3,
+        name: CATEGORY_LABELS[product.category] ?? product.category,
+        item: `${SITE_URL}/magaza?kategori=${product.category}`,
+      }] : []),
+      {
+        '@type': 'ListItem',
+        position: product.category ? 4 : 3,
+        name: product.name,
+        item: `${SITE_URL}/magaza/${product.slug ?? product.id}`,
+      },
+    ],
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">

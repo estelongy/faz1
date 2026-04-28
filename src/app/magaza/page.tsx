@@ -7,7 +7,47 @@ import SiralamaSelect from './SiralamaSelect'
 import CartButton from '@/components/CartButton'
 import AramaBar from './AramaBar'
 
-export const metadata: Metadata = { title: 'Mağaza — Estelongy' }
+const SITE_URL = 'https://estelongy.com'
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ kategori?: string; q?: string }>
+}): Promise<Metadata> {
+  const params = await searchParams
+  const catLabel = params.kategori ? CATEGORY_LABELS[params.kategori] : null
+
+  const title = catLabel
+    ? `${catLabel} Ürünleri & İşlemleri`
+    : 'Mağaza — Estetik Ürün ve Klinik İşlemleri'
+
+  const description = catLabel
+    ? `${catLabel} kategorisinde uzman ve hekim onaylı estetik ürün ve işlemler. Estelongy Gençlik Puanı (EGP) ile karşılaştır.`
+    : 'Bilimsel ve uzman onaylı estetik ürün, takviye ve klinik işlemleri. Estelongy Gençlik Puanı (EGP) ile şeffaf karşılaştırma — hekim, kullanıcı, üretici ve bilimsel kanıt skoruyla.'
+
+  // Search ve filtre kombinasyonlarında canonical her zaman temiz /magaza'ya gider
+  // (kategori filtresi indekslenmesi gerekiyorsa: ayrı landing yapılmalı)
+  const canonical = params.kategori ? `/magaza?kategori=${params.kategori}` : '/magaza'
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: `${title} | Estelongy`,
+      description,
+      url: `${SITE_URL}${canonical}`,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | Estelongy`,
+      description,
+    },
+    // Arama ve sıralama parametreli URL'ler indekslenmesin (duplicate content)
+    robots: params.q ? { index: false, follow: true } : undefined,
+  }
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
   botox:        'Botoks',
@@ -58,8 +98,30 @@ export default async function MagazaPage({
 
   const categories = Object.entries(CATEGORY_LABELS)
 
+  // ── ItemList JSON-LD: Google'a ürün listesini yapısal olarak bildir ──
+  const itemListJsonLd = products && products.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: params.kategori
+      ? `${CATEGORY_LABELS[params.kategori] ?? params.kategori} — Estelongy Mağazası`
+      : 'Estelongy Mağazası — Tüm Ürünler ve İşlemler',
+    numberOfItems: products.length,
+    itemListElement: products.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${SITE_URL}/magaza/${p.slug ?? p.id}`,
+      name: p.name,
+    })),
+  } : null
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="text-white font-black text-lg tracking-tight">ESTELONGY</Link>

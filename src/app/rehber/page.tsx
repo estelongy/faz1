@@ -64,9 +64,41 @@ const colorMap: Record<string, { badge: string; dot: string; tag: string }> = {
   rose:    { badge: 'bg-rose-500/20 text-rose-300 border-rose-500/30',       dot: 'bg-rose-400',   tag: 'bg-rose-500/10 text-rose-400' },
 }
 
+const SITE_URL = 'https://estelongy.com'
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: 'Gençlik Rehberi', item: `${SITE_URL}/rehber` },
+  ],
+}
+
+const itemListJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Estelongy Gençlik Rehberi — Tüm Makaleler',
+  numberOfItems: ARTICLES.length,
+  itemListElement: ARTICLES.map((a, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: `${SITE_URL}/rehber/${a.slug}`,
+    name: a.title,
+  })),
+}
+
 export default function RehberPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       {/* Header */}
       <header className="bg-slate-900/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center gap-3">
