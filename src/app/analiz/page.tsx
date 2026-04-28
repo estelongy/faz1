@@ -161,11 +161,11 @@ export default function AnalizPage() {
         throw new Error(body.error ?? `HTTP ${res.status}`)
       }
 
-      const data = await res.json() as { ok: boolean; result: AnalizResult; usedFallback: boolean }
+      const data = await res.json() as { ok: boolean; result: AnalizResult; usedFallback: boolean; analysisId: string | null }
       setUsedFallback(data.usedFallback ?? false)
       setResult(data.result)
-      // Analiz bitince direkt Skor Merkezi'ne yönlendir
-      router.push('/skor')
+      // Analiz bitince direkt Skor Merkezi'ne yönlendir (analiz ID'si varsa onunla)
+      router.push(data.analysisId ? `/skor?analysisId=${data.analysisId}` : '/skor')
     } catch (err) {
       clearInterval(stageInterval)
       setError(err instanceof Error ? err.message : 'Analiz sırasında bir hata oluştu. Lütfen tekrar deneyin.')

@@ -89,6 +89,7 @@ function SkorMerkeziInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const requestedAnalysisId = searchParams.get('analysisId')
+  const requestedOpen = searchParams.get('open') as ExpandedCard
   const supabase = useMemo(() => createClient(), [])
 
   const [loading, setLoading]       = useState(true)
@@ -99,7 +100,7 @@ function SkorMerkeziInner() {
   // Anket state
   const [anketCevap, setAnketCevap] = useState<Record<string, number>>({})
   const [anketSubmitting, setAnketSubmitting] = useState(false)
-  const [anketIdx, setAnketIdx] = useState(0)  // mevcut soru index
+  const [anketIdx, setAnketIdx] = useState(-1)  // -1 = intro, 0+ = sorular
 
   // Hızlı randevu: bir klinik seçilince RandevuFlow'u o klinikle başlat
   const [hizliKlinikId, setHizliKlinikId] = useState<string | null>(null)
@@ -168,11 +169,15 @@ function SkorMerkeziInner() {
       setBirthYear(profileRes.data?.birth_year ?? null)
       setClinics(clinicsRes.data ?? [])
       setProducts(productsRes.data ?? [])
+      // ?open=anket|randevu|urun query param'ı varsa kart aç
+      if (requestedOpen === 'anket' || requestedOpen === 'randevu' || requestedOpen === 'urun') {
+        setExpanded(requestedOpen)
+      }
       setLoading(false)
     }
     load()
     return () => { cancelled = true }
-  }, [supabase, router, requestedAnalysisId])
+  }, [supabase, router, requestedAnalysisId, requestedOpen])
 
   // ── Anket cevap güncelle (canlı skor için) ────────────────────────────────
   function setCevap(key: string, value: number) {
@@ -336,7 +341,7 @@ function SkorMerkeziInner() {
             isExpanded={expanded === 'anket'}
             onToggle={() => {
               setExpanded(expanded === 'anket' ? null : 'anket')
-              setAnketIdx(0)
+              setAnketIdx(-1) // intro'dan başla
             }}
             preview={
               <div className="relative">
@@ -349,7 +354,7 @@ function SkorMerkeziInner() {
           >
             <AnketWizard
               currentIdx={anketIdx}
-              onPrev={() => setAnketIdx(Math.max(0, anketIdx - 1))}
+              onPrev={() => setAnketIdx(Math.max(-1, anketIdx - 1))}
               onNext={() => setAnketIdx(Math.min(HASTA_ANKET_SORULARI.length - 1, anketIdx + 1))}
               cevap={anketCevap}
               setCevap={setCevap}
@@ -606,6 +611,78 @@ interface AnketWizardProps {
 
 function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, submitting, tahminiBonus }: AnketWizardProps) {
   const total = HASTA_ANKET_SORULARI.length
+
+  // ── Intro Ekranı (currentIdx === -1) ────────────────────────────────────
+  if (currentIdx === -1) {
+    return (
+      <div className="py-2 space-y-5">
+        {/* Başlık */}
+        <div className="text-center space-y-1">
+          <p className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Longevity Başarı Analizi</p>
+          <p className="text-slate-400 text-sm">(Sağlıklı Yaşam Analizi)</p>
+          <h2 className="text-2xl font-black text-white mt-2 leading-snug">
+            Biyolojik Sermayenizi<br />Ne Kadar Korudunuz?
+          </h2>
+        </div>
+
+        {/* Ana açıklama */}
+        <p className="text-slate-300 text-sm leading-relaxed text-center">
+          Bu analiz şu anki sağlığınızı değil; <span className="text-white font-semibold">20 yaşınızdan bugüne kadar</span> yaşam tarzınızın biyolojik yaşlanma hızınızı nasıl şekillendirdiğini ölçer.
+        </p>
+
+        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-700 text-sm text-slate-400 leading-relaxed text-center">
+          Takvim yaşınız değiştirilemez.<br />
+          <span className="text-white font-medium">Biyolojik yaşınız ise büyük ölçüde sizin elinizde olmuştur.</span>
+        </div>
+
+        {/* Nasıl değerlendirmelisiniz */}
+        <div className="space-y-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">📊 Nasıl değerlendirmelisiniz?</p>
+          <p className="text-slate-400 text-xs leading-relaxed">
+            Geçici dönemleri değil, <span className="text-slate-300">20&apos;li yaşlarınızdan bugüne uzanan genel ortalamanızı</span> esas alın.
+          </p>
+          <div className="space-y-2">
+            {[
+              { pct: '%100', label: 'O alanda yaşam boyu tutarlı ve özenliydiniz', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+              { pct: '%50',  label: 'İyi dönemler ve ihmal edilen dönemler dengelendi', color: 'text-amber-400',   bg: 'bg-amber-500/10 border-amber-500/20'   },
+              { pct: '%0',   label: 'O alan büyük ölçüde ihmal edildi',                color: 'text-red-400',     bg: 'bg-red-500/10 border-red-500/20'       },
+            ].map(row => (
+              <div key={row.pct} className={`flex items-start gap-3 p-3 rounded-xl border ${row.bg}`}>
+                <span className={`font-black text-sm shrink-0 w-10 ${row.color}`}>{row.pct}</span>
+                <span className="text-slate-300 text-xs leading-relaxed">{row.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Hatırlatma */}
+        <div className="flex items-start gap-3 p-4 rounded-2xl bg-violet-500/10 border border-violet-500/20">
+          <span className="text-lg shrink-0">💡</span>
+          <p className="text-slate-300 text-xs leading-relaxed">
+            Burada kendinizi yargılamıyorsunuz — <span className="text-white font-medium">nerede olduğunuzu görüyorsunuz.</span>
+          </p>
+        </div>
+
+        {/* Meta */}
+        <div className="flex items-center justify-center gap-6 text-xs text-slate-500">
+          <span>⏱ 3–5 dakika</span>
+          <span className="w-px h-4 bg-slate-700" />
+          <span>📋 5 soru</span>
+          <span className="w-px h-4 bg-slate-700" />
+          <span className="text-amber-400 font-semibold">+10 puan</span>
+        </div>
+
+        {/* CTA */}
+        <button
+          onClick={onNext}
+          className="w-full py-4 rounded-2xl font-black text-white text-base transition-all hover:opacity-90 hover:scale-[1.01] bg-gradient-to-r from-violet-600 to-purple-600">
+          Analize Başla →
+        </button>
+      </div>
+    )
+  }
+
+  // ── Soru Ekranları (currentIdx 0..4) ────────────────────────────────────
   const soru = HASTA_ANKET_SORULARI[currentIdx]
   const value = cevap[soru.key]
   const isLast = currentIdx === total - 1

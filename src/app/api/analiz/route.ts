@@ -251,6 +251,7 @@ export async function POST(req: NextRequest) {
     }
 
     // DB'ye kaydet
+    let savedAnalysisId: string | null = null
     try {
       const { data: analysisRow } = await supabase
         .from('analyses')
@@ -278,6 +279,7 @@ export async function POST(req: NextRequest) {
 
       // scores tablosuna c250_base olarak ekle
       if (analysisRow?.id) {
+        savedAnalysisId = analysisRow.id
         await supabase.from('scores').insert({
           user_id:     user.id,
           score_type:  'web',
@@ -293,7 +295,7 @@ export async function POST(req: NextRequest) {
       console.error('[AI Analiz] DB kayıt hatası:', dbErr)
     }
 
-    return NextResponse.json({ ok: true, result, usedFallback })
+    return NextResponse.json({ ok: true, result, usedFallback, analysisId: savedAnalysisId })
   } catch (err) {
     console.error('[AI Analiz] Beklenmedik hata:', err)
     return NextResponse.json({ error: 'Analiz sırasında bir hata oluştu. Lütfen tekrar deneyin.' }, { status: 500 })

@@ -12,7 +12,7 @@ export default function robots(): MetadataRoute.Robots {
           '/admin/',
           '/api/',
           '/analiz',
-          '/anket',
+          '/skor',
           '/sepet',
           '/siparis/',
           '/paylas/',

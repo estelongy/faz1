@@ -405,7 +405,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
 
             {/* Longevity Anketi — sadece AI skoru var ama anket doldurmamışsa göster */}
             {latestAnalysis?.web_overall != null && !latestAnalysis?.temp_overall && (
-              <Link href="/anket" className="flex-1 group p-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer relative overflow-hidden">
+              <Link href={`/skor?analysisId=${latestAnalysis.id}&open=anket`} className="flex-1 group p-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer relative overflow-hidden">
                 <div className="absolute top-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
                   +10 Puan
                 </div>

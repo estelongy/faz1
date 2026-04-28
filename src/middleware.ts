@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 
 // Giriş gerektiren rotalar (prefix eşleşmesi)
 // /randevu herkese açık — girişsiz kullanıcılar saat seçtikten sonra modal'dan email-OTP ile kaydolup onaylar
-const PROTECTED = ['/panel', '/klinik/panel', '/satici/panel', '/admin', '/anket', '/analiz', '/skor', '/test-skor']
+const PROTECTED = ['/panel', '/klinik/panel', '/satici/panel', '/admin', '/analiz', '/skor', '/test-skor']
 
 // Giriş yapılmışsa erişilmemesi gereken rotalar (tam eşleşme)
 const AUTH_ONLY = ['/giris', '/kayit', '/kurumsal/giris']
@@ -64,11 +64,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Giriş yapılmış → /giris veya /kayit → /panel'e yönlendir
+  // Giriş yapılmış → /giris veya /kayit → next varsa oraya, yoksa /panel'e yönlendir
   const isAuthOnly = AUTH_ONLY.includes(pathname)
   if (session && isAuthOnly) {
     const url = request.nextUrl.clone()
-    url.pathname = '/panel'
+    const next = request.nextUrl.searchParams.get('next')
+    url.pathname = (next && next.startsWith('/')) ? next : '/panel'
+    url.search = ''
     return NextResponse.redirect(url)
   }
 

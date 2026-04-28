@@ -34,51 +34,52 @@ export interface AnketSoru {
 // ─── Hasta Anketi (5 soru) ──────────────────────────────────────────────────
 // Her soru 0–20 arası. Toplam 0–100.
 
+// Sıra: beslenme → cilt → uyku → stres → aktivite (kullanıcı kararı)
 export const HASTA_ANKET_SORULARI: AnketSoru[] = [
-  {
-    key: 'uyku',
-    label: 'Uyku kalitesi',
-    desc: 'Son 1 ayda uyku süreniz ve kalitesini değerlendirin',
-    emoji: '😴',
-    tip: 'scale',
-    min: 0, max: 20,
-    low: 'Çok kötü', high: 'Mükemmel',
-  },
   {
     key: 'beslenme',
     label: 'Beslenme düzeni',
-    desc: 'Günlük beslenme alışkanlıklarınız (sebze, meyve, işlenmiş gıda dengesi)',
+    desc: '20 yaşınızdan bu yana beslenme düzeninizi, sebze-meyve tüketiminizi ve işlenmiş gıdadan kaçınma alışkanlığınızı 0-100 arasında puanlayın.',
     emoji: '🥗',
     tip: 'scale',
-    min: 0, max: 20,
+    min: 0, max: 100,
+    low: 'Çok kötü', high: 'Mükemmel',
+  },
+  {
+    key: 'cilt',
+    label: 'Cilt koruma rutini',
+    desc: '20 yaşınızdan bu yana güneş koruması, nemlendirme ve cilt bakım rutininizi 0-100 arasında puanlayın.',
+    emoji: '✨',
+    tip: 'scale',
+    min: 0, max: 100,
+    low: 'Hiç yok', high: 'Günlük ve düzenli',
+  },
+  {
+    key: 'uyku',
+    label: 'Uyku kalitesi',
+    desc: '20 yaşınızdan bu yana uyku sürenizi, uyku kalitenizi ve dinlendirme kapasitesini 0-100 arasında puanlayın.',
+    emoji: '😴',
+    tip: 'scale',
+    min: 0, max: 100,
     low: 'Çok kötü', high: 'Mükemmel',
   },
   {
     key: 'stres',
     label: 'Stres yönetimi',
-    desc: 'Son 1 ayda stres seviyeniz ve başa çıkma yetkiniz',
+    desc: '20 yaşınızdan bu yana hayatın stres faktörlerine karşı psikolojik dayanıklılığınızı ve iç huzurunuzu koruma kapasitenizi 0-100 arasında puanlayın.',
     emoji: '🧘',
     tip: 'scale',
-    min: 0, max: 20,
+    min: 0, max: 100,
     low: 'Sürekli stresli', high: 'Tamamen rahat',
   },
   {
     key: 'aktivite',
     label: 'Fiziksel aktivite',
-    desc: 'Haftalık egzersiz ve günlük hareket miktarınız',
+    desc: '20 yaşınızdan bu yana kas kütlenizi korumak ve metabolizmanızı canlı tutmak için sergilediğiniz fiziksel aktivite düzeyini 0-100 arasında puanlayın.',
     emoji: '🏃',
     tip: 'scale',
-    min: 0, max: 20,
+    min: 0, max: 100,
     low: 'Hareketsiz', high: 'Çok aktif',
-  },
-  {
-    key: 'cilt',
-    label: 'Cilt koruma rutini',
-    desc: 'Günlük cilt bakımı, güneş koruması ve nemlendirme düzeniniz',
-    emoji: '✨',
-    tip: 'scale',
-    min: 0, max: 20,
-    low: 'Hiç yok', high: 'Günlük ve düzenli',
   },
 ]
 
@@ -90,46 +91,46 @@ export const KLINIK_EK_SORULARI: AnketSoru[] = [
   {
     key: 'sigara',
     label: 'Sigara kullanımı',
-    desc: 'Sigara içiyor musunuz? (0 = hiç, 20 = hiç içmedim)',
+    desc: 'Sigara kullanım geçmişinizi 0-100 arasında puanlayın (0 = yoğun kullanıcı, 100 = hiç içmedim)',
     emoji: '🚭',
     tip: 'scale',
-    min: 0, max: 20,
+    min: 0, max: 100,
     low: 'Yoğun kullanıcı', high: 'Hiç içmedim',
   },
   {
     key: 'alkol',
     label: 'Alkol tüketimi',
-    desc: 'Haftalık alkol alımınız (0 = sık, 20 = hiç)',
+    desc: 'Alkol tüketim alışkanlığınızı 0-100 arasında puanlayın (0 = çok sık, 100 = hiç)',
     emoji: '🍷',
     tip: 'scale',
-    min: 0, max: 20,
+    min: 0, max: 100,
     low: 'Çok sık', high: 'Hiç',
   },
   {
     key: 'aile_gecmisi',
     label: 'Ailevi sağlık',
-    desc: 'Ailede erken yaşlanma / kronik hastalık geçmişi',
+    desc: 'Ailenizdeki erken yaşlanma / kronik hastalık öyküsünü 0-100 arasında puanlayın (0 = yoğun öykü, 100 = temiz geçmiş)',
     emoji: '👨‍👩‍👧',
     tip: 'scale',
-    min: 0, max: 20,
+    min: 0, max: 100,
     low: 'Yoğun öykü', high: 'Temiz geçmiş',
   },
   {
     key: 'kronik_hastalik',
     label: 'Mevcut sağlık durumu',
-    desc: 'Kronik hastalık var mı? (diyabet, hipertansiyon vb.)',
+    desc: 'Mevcut kronik hastalık durumunuzu 0-100 arasında puanlayın (0 = çoklu tanı, 100 = sağlıklı)',
     emoji: '🏥',
     tip: 'scale',
-    min: 0, max: 20,
+    min: 0, max: 100,
     low: 'Çoklu tanı', high: 'Sağlıklı',
   },
   {
     key: 'gunes_maruziyeti',
     label: 'Güneş maruziyeti',
-    desc: 'Günlük güneş maruziyeti ve koruma önlemi',
+    desc: 'Güneş koruma alışkanlığınızı 0-100 arasında puanlayın (0 = korunmasız yoğun maruziyet, 100 = düzenli korunma)',
     emoji: '☀️',
     tip: 'scale',
-    min: 0, max: 20,
+    min: 0, max: 100,
     low: 'Korunmasız yoğun', high: 'Düzenli korunma',
   },
 ]
@@ -147,28 +148,32 @@ export const KLINIK_ANKET_SORULARI: AnketSoru[] = [
 
 /**
  * Hasta anketi puanı: max +10 puan katkı.
- * Input: cevap sözlüğü (key → 0..20)
+ * Input: cevap sözlüğü (key → 0..100)
  * Output: 0..10 arası puan
+ *
+ * NOT: Soru başına ağırlık şu an eşit. Sonra tek tek belirlenecek.
  */
 export function hastaAnketPuani(cevaplar: Record<string, number>): number {
   const total = HASTA_ANKET_SORULARI.reduce((sum, s) => {
     const v = cevaplar[s.key]
     return sum + (typeof v === 'number' ? v : 0)
   }, 0)
-  // 0..100 → 0..10
-  return Math.max(0, Math.min(10, total / 10))
+  // 5 soru × 100 = max 500 → 0..10
+  return Math.max(0, Math.min(10, total / 50))
 }
 
 /**
- * Klinik anketi puanı: max +20 puan katkı (10 soru, her biri 0..20).
- * Input: cevap sözlüğü (key → 0..20)
+ * Klinik anketi puanı: max +20 puan katkı (10 soru, her biri 0..100).
+ * Input: cevap sözlüğü (key → 0..100)
  * Output: 0..20 arası puan
+ *
+ * NOT: Soru başına ağırlık şu an eşit. Sonra tek tek belirlenecek.
  */
 export function klinikAnketPuani(cevaplar: Record<string, number>): number {
   const total = KLINIK_ANKET_SORULARI.reduce((sum, s) => {
     const v = cevaplar[s.key]
     return sum + (typeof v === 'number' ? v : 0)
   }, 0)
-  // 0..200 → 0..20
-  return Math.max(0, Math.min(20, total / 10))
+  // 10 soru × 100 = max 1000 → 0..20
+  return Math.max(0, Math.min(20, total / 50))
 }
