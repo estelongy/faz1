@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import PhoneOtpStep from '@/components/PhoneOtpStep'
 import { updateProfileAction, deleteAccountAction } from './actions'
 
 interface Props {
@@ -29,10 +30,35 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
   const [pwSaving, setPwSaving] = useState(false)
   const [pwMsg, setPwMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
+  // Telefon değiştir state
+  const [phoneStep, setPhoneStep] = useState<'idle' | 'enter' | 'otp' | 'done'>('idle')
+  const [newPhone, setNewPhone] = useState('')
+  const [phoneError, setPhoneError] = useState<string | null>(null)
+
   // Hesap silme onayı
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteText, setDeleteText] = useState('')
   const [deleting, setDeleting] = useState(false)
+
+  function formatPhone(raw: string) {
+    const d = raw.replace(/\D/g, '')
+    if (d.startsWith('90')) return `+${d}`
+    if (d.startsWith('0')) return `+90${d.slice(1)}`
+    return `+90${d}`
+  }
+
+  function startPhoneChange() {
+    setPhoneStep('enter')
+    setNewPhone('')
+    setPhoneError(null)
+  }
+
+  function submitNewPhone() {
+    setPhoneError(null)
+    const digits = newPhone.replace(/\D/g, '')
+    if (digits.length < 10) { setPhoneError('Geçerli bir telefon numarası girin'); return }
+    setPhoneStep('otp')
+  }
 
   async function handleProfileSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -120,16 +146,66 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
       <section className="rounded-2xl border border-slate-700 bg-slate-800/50 p-6">
         <h2 className="text-white font-bold text-lg mb-1">Telefon</h2>
         <p className="text-slate-400 text-sm mb-5">Bildirimler ve hesap güvenliği için</p>
-        <div className="flex items-center justify-between p-4 rounded-xl bg-slate-900 border border-slate-700">
-          <div>
-            <p className="text-slate-500 text-xs">Mevcut numara</p>
-            <p className="text-white font-mono">{phone ?? '—'}</p>
+
+        {phoneStep === 'idle' && (
+          <div className="flex items-center justify-between p-4 rounded-xl bg-slate-900 border border-slate-700">
+            <div>
+              <p className="text-slate-500 text-xs">Mevcut numara</p>
+              <p className="text-white font-mono">{phone ?? '—'}</p>
+            </div>
+            <button onClick={startPhoneChange}
+              className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors">
+              Değiştir
+            </button>
           </div>
-          <button disabled className="px-4 py-2 rounded-lg bg-slate-700 text-slate-400 text-sm cursor-not-allowed">
-            Değiştir (yakında)
-          </button>
-        </div>
-        <p className="text-slate-600 text-xs mt-2">Telefon değişikliği SMS ile doğrulanacak — yakında eklenecek</p>
+        )}
+
+        {phoneStep === 'enter' && (
+          <div className="space-y-3">
+            <p className="text-slate-400 text-sm">Yeni telefon numaranızı girin. SMS ile kod gönderilecek.</p>
+            <div className="flex gap-2">
+              <div className="flex items-center gap-1.5 px-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 text-sm shrink-0 select-none">
+                🇹🇷 <span>+90</span>
+              </div>
+              <input type="tel" value={newPhone}
+                onChange={e => setNewPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                placeholder="5xx xxx xx xx" autoFocus
+                className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500" />
+            </div>
+            {phoneError && <p className="text-red-400 text-sm">{phoneError}</p>}
+            <div className="flex gap-2">
+              <button onClick={() => setPhoneStep('idle')}
+                className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors">
+                Vazgeç
+              </button>
+              <button onClick={submitNewPhone}
+                className="flex-1 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white font-semibold rounded-xl transition-all">
+                Kod Gönder →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {phoneStep === 'otp' && (
+          <PhoneOtpStep
+            phone={formatPhone(newPhone)}
+            onVerified={() => {
+              setPhoneStep('done')
+              router.refresh()
+            }}
+            onBack={() => setPhoneStep('enter')}
+          />
+        )}
+
+        {phoneStep === 'done' && (
+          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
+            ✓ Telefon numaranız güncellendi: <span className="font-mono">{formatPhone(newPhone)}</span>
+            <button onClick={() => setPhoneStep('idle')}
+              className="mt-3 w-full py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+              Tamam
+            </button>
+          </div>
+        )}
       </section>
 
       {/* ŞİFRE DEĞİŞTİR */}
