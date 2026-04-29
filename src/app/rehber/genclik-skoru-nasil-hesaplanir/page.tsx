@@ -100,7 +100,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
               {[
                 { step: '01', label: 'GPT-4 Vision Analizi', color: '#a78bfa', desc: 'Yüklenen selfie; GPT-4o Vision modeline gönderilir. Model 5 cilt bileşenini 0–100 arasında skorlar.' },
                 { step: '02', label: 'Estelongy Algoritması', color: '#60a5fa', desc: 'Bileşen skorları ağırlıklı olarak birleştirilerek ham skor hesaplanır.' },
-                { step: '03', label: 'Yaş Faktörü Düzeltmesi', color: '#34d399', desc: 'Kronolojik yaşa göre beklenti düzeltmesi yapılır. 25 yaş altı hafif avantaj, 55 yaş üstü hafif dezavantaj.' },
+                { step: '03', label: 'Yaş Faktörü Düzeltmesi', color: '#34d399', desc: 'Takvim yaşına göre beklenti düzeltmesi yapılır. 25 yaş altı hafif avantaj, 55 yaş üstü hafif dezavantaj.' },
                 { step: '04', label: 'Longevity Anketi Katkısı (opsiyonel)', color: '#fbbf24', desc: 'Yaşam tarzı soruları tamamlanmışsa 0–10 puana kadar katkı eklenir.' },
                 { step: '05', label: 'Klinik Akış (opsiyonel)', color: '#f97316', desc: 'Klinik anketi ve tetkik verileri skoru rafine eder. Hekim tüm bileşenleri görüp onaylar.' },
                 { step: '06', label: 'Klinik Onaylı Final Skor', color: '#00d4ff', desc: 'Final = (Ara toplam × 0.85) + (Hekim değerlendirmesi × 0.15). Sertifika yayınlanır.' },

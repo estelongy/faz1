@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Longevity Nedir? Biyolojik Yaşlanmanın Bilimi ve Anti-Aging Protokolleri | Estelongy',
-  description: 'Longevity bilimi, biyolojik yaş ile kronolojik yaş farkı, telomer kısalması, serbest radikaller ve günümüzde kanıtlanmış yaşlanma karşıtı protokoller. Gerçek longevity neden sadece görünümden ibaret değil?',
+  description: 'Longevity bilimi, biyolojik yaş ile takvim yaşı farkı, telomer kısalması, serbest radikaller ve günümüzde kanıtlanmış yaşlanma karşıtı protokoller. Gerçek longevity neden sadece görünümden ibaret değil?',
   keywords: ['longevity nedir', 'biyolojik yaş', 'anti aging', 'telomer', 'NAD+', 'yaşlanma mekanizmaları', 'uzun ömür', 'longevity protokolü'],
   openGraph: {
     title: 'Longevity Nedir? Biyolojik Yaşlanmanın Bilimi | Estelongy',
@@ -62,12 +62,12 @@ export default function LongevityNedirPage() {
             </p>
           </div>
 
-          {/* Fark: biyolojik vs kronolojik */}
+          {/* Fark: biyolojik vs takvim */}
           <section className="mb-10" id="biyolojik-yas">
-            <h2 className="text-white font-black text-2xl mb-4">Biyolojik Yaş vs. Kronolojik Yaş</h2>
+            <h2 className="text-white font-black text-2xl mb-4">Biyolojik Yaş vs. Takvim Yaşı</h2>
             <div className="grid grid-cols-2 gap-4 mb-5">
               <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Kronolojik Yaş</p>
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Takvim Yaşı</p>
                 <p className="text-white text-2xl font-black mb-1">Pasaportunuzdaki yaş</p>
                 <p className="text-slate-500 text-sm">Değiştirilemez. Sadece zamanı sayar.</p>
               </div>
@@ -78,7 +78,7 @@ export default function LongevityNedirPage() {
               </div>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Araştırmalar, aynı kronolojik yaştaki iki bireyin biyolojik yaşının <strong className="text-white">10–20 yıl
+              Araştırmalar, aynı takvim yaşındaki iki bireyin biyolojik yaşının <strong className="text-white">10–20 yıl
               fark edebileceğini</strong> gösteriyor. Bu farkı yaratan; genetik yatkınlık (yaklaşık %20),
               yaşam tarzı, beslenme, stres yönetimi ve çevre koşulları (yaklaşık %80).
             </p>
