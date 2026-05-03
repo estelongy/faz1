@@ -147,9 +147,9 @@ export default async function Home() {
         </div>
       </nav>
 
-      {/* ── Hero — 2 kolon, tek viewport ─────────────── */}
-      <section className="pt-16 pb-8 lg:pt-20 lg:pb-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+      {/* ── Hero — 2 kolon, lg'de tam viewport ─────────────── */}
+      <section className="pt-16 pb-8 lg:pt-0 lg:pb-0 lg:min-h-[calc(100vh-4rem)] lg:flex lg:items-center px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl w-full mx-auto grid lg:grid-cols-2 gap-8 lg:gap-10 items-center">
 
           {/* Sol — Telefonlar (mobil'de üstte) */}
           <div className="order-1 lg:order-1">
@@ -163,12 +163,12 @@ export default async function Home() {
               Klinik Onaylı Gençlik Skoru
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-5xl font-black text-white leading-[1.1] mb-3">
+            <h1 className="text-3xl sm:text-4xl lg:text-[2.25rem] xl:text-[2.5rem] font-black text-white leading-[1.1] mb-3 text-balance">
               Gerçek yaşınız ile{' '}
               <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 görünüm yaşınız
               </span>{' '}
-              aynı mı?
+              <span className="whitespace-nowrap">aynı mı?</span>
             </h1>
 
             <p className="text-sm sm:text-base text-slate-400 mb-5 leading-relaxed">

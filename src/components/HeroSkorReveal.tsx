@@ -51,7 +51,7 @@ export default function HeroSkorReveal() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-tr from-violet-600/30 via-purple-500/20 to-pink-500/10 blur-3xl rounded-full" />
 
       {/* İki telefon, açılı, overlap, sakin float */}
-      <div className="relative h-[280px] sm:h-[320px] lg:h-[340px]">
+      <div className="relative h-[260px] sm:h-[300px] lg:h-[320px]">
         {/* SOL — Ön Analiz, skor 64 */}
         <div className="absolute left-0 sm:left-[6%] top-6 -rotate-[10deg] origin-bottom-right scale-[0.82] sm:scale-90 hidden sm:block z-10">
           <div className="phone-float-a">
