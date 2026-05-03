@@ -80,7 +80,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
             </span>
           </div>
           <form action={handleSignOut}>
-            <button type="submit" className="text-sm text-slate-400 hover:text-white transition-colors">
+            <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
               Çıkış
             </button>
           </form>

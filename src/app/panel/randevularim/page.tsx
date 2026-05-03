@@ -60,12 +60,12 @@ export default async function RandevularimPage() {
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/panel" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
           </Link>
           <span className="text-white font-bold text-sm">Randevularım</span>
-          <Link href="/randevu" className="text-violet-400 hover:text-violet-300 text-sm">+ Yeni</Link>
+          <Link href="/randevu" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-violet-500/30 hover:border-violet-400 hover:bg-violet-500/10 text-violet-400 hover:text-violet-300 text-sm font-medium transition-colors">+ Yeni</Link>
         </div>
       </header>
 

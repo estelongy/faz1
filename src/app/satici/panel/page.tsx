@@ -101,7 +101,7 @@ export default async function SaticiPanelPage() {
           </div>
           <div className="flex items-center gap-4">
             <form action={handleSignOut}>
-              <button type="submit" className="text-slate-400 hover:text-red-400 text-sm transition-colors">Çıkış Yap</button>
+              <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-red-400/50 hover:bg-red-500/10 text-slate-300 hover:text-red-400 text-sm font-medium transition-colors">Çıkış Yap</button>
             </form>
           </div>
         </div>

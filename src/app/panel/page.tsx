@@ -171,12 +171,12 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
             <div className="flex items-center gap-4">
               <span className="text-slate-400 text-sm hidden sm:block">{profile?.full_name ?? user.email}</span>
               {userClinic && (
-                <Link href="/klinik/panel" className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors hidden sm:block">
+                <Link href="/klinik/panel" className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-500/10 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
                   Klinik Paneli →
                 </Link>
               )}
               <form action={handleSignOut}>
-                <button type="submit" className="text-sm text-slate-400 hover:text-white transition-colors">
+                <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
                   Çıkış
                 </button>
               </form>
