@@ -183,11 +183,11 @@ function KayitInner() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Link href="/" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors">
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <Link href="/" className="inline-flex items-center gap-1.5 px-3 py-1.5 mb-8 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7m-9 2v8a1 1 0 001 1h3m4 0h3a1 1 0 001-1v-8m-9 2h4" />
           </svg>
-          Geri
+          Anasayfa
         </Link>
 
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">

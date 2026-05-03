@@ -159,8 +159,8 @@ export default async function KlinikBasvurPage({
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            Geri
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7m-9 2v8a1 1 0 001 1h3m4 0h3a1 1 0 001-1v-8m-9 2h4" /></svg>
+            Anasayfa
           </Link>
           <span className="text-white font-bold">Klinik Başvurusu</span>
           <div className="w-16" />
