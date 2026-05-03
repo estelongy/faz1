@@ -14,10 +14,17 @@ export default function HeroSkorReveal() {
   const [scoreLeft, setScoreLeft] = useState(0)
   const [scoreRight, setScoreRight] = useState(0)
   const [stamped, setStamped] = useState(false)
+  const [cycle, setCycle] = useState(0) // her 3sn artıp döngüyü yeniler
 
   useEffect(() => {
-    const COUNT_DURATION = 1500
-    const STAMP_DELAY = 1700
+    const COUNT_DURATION = 1200  // 1.2sn count-up
+    const STAMP_DELAY = 1400     // count bittiğinde damga
+    const LOOP_INTERVAL = 3000   // 3sn'de bir yeniden başla
+
+    // Cycle başlangıcında sıfırla
+    setScoreLeft(0)
+    setScoreRight(0)
+    setStamped(false)
 
     let raf: number
     const startedAt = performance.now()
@@ -38,12 +45,14 @@ export default function HeroSkorReveal() {
     raf = requestAnimationFrame(tick)
 
     const stampTimer = setTimeout(() => setStamped(true), STAMP_DELAY)
+    const loopTimer = setTimeout(() => setCycle(c => c + 1), LOOP_INTERVAL)
 
     return () => {
       cancelAnimationFrame(raf)
       clearTimeout(stampTimer)
+      clearTimeout(loopTimer)
     }
-  }, [])
+  }, [cycle])
 
   return (
     <div className="relative w-full max-w-[480px] mx-auto select-none" aria-hidden="true">
