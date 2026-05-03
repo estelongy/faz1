@@ -52,8 +52,8 @@ export default function HeroSkorReveal() {
 
       {/* İki telefon, açılı, overlap, sakin float */}
       <div className="relative h-[260px] sm:h-[300px] lg:h-[320px]">
-        {/* SOL — Ön Analiz, skor 64 */}
-        <div className="absolute left-0 sm:left-[6%] top-6 -rotate-[10deg] origin-bottom-right scale-[0.82] sm:scale-90 hidden sm:block z-10">
+        {/* SOL — Ön Analiz, skor 64 (sağa kaydırıldı, telefonlar bitişik) */}
+        <div className="absolute left-1/2 -translate-x-[110%] top-6 -rotate-[10deg] origin-bottom-right scale-[0.82] sm:scale-90 hidden sm:block z-10">
           <div className="phone-float-a">
             <PhoneCard
               badge="ÖN ANALIZ"
@@ -69,8 +69,8 @@ export default function HeroSkorReveal() {
           </div>
         </div>
 
-        {/* SAĞ — Klinik Onaylı, skor 87 */}
-        <div className="absolute right-0 sm:right-[4%] top-0 sm:rotate-[6deg] origin-bottom-left z-20">
+        {/* SAĞ — Klinik Onaylı, skor 87 (sola kaydırıldı, telefonlar bitişik) */}
+        <div className="absolute left-1/2 -translate-x-[10%] top-0 sm:rotate-[6deg] origin-bottom-left z-20">
           <div className="phone-float-b">
             <PhoneCard
               badge="KLINIK ONAYLI"

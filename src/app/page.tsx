@@ -158,12 +158,12 @@ export default async function Home() {
 
           {/* Sağ — Mesaj */}
           <div className="text-center lg:text-left order-2 lg:order-2 max-w-xl mx-auto lg:mx-0">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Klinik Onaylı Gençlik Skoru
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-[2.25rem] xl:text-[2.5rem] font-black text-white leading-[1.1] mb-3 text-balance">
+            <h1 className="text-4xl sm:text-5xl lg:text-[2.75rem] xl:text-[3.25rem] font-black text-white leading-[1.1] mb-4 text-balance">
               Gerçek yaşınız ile{' '}
               <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 görünüm yaşınız
@@ -171,25 +171,32 @@ export default async function Home() {
               <span className="whitespace-nowrap">aynı mı?</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-400 mb-5 leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-400 mb-6 leading-relaxed">
               Selfie ile ön analizini al, hekim muayenesiyle{' '}
               <span className="text-emerald-400 font-semibold">Klinik Onaylı Estelongy Gençlik Skoru</span> sertifikana dönüştür.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 mb-2">
+            <div className="mb-4">
               <Link href={dest1}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.02]">
+                className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-bold rounded-xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.02]">
                 Skorumu Öğren
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 12h15" />
                 </svg>
               </Link>
-              <Link href="/klinik/basvur"
-                className="inline-flex items-center gap-1.5 text-slate-400 hover:text-white text-xs transition-colors">
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-1 text-slate-500 text-sm">
+              <span>Ücretsiz</span>
+              <span className="text-slate-700">·</span>
+              <span>Saniyeler içinde</span>
+              <span className="text-slate-700">·</span>
+              <span>Kayıt gerekmez</span>
+              <span className="text-slate-700">·</span>
+              <Link href="/klinik/basvur" className="text-slate-400 hover:text-white transition-colors">
                 Klinik misin? <span className="text-violet-400">Başvur →</span>
               </Link>
             </div>
-            <p className="text-slate-500 text-[11px]">Ücretsiz · Saniyeler içinde · Kayıt gerekmez</p>
           </div>
         </div>
       </section>
@@ -197,7 +204,7 @@ export default async function Home() {
       {/* ── ÜÇ KAPI — sabit yer ─────────────────────────────── */}
       <section className="pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
-          <p className="text-slate-500 text-xs sm:text-sm uppercase tracking-widest mb-5 text-center">Nereden başlamak istersin?</p>
+          <h2 className="text-white text-xl sm:text-2xl font-bold mb-6 text-center">Nereden başlamak istersin?</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
 
