@@ -46,12 +46,12 @@ export default function HeroSkorReveal() {
   }, [])
 
   return (
-    <div className="relative w-full max-w-[560px] mx-auto select-none" aria-hidden="true">
+    <div className="relative w-full max-w-[480px] mx-auto select-none" aria-hidden="true">
       {/* Glow halo */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-tr from-violet-600/30 via-purple-500/20 to-pink-500/10 blur-3xl rounded-full" />
 
       {/* İki telefon, açılı, overlap, sakin float */}
-      <div className="relative h-[340px] sm:h-[380px] lg:h-[400px]">
+      <div className="relative h-[280px] sm:h-[320px] lg:h-[340px]">
         {/* SOL — Ön Analiz, skor 64 */}
         <div className="absolute left-0 sm:left-[6%] top-6 -rotate-[10deg] origin-bottom-right scale-[0.82] sm:scale-90 hidden sm:block z-10">
           <div className="phone-float-a">
@@ -120,7 +120,7 @@ function PhoneCard({
   const offset = circumference - (score / 100) * circumference
 
   return (
-    <div className="relative w-[180px] bg-slate-950 border-[8px] border-slate-800 rounded-[2rem] shadow-2xl shadow-violet-900/40 aspect-[9/17.5]">
+    <div className="relative w-[150px] bg-slate-950 border-[7px] border-slate-800 rounded-[1.75rem] shadow-2xl shadow-violet-900/40 aspect-[9/17.5]">
       {/* Notch */}
       <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-14 h-3.5 bg-slate-900 rounded-full z-10" />
 

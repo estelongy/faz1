@@ -147,23 +147,23 @@ export default async function Home() {
         </div>
       </nav>
 
-      {/* ── Hero — telefonlar üstte, mesaj altta ─────────────── */}
-      <section className="pt-20 pb-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
+      {/* ── Hero — 2 kolon, tek viewport ─────────────── */}
+      <section className="pt-16 pb-8 lg:pt-20 lg:pb-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-10 items-center">
 
-          {/* Telefonlar — float intro */}
-          <div className="mb-6 sm:mb-8">
+          {/* Sol — Telefonlar (mobil'de üstte) */}
+          <div className="order-1 lg:order-1">
             <HeroSkorReveal />
           </div>
 
-          {/* Mesaj */}
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm mb-4">
+          {/* Sağ — Mesaj */}
+          <div className="text-center lg:text-left order-2 lg:order-2 max-w-xl mx-auto lg:mx-0">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Klinik Onaylı Gençlik Skoru
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[1.1] mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-5xl font-black text-white leading-[1.1] mb-3">
               Gerçek yaşınız ile{' '}
               <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 görünüm yaşınız
@@ -171,25 +171,25 @@ export default async function Home() {
               aynı mı?
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-400 mb-6 max-w-2xl mx-auto leading-relaxed">
-              Selfie ile ön analizini al, yaşam tarzı anketi ve hekim muayenesiyle{' '}
+            <p className="text-sm sm:text-base text-slate-400 mb-5 leading-relaxed">
+              Selfie ile ön analizini al, hekim muayenesiyle{' '}
               <span className="text-emerald-400 font-semibold">Klinik Onaylı Estelongy Gençlik Skoru</span> sertifikana dönüştür.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mb-2">
+            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 mb-2">
               <Link href={dest1}
-                className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-bold rounded-xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.02]">
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.02]">
                 Skorumu Öğren
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 12h15" />
                 </svg>
               </Link>
               <Link href="/klinik/basvur"
-                className="inline-flex items-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors">
+                className="inline-flex items-center gap-1.5 text-slate-400 hover:text-white text-xs transition-colors">
                 Klinik misin? <span className="text-violet-400">Başvur →</span>
               </Link>
             </div>
-            <p className="text-slate-500 text-xs">Ücretsiz · Saniyeler içinde · Kayıt gerekmez</p>
+            <p className="text-slate-500 text-[11px]">Ücretsiz · Saniyeler içinde · Kayıt gerekmez</p>
           </div>
         </div>
       </section>
