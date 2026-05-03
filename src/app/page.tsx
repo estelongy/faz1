@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import ScoreBar from '@/components/ScoreBar'
+import HeroSkorReveal from '@/components/HeroSkorReveal'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
@@ -147,30 +148,57 @@ export default async function Home() {
       </nav>
 
       {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Klinik Onaylı Cilt Gençlik Skoru
+      <section className="pt-20 pb-12 lg:pt-24 lg:pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+
+          {/* Sol — Mesaj + tek primary CTA */}
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Klinik Onaylı Cilt Gençlik Skoru
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-black text-white leading-[1.05] mb-5">
+              Cilt yaşını ölç.{' '}
+              <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Hekim onaylasın.
+              </span>
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-400 mb-7 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              Selfie ile ön analizini al. Yaşam tarzı anketi ve hekim muayenesiyle{' '}
+              <span className="text-emerald-400 font-semibold">Klinik Onaylı Estelongy Gençlik Skoru</span> sertifikana dönüştür.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 mb-3">
+              <Link href={dest1}
+                className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-bold rounded-xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.02]">
+                Skorumu Öğren
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 12h15" />
+                </svg>
+              </Link>
+              <Link href="/klinik/basvur"
+                className="inline-flex items-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors">
+                Klinik misin? <span className="text-violet-400">Başvur →</span>
+              </Link>
+            </div>
+            <p className="text-slate-500 text-xs">Ücretsiz · Saniyeler içinde · Kayıt gerekmez</p>
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
-            Gerçek yaşınız ile{' '}
-            <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              cilt yaşınız
-            </span>{' '}
-            aynı mı?
-          </h1>
+          {/* Sağ — Animasyonlu demo skor kartı */}
+          <div className="flex justify-center lg:justify-end">
+            <HeroSkorReveal />
+          </div>
+        </div>
+      </section>
 
-          <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Selfie ile ön analizini al, yaşam tarzı anketi ve hekim muayenesiyle &ldquo;Klinik Onaylı&rdquo;{' '}
-            <span className="text-emerald-400 font-semibold">Estelongy Gençlik Skoru</span>&apos;na dönüştür.
-          </p>
+      {/* ── ÜÇ KAPI — sabit yer ─────────────────────────────── */}
+      <section className="pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-slate-500 text-xs sm:text-sm uppercase tracking-widest mb-5 text-center">Nereden başlamak istersin?</p>
 
-          <p className="text-slate-500 text-sm uppercase tracking-widest mb-8">Nereden başlamak istersin?</p>
-
-          {/* ── ÜÇ KAPI ─────────────────────────────────────── */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
 
             {/* Kapı 1 — Ücretsiz Analiz */}
             <Link href={dest1} className="group relative overflow-hidden rounded-3xl border border-violet-500/30 bg-gradient-to-br from-violet-600/20 via-purple-600/10 to-pink-500/5 p-8 text-left transition-all hover:border-violet-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20">
