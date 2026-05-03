@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import BackButton from '@/components/BackButton'
 
 export const metadata: Metadata = { title: 'İadelerim — Estelongy' }
 
@@ -30,7 +31,7 @@ export default async function IadelerimPage() {
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center gap-3">
-          <Link href="/panel" className="text-slate-400 hover:text-white transition-colors text-sm">← Panelim</Link>
+          <BackButton href="/panel" label="Panelim" />
           <span className="text-slate-700">|</span>
           <span className="text-white text-sm font-bold">İadelerim</span>
         </div>

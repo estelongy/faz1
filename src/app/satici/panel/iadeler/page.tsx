@@ -1,10 +1,10 @@
 export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import IadeKararForm from './IadeKararForm'
+import BackButton from '@/components/BackButton'
 
 export const metadata: Metadata = { title: 'İade Talepleri — Satıcı Paneli' }
 
@@ -50,7 +50,7 @@ export default async function SaticiIadelerPage({
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
-          <Link href="/satici/panel" className="text-slate-400 hover:text-white transition-colors text-sm">← Satıcı Paneli</Link>
+          <BackButton href="/satici/panel" label="Satıcı Paneli" />
           <span className="text-slate-700">|</span>
           <span className="text-white text-sm font-bold">İade Talepleri</span>
           {pendingCount > 0 && (

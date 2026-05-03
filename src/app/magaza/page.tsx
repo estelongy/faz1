@@ -126,10 +126,10 @@ export default async function MagazaPage({
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="text-white font-black text-lg tracking-tight">ESTELONGY</Link>
           <nav className="flex items-center gap-2 text-sm">
-            <Link href="/analiz" className="hidden sm:inline text-slate-400 hover:text-white transition-colors px-3 py-2">Analiz</Link>
-            <Link href="/randevu" className="hidden sm:inline text-slate-400 hover:text-white transition-colors px-3 py-2">Randevu</Link>
-            <Link href="/panel" className="hidden sm:inline text-slate-400 hover:text-white transition-colors px-3 py-2">Panelim</Link>
-            <CartButton />
+            <Link href="/analiz" className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white font-medium transition-colors">Analiz</Link>
+            <Link href="/randevu" className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white font-medium transition-colors">Randevu</Link>
+            <Link href="/panel" className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white font-medium transition-colors">Panelim</Link>
+            <CartButton className="border border-slate-700 hover:border-slate-500" />
           </nav>
         </div>
       </header>
