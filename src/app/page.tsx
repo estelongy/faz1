@@ -147,30 +147,36 @@ export default async function Home() {
         </div>
       </nav>
 
-      {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="pt-20 pb-12 lg:pt-24 lg:pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+      {/* ── Hero — telefonlar üstte, mesaj altta ─────────────── */}
+      <section className="pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
 
-          {/* Sol — Mesaj + tek primary CTA */}
-          <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm mb-5">
+          {/* Telefonlar — float intro */}
+          <div className="mb-6 sm:mb-8">
+            <HeroSkorReveal />
+          </div>
+
+          {/* Mesaj */}
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Klinik Onaylı Cilt Gençlik Skoru
+              Klinik Onaylı Gençlik Skoru
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-black text-white leading-[1.05] mb-5">
-              Cilt yaşını ölç.{' '}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[1.1] mb-4">
+              Gerçek yaşınız ile{' '}
               <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Hekim onaylasın.
-              </span>
+                görünüm yaşınız
+              </span>{' '}
+              aynı mı?
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-400 mb-7 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Selfie ile ön analizini al. Yaşam tarzı anketi ve hekim muayenesiyle{' '}
+            <p className="text-base sm:text-lg text-slate-400 mb-6 max-w-2xl mx-auto leading-relaxed">
+              Selfie ile ön analizini al, yaşam tarzı anketi ve hekim muayenesiyle{' '}
               <span className="text-emerald-400 font-semibold">Klinik Onaylı Estelongy Gençlik Skoru</span> sertifikana dönüştür.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 mb-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mb-2">
               <Link href={dest1}
                 className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-bold rounded-xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.02]">
                 Skorumu Öğren
@@ -184,11 +190,6 @@ export default async function Home() {
               </Link>
             </div>
             <p className="text-slate-500 text-xs">Ücretsiz · Saniyeler içinde · Kayıt gerekmez</p>
-          </div>
-
-          {/* Sağ — Animasyonlu demo skor kartı */}
-          <div className="flex justify-center lg:justify-end">
-            <HeroSkorReveal />
           </div>
         </div>
       </section>
