@@ -60,9 +60,9 @@ export default function HeroSkorReveal() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-tr from-violet-600/30 via-purple-500/20 to-pink-500/10 blur-3xl rounded-full" />
 
       {/* İki telefon, açılı, overlap, sakin float */}
-      <div className="relative h-[240px] sm:h-[300px] lg:h-[320px]">
+      <div className="relative h-[200px] sm:h-[300px] lg:h-[320px]">
         {/* SOL — Ön Analiz, skor 64 (sağa kaydırıldı, telefonlar bitişik) */}
-        <div className="absolute left-1/2 -translate-x-[115%] sm:-translate-x-[110%] top-4 sm:top-6 -rotate-[10deg] origin-bottom-right scale-[0.6] sm:scale-90 z-10">
+        <div className="absolute left-1/2 -translate-x-[115%] sm:-translate-x-[110%] top-2 sm:top-6 -rotate-[10deg] origin-top-right sm:origin-bottom-right scale-[0.6] sm:scale-90 z-10">
           <div className="phone-float-a">
             <PhoneCard
               badge="ÖN ANALIZ"
@@ -79,7 +79,7 @@ export default function HeroSkorReveal() {
         </div>
 
         {/* SAĞ — Klinik Onaylı, skor 87 (sola kaydırıldı, telefonlar bitişik) */}
-        <div className="absolute left-1/2 -translate-x-[15%] sm:-translate-x-[10%] top-0 rotate-[4deg] sm:rotate-[6deg] origin-bottom-left scale-[0.7] sm:scale-100 z-20">
+        <div className="absolute left-1/2 -translate-x-[15%] sm:-translate-x-[10%] top-0 rotate-[4deg] sm:rotate-[6deg] origin-top-left sm:origin-bottom-left scale-[0.7] sm:scale-100 z-20">
           <div className="phone-float-b">
             <PhoneCard
               badge="KLINIK ONAYLI"
