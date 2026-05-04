@@ -163,7 +163,7 @@ export default async function Home() {
               Klinik Onaylı Gençlik Skoru
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[2.75rem] xl:text-[3.25rem] font-black text-white leading-[1.1] mb-4 text-balance">
+            <h1 className="text-3xl sm:text-5xl lg:text-[2.75rem] xl:text-[3.25rem] font-black text-white leading-[1.1] mb-4 text-balance">
               Gerçek yaşınız ile{' '}
               <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 görünüm yaşınız
