@@ -160,7 +160,7 @@ export default async function Home() {
           <div className="text-center lg:text-left order-2 lg:order-2 max-w-xl mx-auto lg:mx-0">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Klinik Onaylı Gençlik Skoru
+              Estelongy Gençlik Skoru
             </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-[2.75rem] xl:text-[3.25rem] font-black text-white leading-[1.1] mb-4 text-balance">
