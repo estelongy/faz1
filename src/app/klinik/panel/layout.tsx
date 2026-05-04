@@ -68,8 +68,8 @@ export default async function KlinikPanelLayout({ children }: { children: React.
         freeCredit={freeCredit}
       />
 
-      {/* Ana içerik — sidebar offset */}
-      <div className="lg:pl-64">
+      {/* Ana içerik — sidebar collapsed offset (72px), expanded sidebar overlays */}
+      <div className="lg:pl-[72px]">
         {/* Üst bar (mobil için boşluk + çıkış) */}
         <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur border-b border-slate-800 h-14 flex items-center justify-between px-4 lg:px-8">
           <div className="lg:hidden w-10" /> {/* mobile hamburger placeholder */}
