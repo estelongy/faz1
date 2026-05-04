@@ -163,16 +163,18 @@ export default async function SaticiBasvurPage({
           <p className="text-slate-400 text-sm mt-1">Başvurunuz admin onayından sonra aktive edilir</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
           {[
             { icon: '🛍️', title: 'Hedefli Kitle', desc: 'Cilt sağlığına yatırım yapan hastalara ulaşın' },
             { icon: '✓',  title: 'Hekim Puanlı', desc: 'Ürünleriniz uzman değerlendirmesiyle öne çıkar' },
             { icon: '📊', title: 'Analitik', desc: 'Satış ve etkileşim verilerinizi takip edin' },
           ].map(({ icon, title, desc }) => (
-            <div key={title} className="p-4 rounded-xl bg-slate-800/50 border border-slate-700 text-center">
-              <div className="text-2xl mb-2">{icon}</div>
-              <div className="text-white text-sm font-medium">{title}</div>
-              <div className="text-slate-500 text-xs mt-0.5">{desc}</div>
+            <div key={title} className="flex sm:block items-center gap-3 p-4 rounded-xl bg-slate-800/50 border border-slate-700 sm:text-center">
+              <div className="text-2xl shrink-0 sm:mb-2">{icon}</div>
+              <div className="flex-1 sm:flex-initial">
+                <div className="text-white text-sm font-medium">{title}</div>
+                <div className="text-slate-500 text-xs mt-0.5">{desc}</div>
+              </div>
             </div>
           ))}
         </div>
