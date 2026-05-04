@@ -227,7 +227,7 @@ export default async function UrunDetayPage({
       </header>
 
       <div className="max-w-5xl mx-auto px-4 pt-24 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
 
           {/* Sol: Görsel + Puan */}
           <div>
