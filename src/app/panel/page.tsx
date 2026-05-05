@@ -52,13 +52,6 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     .limit(1)
     .maybeSingle()
 
-  // Kullanıcının kliniği var mı? (klinik paneli linki için)
-  const { data: userClinic } = await supabase
-    .from('clinics')
-    .select('id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
   // Bekleyen vitrini paylaşım izni istekleri
   const pendingShareRequests = await fetchPendingRequestsForUser(user.id, supabase)
 
@@ -160,37 +153,19 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">Estelongy</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <span className="text-slate-400 text-sm hidden sm:block">{profile?.full_name ?? user.email}</span>
-              {userClinic && (
-                <Link href="/klinik/panel" className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-500/10 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
-                  Klinik Paneli →
-                </Link>
-              )}
-              <form action={handleSignOut}>
-                <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
-                  Çıkış
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+    <main className="min-h-screen">
+      {/* Üst bar — sidebar ile uyumlu */}
+      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5 h-14 flex items-center justify-between px-4 lg:px-8">
+        <div className="lg:hidden w-10" />
+        <span className="text-slate-400 text-xs hidden sm:block truncate">{profile?.full_name ?? user.email}</span>
+        <form action={handleSignOut}>
+          <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
+            Çıkış
+          </button>
+        </form>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16 space-y-6">
 
         {/* Başvuru başarı mesajı */}
         {basvuruSuccess && (
@@ -379,32 +354,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           </div>
         </Link>
 
-        {/* ─── BÖLGE 3: YÖNETİM GRID ───────────────────────────── */}
-        <section>
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 px-1">Yönetim</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            <YonetimKarti href="/panel/hesabim"      icon="👤" label="Hesabım" />
-            <YonetimKarti href="/panel/analizlerim"  icon="📅" label="Geçmişim" />
-            <YonetimKarti href="/panel/siparislerim" icon="📦" label="Siparişlerim" />
-            <YonetimKarti href="/panel/iadelerim"    icon="↩" label="İadelerim" />
-            <YonetimKarti href="/panel/adreslerim"   icon="📍" label="Adreslerim" />
-            <YonetimKarti href="/panel/referral"     icon="🎁" label={profile?.points_balance ? `Puanım: ${profile.points_balance}` : 'Davet & Puan'} />
-            <YonetimKarti href="/panel/leaderboard"  icon="🏆" label="Sıralama" />
-          </div>
-        </section>
       </div>
     </main>
-  )
-}
-
-function YonetimKarti({ href, icon, label }: { href: string; icon: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="p-4 rounded-2xl border border-slate-700 bg-slate-800/40 hover:bg-slate-800 hover:border-slate-600 hover:scale-[1.02] transition-all flex flex-col items-center text-center gap-2"
-    >
-      <span className="text-3xl">{icon}</span>
-      <span className="text-white text-sm font-semibold leading-tight">{label}</span>
-    </Link>
   )
 }

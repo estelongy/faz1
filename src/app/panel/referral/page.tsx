@@ -39,7 +39,7 @@ export default async function ReferralPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+      <header className="fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BackButton href="/panel" label="Panelim" />
