@@ -2,17 +2,11 @@ import Link from 'next/link'
 import TercihliKartlarSection from './TercihliKartlarSection'
 import AkreditasyonKart from './AkreditasyonKart'
 import OnboardingBanner from './OnboardingBanner'
+import BugununAkisiCard, { type ApptView } from './BugununAkisiCard'
 import type { Accreditation } from '@/lib/clinic-accreditation'
 import type { OnboardingStatus } from '@/lib/clinic-onboarding'
 import type { PostsByCategory } from '@/lib/editorial-posts'
 import { type SharedCaseWithProfile, formatAnonymousName, calculateDelta } from '@/lib/shared-cases'
-
-interface TodayAppt {
-  id: string
-  time: string | null
-  patientName: string
-  status: string
-}
 
 interface UretimMetrics {
   thisMonthCount: number
@@ -24,32 +18,24 @@ interface UretimMetrics {
 interface Props {
   hekimName: string | null
   clinicName: string
-  todayAppts: TodayAppt[]
-  pendingCount: number
+  todayAppts: ApptView[]
+  tomorrowApptsCount: number
+  pendingAppts: ApptView[]
+  inProgressAppts: ApptView[]
   uretimMetrics: UretimMetrics
   totalCredit: number
   accreditation: Accreditation
   onboarding: OnboardingStatus
   postsByCategory: PostsByCategory
   approvedCases: SharedCaseWithProfile[]
-}
-
-const STATUS_COLOR: Record<string, string> = {
-  pending:     'bg-amber-500/20 text-amber-400',
-  confirmed:   'bg-blue-500/20 text-blue-400',
-  in_progress: 'bg-violet-500/20 text-violet-400',
-  completed:   'bg-emerald-500/20 text-emerald-400',
-  cancelled:   'bg-red-500/20 text-red-400',
-  no_show:     'bg-slate-500/20 text-slate-400',
-}
-
-const STATUS_LABEL: Record<string, string> = {
-  pending: 'Beklemede', confirmed: 'Onaylı', in_progress: 'Görüşmede',
-  completed: 'Tamamlandı', cancelled: 'İptal', no_show: 'Gelmedi',
+  onConfirmAppointment: (apptId: string) => Promise<{ ok: boolean; error?: string }>
+  onRejectAppointment: (apptId: string) => Promise<{ ok: boolean; error?: string }>
 }
 
 export default function KlinikPanelDashboard({
-  hekimName, clinicName, todayAppts, pendingCount, uretimMetrics, totalCredit, accreditation, onboarding, postsByCategory, approvedCases,
+  hekimName, clinicName, todayAppts, tomorrowApptsCount, pendingAppts, inProgressAppts,
+  uretimMetrics, totalCredit, accreditation, onboarding, postsByCategory, approvedCases,
+  onConfirmAppointment, onRejectAppointment,
 }: Props) {
   const greeting = getGreeting()
   const firstName = hekimName?.split(' ')[0] ?? 'Hekim'
@@ -93,7 +79,14 @@ export default function KlinikPanelDashboard({
       {/* ─── KATMAN 1 — ŞİMDİ ─────────────────────────────────────── */}
       <section>
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-2 px-1">Şimdi</p>
-        <BugununAkisiCard todayAppts={todayAppts} pendingCount={pendingCount} />
+        <BugununAkisiCard
+          todayAppts={todayAppts}
+          tomorrowApptsCount={tomorrowApptsCount}
+          pendingAppts={pendingAppts}
+          inProgressAppts={inProgressAppts}
+          onConfirm={onConfirmAppointment}
+          onReject={onRejectAppointment}
+        />
       </section>
 
       {/* ─── KATMAN 2 — BU AY ─────────────────────────────────────── */}
@@ -121,76 +114,8 @@ export default function KlinikPanelDashboard({
 }
 
 // ───────────────────────────────────────────────────────────────────
-// SABİT KARTLAR
+// SABİT KARTLAR (BugununAkisiCard ayrı dosyaya taşındı — client interaktif)
 // ───────────────────────────────────────────────────────────────────
-
-function BugununAkisiCard({ todayAppts, pendingCount }: { todayAppts: TodayAppt[]; pendingCount: number }) {
-  const formatTime = (t: string | null) => t
-    ? new Date(t).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
-    : '—'
-
-  return (
-    <Link
-      href="/klinik/panel/takvim"
-      className="block group relative overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800/80 via-slate-800/50 to-slate-900/30 hover:border-violet-500/50 transition-all"
-    >
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-white font-bold text-lg">Bugünün Akışı</h2>
-              <p className="text-slate-500 text-xs mt-0.5">
-                {todayAppts.length > 0
-                  ? `${todayAppts.length} randevu${pendingCount > 0 ? ` · ${pendingCount} onay bekliyor` : ''}`
-                  : pendingCount > 0
-                    ? `${pendingCount} onay bekliyor`
-                    : 'Bugün boş — yarına bakabilirsin'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-violet-300 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-            Takvime git
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 12h15" />
-            </svg>
-          </div>
-        </div>
-
-        {todayAppts.length > 0 ? (
-          <div className="space-y-2">
-            {todayAppts.slice(0, 3).map(apt => (
-              <div key={apt.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-700/50">
-                <div className="text-violet-300 font-mono text-sm font-bold w-12 shrink-0">{formatTime(apt.time)}</div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium truncate">{apt.patientName}</p>
-                </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${STATUS_COLOR[apt.status] ?? STATUS_COLOR.pending}`}>
-                  {STATUS_LABEL[apt.status] ?? apt.status}
-                </span>
-              </div>
-            ))}
-            {todayAppts.length > 3 && (
-              <p className="text-center text-slate-500 text-xs pt-1">+{todayAppts.length - 3} daha</p>
-            )}
-          </div>
-        ) : (
-          <div className="py-6 text-center">
-            <p className="text-slate-500 text-sm">
-              {pendingCount > 0
-                ? `${pendingCount} onay bekleyen randevuya bakmak için takvime git`
-                : 'Bugün açık slot yok. Müsaitlik takvimini güncelleyerek hasta kabulüne devam edebilirsin.'}
-            </p>
-          </div>
-        )}
-      </div>
-    </Link>
-  )
-}
 
 function UretiminCard({ metrics }: { metrics: UretimMetrics }) {
   const { thisMonthCount, monthDelta, acceptanceRate, klinikOnayiSayisi } = metrics

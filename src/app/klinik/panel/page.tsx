@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import KlinikPanelDashboard from '@/components/klinik-panel/KlinikPanelDashboard'
 import { computeAccreditation } from '@/lib/clinic-accreditation'
@@ -11,6 +12,49 @@ import { fetchApprovedCases } from '@/lib/shared-cases'
 
 export const metadata: Metadata = {
   title: 'Klinik Paneli',
+}
+
+// ── Server Actions: hızlı randevu yönetimi ─────────────────────────────
+async function confirmAppointmentAction(apptId: string): Promise<{ ok: boolean; error?: string }> {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: 'Oturum yok' }
+
+  const { data: clinic } = await supabase
+    .from('clinics').select('id').eq('user_id', user.id).single()
+  if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
+
+  const { error } = await supabase.from('appointments')
+    .update({ status: 'confirmed' })
+    .eq('id', apptId)
+    .eq('clinic_id', clinic.id)
+    .eq('status', 'pending')
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel')
+  return { ok: true }
+}
+
+async function rejectAppointmentAction(apptId: string): Promise<{ ok: boolean; error?: string }> {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: 'Oturum yok' }
+
+  const { data: clinic } = await supabase
+    .from('clinics').select('id').eq('user_id', user.id).single()
+  if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
+
+  const { error } = await supabase.from('appointments')
+    .update({ status: 'cancelled' })
+    .eq('id', apptId)
+    .eq('clinic_id', clinic.id)
+    .in('status', ['pending', 'confirmed'])
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel')
+  return { ok: true }
 }
 
 export default async function KlinikPanelPage() {
@@ -76,10 +120,20 @@ export default async function KlinikPanelPage() {
 
   const klinikOnayiSayisi = finalScores?.length ?? 0
 
-  // Bugünün akışı
+  // Bugünün akışı + önceliklendirilmiş listeler
   const today = new Date().toISOString().split('T')[0]
+  const tomorrow = new Date(Date.now() + 86400_000).toISOString().split('T')[0]
+
   const todayAppts = apptsList.filter(a => a.appointment_date?.startsWith(today))
-  const pendingCount = apptsList.filter(a => a.status === 'pending').length
+  const tomorrowAppts = apptsList.filter(a => a.appointment_date?.startsWith(tomorrow))
+
+  // Onay bekleyen tüm pending randevular (bugüne özgü değil — klinik gelir akışı)
+  const pendingAppts = apptsList
+    .filter(a => a.status === 'pending')
+    .sort((a, b) => (a.appointment_date ?? '').localeCompare(b.appointment_date ?? ''))
+
+  // Şu an akışta (in_progress)
+  const inProgressAppts = apptsList.filter(a => a.status === 'in_progress')
 
   const totalCredit = (clinic.jeton_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
 
@@ -91,17 +145,21 @@ export default async function KlinikPanelPage() {
     fetchApprovedCases(clinic.id, supabase, 5),
   ])
 
+  const apptToView = (a: typeof apptsList[number]) => ({
+    id: a.id,
+    time: a.appointment_date,
+    patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
+    status: a.status as string,
+  })
+
   return (
     <KlinikPanelDashboard
       hekimName={profile?.full_name ?? null}
       clinicName={clinic.name}
-      todayAppts={todayAppts.map(a => ({
-        id: a.id,
-        time: a.appointment_date,
-        patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
-        status: a.status as string,
-      }))}
-      pendingCount={pendingCount}
+      todayAppts={todayAppts.map(apptToView)}
+      tomorrowApptsCount={tomorrowAppts.length}
+      pendingAppts={pendingAppts.map(apptToView)}
+      inProgressAppts={inProgressAppts.map(apptToView)}
       uretimMetrics={{
         thisMonthCount,
         monthDelta,
@@ -113,6 +171,8 @@ export default async function KlinikPanelPage() {
       onboarding={onboarding}
       postsByCategory={postsByCategory}
       approvedCases={approvedCases}
+      onConfirmAppointment={confirmAppointmentAction}
+      onRejectAppointment={rejectAppointmentAction}
     />
   )
 }
