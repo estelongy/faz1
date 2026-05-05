@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import TercihliKartlarSection from './TercihliKartlarSection'
 
 interface TodayAppt {
   id: string
@@ -88,25 +89,7 @@ export default function KlinikPanelDashboard({
       </section>
 
       {/* ─── KATMAN 3 — UZUN VADE (TERCİHLİ) ──────────────────────── */}
-      <section>
-        <div className="flex items-center justify-between mb-2 px-1">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">Senin Seçtiklerin</p>
-          <button
-            type="button"
-            disabled
-            title="Yakında — kart yönetimi"
-            className="text-xs text-slate-600 hover:text-slate-400 transition-colors disabled:cursor-not-allowed"
-          >
-            Panelimi düzenle →
-          </button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AkademiVitriniCard />
-          <EstelongyDuyurulariCard />
-          <ToplulukPulseCard />
-          <KartEklePlaceholder />
-        </div>
-      </section>
+      <TercihliKartlarSection />
     </div>
   )
 
@@ -310,89 +293,6 @@ function SonucVitriniCard() {
         Rıza akışı yakında
       </div>
     </div>
-  )
-}
-
-// ───────────────────────────────────────────────────────────────────
-// TERCİHLİ KARTLAR (placeholder Faz 1)
-// ───────────────────────────────────────────────────────────────────
-
-function AkademiVitriniCard() {
-  return (
-    <PlaceholderCard
-      title="Akademi Vitrini"
-      subtitle="Bilimsel makaleler, kongre, derleme"
-      icon="📰"
-      iconColor="from-blue-500/20 to-cyan-500/10 border-blue-500/20"
-    />
-  )
-}
-
-function EstelongyDuyurulariCard() {
-  return (
-    <PlaceholderCard
-      title="Estelongy Duyuruları"
-      subtitle="Platform haberleri, yeni özellikler"
-      icon="📢"
-      iconColor="from-emerald-500/20 to-teal-500/10 border-emerald-500/20"
-    />
-  )
-}
-
-function ToplulukPulseCard() {
-  return (
-    <PlaceholderCard
-      title="Topluluk Pulse"
-      subtitle="Tartışmalar, yaklaşan etkinlikler"
-      icon="💬"
-      iconColor="from-fuchsia-500/20 to-violet-500/10 border-fuchsia-500/20"
-    />
-  )
-}
-
-function PlaceholderCard({ title, subtitle, icon, iconColor }: {
-  title: string; subtitle: string; icon: string; iconColor: string
-}) {
-  return (
-    <div className={`block relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 ${iconColor}`}>
-      <div className="flex items-start gap-3 mb-4">
-        <div className="text-2xl">{icon}</div>
-        <div className="flex-1">
-          <h3 className="text-white font-bold text-sm">{title}</h3>
-          <p className="text-slate-500 text-xs mt-0.5">{subtitle}</p>
-        </div>
-        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-400 uppercase tracking-wider shrink-0">Yakında</span>
-      </div>
-      <div className="space-y-2">
-        <div className="h-2 rounded bg-slate-800/60 w-3/4"></div>
-        <div className="h-2 rounded bg-slate-800/60 w-1/2"></div>
-        <div className="h-2 rounded bg-slate-800/60 w-2/3"></div>
-      </div>
-      <div className="mt-4 pt-3 border-t border-slate-700/30 text-xs text-slate-600 italic">
-        İçerik akışı yakında
-      </div>
-    </div>
-  )
-}
-
-function KartEklePlaceholder() {
-  return (
-    <button
-      type="button"
-      disabled
-      title="Yakında — kart kütüphanesi"
-      className="group flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-700 hover:border-slate-600 bg-slate-800/20 hover:bg-slate-800/40 p-5 min-h-[180px] transition-all disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 group-hover:text-slate-400 transition-colors">
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-      </div>
-      <div className="text-center">
-        <p className="text-slate-400 text-sm font-medium">Kart Ekle</p>
-        <p className="text-slate-600 text-xs mt-0.5">Kütüphaneden seç</p>
-      </div>
-    </button>
   )
 }
 
