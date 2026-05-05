@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import TercihliKartlarSection from './TercihliKartlarSection'
 import AkreditasyonKart from './AkreditasyonKart'
+import OnboardingBanner from './OnboardingBanner'
 import type { Accreditation } from '@/lib/clinic-accreditation'
+import type { OnboardingStatus } from '@/lib/clinic-onboarding'
 
 interface TodayAppt {
   id: string
@@ -25,6 +27,7 @@ interface Props {
   uretimMetrics: UretimMetrics
   totalCredit: number
   accreditation: Accreditation
+  onboarding: OnboardingStatus
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -42,7 +45,7 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 export default function KlinikPanelDashboard({
-  hekimName, clinicName, todayAppts, pendingCount, uretimMetrics, totalCredit, accreditation,
+  hekimName, clinicName, todayAppts, pendingCount, uretimMetrics, totalCredit, accreditation, onboarding,
 }: Props) {
   const greeting = getGreeting()
   const firstName = hekimName?.split(' ')[0] ?? 'Hekim'
@@ -79,6 +82,9 @@ export default function KlinikPanelDashboard({
           </Link>
         </div>
       </header>
+
+      {/* ─── ONBOARDING BANNER — sadece tamamlanmamış adım varsa ─── */}
+      <OnboardingBanner onboarding={onboarding} />
 
       {/* ─── KATMAN 1 — ŞİMDİ ─────────────────────────────────────── */}
       <section>

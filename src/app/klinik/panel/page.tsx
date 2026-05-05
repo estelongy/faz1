@@ -3,9 +3,9 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import KlinikWelcome from '@/components/KlinikWelcome'
 import KlinikPanelDashboard from '@/components/klinik-panel/KlinikPanelDashboard'
 import { computeAccreditation } from '@/lib/clinic-accreditation'
+import { computeOnboarding } from '@/lib/clinic-onboarding'
 
 export const metadata: Metadata = {
   title: 'Klinik Paneli',
@@ -41,19 +41,7 @@ export default async function KlinikPanelPage() {
     .order('appointment_date', { ascending: true })
     .limit(100)
 
-  // Yeni klinik (hiç randevu yok) — welcome state
-  if (!appointments || appointments.length === 0) {
-    return (
-      <div className="max-w-7xl mx-auto">
-        <KlinikWelcome
-          clinicName={clinic.name}
-          clinicId={clinic.id}
-          jetonBalance={clinic.jeton_balance ?? 0}
-          freeBalance={clinic.free_appointments_remaining ?? 0}
-        />
-      </div>
-    )
-  }
+  const apptsList = appointments ?? []
 
   // Üretimin metrikleri — bu ay
   const now = new Date()
@@ -61,8 +49,8 @@ export default async function KlinikPanelPage() {
   const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
   const prevMonthEnd = monthStart
 
-  const thisMonthAppts = appointments.filter(a => a.appointment_date && a.appointment_date >= monthStart)
-  const prevMonthAppts = appointments.filter(
+  const thisMonthAppts = apptsList.filter(a => a.appointment_date && a.appointment_date >= monthStart)
+  const prevMonthAppts = apptsList.filter(
     a => a.appointment_date && a.appointment_date >= prevMonthStart && a.appointment_date < prevMonthEnd
   )
 
@@ -88,13 +76,16 @@ export default async function KlinikPanelPage() {
 
   // Bugünün akışı
   const today = new Date().toISOString().split('T')[0]
-  const todayAppts = appointments.filter(a => a.appointment_date?.startsWith(today))
-  const pendingCount = appointments.filter(a => a.status === 'pending').length
+  const todayAppts = apptsList.filter(a => a.appointment_date?.startsWith(today))
+  const pendingCount = apptsList.filter(a => a.status === 'pending').length
 
   const totalCredit = (clinic.jeton_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
 
-  // Akreditasyon — gerçek hesaplama
-  const accreditation = await computeAccreditation(clinic.id, supabase)
+  // Akreditasyon ve onboarding — paralel hesaplama
+  const [accreditation, onboarding] = await Promise.all([
+    computeAccreditation(clinic.id, supabase),
+    computeOnboarding(clinic.id, supabase),
+  ])
 
   return (
     <KlinikPanelDashboard
@@ -115,6 +106,7 @@ export default async function KlinikPanelPage() {
       }}
       totalCredit={totalCredit}
       accreditation={accreditation}
+      onboarding={onboarding}
     />
   )
 }
