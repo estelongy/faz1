@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import TercihliKartlarSection from './TercihliKartlarSection'
+import AkreditasyonKart from './AkreditasyonKart'
+import type { Accreditation } from '@/lib/clinic-accreditation'
 
 interface TodayAppt {
   id: string
@@ -22,6 +24,7 @@ interface Props {
   pendingCount: number
   uretimMetrics: UretimMetrics
   totalCredit: number
+  accreditation: Accreditation
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -39,7 +42,7 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 export default function KlinikPanelDashboard({
-  hekimName, clinicName, todayAppts, pendingCount, uretimMetrics, totalCredit,
+  hekimName, clinicName, todayAppts, pendingCount, uretimMetrics, totalCredit, accreditation,
 }: Props) {
   const greeting = getGreeting()
   const firstName = hekimName?.split(' ')[0] ?? 'Hekim'
@@ -56,10 +59,15 @@ export default function KlinikPanelDashboard({
           <p className="text-slate-400 text-sm mt-1">{clinicName}</p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Faz rozeti — placeholder Faz 1 */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-bold">
+          {/* Faz rozeti — gerçek akreditasyon */}
+          <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${
+            accreditation.phase === 0 ? 'bg-slate-700/30 border-slate-600 text-slate-400' :
+            accreditation.phase === 1 ? 'bg-violet-500/10 border-violet-500/30 text-violet-300' :
+            accreditation.phase === 2 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' :
+            'bg-amber-500/10 border-amber-500/30 text-amber-300'
+          }`}>
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2l2.5 5.5L18 8l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L10 2z"/></svg>
-            Faz 1 — Doğrulanmış Hekim
+            {accreditation.phase === 0 ? 'Yeni Klinik' : `Faz ${accreditation.phase} — ${accreditation.phaseLabel}`}
           </div>
           <Link href="/klinik/panel/jeton"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold hover:opacity-80 transition-opacity">
@@ -83,7 +91,7 @@ export default function KlinikPanelDashboard({
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-2 px-1">Bu Ay</p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <UretiminCard metrics={uretimMetrics} />
-          <AkreditasyonYoluCard />
+          <AkreditasyonKart accreditation={accreditation} />
           <SonucVitriniCard />
         </div>
       </section>
@@ -212,56 +220,6 @@ function UretiminCard({ metrics }: { metrics: UretimMetrics }) {
         <span className="text-emerald-400 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
       </div>
     </Link>
-  )
-}
-
-function AkreditasyonYoluCard() {
-  // Placeholder — Faz 1 başlangıç. Gerçek kriterler ve ilerleme commit 3'te DB'den.
-  const ilerleme = 35  // %
-  return (
-    <div className="block group relative overflow-hidden rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/5 to-purple-500/5 p-5">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-white font-bold">Akreditasyon Yolu</h3>
-          <p className="text-slate-500 text-xs mt-0.5">Faz 1 — Doğrulanmış Hekim</p>
-        </div>
-        <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-          <svg className="w-4 h-4 text-violet-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 2l2.5 5.5L18 8l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L10 2z"/>
-          </svg>
-        </div>
-      </div>
-
-      {/* İlerleme barı */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between text-xs mb-1.5">
-          <span className="text-slate-400">Faz 2&apos;ye ilerleme</span>
-          <span className="text-violet-300 font-bold">%{ilerleme}</span>
-        </div>
-        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all" style={{ width: `${ilerleme}%` }} />
-        </div>
-      </div>
-
-      <div className="space-y-1.5 text-xs">
-        <div className="flex items-center gap-2 text-slate-400">
-          <span className="w-1 h-1 rounded-full bg-emerald-400"></span>
-          <span>Profil tamamlandı</span>
-        </div>
-        <div className="flex items-center gap-2 text-slate-400">
-          <span className="w-1 h-1 rounded-full bg-emerald-400"></span>
-          <span>İlk randevu kabul edildi</span>
-        </div>
-        <div className="flex items-center gap-2 text-slate-500">
-          <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-          <span>20 onaylı randevu (devam ediyor)</span>
-        </div>
-      </div>
-
-      <div className="mt-4 pt-3 border-t border-slate-700/50 text-xs text-slate-600 italic">
-        Detaylar yakında
-      </div>
-    </div>
   )
 }
 

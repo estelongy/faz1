@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import KlinikWelcome from '@/components/KlinikWelcome'
 import KlinikPanelDashboard from '@/components/klinik-panel/KlinikPanelDashboard'
+import { computeAccreditation } from '@/lib/clinic-accreditation'
 
 export const metadata: Metadata = {
   title: 'Klinik Paneli',
@@ -92,6 +93,9 @@ export default async function KlinikPanelPage() {
 
   const totalCredit = (clinic.jeton_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
 
+  // Akreditasyon — gerçek hesaplama
+  const accreditation = await computeAccreditation(clinic.id, supabase)
+
   return (
     <KlinikPanelDashboard
       hekimName={profile?.full_name ?? null}
@@ -110,6 +114,7 @@ export default async function KlinikPanelPage() {
         klinikOnayiSayisi,
       }}
       totalCredit={totalCredit}
+      accreditation={accreditation}
     />
   )
 }
