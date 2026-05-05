@@ -17,12 +17,12 @@ export async function getOrCreateActiveJourney(
   userId: string,
   supabase: SupabaseClient,
 ): Promise<string> {
-  // Aktif journey var mı?
+  // Aktif yolculuk var mı? ('active' = ön analiz aşamasında, 'clinic_done' = klinik bitti son analiz bekleniyor)
   const { data: existing } = await supabase
     .from('journeys')
     .select('id')
     .eq('user_id', userId)
-    .eq('status', 'active')
+    .in('status', ['active', 'clinic_done'])
     .order('started_at', { ascending: false })
     .limit(1)
     .maybeSingle()

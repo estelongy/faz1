@@ -6,13 +6,13 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import ScoreChart, { type ScorePoint } from '@/components/ScoreChart'
-import ZiyaretKarti, { type ZiyaretItem, type ZiyaretAnalysis } from '@/components/ZiyaretKarti'
+import YolculukKarti, { type YolculukView, type YolculukAnalysis, type YolculukAppointment } from '@/components/YolculukKarti'
 
 export const metadata: Metadata = {
   title: 'Geçmişim — Estelongy',
 }
 
-export default async function AnalizlerimPage() {
+export default async function GecmisimPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
@@ -20,128 +20,127 @@ export default async function AnalizlerimPage() {
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role && role !== 'user') redirect(pathForRole(role))
 
-  // Aktif journey id (badge için)
-  const { data: activeJourneyRow } = await supabase
+  // ─── Son 10 yolculuk ──────────────────────────────────────────
+  const { data: journeysRaw } = await supabase
     .from('journeys')
-    .select('id')
+    .select('id, status, started_at, completed_at, appointment_id')
     .eq('user_id', user.id)
-    .eq('status', 'active')
     .order('started_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-  const activeJourneyId = activeJourneyRow?.id ?? null
+    .limit(10)
 
-  // Tüm analizler — journey_id dahil, yeniden eskiye
-  const { data: allAnalysesRaw } = await supabase
-    .from('analyses')
-    .select('id, web_overall, temp_overall, final_overall, status, created_at, doctor_notes, doctor_approved_scores, web_scores, appointment_id, journey_id')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(100)
+  const journeyIds = (journeysRaw ?? []).map(j => j.id)
+  const apptIds = (journeysRaw ?? []).map(j => j.appointment_id).filter(Boolean) as string[]
 
-  // Tüm randevular (zaman çizelgesi için)
-  const { data: allAppointmentsRaw } = await supabase
-    .from('appointments')
-    .select('id, appointment_date, status, notes, clinic_notes, procedure_notes, recommendations, created_at, clinics(name)')
-    .eq('user_id', user.id)
-    .order('appointment_date', { ascending: false })
-    .limit(60)
+  // İlgili tüm analizleri çek
+  const { data: analysesRaw } = journeyIds.length > 0
+    ? await supabase
+        .from('analyses')
+        .select('id, journey_id, appointment_id, web_overall, temp_overall, final_overall, web_scores, doctor_notes, doctor_approved_scores, created_at')
+        .eq('user_id', user.id)
+        .in('journey_id', journeyIds)
+        .order('created_at', { ascending: false })
+    : { data: [] }
 
-  // Skor grafiği — sadece en son analiz per journey + klinik onaylılar
-  // (allAnalysesRaw yeniden eskiye sıralı; journey'i birden çok temsil etmesin)
-  const seenJourneysForChart = new Set<string>()
-  const chartPoints: ScorePoint[] = (allAnalysesRaw ?? []).flatMap(a => {
-    const pts: ScorePoint[] = []
-    // Klinik onaylı skoru her zaman ekle
-    if (a.final_overall != null) pts.push({ date: a.created_at, score: a.final_overall, type: 'klinik_onayli' })
-    // Ön analiz: journey başına sadece en yeni (ilk görülen)
-    const aiScore = a.web_overall ?? a.temp_overall
-    if (aiScore != null) {
-      const jKey = a.journey_id ?? a.id // journey yoksa kendisi unique
-      if (!seenJourneysForChart.has(jKey)) {
-        seenJourneysForChart.add(jKey)
-        pts.push({ date: a.created_at, score: aiScore, type: 'ai_analiz' })
-      }
-    }
-    return pts
-  })
+  // İlgili appointment'ları çek
+  const { data: apptsRaw } = apptIds.length > 0
+    ? await supabase
+        .from('appointments')
+        .select('id, appointment_date, status, completed_at, notes, clinic_notes, procedure_notes, recommendations, clinics(name)')
+        .in('id', apptIds)
+    : { data: [] }
 
-  // Ziyaret zaman çizelgesi: randevu ↔ analiz eşleştirme
-  const analysesByAppt = new Map<string, NonNullable<typeof allAnalysesRaw>[number]>()
-  const looseAnalyses: NonNullable<typeof allAnalysesRaw> = []
-  ;(allAnalysesRaw ?? []).forEach(a => {
-    if (a.appointment_id) analysesByAppt.set(a.appointment_id, a)
-    else looseAnalyses.push(a)
-  })
+  const apptsById = new Map<string, NonNullable<typeof apptsRaw>[number]>()
+  ;(apptsRaw ?? []).forEach(a => apptsById.set(a.id, a))
 
-  // Journey dedup: aynı journey_id'ye sahip analizlerde sadece en yenisini göster
-  // (allAnalysesRaw yeniden eskiye sıralı — ilk görülen zaten en yeni)
-  const seenJourneys = new Set<string>()
-  const deduplicatedLoose = looseAnalyses.filter(a => {
-    if (!a.journey_id) return true // journey_id yok = legacy, hepsini göster
-    if (seenJourneys.has(a.journey_id)) return false
-    seenJourneys.add(a.journey_id)
-    return true
-  })
-
-  type RawA = NonNullable<typeof allAnalysesRaw>[number]
-  const toZA = (a: RawA): ZiyaretAnalysis => ({
+  // ─── Per journey: pre/clinic/post analizleri ayır ──────────────
+  type RawA = NonNullable<typeof analysesRaw>[number]
+  const toYA = (a: RawA): YolculukAnalysis => ({
     id: a.id,
     web_overall: a.web_overall,
     temp_overall: a.temp_overall,
     final_overall: a.final_overall,
-    status: a.status,
-    created_at: a.created_at,
-    doctor_notes: a.doctor_notes,
-    doctor_approved_scores: (a.doctor_approved_scores ?? null) as ZiyaretAnalysis['doctor_approved_scores'],
     web_scores: (a.web_scores ?? null) as Record<string, number> | null,
+    doctor_notes: a.doctor_notes,
+    doctor_approved_scores: (a.doctor_approved_scores ?? null) as YolculukAnalysis['doctor_approved_scores'],
+    created_at: a.created_at,
   })
-  const visitItems: ZiyaretItem[] = (allAppointmentsRaw ?? []).map(apt => {
-    const a = analysesByAppt.get(apt.id) ?? null
-    return {
-      kind: 'visit' as const,
+
+  const totalJourneys = (journeysRaw ?? []).length
+  const journeyViews: YolculukView[] = (journeysRaw ?? []).map((j, idxFromNewest) => {
+    const apt = j.appointment_id ? apptsById.get(j.appointment_id) ?? null : null
+    const journeyAnalyses = (analysesRaw ?? []).filter(a => a.journey_id === j.id)
+
+    // Klinik analizi: appointment_id'ye bağlı VE final_overall'i olan en son analiz
+    const clinicA = apt
+      ? journeyAnalyses.find(a => a.appointment_id === apt.id && a.final_overall != null)
+        ?? journeyAnalyses.find(a => a.appointment_id === apt.id)
+        ?? null
+      : null
+
+    // Klinik referans tarihi: appointment.completed_at
+    const apptCompletedAt = apt?.completed_at ? new Date(apt.completed_at).getTime() : null
+
+    // Pre = klinik tarihinden önce (veya klinik yoksa hepsi); en son olanı al
+    const preCandidates = journeyAnalyses
+      .filter(a => a.id !== clinicA?.id)
+      .filter(a => apptCompletedAt == null || new Date(a.created_at).getTime() <= apptCompletedAt)
+    const preA = preCandidates.length > 0
+      ? preCandidates.reduce((best, cur) =>
+          new Date(cur.created_at).getTime() > new Date(best.created_at).getTime() ? cur : best
+        )
+      : null
+
+    // Post = klinik tarihinden sonra; varsa en yenisi
+    const postCandidates = journeyAnalyses
+      .filter(a => a.id !== clinicA?.id)
+      .filter(a => apptCompletedAt != null && new Date(a.created_at).getTime() > apptCompletedAt)
+    const postA = postCandidates.length > 0
+      ? postCandidates.reduce((best, cur) =>
+          new Date(cur.created_at).getTime() > new Date(best.created_at).getTime() ? cur : best
+        )
+      : null
+
+    const apptView: YolculukAppointment | null = apt ? {
       id: apt.id,
-      date: apt.appointment_date ?? apt.created_at,
+      appointment_date: apt.appointment_date,
       status: apt.status,
-      reasonNote: apt.notes ?? null,
-      clinicNote: apt.clinic_notes ?? null,
-      procedureNotes: apt.procedure_notes ?? null,
-      recommendations: apt.recommendations ?? null,
-      analysis: a ? toZA(a) : null,
-      scoreDelta: null,
-      appointmentId: apt.id,
-      isActive: ['pending', 'confirmed', 'in_progress'].includes(apt.status),
-      userId: user.id,
+      completed_at: apt.completed_at,
+      clinic_name: (apt.clinics as { name?: string } | null)?.name ?? null,
+      notes: apt.notes,
+      clinic_notes: apt.clinic_notes,
+      procedure_notes: apt.procedure_notes,
+      recommendations: apt.recommendations,
+    } : null
+
+    return {
+      id: j.id,
+      status: j.status as YolculukView['status'],
+      startedAt: j.started_at,
+      completedAt: j.completed_at,
+      preAnalysis: preA ? toYA(preA) : null,
+      appointment: apptView,
+      clinicAnalysis: clinicA ? toYA(clinicA) : null,
+      postAnalysis: postA ? toYA(postA) : null,
+      // En eski yolculuk #1, en yeni #N
+      index: totalJourneys - idxFromNewest,
+      total: totalJourneys,
     }
   })
-  const selfItems: ZiyaretItem[] = deduplicatedLoose.map(a => ({
-    kind: 'self_analysis' as const,
-    id: a.id,
-    date: a.created_at,
-    status: a.status ?? '',
-    reasonNote: null,
-    clinicNote: null,
-    procedureNotes: null,
-    recommendations: null,
-    analysis: toZA(a),
-    scoreDelta: null,
-    appointmentId: null,
-    // Aktif journey'e ait analiz → mor kenarlık
-    isActive: activeJourneyId != null && a.journey_id === activeJourneyId,
-    userId: user.id,
-  }))
-  const timeline: ZiyaretItem[] = [...visitItems, ...selfItems].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  )
-  // Skor farkı: kronolojik (eski→yeni)
-  {
-    let prev: number | null = null
-    for (const it of [...timeline].reverse()) {
-      const cur = it.analysis?.final_overall ?? it.analysis?.web_overall ?? it.analysis?.temp_overall ?? null
-      if (prev != null && cur != null) it.scoreDelta = Math.round((cur - prev) * 10) / 10
-      if (cur != null) prev = cur
+
+  // ─── Skor grafiği için noktalar ────────────────────────────────
+  const chartPoints: ScorePoint[] = journeyViews.flatMap(j => {
+    const pts: ScorePoint[] = []
+    if (j.preAnalysis?.web_overall != null) {
+      pts.push({ date: j.preAnalysis.created_at, score: j.preAnalysis.web_overall, type: 'ai_analiz' })
     }
-  }
+    if (j.clinicAnalysis?.final_overall != null) {
+      pts.push({ date: j.clinicAnalysis.created_at, score: j.clinicAnalysis.final_overall, type: 'klinik_onayli' })
+    }
+    if (j.postAnalysis?.web_overall != null) {
+      pts.push({ date: j.postAnalysis.created_at, score: j.postAnalysis.web_overall, type: 'ai_analiz' })
+    }
+    return pts
+  }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
@@ -169,36 +168,27 @@ export default async function AnalizlerimPage() {
           </section>
         )}
 
-        {/* Ziyaret & Ölçüm Zaman Çizelgesi */}
-        {timeline.length > 0 ? (
-          <section className="space-y-4">
+        {/* Yolculuklar */}
+        {journeyViews.length > 0 ? (
+          <section className="space-y-3">
             <div className="flex items-baseline justify-between px-1">
-              <h2 className="text-white font-bold text-lg">Tüm Yolculuklarım</h2>
-              <span className="text-slate-500 text-xs">{timeline.length} kayıt</span>
+              <h2 className="text-white font-bold text-lg">Gençleşme Yolculukların</h2>
+              <span className="text-slate-500 text-xs">
+                Son {journeyViews.length} yolculuk
+              </span>
             </div>
-            <p className="text-slate-500 text-sm px-1 -mt-2">
-              Selfie analizleri, klinik ziyaretleri ve hekim onaylı süreçler — tek yerde
+            <p className="text-slate-500 text-sm px-1 -mt-1">
+              Her yolculuk: Ön Analiz → Klinik Onayı → Son Analiz (ops.)
             </p>
-            {/* Aktif yolculuk varsa küçük bilgi notu */}
-            {activeJourneyId && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-500/8 border border-violet-500/20 text-violet-400 text-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse shrink-0" />
-                Mor kenarlıklı kart aktif yolculuğun — kaldığın yerden devam edebilirsin
-              </div>
-            )}
-            {timeline.map(item => (
-              <ZiyaretKarti
-                key={`${item.kind}-${item.id}`}
-                item={item}
-                editable={false}
-              />
+            {journeyViews.map(j => (
+              <YolculukKarti key={j.id} y={j} />
             ))}
           </section>
         ) : (
           <div className="text-center py-16">
-            <div className="w-20 h-20 mx-auto rounded-2xl bg-slate-800 flex items-center justify-center mb-4 text-4xl">📊</div>
-            <p className="text-white font-semibold mb-2">Henüz analiziniz yok</p>
-            <p className="text-slate-400 text-sm mb-5">Selfie ile gençlik skorunuzu ölçün</p>
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-slate-800 flex items-center justify-center mb-4 text-4xl">🎯</div>
+            <p className="text-white font-semibold mb-2">Henüz yolculuğun yok</p>
+            <p className="text-slate-400 text-sm mb-5">Selfie ile ilk gençleşme yolculuğunu başlat</p>
             <Link href="/analiz" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl">
               Analizi Başlat →
             </Link>
