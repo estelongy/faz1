@@ -113,7 +113,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit }: P
         onMouseLeave={() => setHovered(false)}
         className={`fixed top-0 left-0 bottom-0 bg-slate-900 border-r border-slate-800 z-50 flex flex-col transition-[width,transform] duration-200 ease-out ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-64 lg:w-[72px] ${expanded ? 'lg:w-64 lg:shadow-2xl lg:shadow-black/40' : ''}`}
+        } lg:translate-x-0 w-64 ${expanded ? 'lg:w-64 lg:shadow-2xl lg:shadow-black/40' : 'lg:w-[72px]'}`}
       >
 
         {/* Klinik kimlik kartı */}
