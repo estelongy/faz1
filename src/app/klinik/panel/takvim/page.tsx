@@ -1,9 +1,59 @@
 export const dynamic = 'force-dynamic'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import KlinikTakvimClient from './KlinikTakvimClient'
+
+// ── Server Actions ─────────────────────────────────────────────
+async function confirmAction(apptId: string): Promise<{ ok: boolean; error?: string }> {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: 'Oturum yok' }
+  const { data: clinic } = await supabase.from('clinics').select('id').eq('user_id', user.id).single()
+  if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
+  const { error } = await supabase.from('appointments')
+    .update({ status: 'confirmed' })
+    .eq('id', apptId).eq('clinic_id', clinic.id).eq('status', 'pending')
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/takvim')
+  revalidatePath('/klinik/panel')
+  return { ok: true }
+}
+
+async function rejectAction(apptId: string): Promise<{ ok: boolean; error?: string }> {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: 'Oturum yok' }
+  const { data: clinic } = await supabase.from('clinics').select('id').eq('user_id', user.id).single()
+  if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
+  const { error } = await supabase.from('appointments')
+    .update({ status: 'cancelled' })
+    .eq('id', apptId).eq('clinic_id', clinic.id).in('status', ['pending', 'confirmed'])
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/takvim')
+  revalidatePath('/klinik/panel')
+  return { ok: true }
+}
+
+async function noShowAction(apptId: string): Promise<{ ok: boolean; error?: string }> {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: 'Oturum yok' }
+  const { data: clinic } = await supabase.from('clinics').select('id').eq('user_id', user.id).single()
+  if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
+  const { error } = await supabase.from('appointments')
+    .update({ status: 'no_show' })
+    .eq('id', apptId).eq('clinic_id', clinic.id).eq('status', 'confirmed')
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/takvim')
+  revalidatePath('/klinik/panel')
+  return { ok: true }
+}
 
 export default async function KlinikTakvimPage() {
   const supabase = await createClient()
@@ -53,14 +103,19 @@ export default async function KlinikTakvimPage() {
           ⚙ Müsaitlik Ayarları
         </Link>
       </div>
-      <KlinikTakvimClient appointments={appts.map(a => ({
-        id: a.id,
-        userId: a.user_id,
-        date: a.appointment_date ?? '',
-        status: a.status,
-        durationMinutes: a.duration_minutes ?? 30,
-        patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
-      }))} />
+      <KlinikTakvimClient
+        appointments={appts.map(a => ({
+          id: a.id,
+          userId: a.user_id,
+          date: a.appointment_date ?? '',
+          status: a.status,
+          durationMinutes: a.duration_minutes ?? 30,
+          patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
+        }))}
+        onConfirm={confirmAction}
+        onReject={rejectAction}
+        onNoShow={noShowAction}
+      />
     </div>
   )
 }
