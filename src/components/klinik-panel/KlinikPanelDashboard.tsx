@@ -5,6 +5,7 @@ import OnboardingBanner from './OnboardingBanner'
 import type { Accreditation } from '@/lib/clinic-accreditation'
 import type { OnboardingStatus } from '@/lib/clinic-onboarding'
 import type { PostsByCategory } from '@/lib/editorial-posts'
+import { type SharedCaseWithProfile, formatAnonymousName, calculateDelta } from '@/lib/shared-cases'
 
 interface TodayAppt {
   id: string
@@ -30,6 +31,7 @@ interface Props {
   accreditation: Accreditation
   onboarding: OnboardingStatus
   postsByCategory: PostsByCategory
+  approvedCases: SharedCaseWithProfile[]
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -47,7 +49,7 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 export default function KlinikPanelDashboard({
-  hekimName, clinicName, todayAppts, pendingCount, uretimMetrics, totalCredit, accreditation, onboarding, postsByCategory,
+  hekimName, clinicName, todayAppts, pendingCount, uretimMetrics, totalCredit, accreditation, onboarding, postsByCategory, approvedCases,
 }: Props) {
   const greeting = getGreeting()
   const firstName = hekimName?.split(' ')[0] ?? 'Hekim'
@@ -100,7 +102,7 @@ export default function KlinikPanelDashboard({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <UretiminCard metrics={uretimMetrics} />
           <AkreditasyonKart accreditation={accreditation} />
-          <SonucVitriniCard />
+          <SonucVitriniCard cases={approvedCases} />
         </div>
       </section>
 
@@ -231,14 +233,55 @@ function UretiminCard({ metrics }: { metrics: UretimMetrics }) {
   )
 }
 
-function SonucVitriniCard() {
-  // Placeholder — rıza akışı kurulana kadar boş state
+function SonucVitriniCard({ cases }: { cases: SharedCaseWithProfile[] }) {
+  // Onaylı vakalardan en yüksek Δ olanı seç
+  const sortedByDelta = [...cases].sort((a, b) => {
+    const da = calculateDelta(a.initial_score, a.final_score) ?? -Infinity
+    const db = calculateDelta(b.initial_score, b.final_score) ?? -Infinity
+    return db - da
+  })
+  const topCase = sortedByDelta[0]
+  const delta = topCase ? calculateDelta(topCase.initial_score, topCase.final_score) : null
+
+  if (!topCase) {
+    // Boş state — vaka yok
+    return (
+      <div className="block group relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-5">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-white font-bold">Sonuç Vitrini</h3>
+            <p className="text-slate-500 text-xs mt-0.5">En iyi vakaların</p>
+          </div>
+          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+            <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2l2.5 5.5L18 8l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L10 2z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div className="py-4 text-center">
+          <div className="text-4xl mb-2 opacity-40">✦</div>
+          <p className="text-slate-400 text-sm font-medium mb-1">Vitrinin boş</p>
+          <p className="text-slate-500 text-xs leading-relaxed">
+            Hasta detayında &quot;Paylaşım izni iste&quot; butonuyla en iyi vakalarını burada sergileyebilirsin.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const anonName = formatAnonymousName(topCase.patient_full_name, topCase.anonymity_level)
+  const ageGenderLine = [
+    topCase.patient_age != null ? `${topCase.patient_age} yaş` : null,
+    topCase.patient_gender,
+  ].filter(Boolean).join(' · ')
+
   return (
-    <div className="block group relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-5">
+    <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-5">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-white font-bold">Sonuç Vitrini</h3>
-          <p className="text-slate-500 text-xs mt-0.5">En iyi vakaların</p>
+          <p className="text-slate-500 text-xs mt-0.5">{cases.length} onaylı vaka</p>
         </div>
         <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
           <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -247,17 +290,44 @@ function SonucVitriniCard() {
         </div>
       </div>
 
-      <div className="py-4 text-center">
-        <div className="text-4xl mb-2 opacity-40">✦</div>
-        <p className="text-slate-400 text-sm font-medium mb-1">Vitrinin boş</p>
-        <p className="text-slate-500 text-xs leading-relaxed">
-          Hastalarından paylaşım izni aldıkça en yüksek Δ vakaların burada öne çıkar.
-        </p>
+      {/* Top vaka */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 text-xs text-amber-300/80">
+          <span>🏆</span>
+          <span className="font-bold uppercase tracking-wider">Bu ayın en yüksek Δ</span>
+        </div>
+
+        <div className="flex items-baseline gap-3">
+          <span className="text-white font-bold text-base">{anonName}</span>
+          {ageGenderLine && <span className="text-slate-500 text-xs">{ageGenderLine}</span>}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="text-center">
+            <p className="text-slate-600 text-[10px] uppercase tracking-wider">Ön</p>
+            <p className="text-slate-400 text-2xl font-bold">{topCase.initial_score ?? '—'}</p>
+          </div>
+          <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 12h15" />
+          </svg>
+          <div className="text-center">
+            <p className="text-emerald-400/70 text-[10px] uppercase tracking-wider">Klinik Onaylı</p>
+            <p className="text-emerald-400 text-2xl font-black">{topCase.final_score ?? '—'}</p>
+          </div>
+          {delta != null && delta > 0 && (
+            <div className="ml-auto px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30">
+              <span className="text-emerald-300 font-black text-sm">+{delta}</span>
+              <span className="text-emerald-400/70 text-[10px] ml-1">puan</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-600 italic text-center">
-        Rıza akışı yakında
-      </div>
+      {cases.length > 1 && (
+        <p className="mt-4 pt-3 border-t border-slate-700/30 text-xs text-slate-500 text-center">
+          + {cases.length - 1} vaka daha vitrinde
+        </p>
+      )}
     </div>
   )
 }

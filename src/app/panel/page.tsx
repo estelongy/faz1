@@ -13,6 +13,8 @@ import { pathForRole } from '@/lib/auth-redirect'
 import ScoreBar from '@/components/ScoreBar'
 import { getSkorDurumu, getScorePhase, getSkorDurumuLabel, getSkorDurumuColor } from '@/lib/skor-durum'
 import PaylasModal from '@/components/PaylasModal'
+import PaylasimRizaBanner from '@/components/PaylasimRizaBanner'
+import { fetchPendingRequestsForUser } from '@/lib/shared-cases'
 
 export default async function PanelPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const params = await searchParams
@@ -56,6 +58,9 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     .select('id')
     .eq('user_id', user.id)
     .maybeSingle()
+
+  // Bekleyen vitrini paylaşım izni istekleri
+  const pendingShareRequests = await fetchPendingRequestsForUser(user.id, supabase)
 
   const latestScore = latestAnalysis?.final_overall ?? latestAnalysis?.temp_overall ?? latestAnalysis?.web_overall ?? null
 
@@ -215,6 +220,9 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           </h1>
           <p className="text-slate-400 text-sm">Cilt sağlığınızı takip edin</p>
         </div>
+
+        {/* Vitrini paylaşım rıza banner'ı */}
+        <PaylasimRizaBanner pendingRequests={pendingShareRequests} />
 
         {/* ─── BÖLGE 1: 3 KAPI — Hızlı Aksiyonlar (skorun üstünde) ── */}
         <section>

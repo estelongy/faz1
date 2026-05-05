@@ -7,6 +7,7 @@ import KlinikPanelDashboard from '@/components/klinik-panel/KlinikPanelDashboard
 import { computeAccreditation } from '@/lib/clinic-accreditation'
 import { computeOnboarding } from '@/lib/clinic-onboarding'
 import { fetchEditorialPosts } from '@/lib/editorial-posts'
+import { fetchApprovedCases } from '@/lib/shared-cases'
 
 export const metadata: Metadata = {
   title: 'Klinik Paneli',
@@ -82,11 +83,12 @@ export default async function KlinikPanelPage() {
 
   const totalCredit = (clinic.jeton_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
 
-  // Akreditasyon, onboarding, editöryel postlar — paralel
-  const [accreditation, onboarding, postsByCategory] = await Promise.all([
+  // Akreditasyon, onboarding, editöryel postlar, vitrini vakalar — paralel
+  const [accreditation, onboarding, postsByCategory, approvedCases] = await Promise.all([
     computeAccreditation(clinic.id, supabase),
     computeOnboarding(clinic.id, supabase),
     fetchEditorialPosts(supabase, 3),
+    fetchApprovedCases(clinic.id, supabase, 5),
   ])
 
   return (
@@ -110,6 +112,7 @@ export default async function KlinikPanelPage() {
       accreditation={accreditation}
       onboarding={onboarding}
       postsByCategory={postsByCategory}
+      approvedCases={approvedCases}
     />
   )
 }

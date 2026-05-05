@@ -9,6 +9,7 @@ import ScoreChart, { type ScorePoint } from '@/components/ScoreChart'
 import KlinikNotlar, { type ClinicNote } from './KlinikNotlar'
 import ZiyaretKarti, { type ZiyaretItem, type ZiyaretAnalysis } from '@/components/ZiyaretKarti'
 import { saveVisitNotesAction } from './ziyaret-actions'
+import VitrinePaylasimSection from './VitrinePaylasimSection'
 
 export const metadata: Metadata = {
   title: 'Hasta Detayı',
@@ -171,6 +172,32 @@ export default async function HastaDetayPage({
     if (cur != null) prevFinal = cur
   }
 
+  // ── Vitrine paylaşım: final_overall olan analizler + shared_cases birleştir
+  const finalAnalysesForShare = (analyses ?? []).filter(a => a.final_overall != null)
+  const analysisIdsForShare = finalAnalysesForShare.map(a => a.id)
+  const { data: sharedCasesRaw } = analysisIdsForShare.length > 0
+    ? await supabase
+        .from('shared_cases')
+        .select('id, analysis_id, status, requested_at')
+        .eq('clinic_id', clinic.id)
+        .in('analysis_id', analysisIdsForShare)
+    : { data: [] }
+  const scMap = new Map((sharedCasesRaw ?? []).map(sc => [sc.analysis_id, sc]))
+  const vitrineAnalyses = finalAnalysesForShare
+    .map(a => ({
+      id: a.id,
+      created_at: a.created_at,
+      web_overall: a.web_overall,
+      temp_overall: a.temp_overall,
+      final_overall: a.final_overall as number,
+      shared_case: scMap.get(a.id) ? {
+        id: scMap.get(a.id)!.id,
+        status: scMap.get(a.id)!.status as 'pending' | 'approved' | 'rejected' | 'revoked',
+        requested_at: scMap.get(a.id)!.requested_at,
+      } : null,
+    }))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex items-center gap-3">
@@ -249,6 +276,13 @@ export default async function HastaDetayPage({
 
         {/* ── Klinik Notları ── */}
         <KlinikNotlar userId={params.userId} notes={notes} />
+
+        {/* ── Sonuç Vitrini Paylaşımı ── */}
+        {vitrineAnalyses.length > 0 && (
+          <div className="mt-6">
+            <VitrinePaylasimSection userId={params.userId} analyses={vitrineAnalyses} />
+          </div>
+        )}
 
         {/* ── Ziyaret Zaman Çizelgesi ── */}
         <div className="mt-6 space-y-4">
