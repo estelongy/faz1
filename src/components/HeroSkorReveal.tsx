@@ -105,7 +105,7 @@ type Zone = { label: string; color: string; ring: string }
 
 function zoneFor(score: number): Zone {
   if (score < 56)  return { label: 'Çok Düşük', color: 'text-red-400',     ring: 'stroke-red-400' }
-  if (score < 66)  return { label: 'Düşük',     color: 'text-purple-400',  ring: 'stroke-purple-400' }
+  if (score < 66)  return { label: 'Düşük',     color: 'text-amber-400',   ring: 'stroke-amber-400' }
   if (score < 80)  return { label: 'Normal',    color: 'text-yellow-400',  ring: 'stroke-yellow-400' }
   if (score < 90)  return { label: 'İyi',       color: 'text-emerald-400', ring: 'stroke-emerald-400' }
   return            { label: 'Çok İyi',   color: 'text-blue-400',    ring: 'stroke-blue-400' }
