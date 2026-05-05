@@ -20,20 +20,6 @@ interface Props {
   onReject: (apptId: string) => Promise<{ ok: boolean; error?: string }>
 }
 
-const STATUS_COLOR: Record<string, string> = {
-  pending:     'bg-amber-500/20 text-amber-300 border-amber-500/30',
-  confirmed:   'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  in_progress: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
-  completed:   'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-  cancelled:   'bg-red-500/20 text-red-300 border-red-500/30',
-  no_show:     'bg-slate-500/20 text-slate-400 border-slate-500/30',
-}
-
-const STATUS_LABEL: Record<string, string> = {
-  pending: 'Beklemede', confirmed: 'Onaylı', in_progress: 'Görüşmede',
-  completed: 'Tamamlandı', cancelled: 'İptal', no_show: 'Gelmedi',
-}
-
 function formatTime(iso: string | null) {
   if (!iso) return '—'
   return new Date(iso).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
