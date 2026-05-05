@@ -310,7 +310,9 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               {/* Faz rozeti */}
               <div className="flex justify-center mb-3">
                 <div
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border"
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border ${
+                    skorDurumu === 'guncelleniyor' ? 'skor-guncelleniyor-rozet' : ''
+                  }`}
                   style={{
                     color: skorDurumColors.fg,
                     background: skorDurumColors.bg,
@@ -320,7 +322,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                   {skorDurumu === 'klinik_onayli' && <span>✦</span>}
                   {skorDurumu === 'guncelleniyor' && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: skorDurumColors.fg }} />}
                   {skorDurumu === 'tahmini' && <span>ℹ</span>}
-                  <span>{skorDurumLabel.toUpperCase()}</span>
+                  <span className="relative z-10">{skorDurumLabel.toUpperCase()}</span>
                 </div>
               </div>
 
