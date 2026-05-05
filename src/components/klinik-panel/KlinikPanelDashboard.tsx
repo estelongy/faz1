@@ -252,7 +252,7 @@ function AkreditasyonYoluCard() {
       {/* İlerleme barı */}
       <div className="mb-4">
         <div className="flex items-center justify-between text-xs mb-1.5">
-          <span className="text-slate-400">Faz 2'ye ilerleme</span>
+          <span className="text-slate-400">Faz 2&apos;ye ilerleme</span>
           <span className="text-violet-300 font-bold">%{ilerleme}</span>
         </div>
         <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
