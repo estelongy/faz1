@@ -9,7 +9,7 @@ import ScoreChart, { type ScorePoint } from '@/components/ScoreChart'
 import ZiyaretKarti, { type ZiyaretItem, type ZiyaretAnalysis } from '@/components/ZiyaretKarti'
 
 export const metadata: Metadata = {
-  title: 'Analizlerim — Estelongy',
+  title: 'Geçmişim — Estelongy',
 }
 
 export default async function AnalizlerimPage() {
@@ -20,13 +20,24 @@ export default async function AnalizlerimPage() {
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role && role !== 'user') redirect(pathForRole(role))
 
-  // Tüm analizler
+  // Aktif journey id (badge için)
+  const { data: activeJourneyRow } = await supabase
+    .from('journeys')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
+    .order('started_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const activeJourneyId = activeJourneyRow?.id ?? null
+
+  // Tüm analizler — journey_id dahil, yeniden eskiye
   const { data: allAnalysesRaw } = await supabase
     .from('analyses')
-    .select('id, web_overall, temp_overall, final_overall, status, created_at, doctor_notes, doctor_approved_scores, web_scores, appointment_id')
+    .select('id, web_overall, temp_overall, final_overall, status, created_at, doctor_notes, doctor_approved_scores, web_scores, appointment_id, journey_id')
     .eq('user_id', user.id)
-    .order('created_at', { ascending: true })
-    .limit(60)
+    .order('created_at', { ascending: false })
+    .limit(100)
 
   // Tüm randevular (zaman çizelgesi için)
   const { data: allAppointmentsRaw } = await supabase
@@ -36,12 +47,22 @@ export default async function AnalizlerimPage() {
     .order('appointment_date', { ascending: false })
     .limit(60)
 
-  // Skor grafiği için noktalar
+  // Skor grafiği — sadece en son analiz per journey + klinik onaylılar
+  // (allAnalysesRaw yeniden eskiye sıralı; journey'i birden çok temsil etmesin)
+  const seenJourneysForChart = new Set<string>()
   const chartPoints: ScorePoint[] = (allAnalysesRaw ?? []).flatMap(a => {
     const pts: ScorePoint[] = []
-    const aiScore = a.web_overall ?? a.temp_overall
-    if (aiScore != null) pts.push({ date: a.created_at, score: aiScore, type: 'ai_analiz' })
+    // Klinik onaylı skoru her zaman ekle
     if (a.final_overall != null) pts.push({ date: a.created_at, score: a.final_overall, type: 'klinik_onayli' })
+    // Ön analiz: journey başına sadece en yeni (ilk görülen)
+    const aiScore = a.web_overall ?? a.temp_overall
+    if (aiScore != null) {
+      const jKey = a.journey_id ?? a.id // journey yoksa kendisi unique
+      if (!seenJourneysForChart.has(jKey)) {
+        seenJourneysForChart.add(jKey)
+        pts.push({ date: a.created_at, score: aiScore, type: 'ai_analiz' })
+      }
+    }
     return pts
   })
 
@@ -52,6 +73,17 @@ export default async function AnalizlerimPage() {
     if (a.appointment_id) analysesByAppt.set(a.appointment_id, a)
     else looseAnalyses.push(a)
   })
+
+  // Journey dedup: aynı journey_id'ye sahip analizlerde sadece en yenisini göster
+  // (allAnalysesRaw yeniden eskiye sıralı — ilk görülen zaten en yeni)
+  const seenJourneys = new Set<string>()
+  const deduplicatedLoose = looseAnalyses.filter(a => {
+    if (!a.journey_id) return true // journey_id yok = legacy, hepsini göster
+    if (seenJourneys.has(a.journey_id)) return false
+    seenJourneys.add(a.journey_id)
+    return true
+  })
+
   type RawA = NonNullable<typeof allAnalysesRaw>[number]
   const toZA = (a: RawA): ZiyaretAnalysis => ({
     id: a.id,
@@ -82,7 +114,7 @@ export default async function AnalizlerimPage() {
       userId: user.id,
     }
   })
-  const selfItems: ZiyaretItem[] = looseAnalyses.map(a => ({
+  const selfItems: ZiyaretItem[] = deduplicatedLoose.map(a => ({
     kind: 'self_analysis' as const,
     id: a.id,
     date: a.created_at,
@@ -94,7 +126,8 @@ export default async function AnalizlerimPage() {
     analysis: toZA(a),
     scoreDelta: null,
     appointmentId: null,
-    isActive: false,
+    // Aktif journey'e ait analiz → mor kenarlık
+    isActive: activeJourneyId != null && a.journey_id === activeJourneyId,
     userId: user.id,
   }))
   const timeline: ZiyaretItem[] = [...visitItems, ...selfItems].sort(
@@ -118,7 +151,7 @@ export default async function AnalizlerimPage() {
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
           </Link>
-          <span className="text-white font-bold text-sm">Analizlerim</span>
+          <span className="text-white font-bold text-sm">Geçmişim</span>
           <Link href="/analiz" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-violet-500/30 hover:border-violet-400 hover:bg-violet-500/10 text-violet-400 hover:text-violet-300 text-sm font-medium transition-colors">+ Yeni</Link>
         </div>
       </header>
@@ -140,12 +173,19 @@ export default async function AnalizlerimPage() {
         {timeline.length > 0 ? (
           <section className="space-y-4">
             <div className="flex items-baseline justify-between px-1">
-              <h2 className="text-white font-bold text-lg">Ziyaret & Ölçüm Geçmişi</h2>
+              <h2 className="text-white font-bold text-lg">Tüm Yolculuklarım</h2>
               <span className="text-slate-500 text-xs">{timeline.length} kayıt</span>
             </div>
             <p className="text-slate-500 text-sm px-1 -mt-2">
-              Klinik ziyaretleriniz, yapılan işlemler, hekim önerileri ve her ziyarette alınan ölçüm sonuçları
+              Selfie analizleri, klinik ziyaretleri ve hekim onaylı süreçler — tek yerde
             </p>
+            {/* Aktif yolculuk varsa küçük bilgi notu */}
+            {activeJourneyId && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-500/8 border border-violet-500/20 text-violet-400 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse shrink-0" />
+                Mor kenarlıklı kart aktif yolculuğun — kaldığın yerden devam edebilirsin
+              </div>
+            )}
             {timeline.map(item => (
               <ZiyaretKarti
                 key={`${item.kind}-${item.id}`}

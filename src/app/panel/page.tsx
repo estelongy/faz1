@@ -114,7 +114,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
         emoji: '📅',
         title: `Randevunuz var: ${dateStr}`,
         desc: apt.clinics?.name ?? 'Klinik',
-        href: '/panel/randevularim',
+        href: '/panel/analizlerim',
         cta: 'Randevuya Git →',
         gradient: 'from-blue-600 to-cyan-600',
       }
@@ -382,8 +382,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 px-1">Yönetim</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             <YonetimKarti href="/panel/hesabim"      icon="👤" label="Hesabım" />
-            <YonetimKarti href="/panel/analizlerim"  icon="📊" label="Analizlerim" />
-            <YonetimKarti href="/panel/randevularim" icon="📅" label="Randevularım" />
+            <YonetimKarti href="/panel/analizlerim"  icon="📅" label="Geçmişim" />
             <YonetimKarti href="/panel/siparislerim" icon="📦" label="Siparişlerim" />
             <YonetimKarti href="/panel/iadelerim"    icon="↩" label="İadelerim" />
             <YonetimKarti href="/panel/adreslerim"   icon="📍" label="Adreslerim" />

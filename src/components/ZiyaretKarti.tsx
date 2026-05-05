@@ -123,6 +123,36 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
   const preScore   = a?.web_overall ?? a?.temp_overall ?? null
   const finalScore = a?.final_overall ?? null
 
+  // ── Yolculuk adımları ────────────────────────────────────────────
+  type JStep = { key: string; label: string; done: boolean }
+  const journeySteps: JStep[] = []
+  let journeyTitle = ''
+
+  if (item.kind === 'self_analysis') {
+    journeySteps.push({ key: 'analiz', label: 'Selfie Analizi', done: true })
+    if (a?.temp_overall != null) {
+      journeySteps.push({ key: 'anket', label: 'Anket', done: true })
+    }
+    journeyTitle = a?.temp_overall != null ? 'Analiz + Anket' : 'Selfie Analizi'
+  } else {
+    // visit
+    if (a) journeySteps.push({ key: 'analiz', label: 'Ön Analiz', done: true })
+    journeySteps.push({
+      key: 'ziyaret',
+      label: 'Klinik Ziyareti',
+      done: ['completed', 'in_progress', 'confirmed'].includes(item.status),
+    })
+    if (a?.final_overall != null) {
+      journeySteps.push({ key: 'onay', label: 'Hekim Onayı', done: true })
+      journeyTitle = 'Hekim Onaylı Süreç'
+    } else if (['completed', 'in_progress'].includes(item.status)) {
+      journeySteps.push({ key: 'onay', label: 'Hekim Onayı', done: false })
+      journeyTitle = 'Klinik Ziyareti'
+    } else {
+      journeyTitle = 'Klinik Randevusu'
+    }
+  }
+
   async function onSave() {
     if (!saveVisitNotes || item.kind !== 'visit') return
     setErr(null)
@@ -137,11 +167,11 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
     })
   }
 
-  // Renk teması — kart kenarı
-  const accent = item.kind === 'self_analysis'
-    ? 'border-slate-700'
-    : item.isActive
-      ? 'border-violet-500/40'
+  // Renk teması — aktif journey (hem visit hem self_analysis) mor kenarlık alır
+  const accent = item.isActive
+    ? 'border-violet-500/40'
+    : item.kind === 'self_analysis'
+      ? 'border-slate-700'
       : 'border-slate-800'
 
   return (
@@ -172,10 +202,20 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
             )}
           </div>
           <div>
-            <div className="text-white font-bold text-sm">
-              {item.kind === 'self_analysis' ? 'Bağımsız Ön Analiz' : 'Klinik Ziyareti'}
-            </div>
+            <div className="text-white font-bold text-sm">{journeyTitle}</div>
             <div className="text-slate-500 text-xs">{formatDate(item.date)}</div>
+            {/* Journey adım göstergesi */}
+            <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+              {journeySteps.map((step, i) => (
+                <div key={step.key} className="flex items-center gap-1">
+                  {i > 0 && <div className="w-3 h-px bg-slate-700" />}
+                  <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${step.done ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${step.done ? 'bg-emerald-400/80' : 'bg-slate-600'}`} />
+                    {step.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

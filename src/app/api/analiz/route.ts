@@ -3,6 +3,7 @@ import OpenAI from 'openai'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimitAnaliz, rateLimitResponse } from '@/lib/ratelimit'
 import { clamp, colorZone } from '@/lib/egs'
+import { getOrCreateActiveJourney } from '@/lib/journeys'
 
 // ─── Tipler ───────────────────────────────────────────────────────────────────
 
@@ -253,10 +254,19 @@ export async function POST(req: NextRequest) {
     // DB'ye kaydet
     let savedAnalysisId: string | null = null
     try {
+      // Aktif journey bul veya oluştur
+      let journeyId: string | null = null
+      try {
+        journeyId = await getOrCreateActiveJourney(user.id, supabase)
+      } catch (jErr) {
+        console.error('[AI Analiz] Journey hatası (analiz yine kaydedilecek):', jErr)
+      }
+
       const { data: analysisRow } = await supabase
         .from('analyses')
         .insert({
           user_id:     user.id,
+          journey_id:  journeyId,
           web_overall: Math.round(c250Score),
           status:      'completed',
           web_ai_raw: {
