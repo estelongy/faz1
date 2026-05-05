@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import type { EditorialPost, PostsByCategory, PostCategory } from '@/lib/editorial-posts'
 
 // ───────────────────────────────────────────────────────────────────
 // Kart Kütüphanesi — tek kaynak
@@ -11,8 +12,10 @@ interface CardDef {
   title: string
   subtitle: string
   icon: string
-  iconBg: string  // tailwind gradient/border classes
+  iconBg: string
   defaultOpen?: boolean
+  /** Editöryel kategori — varsa kart bu kategoriden post çeker */
+  category?: PostCategory
 }
 
 const CARD_LIBRARY: CardDef[] = [
@@ -23,6 +26,7 @@ const CARD_LIBRARY: CardDef[] = [
     icon: '📰',
     iconBg: 'from-blue-500/20 to-cyan-500/10 border-blue-500/20',
     defaultOpen: true,
+    category: 'akademi',
   },
   {
     id: 'duyurular',
@@ -31,6 +35,7 @@ const CARD_LIBRARY: CardDef[] = [
     icon: '📢',
     iconBg: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/20',
     defaultOpen: true,
+    category: 'duyuru',
   },
   {
     id: 'topluluk',
@@ -39,6 +44,7 @@ const CARD_LIBRARY: CardDef[] = [
     icon: '💬',
     iconBg: 'from-fuchsia-500/20 to-violet-500/10 border-fuchsia-500/20',
     defaultOpen: true,
+    category: 'topluluk',
   },
   {
     id: 'hastalarim',
@@ -60,6 +66,7 @@ const CARD_LIBRARY: CardDef[] = [
     subtitle: 'Editör onaylı medikal haber',
     icon: '🔬',
     iconBg: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/20',
+    category: 'bilim',
   },
   {
     id: 'resmi',
@@ -67,6 +74,7 @@ const CARD_LIBRARY: CardDef[] = [
     subtitle: 'TTB, branş dernekleri, bakanlık',
     icon: '📋',
     iconBg: 'from-slate-500/20 to-slate-400/10 border-slate-500/20',
+    category: 'resmi',
   },
   {
     id: 'sosyal',
@@ -74,22 +82,26 @@ const CARD_LIBRARY: CardDef[] = [
     subtitle: 'Estelongy X & Instagram özet',
     icon: '✨',
     iconBg: 'from-pink-500/20 to-rose-500/10 border-pink-500/20',
+    category: 'sosyal',
   },
 ]
 
 const STORAGE_KEY = 'estelongy_klinik_panel_cards'
-const MAX_TERCIHLI = 4  // 4 sabit + max 4 tercihli = 8 toplam
+const MAX_TERCIHLI = 4
+
+interface Props {
+  postsByCategory: PostsByCategory
+}
 
 // ───────────────────────────────────────────────────────────────────
 
-export default function TercihliKartlarSection() {
+export default function TercihliKartlarSection({ postsByCategory }: Props) {
   const [openIds, setOpenIds] = useState<string[]>(
     () => CARD_LIBRARY.filter(c => c.defaultOpen).map(c => c.id)
   )
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
 
-  // localStorage'tan yükle
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
@@ -101,7 +113,6 @@ export default function TercihliKartlarSection() {
     setHydrated(true)
   }, [])
 
-  // localStorage'a yaz
   useEffect(() => {
     if (!hydrated) return
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(openIds)) } catch {}
@@ -136,14 +147,18 @@ export default function TercihliKartlarSection() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {openCards.map(card => (
-          <PreferredCard key={card.id} card={card} onRemove={() => removeCard(card.id)} />
+          <PreferredCard
+            key={card.id}
+            card={card}
+            posts={card.category ? (postsByCategory[card.category] ?? []) : []}
+            onRemove={() => removeCard(card.id)}
+          />
         ))}
         {canAddMore && (
           <KartEkleButton onClick={() => setPaletteOpen(true)} />
         )}
       </div>
 
-      {/* Mini Palet — modal */}
       {paletteOpen && (
         <KartPaleti
           closedCards={closedCards}
@@ -156,49 +171,216 @@ export default function TercihliKartlarSection() {
 }
 
 // ───────────────────────────────────────────────────────────────────
-// Tercihli Kart (placeholder içerik, X ile kaldırılabilir)
+// Tercihli Kart — gerçek içerik + kaldır butonu
 // ───────────────────────────────────────────────────────────────────
 
-function PreferredCard({ card, onRemove }: { card: CardDef; onRemove: () => void }) {
+function PreferredCard({
+  card, posts, onRemove,
+}: {
+  card: CardDef
+  posts: EditorialPost[]
+  onRemove: () => void
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const hasContent = posts.length > 0
+  const hasCategory = !!card.category
+
   return (
-    <div className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 ${card.iconBg}`}>
-      {/* X kaldır butonu — hover'da görünür */}
-      <button
-        type="button"
-        onClick={onRemove}
-        title="Bu kartı paneldan kaldır"
-        className="absolute top-3 right-3 w-7 h-7 rounded-full bg-slate-900/60 hover:bg-red-500/80 border border-slate-700 hover:border-red-400 text-slate-400 hover:text-white opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center z-10"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+    <>
+      <div className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 ${card.iconBg}`}>
+        {/* X kaldır */}
+        <button
+          type="button"
+          onClick={onRemove}
+          title="Bu kartı paneldan kaldır"
+          className="absolute top-3 right-3 w-7 h-7 rounded-full bg-slate-900/60 hover:bg-red-500/80 border border-slate-700 hover:border-red-400 text-slate-400 hover:text-white opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center z-10"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-      <div className="flex items-start gap-3 mb-4 pr-8">
-        <div className="text-2xl">{card.icon}</div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-white font-bold text-sm">{card.title}</h3>
-          <p className="text-slate-500 text-xs mt-0.5">{card.subtitle}</p>
+        <div className="flex items-start gap-3 mb-4 pr-8">
+          <div className="text-2xl">{card.icon}</div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-white font-bold text-sm">{card.title}</h3>
+            <p className="text-slate-500 text-xs mt-0.5">{card.subtitle}</p>
+          </div>
+          {!hasCategory && (
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-400 uppercase tracking-wider shrink-0">Yakında</span>
+          )}
         </div>
-        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-400 uppercase tracking-wider shrink-0">Yakında</span>
+
+        {/* İçerik — kategori varsa ve post varsa, yoksa boş state */}
+        {hasCategory ? (
+          hasContent ? (
+            <div className="space-y-2.5">
+              {posts.map(post => (
+                <PostMiniRow key={post.id} post={post} />
+              ))}
+              <button
+                type="button"
+                onClick={() => setExpanded(true)}
+                className="w-full text-left text-violet-300 hover:text-violet-200 text-xs font-semibold pt-1 transition-colors"
+              >
+                Hepsini gör →
+              </button>
+            </div>
+          ) : (
+            <div className="py-4 text-center text-slate-500 text-xs">
+              Henüz içerik yok
+            </div>
+          )
+        ) : (
+          // Kategorisi olmayan kartlar (Hastalarım, Avantajlar) için skeleton
+          <>
+            <div className="space-y-2">
+              <div className="h-2 rounded bg-slate-800/60 w-3/4"></div>
+              <div className="h-2 rounded bg-slate-800/60 w-1/2"></div>
+              <div className="h-2 rounded bg-slate-800/60 w-2/3"></div>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-700/30 text-xs text-slate-600 italic">
+              İçerik akışı yakında
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Skeleton içerik — gerçek feed gelene kadar */}
-      <div className="space-y-2">
-        <div className="h-2 rounded bg-slate-800/60 w-3/4"></div>
-        <div className="h-2 rounded bg-slate-800/60 w-1/2"></div>
-        <div className="h-2 rounded bg-slate-800/60 w-2/3"></div>
-      </div>
+      {/* Expand modal — tüm postlar */}
+      {expanded && hasContent && (
+        <PostListModal card={card} posts={posts} onClose={() => setExpanded(false)} />
+      )}
+    </>
+  )
+}
 
-      <div className="mt-4 pt-3 border-t border-slate-700/30 text-xs text-slate-600 italic">
-        İçerik akışı yakında
+function PostMiniRow({ post }: { post: EditorialPost }) {
+  const dateStr = formatRelativeDate(post.published_at)
+  const Tag = post.external_url ? 'a' : 'div'
+  return (
+    <Tag
+      {...(post.external_url ? { href: post.external_url, target: '_blank', rel: 'noopener noreferrer' } : {})}
+      className={`block p-2.5 rounded-lg bg-slate-900/40 border border-slate-700/40 ${post.external_url ? 'hover:border-slate-600 hover:bg-slate-900/60 cursor-pointer' : ''} transition-all`}
+    >
+      <p className="text-white text-xs font-semibold leading-snug line-clamp-2">{post.title}</p>
+      {post.excerpt && (
+        <p className="text-slate-500 text-[11px] mt-1 leading-relaxed line-clamp-2">{post.excerpt}</p>
+      )}
+      <p className="text-slate-600 text-[10px] mt-1.5 flex items-center gap-1">
+        {dateStr}
+        {post.external_url && (
+          <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        )}
+      </p>
+    </Tag>
+  )
+}
+
+function PostListModal({
+  card, posts, onClose,
+}: {
+  card: CardDef
+  posts: EditorialPost[]
+  onClose: () => void
+}) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [onClose])
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="sticky top-0 bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="text-2xl">{card.icon}</div>
+            <div>
+              <h2 className="text-white font-bold">{card.title}</h2>
+              <p className="text-slate-500 text-xs">{card.subtitle}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+            aria-label="Kapat"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-6 space-y-3">
+          {posts.map(post => (
+            <PostFullRow key={post.id} post={post} />
+          ))}
+        </div>
       </div>
     </div>
   )
 }
 
+function PostFullRow({ post }: { post: EditorialPost }) {
+  const dateStr = formatRelativeDate(post.published_at)
+  const Tag = post.external_url ? 'a' : 'div'
+  return (
+    <Tag
+      {...(post.external_url ? { href: post.external_url, target: '_blank', rel: 'noopener noreferrer' } : {})}
+      className={`block p-4 rounded-xl bg-slate-800/60 border border-slate-700 ${post.external_url ? 'hover:border-violet-500/40 cursor-pointer' : ''} transition-all`}
+    >
+      <p className="text-white text-sm font-bold leading-snug">{post.title}</p>
+      {post.excerpt && (
+        <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">{post.excerpt}</p>
+      )}
+      {post.body && (
+        <p className="text-slate-500 text-xs mt-2 leading-relaxed">{post.body}</p>
+      )}
+      <div className="flex items-center justify-between mt-3 text-[11px]">
+        <span className="text-slate-600">{dateStr}</span>
+        {post.external_url && (
+          <span className="text-violet-300 font-semibold flex items-center gap-1">
+            Aç
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </span>
+        )}
+      </div>
+    </Tag>
+  )
+}
+
+function formatRelativeDate(iso: string): string {
+  const date = new Date(iso)
+  const diffMs = Date.now() - date.getTime()
+  const diffMin = Math.floor(diffMs / (1000 * 60))
+  const diffHr = Math.floor(diffMs / (1000 * 60 * 60))
+  const diffDay = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  if (diffMin < 1) return 'şimdi'
+  if (diffMin < 60) return `${diffMin} dk önce`
+  if (diffHr < 24) return `${diffHr} sa önce`
+  if (diffDay < 7) return `${diffDay} gün önce`
+  return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })
+}
+
 // ───────────────────────────────────────────────────────────────────
-// Kart Ekle butonu — placeholder kart şeklinde
+// Kart Ekle butonu
 // ───────────────────────────────────────────────────────────────────
 
 function KartEkleButton({ onClick }: { onClick: () => void }) {
@@ -222,7 +404,7 @@ function KartEkleButton({ onClick }: { onClick: () => void }) {
 }
 
 // ───────────────────────────────────────────────────────────────────
-// Mini Palet — kapalı kartların listesi modal'ı
+// Mini Palet
 // ───────────────────────────────────────────────────────────────────
 
 function KartPaleti({
@@ -232,7 +414,6 @@ function KartPaleti({
   onSelect: (id: string) => void
   onClose: () => void
 }) {
-  // Escape ile kapat
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -250,7 +431,6 @@ function KartPaleti({
         className="w-full max-w-2xl bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
           <div>
             <h3 className="text-white font-bold">Kart Kütüphanesi</h3>
@@ -270,7 +450,6 @@ function KartPaleti({
           </button>
         </div>
 
-        {/* Kart listesi */}
         <div className="p-4 max-h-[60vh] overflow-y-auto">
           {closedCards.length === 0 ? (
             <div className="py-12 text-center">

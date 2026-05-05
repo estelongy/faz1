@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import KlinikPanelDashboard from '@/components/klinik-panel/KlinikPanelDashboard'
 import { computeAccreditation } from '@/lib/clinic-accreditation'
 import { computeOnboarding } from '@/lib/clinic-onboarding'
+import { fetchEditorialPosts } from '@/lib/editorial-posts'
 
 export const metadata: Metadata = {
   title: 'Klinik Paneli',
@@ -81,10 +82,11 @@ export default async function KlinikPanelPage() {
 
   const totalCredit = (clinic.jeton_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
 
-  // Akreditasyon ve onboarding — paralel hesaplama
-  const [accreditation, onboarding] = await Promise.all([
+  // Akreditasyon, onboarding, editöryel postlar — paralel
+  const [accreditation, onboarding, postsByCategory] = await Promise.all([
     computeAccreditation(clinic.id, supabase),
     computeOnboarding(clinic.id, supabase),
+    fetchEditorialPosts(supabase, 3),
   ])
 
   return (
@@ -107,6 +109,7 @@ export default async function KlinikPanelPage() {
       totalCredit={totalCredit}
       accreditation={accreditation}
       onboarding={onboarding}
+      postsByCategory={postsByCategory}
     />
   )
 }
