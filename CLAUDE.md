@@ -74,7 +74,8 @@ Build durumu: Vercel MCP `list_deployments` (projectId: `prj_qQ0N5SSfH8kqaY61qyi
 /satici/basvur           → Satıcı başvuru
 /satici/panel            → Satıcı yönetim (ürünler, sipariş, kazanç, ödeme hesabı, iade)
 
-/admin                   → Admin dashboard (kullanıcılar, klinikler, satıcılar, ürünler, kuponlar, iadeler)
+/admin                   → Admin dashboard (kullanıcılar, klinikler, satıcılar, ürünler, kuponlar, iadeler, **içerik**)
+/admin/icerik            → Editöryel içerik CMS — hekim panel kartlarına post girişi (kategori bazlı)
 /rehber                  → SEO hub + alt sayfalar
 /hakkinda/*              → SSS, İletişim, Sözleşme, Aydınlatma, Çerez
 ```
@@ -88,7 +89,11 @@ Build durumu: Vercel MCP `list_deployments` (projectId: `prj_qQ0N5SSfH8kqaY61qyi
 - **ID:** `dcmnxmqzimrgmholktid` · **URL:** `https://dcmnxmqzimrgmholktid.supabase.co`
 - **Edge Function:** `send-appointment-email`
 
-**Tablolar:** `profiles` · `clinics` · `vendors` · `appointments` · `analyses` · `scores` · `longevity_surveys` · `products` · `orders` · `order_items` · `addresses` · `carts` · `cart_items` · `returns` · `transactions` · `jeton_transactions` · `reviews` · `notification_queue` · `audit_logs` · `clinic_availability` · `user_badges` · `user_activity_streaks` · `referral_codes` · `referral_uses` · `coupons`
+**Tablolar:** `profiles` · `clinics` · `vendors` · `appointments` · `analyses` · `scores` · `longevity_surveys` · `products` · `orders` · `order_items` · `addresses` · `carts` · `cart_items` · `returns` · `transactions` · `jeton_transactions` · `reviews` · `notification_queue` · `audit_logs` · `clinic_availability` · `user_badges` · `user_activity_streaks` · `referral_codes` · `referral_uses` · `coupons` · `clinic_patient_notes` · `point_transactions` · **`editorial_posts`** · **`shared_cases`**
+
+**Yeni tablolar (Klinik Panel V2):**
+- `editorial_posts` — admin tarafından girilen içerik. Kategoriler: `akademi` / `duyuru` / `topluluk` / `bilim` / `resmi` / `sosyal`. Hekim panelindeki tercihli kartlar buradan beslenir. RLS: published herkese, admin tüm op.
+- `shared_cases` — Sonuç Vitrini hasta rıza akışı. status: `pending`/`approved`/`rejected`/`revoked`. Skor snapshot'ları (initial/final), patient_age, anonymity_level (`initials`/`firstname`/`full_anon`). UNIQUE (clinic_id, analysis_id). KVKK uyumlu.
 
 **Kritik kısıtlamalar:**
 ```
@@ -220,6 +225,95 @@ Final = (toplam × 0.85) + (hekim_puanı × 0.15)
 
 ---
 
+## Klinik Panel V2 — 3 Katmanlı Dashboard (2026 Mayıs)
+
+`/klinik/panel` ana sayfa **felsefe + mimari + interaktif sistemler**.
+
+### Felsefe
+"5 saniyede özet, 60 saniyede tarama, premium sessizlik" — Architectural Digest karanlık modu, Bloomberg değil. Hekim psikolojisine üç değer ekseni:
+- **Artı değer** (Estelongy'siz alamayacağı: yönlendirme, Δ, klinik onayı)
+- **Kolaylık** (operasyon yükünü düşür)
+- **Kişisel gelişim + topluluk** (klinik dışı insan olarak büyüme)
+
+### Sidebar — Gmail tarzı hover-expand
+- `src/components/KlinikSidebar.tsx`
+- Default 72px ikon-only, hover → 264px overlay (ana içerik kaymaz)
+- Pin butonu (localStorage), açık modda ince scrollbar / kapalı modda gizli
+- Logo = `/klinik/panel` linki (panele dön kuralı garantisi)
+
+### 3 Katman
+- **Katman 1 ŞIMDI:** Bugünün Akışı kartı (full-width, navigate → `/klinik/panel/takvim`)
+- **Katman 2 BU AY:** 3 sabit kart yan yana
+  - **Üretimin** — gerçek metrikler (yönlendirilen, kabul oranı, klinik onayı, geçen aya delta), navigate → `/rapor`. Asla "ciro/para/komisyon" demez.
+  - **Akreditasyon Yolu** — gerçek faz hesaplama, expand-modal
+  - **Sonuç Vitrini** — KVKK rızalı vakalar, expand-modal
+- **Katman 3 SENIN SEÇTIKLERIN:** 8 kart kütüphane / max 4 tercihli (8 toplam limit)
+
+### Kart Davranış Tipleri (sabit, hekim seçemez)
+- `navigate` — ilgili sayfaya gider
+- `expand-modal` — overlay açılır, X ile kapanır, body scroll lock
+
+### Sabit "Panele Dön" Kuralı (3 katman garantisi)
+1. Sidebar'da en üstte logo = `/klinik/panel`
+2. Sub-route'larda üst sticky header'da `← Panel` (mevcut)
+3. Modal/expand katmanlarında üst sağ X kapat
+
+### Akreditasyon Sistemi
+`src/lib/clinic-accreditation.ts` — on-the-fly hesaplama, cache yok.
+
+| Faz | Etiket | Kriterler |
+|-----|--------|-----------|
+| **0** | Yeni Klinik | Faz 1 kriterlerini karşılayamayan |
+| **1** | Doğrulanmış Hekim | Profil tam, müsaitlik tanımlı, ≥5 onaylı randevu |
+| **2** | Estelongy Hekimi | ≥20 onaylı randevu, ≥5 klinik onayı |
+| **3** | Estelongy Uzmanı | ≥100 onaylı randevu, ≥30 klinik onayı |
+
+Sonraki faza ilerleme % (kısmi sayısal kriterler dahil hesaplanır). `AkreditasyonKart` client component → modal.
+
+### Onboarding Flow (4 Adım)
+`src/lib/clinic-onboarding.ts` — yeni klinikler için banner.
+
+1. Profil tamamla → "Doğrulanmış Hekim" rozeti
+2. Müsaitlik takvimi → 20 hediye kredi açılır
+3. İlk randevu kabul → Akademi içeriği unlocked
+4. İlk klinik onayı → "Estelongy Hekimi" rozeti + Faz 1
+
+`OnboardingBanner` → kompakt accordion, üstte ilerleme barı, 4/4'te kutlama (1 kez, localStorage). Eski `KlinikWelcome` ekranı kaldırıldı.
+
+### Editöryel İçerik Sistemi
+`src/lib/editorial-posts.ts` + `editorial_posts` tablosu.
+
+Admin `/admin/icerik` sayfasından kategori bazlı post girer (başlık + özet + body + dış link + görsel). Hekim panelindeki 6 tercihli kart bu kategorilerden beslenir:
+- akademi → Akademi Vitrini
+- duyuru → Estelongy Duyuruları
+- topluluk → Topluluk Pulse
+- bilim → Bilimsel Haber Akışı
+- resmi → Resmi Duyurular
+- sosyal → Sosyal Medya Akışı
+
+Her kart son 3 post mini önizleme + "Hepsini gör →" expand-modal.
+
+### Sonuç Vitrini Rıza Akışı (KVKK)
+`src/lib/shared-cases.ts` + `shared_cases` tablosu + `vitrine-actions.ts`.
+
+**Akış:**
+1. Hekim → hasta detay (`/klinik/panel/hasta/[userId]`) → `VitrinePaylasimSection` → "Paylaşım izni iste"
+2. `shared_cases` insert (status=pending, score snapshot)
+3. Hasta `/panel`'de `PaylasimRizaBanner` görür → anonimlik seç (initials/firstname/full_anon) → kabul/red
+4. Onaylı vakalar dashboard `Sonuç Vitrini` kartında en yüksek Δ ile gösterilir
+5. Hekim revoke edebilir, hasta da reddedebilir
+
+RLS politikaları: hekim kendi kliniği yönetir, hasta kendi cevaplar, public sadece approved okur.
+
+### Tercihli Kart Yönetimi
+`TercihliKartlarSection` (client) — localStorage `estelongy_klinik_panel_cards`. Default açık 3 kart (Akademi, Duyurular, Topluluk). "+" buton → mini palet (kapalı kartlar listesi). X ile kaldır. Max 4 tercihli aktif.
+
+**Henüz placeholder olan tercihli kartlar:**
+- Hastalarım Vitrini (kendi data, ayrı sistem)
+- Estelongy Avantajları (partner programı henüz yok — Shell/Rixos/THY anlaşmaları Faz 3'te)
+
+---
+
 ## Ziyaret Zaman Çizelgesi
 
 Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel`) tarafında ziyaret bazlı birleşik kart akışı.
@@ -274,8 +368,10 @@ Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel`) tarafında ziya
 
 ## Bekleyen Görevler — Sıralı Öncelik
 
+> **Klinik Panel V2 tamam (2026 Mayıs):** Faz 1+2 (sidebar/dashboard/akreditasyon/onboarding/CMS/rıza) — bkz. "Tamamlanan Yapısal İşler". Klinik tarafı lansmana mimari olarak hazır.
+
 ### 🥇 1. Tetkik Puanı Algoritması (Sıradaki — Aktif İş)
-Skor algoritmasının kalan parçası. Anket bitti, şimdi tetkik.
+Skor algoritmasının kalan parçası. Anket bitti, şimdi tetkik. **Lansman blokeri** — kullanıcı tarafının %90'ı bitti, algoritma bekleniyor.
 - [ ] `src/lib/tetkik-params.ts` parametre listesi gözden geçirilecek
 - [ ] Her parametre için skor katkısı kuralı belirlenecek (referans aralığı içi/dışı, yakınlık etkisi)
 - [ ] Tetkik max toplam katkısı belirlenecek (anket gibi 3.6 mı, daha fazla mı?)
@@ -447,10 +543,12 @@ ALTER TABLE clinics ADD COLUMN
 Faz A iskeleti canlıda. Yer tutucular dolması gereken modüller:
 
 **📰 Akademi:**
-- [ ] Bilim makaleleri yönetimi (admin tarafı CMS basit)
-- [ ] Kongre takvimi (manuel CRUD + tarih bazlı sıralama)
-- [ ] Klinik vakaları — anonim paylaşım (klinik akış sonrası "topluluk ile paylaş" toggle)
+- [x] **Editöryel CMS** — `/admin/icerik` admin sayfası (kategori bazlı post girişi, yayınla/gizle/sil) — `editorial_posts` tablosu
+- [x] **Hekim panel besleme** — Akademi Vitrini, Bilimsel Haber, Resmi Duyurular kartları admin'den çekiyor
+- [x] **Klinik vakaları anonim paylaşım** — Sonuç Vitrini rıza akışı (Faz 2d), `shared_cases` tablosu, KVKK uyumlu (initials/firstname/full_anon)
+- [ ] Kongre takvimi (manuel CRUD + tarih bazlı sıralama) — şu an `topluluk` kategorisinde post olarak girilebilir, ayrı tablo yok
 - [ ] Protokol kütüphanesi (skor bandına göre)
+- [ ] PubMed E-utilities entegrasyonu (otomatik bilimsel makale çekme)
 
 **📱 Pazarlama:**
 - [ ] WhatsApp şablon kütüphanesi (randevu hatırlatma, sonuç paylaşım, tekrar randevu)
@@ -459,8 +557,9 @@ Faz A iskeleti canlıda. Yer tutucular dolması gereken modüller:
 - [ ] Performans raporu (link tıklama, mesaj dönüşümü)
 
 **💬 Topluluk:**
-- [ ] Branş kanalları (dermatoloji/plastik/longevity/estelongy duyuruları)
-- [ ] Anonim vaka paylaşımı (ikinci görüş)
+- [x] **Topluluk Pulse kartı** — admin'den girilen tartışma/etkinlik postları
+- [x] **Anonim vaka paylaşımı** — Sonuç Vitrini ile entegre (Faz 2d)
+- [ ] Branş kanalları (dermatoloji/plastik/longevity/estelongy duyuruları) — şu an tek kategori, branş ayrımı yok
 - [ ] Klinik rehberi (şehir + EGP filtreli liste)
 - [ ] Aylık webinar kayıt + arşiv
 
@@ -494,7 +593,16 @@ Faz A iskeleti canlıda. Yer tutucular dolması gereken modüller:
 - **SMS/OTP altyapısı:** Netgsm + Upstash Redis Production, `/api/otp/send` + `/verify` canlı
 - **Stripe Connect:** test mode aktif (live KYC Vestoriq Estonya belgelerine bağlı)
 - **AI:** `gpt-5.4-mini` Vision Production'a entegre, fallback Math.random + `usedFallback: true`
-- **Klinik Portal Faz A:** Sticky sol sidebar (`KlinikSidebar`) + ortak `layout.tsx` (auth/clinic/approval kontrolü tek yerde) + 5 yeni modül (Hastalarım/Profil/Akademi/Pazarlama/Topluluk/Destek). Discord-vari kanal listesi hissi, "Estelongy Klinik Topluluğu" canlı rozet. Akademi/Pazarlama/Topluluk **teaser** durumunda (Faz B/C ile dolacak).
+- **Klinik Portal Faz A:** Sticky sol sidebar (`KlinikSidebar`) + ortak `layout.tsx` (auth/clinic/approval kontrolü tek yerde) + 5 yeni modül (Hastalarım/Profil/Akademi/Pazarlama/Topluluk/Destek).
+- **Klinik Panel V2 (2026 Mayıs):** Tam yeniden inşa — bkz. yukarıdaki "Klinik Panel V2 — 3 Katmanlı Dashboard" bölümü.
+  - Sidebar Gmail tarzı hover-expand + pin (localStorage)
+  - 3 katmanlı dashboard (ŞIMDI / BU AY / SENIN SEÇTIKLERIN)
+  - 4 sabit + max 4 tercihli kart, 8 kartlık kütüphane, "+" buton + palet
+  - **Faz 2a Akreditasyon:** Gerçek 4 faz sistemi (Yeni→Doğrulanmış→Estelongy Hekimi→Uzman), `clinic_accreditation` cache'siz on-the-fly
+  - **Faz 2b Onboarding:** 4 adımlı banner (profil→müsaitlik→ilk randevu→ilk onay), nitelikli ödüller (rozet/kredi/içerik unlock)
+  - **Faz 2c İçerik CMS:** `editorial_posts` tablosu + `/admin/icerik` admin sayfası + 6 tercihli kart gerçek içerik beslemesi
+  - **Faz 2d Sonuç Vitrini Rıza:** `shared_cases` tablosu + KVKK uyumlu hekim→hasta→hekim akışı + anonimlik seçimi
+  - Eski `KlinikWelcome` ayrı ekranı kaldırıldı, yeni klinikler dashboard'u görüyor (banner aktif)
 - **Bildirim sistemi:** Cron `0 9 * * *` (Hobby plan), `appointment_confirmed` + 24h hatırlatma + `score_update` enqueue. SMS+e-posta (telefon doğrulanmışsa).
 - **Anasayfa auth-aware:** Login varsa "Hesabım" + 3 kapı linkleri direkt destination. Login yoksa "Giriş/Kayıt" + `/giris?next=...`.
 - **Panel 3 kapı:** Skor üstünde Skoru Güncelle / Klinik Randevu Al / Mağaza kartları (anasayfa görsel diliyle paralel).
