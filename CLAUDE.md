@@ -376,6 +376,66 @@ Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel`) tarafında ziya
 
 > **Klinik Panel V2 tamam (2026 Mayıs):** Faz 1+2 (sidebar/dashboard/akreditasyon/onboarding/CMS/rıza) — bkz. "Tamamlanan Yapısal İşler". Klinik tarafı lansmana mimari olarak hazır.
 
+---
+
+### 👤 0. SENİN YAPACAKLARIN — Manuel Lansman Checklist
+
+> Kod yok, sadece dış servis kayıtları + Vercel env'e ekleme + canlı test. Lansmandan önce hepsi bitmeli. Yan yana 1 oturumda halledilebilir (~1-2 saat).
+
+#### A. Vercel Environment Variables (Production scope)
+- [ ] **`RESEND_API_KEY`** — yoksa welcome email + sipariş onay email + bildirim sessiz fail. resend.com → API key oluştur, Vercel'e ekle.
+- [ ] **`FROM_EMAIL`** — `noreply@estelongy.com` (DNS kaydı yapıldıysa) yoksa default
+- [ ] **`OPENAI_API_KEY`** — analiz için (zaten var olabilir, doğrula)
+- [ ] **`CRON_SECRET`** — cron'lar header'da bunu istiyor; rasgele 32-char string üret, hem Vercel env'e hem cron job header'larına ekle
+- [ ] **`NEXT_PUBLIC_SENTRY_DSN`** + **`SENTRY_ORG`** + **`SENTRY_PROJECT`** — sentry.io'da "estelongy" projesi yarat → DSN al → Vercel env. Test hatası fırlat, dashboard'da gör.
+- [ ] **`NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`** — Search Console verification kodu
+- [ ] **`NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE`** — Cloudflare Dashboard → Stream → "Customer code" (özel iframe domain'i için). Yoksa video oynatma "hazırlanıyor" placeholder'ı kalır.
+- [ ] **`CLOUDFLARE_ACCOUNT_ID`** + **`CLOUDFLARE_STREAM_TOKEN`** — eğitmen video upload (henüz UI yok ama yakında)
+
+#### B. Cloudflare Stream Subscription
+- [ ] Cloudflare Stream subscribe ($5/ay, 1000 dk hosting + sınırsız izleme)
+- [ ] API token oluştur: Stream:Edit izniyle
+- [ ] Customer code'u kopyala
+- [ ] Yukarıdaki 3 env var'ı Vercel'e ekle → Production redeploy
+
+#### C. Stripe Live Mode (Vestoriq KYC sonrası)
+- [ ] Vestoriq OÜ Estonya vergi belgeleri tamamlandığında Stripe Dashboard → Activate Live mode → KYC formu
+- [ ] Onaylanınca live `STRIPE_SECRET_KEY` + `STRIPE_PUBLISHABLE_KEY` + `STRIPE_WEBHOOK_SECRET` Vercel'e (test mode'un üzerine yaz)
+- [ ] Webhook endpoint URL'i: `https://estelongy.com/api/stripe/webhook` — Stripe'a kaydet, signing secret al
+- [ ] **Akademi otomatik live olur** (TRY çalışıyor, jeton paketleri EUR)
+
+#### D. Search Console + SEO
+- [ ] **Google Search Console** → property ekle (`estelongy.com`) → DNS verification al → `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` env
+- [ ] Search Console → Sitemaps → `https://estelongy.com/sitemap.xml` submit
+- [ ] **Bing Webmaster Tools** → site ekle → sitemap submit
+- [ ] `src/app/layout.tsx` içindeki `sameAs` URL'lerini gerçek sosyal medya hesaplarıyla güncelle (instagram/twitter/linkedin) — şu an placeholder
+
+#### E. Supabase Auth Konfigürasyonu
+- [ ] Supabase Dashboard → Authentication → Providers → **Google OAuth** etkinleştir
+- [ ] Google Cloud Console → OAuth Client ID oluştur → Client ID + Secret'ı Supabase'e yapıştır
+- [ ] Authorized redirect URI: `https://dcmnxmqzimrgmholktid.supabase.co/auth/v1/callback`
+
+#### F. Vercel Hijyen
+- [ ] **İki proje karışıklığı** (`faz1` vs `faz-1`) — birini sil, domain tek projede toplansın. Domain `estelongy.com` doğru projeye bağlansın.
+- [ ] Vercel Pro'ya geçerse: bildirim 1h hatırlatma cron'u saatlik etkinleşir
+- [ ] Production deploy alarmı (Discord/Slack webhook integration — opsiyonel)
+
+#### G. Lansman Öncesi Canlı Smoke Testleri
+- [ ] **Hasta kayıt** — `/kayit` formu → SMS OTP → kayıt → welcome email geliyor mu
+- [ ] **Klinik kayıt** — `/kurumsal/giris` → Klinik kartı → Kayıt Ol → form + SMS OTP → `/klinik/basvur` açılıyor mu
+- [ ] **Satıcı kayıt** — `/kurumsal/giris` → Satıcı kartı → Kayıt Ol → form + SMS OTP → `/satici/basvur` açılıyor mu
+- [ ] **Sağlık Profesyoneli kayıt** — `/kurumsal/giris` → Sağlık Profesyoneli → Kayıt Ol → dedicated form + SMS OTP → `/panel` (emerald sidebar) açılıyor mu, welcome email "Akademi'ye Hoş Geldiniz" geliyor mu
+- [ ] **Sidebar Çıkış** — sağlık profesyoneli olarak giriş → sidebar altındaki kırmızı Çıkış butonu çalışıyor mu
+- [ ] **Akademi alıcı akışı** (Stream env eklendikten sonra) — `/akademi`'de paket gör → Satın Al → Stripe (test mode) → `/panel/kurslarim`'da görünüyor mu → video oynatılıyor mu
+- [ ] **Eğitmen başvuru** — klinik panel → "Eğitmen Ol" → form → admin'de görünüyor mu → onaylama → klinik panele "Eğitmen Paneli" linki çıkıyor mu
+
+#### H. Soft Launch / Tanıtım Hazırlığı (opsiyonel)
+- [ ] İlk 5-10 KOL hekime kişisel davet → eğitmen olun + ilk paketinizi yükleyin (anchor strategy)
+- [ ] Instagram + LinkedIn kurumsal hesap kuruluşu
+- [ ] İlk basın bültenleri / blog yazıları taslakları
+
+---
+
 ### 🥇 1. Tetkik Puanı Algoritması (Sıradaki — Aktif İş)
 Skor algoritmasının kalan parçası. Anket bitti, şimdi tetkik. **Lansman blokeri** — kullanıcı tarafının %90'ı bitti, algoritma bekleniyor.
 - [ ] `src/lib/tetkik-params.ts` parametre listesi gözden geçirilecek
