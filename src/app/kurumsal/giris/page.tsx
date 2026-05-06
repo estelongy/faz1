@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { pathForRole } from '@/lib/auth-redirect'
 
-type AccountType = 'klinik' | 'satici' | null
+type AccountType = 'klinik' | 'satici' | 'saglik_profesyoneli' | null
 
 export default function KurumsalGirisPage() {
   const router = useRouter()
@@ -35,7 +35,7 @@ export default function KurumsalGirisPage() {
       const role = (loginData.user?.app_metadata as Record<string, string>)?.role
 
       // Rol atanmışsa direkt ilgili panele git
-      if (role === 'admin' || role === 'clinic' || role === 'vendor') {
+      if (role === 'admin' || role === 'clinic' || role === 'vendor' || role === 'health_professional') {
         router.push(pathForRole(role))
         router.refresh()
         return
@@ -46,19 +46,50 @@ export default function KurumsalGirisPage() {
         router.push('/klinik/basvur')
       } else if (accountType === 'satici') {
         router.push('/satici/basvur')
+      } else if (accountType === 'saglik_profesyoneli') {
+        // Halihazırda 'user' rolüyle giriş yapıyorsa: panele yönlendir,
+        // sağlık profesyoneli rolüne geçmek için yeni kayıt gerekli
+        router.push('/panel')
       } else {
         router.push('/panel')
       }
       router.refresh()
     } else {
       if (password.length < 6) { setError('Şifre en az 6 karakter olmalıdır.'); setLoading(false); return }
+
+      // Sağlık Profesyoneli — service-role API ile rol doğrudan set ediliyor
+      if (accountType === 'saglik_profesyoneli') {
+        const res = await fetch('/api/saglik-profesyoneli/kayit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, full_name: fullName }),
+        })
+        const result = await res.json()
+        if (!res.ok) {
+          setError(result.error || 'Hesap oluşturulamadı.')
+          setLoading(false)
+          return
+        }
+        // Hesap oluştu (email_confirm:true) → direkt giriş + panele yönlendir
+        const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password })
+        if (signInErr) {
+          setError('Hesap oluşturuldu ancak giriş yapılamadı. Lütfen giriş yapmayı deneyin.')
+          setLoading(false)
+          setMode('giris')
+          return
+        }
+        router.push('/panel')
+        router.refresh()
+        return
+      }
+
+      // Klinik / Satıcı — normal signUp + e-posta doğrulama + başvuru akışı
       const { data, error: err } = await supabase.auth.signUp({
         email, password,
         options: { data: { full_name: fullName }, emailRedirectTo: `${location.origin}/auth/callback` },
       })
       if (err) { setError(err.message); setLoading(false); return }
       if (data.user && !data.session) {
-        // E-posta doğrulanmadı — doğrulama mesajı göster, başvuruya yönlendirme
         setEmailSent(true)
         setLoading(false)
         return
@@ -107,7 +138,7 @@ export default function KurumsalGirisPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white">Kurumsal Giriş</h1>
-          <p className="text-slate-400 text-sm mt-1">Klinik veya satıcı hesabınızla devam edin</p>
+          <p className="text-slate-400 text-sm mt-1">Klinik, satıcı veya sağlık profesyoneli hesabınızla devam edin</p>
         </div>
 
         {/* Hesap tipi seçimi */}
@@ -148,24 +179,54 @@ export default function KurumsalGirisPage() {
                 </svg>
               </div>
             </button>
+
+            <button onClick={() => setAccountType('saglik_profesyoneli')}
+              className="w-full p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all text-left group">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shrink-0">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="text-white font-bold text-lg">Sağlık Profesyoneli</div>
+                  <div className="text-slate-400 text-sm">Akademi eğitimlerine ve mağazaya erişim</div>
+                </div>
+                <svg className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </button>
           </div>
         ) : (
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
             {/* Seçili hesap tipi göstergesi */}
             <div className={`flex items-center gap-3 p-3 rounded-xl mb-6 ${
-              accountType === 'klinik' ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-amber-500/10 border border-amber-500/20'
+              accountType === 'klinik'
+                ? 'bg-blue-500/10 border border-blue-500/20'
+                : accountType === 'satici'
+                ? 'bg-amber-500/10 border border-amber-500/20'
+                : 'bg-emerald-500/10 border border-emerald-500/20'
             }`}>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 ${
-                accountType === 'klinik' ? 'bg-gradient-to-br from-blue-500 to-cyan-600' : 'bg-gradient-to-br from-amber-500 to-orange-500'
+                accountType === 'klinik'
+                  ? 'bg-gradient-to-br from-blue-500 to-cyan-600'
+                  : accountType === 'satici'
+                  ? 'bg-gradient-to-br from-amber-500 to-orange-500'
+                  : 'bg-gradient-to-br from-emerald-500 to-teal-600'
               }`}>
                 {accountType === 'klinik' ? (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                ) : (
+                ) : accountType === 'satici' ? (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 )}
               </div>
-              <span className={`font-medium text-sm ${accountType === 'klinik' ? 'text-blue-300' : 'text-amber-300'}`}>
-                {accountType === 'klinik' ? 'Klinik Hesabı' : 'Satıcı Hesabı'}
+              <span className={`font-medium text-sm ${
+                accountType === 'klinik' ? 'text-blue-300' : accountType === 'satici' ? 'text-amber-300' : 'text-emerald-300'
+              }`}>
+                {accountType === 'klinik' ? 'Klinik Hesabı' : accountType === 'satici' ? 'Satıcı Hesabı' : 'Sağlık Profesyoneli'}
               </span>
               <button onClick={() => setAccountType(null)} className="ml-auto text-slate-500 hover:text-white transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -201,7 +262,9 @@ export default function KurumsalGirisPage() {
                 className={`w-full py-3 disabled:opacity-50 text-white font-semibold rounded-xl transition-all text-sm ${
                   accountType === 'klinik'
                     ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500'
-                    : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400'
+                    : accountType === 'satici'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400'
+                    : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500'
                 }`}>
                 {loading ? 'Yükleniyor...' : mode === 'giris' ? 'Giriş Yap' : 'Devam Et'}
               </button>

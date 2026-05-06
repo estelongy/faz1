@@ -223,6 +223,10 @@ Response: `{ ok, result, usedFallback, analysisId }` — analysisId frontend'de 
 Akış: Kabul → Hasta Anketi → Klinik Anketi → Tetkik → İleri Analiz → Hekim Onayı  
 Final = (toplam × 0.85) + (hekim_puanı × 0.15)
 
+**`finalOnay` sağlamlığı (2026 Mayıs):** Promise.all kaldırıldı. Önce `appointments` update edilir → 0 satır dönerse `throw` (kullanıcı redirect olmaz, hatayı görür). Sonra analiz + skor güncellenir. Sonunda `revalidatePath('/klinik/panel/takvim')` + `revalidatePath('/klinik/panel')` → redirect. `kabulEt` da aynı revalidate çağrılarını yapar.
+
+**Takvim filtreleri (`/klinik/panel/takvim`):** 7 tıklanabilir pill (Bugün / Bekleyen / Görüşmede / Onaylı / Tamamlanan / İptal / Gelmedi). İptal+gelmedi iş listelerinden (Bugün/Bekleyen/Görüşmede/Onaylı) **dışlanır**, sadece kendi filtrelerinde görünür. Inline aksiyon butonları: Onayla / Reddet / Hasta Geldi / Akışı Sürdür / Gelmedi.
+
 ---
 
 ## Klinik Panel V2 — 3 Katmanlı Dashboard (2026 Mayıs)
@@ -363,6 +367,8 @@ Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel`) tarafında ziya
 - Auth callback `next` param: sadece `/` ile başlıyorsa geçerli (open redirect koruması)
 - AI down → fallback skor göster, sessiz başarısızlık yok
 - Server action'larda `redirect()` try/catch **dışında** olmalı
+- **Server action'larda `Promise.all` ile birden fazla supabase write yapma** — biri sessizce fail ederse (RLS / auth) diğeri yine de geçer ve veri tutarsız kalır. Sequential `await` + `.select('id')` ile rows-affected kontrol et, 0 satır = `throw`.
+- **Status değiştiren server action'larda** ilgili tüm cache path'lerine `revalidatePath` çağır (`from 'next/cache'`) — özellikle `/klinik/panel`, `/klinik/panel/takvim` listeleri force-dynamic olsa bile cache invalidation ister.
 
 ---
 
@@ -538,7 +544,48 @@ ALTER TABLE clinics ADD COLUMN
 
 > **Sıralama:** Bu iş **bildirim sisteminden sonra** başlar (çünkü yorum tetikleyici e-posta gerekir). Tetkik algoritması → bildirim → klinik deneyim sistemi.
 
-### 10. Klinik Portal Faz B (lansman sonrası 2-4 hafta)
+### 🎓 10. Akademi MVP — Sağlık Profesyoneli & KOL Marketplace (LANSMAN SCOPE)
+
+**Felsefe:** Açık marketplace — eğitmen klinikler video paketleri yükler, sağlık profesyonelleri satın alıp izler. **%30 Estelongy / %70 hoca**. Algoritma kalite eler (puan + satış + tamamlanma + iade). Aynı trust altyapısı (rehber sıralaması) eğitmen sıralamasını da besler. Faz 0 anchor: 5 KOL hocayla pilot, sonra ölçek.
+
+**Tamamlanan (sağlık profesyoneli kullanıcı tipi):**
+- [x] `health_professional` rolü → `pathForRole` /panel'e yönlendirir
+- [x] `/panel` layout'ta health_professional erişim açıldı
+- [x] `/api/saglik-profesyoneli/kayit` route — service-role, `app_metadata.role` + `profiles.role` 'health_professional' set, e-posta doğrulaması atlanır (beyan bazlı)
+- [x] `/kurumsal/giris` 3. seçenek (emerald renk Sağlık Profesyoneli kartı + form + auto-login)
+- [x] Welcome email şablonu (Akademi temalı)
+
+**Test edilecekler (lansman öncesi tur):**
+- [ ] `/kurumsal/giris` açılıyor, 3 kart görünüyor (klinik / satıcı / sağlık profesyoneli)
+- [ ] Sağlık Profesyoneli kartı tıklanınca emerald form açılıyor
+- [ ] Kayıt Ol → Ad Soyad + email + şifre → `/api/saglik-profesyoneli/kayit` 200 dönüyor
+- [ ] `app_metadata.role` ve `profiles.role` 'health_professional' olarak yazılıyor
+- [ ] Otomatik giriş + `/panel`'e yönlendirme çalışıyor
+- [ ] Welcome email "Estelongy Akademi'ye Hoş Geldiniz 🎓" geliyor
+- [ ] Tekrar giriş yapınca direkt `/panel`'e atıyor (rol kontrolü)
+- [ ] Mevcut hasta + klinik + satıcı kayıt akışları bozulmadı (regresyon)
+
+**Devam edecekler (lansman scope):**
+- [ ] Eğitmen rolü — klinik kullanıcısı üstüne `is_educator` flag (admin tarafından "hocam ol" daveti)
+- [ ] Eğitmen paneli — paket oluşturma (başlık + video listesi + fiyat + açıklama)
+- [ ] **Cloudflare Stream** entegrasyonu (video hosting + DRM, Mux/Vimeo değil)
+- [ ] `/akademi` keşif sayfası — paket listesi + filtre + sıralama (puan/satış/yenilik)
+- [ ] Paket detay + satın alma akışı (Stripe → Vestoriq)
+- [ ] `/panel/kurslarim` sekmesi — video player + ilerleme + puan verme (hasta + sağlık profesyoneli için)
+- [ ] Kalite algoritması: puan (1-5) + satış sayısı + tamamlanma oranı + iade oranı → sıralama skoru
+- [ ] %70/%30 split — başlangıçta manuel IBAN transfer (ay sonu), Stripe Connect TR desteklemiyor
+- [ ] Eğitmen dashboard — satış, gelir, paket performansı
+
+**Faz 2 (lansman sonrası):**
+- [ ] Webinar (canlı yayın) altyapısı
+- [ ] Firma kapısı — sponsored content, ürün tanıtım, sayfa analytics (Allergan/Galderma/Sinclair)
+- [ ] Kore/global eğitmen erişimi (lokalizasyon altyapısı, alt yazı/çeviri)
+- [ ] Diploma doğrulama — beyan'dan belge yüklemeye geçiş (operasyonel onay süreci)
+- [ ] Mentörlük (saatlik 1-1) ve vaka takibi formatları
+
+---
+
+### 11. Klinik Portal Faz B (lansman sonrası 2-4 hafta)
 
 Faz A iskeleti canlıda. Yer tutucular dolması gereken modüller:
 

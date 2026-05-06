@@ -4,7 +4,7 @@
  */
 import { sendEmail } from './notifications'
 
-export type WelcomeRole = 'user' | 'clinic' | 'vendor'
+export type WelcomeRole = 'user' | 'clinic' | 'vendor' | 'health_professional'
 
 interface Opts {
   to: string
@@ -35,6 +35,13 @@ const ROLE_META: Record<WelcomeRole, { subject: string; heading: string; body: s
     body: 'Satıcı başvurunuz Estelongy ekibi tarafından onaylandı. Artık satıcı panelinize erişebilir, ürünlerinizi yükleyebilir ve siparişleri yönetmeye başlayabilirsiniz. Hoş geldiniz!',
     ctaLabel: 'Satıcı Panelime Git',
     ctaPath: '/satici/panel',
+  },
+  health_professional: {
+    subject: 'Estelongy Akademi\'ye Hoş Geldiniz 🎓',
+    heading: 'Eğitim yolculuğunuz başlıyor',
+    body: 'Sağlık profesyoneli hesabınız aktif. Artık Estelongy Akademi üzerinden alanında deneyimli hocaların eğitimlerine erişebilir, kurs satın alabilir ve mağazadan ürün siparişi verebilirsiniz. Hoş geldiniz!',
+    ctaLabel: 'Panele Git',
+    ctaPath: '/panel',
   },
 }
 

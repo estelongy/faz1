@@ -18,6 +18,7 @@ interface Clinic {
   specialties: string[] | null
   approval_status: ApprovalStatus
   is_active: boolean
+  is_educator: boolean | null
   jeton_balance: number
   created_at: string
   profiles: { full_name: string | null } | null
@@ -86,6 +87,67 @@ async function updateClinic(formData: FormData) {
   redirect('/admin/klinikler')
 }
 
+async function toggleEducator(formData: FormData) {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+
+  const clinicId = formData.get('clinicId') as string
+  const makeEducator = formData.get('makeEducator') === 'true'
+  if (!clinicId) redirect('/admin/klinikler')
+
+  await supabase
+    .from('clinics')
+    .update({
+      is_educator: makeEducator,
+      educator_marked_at: makeEducator ? new Date().toISOString() : null,
+      // Davet ile direkt eğitmen yapılırsa başvuru durumunu da güncelle
+      educator_application_status: makeEducator ? 'approved' : 'none',
+      educator_decided_at: makeEducator ? new Date().toISOString() : null,
+    })
+    .eq('id', clinicId)
+
+  redirect('/admin/klinikler')
+}
+
+async function decideEducatorApplication(formData: FormData) {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+
+  const clinicId = formData.get('clinicId') as string
+  const decision = formData.get('decision') as 'approve' | 'reject'
+  const note = (formData.get('note') as string)?.trim() || null
+  if (!clinicId || !decision) redirect('/admin/klinikler')
+
+  if (decision === 'approve') {
+    await supabase
+      .from('clinics')
+      .update({
+        is_educator: true,
+        educator_application_status: 'approved',
+        educator_decided_at: new Date().toISOString(),
+        educator_decision_note: note,
+        educator_marked_at: new Date().toISOString(),
+      })
+      .eq('id', clinicId)
+  } else {
+    await supabase
+      .from('clinics')
+      .update({
+        is_educator: false,
+        educator_application_status: 'rejected',
+        educator_decided_at: new Date().toISOString(),
+        educator_decision_note: note,
+      })
+      .eq('id', clinicId)
+  }
+
+  redirect('/admin/klinikler')
+}
+
 async function addJeton(formData: FormData) {
   'use server'
   const supabase = await createClient()
@@ -118,13 +180,31 @@ export default async function KliniklerPage() {
 
   const { data: clinics } = await supabase
     .from('clinics')
-    .select('id, name, location, bio, specialties, approval_status, is_active, jeton_balance, created_at, profiles(full_name)')
+    .select('id, name, location, bio, specialties, approval_status, is_active, is_educator, jeton_balance, created_at, profiles(full_name)')
     .order('created_at', { ascending: false })
 
   const all = (clinics ?? []) as unknown as Clinic[]
   const pending = all.filter(c => c.approval_status === 'pending')
   const approved = all.filter(c => c.approval_status === 'approved')
   const rejected = all.filter(c => c.approval_status === 'rejected')
+
+  // Bekleyen eğitmen başvuruları
+  const { data: educatorApps } = await supabase
+    .from('clinics')
+    .select('id, name, location, educator_application_message, educator_applied_at, profiles(full_name)')
+    .eq('educator_application_status', 'pending')
+    .eq('approval_status', 'approved')
+    .order('educator_applied_at', { ascending: true })
+
+  type EducatorApp = {
+    id: string
+    name: string
+    location: string | null
+    educator_application_message: string | null
+    educator_applied_at: string | null
+    profiles: { full_name: string | null } | null
+  }
+  const educatorPending = (educatorApps ?? []) as unknown as EducatorApp[]
 
   return (
     <div className="p-8">
@@ -146,6 +226,69 @@ export default async function KliniklerPage() {
           </div>
         ))}
       </div>
+
+      {/* Bekleyen Eğitmen Başvuruları — en üstte */}
+      {educatorPending.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-white font-bold mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            🎓 Bekleyen Eğitmen Başvuruları ({educatorPending.length})
+          </h2>
+          <div className="space-y-4">
+            {educatorPending.map((app) => (
+              <div key={app.id} className="p-5 rounded-2xl bg-slate-900 border border-emerald-500/30">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="text-white font-bold">{app.name}</div>
+                    <div className="text-slate-400 text-xs mt-0.5">
+                      {app.profiles?.full_name ?? '—'} · {app.location ?? 'Konum yok'}
+                      {app.educator_applied_at && (
+                        <> · Başvuru: {new Date(app.educator_applied_at).toLocaleDateString('tr-TR')}</>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">
+                    Eğitmen Başvurusu
+                  </span>
+                </div>
+                {app.educator_application_message && (
+                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 mb-4">
+                    <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Başvuru Mesajı</div>
+                    <p className="text-slate-300 text-sm whitespace-pre-wrap">{app.educator_application_message}</p>
+                  </div>
+                )}
+                <form action={decideEducatorApplication} className="space-y-3">
+                  <input type="hidden" name="clinicId" value={app.id} />
+                  <textarea
+                    name="note"
+                    rows={2}
+                    placeholder="Karar notu (opsiyonel) — kliniğe iletilir"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-sm resize-none"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      name="decision"
+                      value="approve"
+                      className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl transition-colors"
+                    >
+                      ✓ Onayla — Eğitmen Yap
+                    </button>
+                    <button
+                      type="submit"
+                      name="decision"
+                      value="reject"
+                      className="flex-1 py-2.5 bg-red-900/40 hover:bg-red-900/60 text-red-400 text-sm font-medium rounded-xl border border-red-800/50 transition-colors"
+                    >
+                      ✕ Reddet
+                    </button>
+                  </div>
+                </form>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Bekleyen başvurular — öne çıkar */}
       {pending.length > 0 && (
@@ -174,6 +317,7 @@ export default async function KliniklerPage() {
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">Kayıt</th>
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">Kredi</th>
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">Durum</th>
+                <th className="text-left px-4 py-3 text-slate-400 font-medium">Eğitmen</th>
                 <th className="text-left px-4 py-3 text-slate-400 font-medium">İşlem</th>
               </tr>
             </thead>
@@ -205,6 +349,27 @@ export default async function KliniklerPage() {
                     <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLOR[c.approval_status]}`}>
                       {STATUS_LABEL[c.approval_status]}
                     </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    {c.approval_status === 'approved' ? (
+                      <form action={toggleEducator}>
+                        <input type="hidden" name="clinicId" value={c.id} />
+                        <input type="hidden" name="makeEducator" value={c.is_educator ? 'false' : 'true'} />
+                        <button
+                          type="submit"
+                          className={`text-xs px-2 py-1 rounded-lg font-medium transition-colors ${
+                            c.is_educator
+                              ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
+                              : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
+                          }`}
+                          title={c.is_educator ? 'Eğitmen yetkisini kaldır' : 'Eğitmen yetkisi ver (Akademi paket oluşturabilir)'}
+                        >
+                          {c.is_educator ? '🎓 Eğitmen' : '+ Eğitmen Yap'}
+                        </button>
+                      </form>
+                    ) : (
+                      <span className="text-xs text-slate-600">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <form action={updateClinic} className="flex gap-1">

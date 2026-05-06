@@ -17,46 +17,55 @@ interface NavGroup {
   items: NavItem[]
 }
 
-const NAV_GROUPS: NavGroup[] = [
-  {
-    items: [
-      { href: '/klinik/panel',           icon: '🏠', label: 'Panel', exact: true },
-      { href: '/klinik/panel/randevular', icon: '📅', label: 'Randevular' },
-      { href: '/klinik/panel/hastalarim', icon: '👥', label: 'Hastalarım' },
-      { href: '/klinik/panel/jeton',      icon: '💳', label: 'Krediler' },
-      { href: '/klinik/panel/rapor',      icon: '📊', label: 'Raporlar' },
-    ],
-  },
-  {
-    title: 'Topluluk',
-    items: [
-      { href: '/klinik/panel/akademi',    icon: '📰', label: 'Akademi',     badge: 'soon' },
-      { href: '/klinik/panel/pazarlama',  icon: '📱', label: 'Pazarlama',   badge: 'soon' },
-      { href: '/klinik/panel/topluluk',   icon: '💬', label: 'Topluluk',    badge: 'soon' },
-      { href: '/klinik/panel/destek',     icon: '🛟', label: 'Destek' },
-    ],
-  },
-  {
-    title: 'Klinik',
-    items: [
-      { href: '/klinik/panel/profil',     icon: '🏥', label: 'Klinik Profilim' },
-    ],
-  },
-]
+function buildNavGroups(isEducator: boolean): NavGroup[] {
+  const main: NavItem[] = [
+    { href: '/klinik/panel',           icon: '🏠', label: 'Panel', exact: true },
+    { href: '/klinik/panel/randevular', icon: '📅', label: 'Randevular' },
+    { href: '/klinik/panel/hastalarim', icon: '👥', label: 'Hastalarım' },
+    { href: '/klinik/panel/jeton',      icon: '💳', label: 'Krediler' },
+    { href: '/klinik/panel/rapor',      icon: '📊', label: 'Raporlar' },
+  ]
+  if (isEducator) {
+    main.push({ href: '/klinik/panel/akademi/paketler', icon: '🎓', label: 'Eğitmen Paneli', badge: 'new' })
+  } else {
+    main.push({ href: '/klinik/panel/akademi/basvur', icon: '🎓', label: 'Eğitmen Ol' })
+  }
+
+  return [
+    { items: main },
+    {
+      title: 'Topluluk',
+      items: [
+        { href: '/klinik/panel/akademi',    icon: '📰', label: 'Akademi',     badge: 'soon' },
+        { href: '/klinik/panel/pazarlama',  icon: '📱', label: 'Pazarlama',   badge: 'soon' },
+        { href: '/klinik/panel/topluluk',   icon: '💬', label: 'Topluluk',    badge: 'soon' },
+        { href: '/klinik/panel/destek',     icon: '🛟', label: 'Destek' },
+      ],
+    },
+    {
+      title: 'Klinik',
+      items: [
+        { href: '/klinik/panel/profil',     icon: '🏥', label: 'Klinik Profilim' },
+      ],
+    },
+  ]
+}
 
 interface Props {
   clinicName: string
   totalCredit: number
   freeCredit: number
+  isEducator?: boolean
 }
 
 const PIN_KEY = 'estelongy_klinik_sidebar_pinned'
 
-export default function KlinikSidebar({ clinicName, totalCredit, freeCredit }: Props) {
+export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isEducator = false }: Props) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [pinned, setPinned] = useState(false)
   const [hovered, setHovered] = useState(false)
+  const navGroups = buildNavGroups(isEducator)
 
   // localStorage'tan pin state'i yükle
   useEffect(() => {
@@ -152,7 +161,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit }: P
 
         {/* Navigasyon — scrollable, ince scrollbar sadece scroll esnasında */}
         <nav className={`flex-1 overflow-y-auto p-3 space-y-5 ${expanded ? 'klinik-sidebar-scroll' : 'klinik-sidebar-scroll-hidden'}`}>
-          {NAV_GROUPS.map((group, gi) => (
+          {navGroups.map((group, gi) => (
             <div key={gi}>
               {group.title && expanded && (
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-1.5 px-2">{group.title}</p>

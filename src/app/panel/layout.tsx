@@ -8,9 +8,9 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
 
-  // Rol kontrolü — sadece user
+  // Rol kontrolü — user ve health_professional
   const role = (user.app_metadata as Record<string, string>)?.role
-  if (role && role !== 'user') redirect(pathForRole(role))
+  if (role && role !== 'user' && role !== 'health_professional') redirect(pathForRole(role))
 
   // Profil — isim ve puan için
   const { data: profile } = await supabase
