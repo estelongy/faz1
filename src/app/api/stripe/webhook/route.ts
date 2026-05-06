@@ -178,10 +178,75 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  // ─── Klinik Kredi Ödemesi (Checkout Session) ─────────────────────
+  // ─── Klinik Kredi Ödemesi VEYA Akademi Paket Satın Alma ──────────
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
+    const kind = session.metadata?.kind
 
+    // Akademi paket satın alma
+    if (kind === 'akademi_purchase') {
+      const purchaseId = session.metadata?.purchase_id
+      const packageId  = session.metadata?.package_id
+
+      if (!purchaseId || !packageId) {
+        console.error('[Webhook] akademi_purchase metadata eksik')
+        return NextResponse.json({ error: 'Metadata eksik' }, { status: 400 })
+      }
+
+      const admin = createServiceClient()
+
+      // İdempotency: zaten paid ise geç
+      const { data: existing } = await admin
+        .from('course_purchases')
+        .select('id, status')
+        .eq('id', purchaseId)
+        .maybeSingle()
+
+      if (!existing) {
+        console.error('[Webhook] purchase bulunamadı:', purchaseId)
+        return NextResponse.json({ error: 'Satın alma kaydı yok' }, { status: 404 })
+      }
+      if (existing.status === 'paid') {
+        return NextResponse.json({ received: true, note: 'already paid' })
+      }
+
+      // Paid olarak işaretle
+      const { data: updated, error: updErr } = await admin
+        .from('course_purchases')
+        .update({
+          status: 'paid',
+          paid_at: new Date().toISOString(),
+          stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+        })
+        .eq('id', purchaseId)
+        .eq('status', 'pending')
+        .select('id')
+      if (updErr) {
+        console.error('[Webhook] akademi purchase update error:', updErr)
+        return NextResponse.json({ error: 'Satın alma güncellenemedi' }, { status: 500 })
+      }
+      if (!updated || updated.length === 0) {
+        // Race: başka bir webhook tetiklenmiş olabilir
+        return NextResponse.json({ received: true, note: 'already finalized' })
+      }
+
+      // total_purchases++ paket üzerinde
+      const { data: currentPkg } = await admin
+        .from('course_packages')
+        .select('total_purchases')
+        .eq('id', packageId)
+        .maybeSingle()
+
+      await admin
+        .from('course_packages')
+        .update({ total_purchases: (currentPkg?.total_purchases ?? 0) + 1 })
+        .eq('id', packageId)
+
+      console.log(`[Akademi] Satın alma tamamlandı: ${purchaseId}`)
+      return NextResponse.json({ received: true, kind: 'akademi_purchase' })
+    }
+
+    // Klinik kredi yüklemesi (legacy)
     const clinicId  = session.metadata?.clinic_id
     const credits   = parseInt(session.metadata?.jetons ?? '0', 10)
     const packageId = session.metadata?.package_id

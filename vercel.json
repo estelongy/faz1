@@ -3,6 +3,10 @@
     {
       "path": "/api/notifications/process",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/akademi-quality-score",
+      "schedule": "0 3 * * *"
     }
   ]
 }
