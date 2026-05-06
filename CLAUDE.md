@@ -2,85 +2,65 @@
 
 ## Proje Özeti
 
-**Estelongy** — Estetik sağlık alanında AI destekli klinik yönetim ve hasta takip platformu.  
-**Stack:** Next.js 14 (App Router) · Tailwind · Supabase PostgreSQL (RLS) · OpenAI gpt-5.4-mini · Stripe · Resend · Sentry · Vercel
+**Estelongy** — Estetik sağlık alanında AI destekli klinik yönetim, hasta takip ve KOL eğitim platformu.
+**Stack:** Next.js 14 (App Router) · Tailwind · Supabase PostgreSQL (RLS) · OpenAI gpt-5.4-mini · Stripe · Resend · Sentry · Cloudflare Stream · Vercel
 
-### Git & Deploy Akışı (ÖNEMLİ)
+### Git & Deploy Akışı (KRİTİK)
 
 ```
 Production branch:  claude/priceless-ellis  →  estelongy-clean.vercel.app
 ```
 
-**Canlıya çıkarmak için tek adım:**
-1. Değişiklikleri `claude/priceless-ellis` branch'ine commit + push et → Vercel production build tetiklenir
-
-**ASLA `main`'e push etme** — `main` Vercel'de production değil, push etmek sadece preview üretir ve işe yaramaz.
-
-Build durumu: Vercel MCP `list_deployments` (projectId: `prj_qQ0N5SSfH8kqaY61qyiAFIOy9pVS`, team: `team_6KIGU5JvMoWBV5To6nncBNnc`)
+- Push → Vercel **preview** build (target: null)
+- Production'a geçirmek için: `vercel promote <deployment_id> --yes`
+- **ASLA `main`'e push etme** — main production değil
+- Vercel proje: `prj_qQ0N5SSfH8kqaY61qyiAFIOy9pVS` · team: `team_6KIGU5JvMoWBV5To6nncBNnc`
+- Supabase proje: `dcmnxmqzimrgmholktid`
 
 ---
 
 ## Kullanıcı Rolleri
 
-| Rol | Yetkiler |
-|-----|----------|
-| `user` | Analiz, Anket, Randevu, Sipariş, Yorum, Skor takibi |
-| `clinic` | Hasta listesi, Takvim, Analiz onay, Jeton harcama |
-| `vendor` | Ürün, Stok, Sipariş, İade, Komisyon takibi |
-| `admin` | Tüm kaynaklar, Klinik/Kullanıcı/Kupon yönetimi |
+| Rol | Yetkiler | Panel |
+|-----|----------|-------|
+| `user` | Analiz, Anket, Randevu, Sipariş, Skor takibi | `/panel` (violet tema) |
+| `health_professional` | Akademi (kurs satın al/izle), Mağaza, Topluluk | `/panel` (emerald tema) |
+| `clinic` | Hasta listesi, Takvim, Analiz onay, Jeton, Akademi eğitmenliği | `/klinik/panel` |
+| `vendor` | Ürün, Stok, Sipariş, İade, Komisyon | `/satici/panel` |
+| `admin` | Tüm kaynaklar | `/admin` |
 
-> Klinik ve Vendor başvuruları `pending` durumunda `user` yetkisiyle çalışır.
+> Klinik/Vendor başvurusu beklerken `user` rolüyle çalışır.
+> Sağlık profesyoneli kayıt: beyan bazlı (diploma istenmez), ünvan + uzmanlık + SMS OTP zorunlu.
 
 ---
 
 ## Sayfa Haritası
 
 ```
-/                        → Landing page (3 kapı: Analiz / Randevu / Mağaza)
-/giris  /kayit           → Auth (girişli kullanıcı next param'a yönlenir)
-/kurumsal/giris          → Klinik & Satıcı girişi (tek sayfa, tip seçimi)
+/                        → Landing (3 kapı: Analiz / Randevu / Mağaza) + nav: Rehber/Akademi/Klinik
+/giris  /kayit           → Auth (Hasta — SMS OTP zorunlu)
+/kurumsal/giris          → Klinik & Satıcı & Sağlık Pro hesap tipi seçimi
+/kurumsal/saglik-profesyoneli/kayit → SP dedicated kayıt (ünvan/uzmanlık/SMS OTP/beyan/KVKK)
 
 /panel                   → Hasta paneli (3 bölge: Skor / Sıradaki Adım / Yönetim Grid)
-/panel/hesabim           → Profil + telefon (SMS OTP) + şifre + hesabı sil
-/panel/analizlerim       → Skor geçmiş grafiği + ziyaret zaman çizelgesi
-/panel/randevularim      → Tüm randevular (iptal/QR)
-/panel/siparislerim      → Sipariş listesi
-/panel/iadelerim         → İade talepleri
-/panel/adreslerim        → Adres yönetimi
-/panel/referral          → Referral + komisyon
-/panel/leaderboard       → Anonim skor sıralaması
+                            └ health_professional ise emerald tema, Akademi/Mağaza odaklı
+/panel/hesabim/analizlerim/randevularim/siparislerim/iadelerim/adreslerim/referral/leaderboard
+/panel/kurslarim         → Sağlık pro: satın alınan kurslar (ilerleme barı)
+/panel/kurslarim/[slug]  → Video player + sidebar (CF Stream iframe)
 
-/analiz                  → gpt-5.4-mini Vision + Estelongy Algoritması
-/skor?analysisId=xxx     → Skor merkezi (3 kart: Anket / Randevu / Ürün) + ?open=anket|randevu|urun
-/randevu                 → Klinik seç + müsaitlik + randevu
-/magaza  /magaza/[slug]  → Ürün listesi + detay
-/sepet  /siparis/[no]    → Sepet + sipariş detay/iade
+/analiz · /skor · /randevu · /magaza · /sepet · /siparis/[no]
 
-/klinik/basvur           → Klinik başvuru
-/klinik/panel            → Klinik portal (sticky sidebar layout, Discord-vari topluluk hissi)
-  ├─ /                   → Bekleyen randevu, bugün, istatistik (ana feed)
-  ├─ /randevular         → /takvim'e redirect
-  ├─ /takvim · /musaitlik → Takvim görünümü + müsaitlik ayarları
-  ├─ /hastalarim         → Klinik CRM (kliniğe randevu almış tüm hastalar)
-  ├─ /hasta/[userId]     → Hasta detay (skor geçmişi, ziyaret zaman çizelgesi)
-  ├─ /randevu/[id]       → KlinikAkışWizard (6 adım kabul→onay)
-  ├─ /jeton              → Kredi yönetimi (Stripe ile satın alma)
-  ├─ /rapor              → Aylık rapor (skor Δ, kredi kullanımı, no-show)
-  ├─ /profil             → Klinik profili + EGP rozet placeholder
-  ├─ /akademi            → 🟡 Yakında: Bilim/Kongre/Vaka teaser
-  ├─ /pazarlama          → 🟡 Yakında: WhatsApp/sosyal medya/AI yazar teaser
-  ├─ /topluluk           → 🟡 Yakında: kanal tabanlı klinik topluluğu teaser
-  └─ /destek             → E-posta + WhatsApp + SSS hızlı linkler
-/satici/basvur           → Satıcı başvuru
-/satici/panel            → Satıcı yönetim (ürünler, sipariş, kazanç, ödeme hesabı, iade)
+/akademi                 → Public discovery (filtre: kategori/seviye/sıralama)
+/akademi/[slug]          → Paket detay + içerik listesi + Satın Al
 
-/admin                   → Admin dashboard (kullanıcılar, klinikler, satıcılar, ürünler, kuponlar, iadeler, **içerik**)
-/admin/icerik            → Editöryel içerik CMS — hekim panel kartlarına post girişi (kategori bazlı)
-/rehber                  → SEO hub + alt sayfalar
-/hakkinda/*              → SSS, İletişim, Sözleşme, Aydınlatma, Çerez
+/klinik/basvur · /klinik/panel
+/klinik/panel/akademi/basvur     → Eğitmen başvurusu
+/klinik/panel/akademi/paketler   → Eğitmen paneli (paket + video CRUD)
+
+/satici/basvur · /satici/panel
+/admin · /admin/icerik (editöryel CMS) · /admin/klinikler (klinik + eğitmen onay)
+/rehber · /hakkinda/*
 ```
-
-> **Not:** `/anket` standalone sayfa **silindi**. Longevity anketi artık tek yerde: `/skor?analysisId=xxx&open=anket`. Tek soru kaynağı: `src/lib/anket-sorular.ts`.
 
 ---
 
@@ -89,28 +69,48 @@ Build durumu: Vercel MCP `list_deployments` (projectId: `prj_qQ0N5SSfH8kqaY61qyi
 - **ID:** `dcmnxmqzimrgmholktid` · **URL:** `https://dcmnxmqzimrgmholktid.supabase.co`
 - **Edge Function:** `send-appointment-email`
 
-**Tablolar:** `profiles` · `clinics` · `vendors` · `appointments` · `analyses` · `scores` · `longevity_surveys` · `products` · `orders` · `order_items` · `addresses` · `carts` · `cart_items` · `returns` · `transactions` · `jeton_transactions` · `reviews` · `notification_queue` · `audit_logs` · `clinic_availability` · `user_badges` · `user_activity_streaks` · `referral_codes` · `referral_uses` · `coupons` · `clinic_patient_notes` · `point_transactions` · **`editorial_posts`** · **`shared_cases`**
+**Tablolar (özet):** `profiles · clinics · vendors · appointments · analyses · scores · longevity_surveys · products · orders · order_items · addresses · carts · cart_items · returns · transactions · jeton_transactions · reviews · notification_queue · audit_logs · clinic_availability · user_badges · user_activity_streaks · referral_codes · referral_uses · coupons · clinic_patient_notes · point_transactions · editorial_posts · shared_cases · journeys`
 
-**Yeni tablolar (Klinik Panel V2):**
-- `editorial_posts` — admin tarafından girilen içerik. Kategoriler: `akademi` / `duyuru` / `topluluk` / `bilim` / `resmi` / `sosyal`. Hekim panelindeki tercihli kartlar buradan beslenir. RLS: published herkese, admin tüm op.
-- `shared_cases` — Sonuç Vitrini hasta rıza akışı. status: `pending`/`approved`/`rejected`/`revoked`. Skor snapshot'ları (initial/final), patient_age, anonymity_level (`initials`/`firstname`/`full_anon`). UNIQUE (clinic_id, analysis_id). KVKK uyumlu.
+**Akademi tabloları:** `course_packages · course_videos · course_purchases · course_progress · course_reviews`
+
+**Profile rol alanları:**
+```
+profiles.role             → 'user' | 'health_professional' | 'clinic' | 'vendor' | 'admin'
+profiles.hp_title         → Dr./Uz.Dr./Op.Dr./Prof./Doç./Diş.Hek./Hemşire/Eczacı/Tıp.Öğr./Diğer
+profiles.hp_specialty     → uzmanlık alanı (serbest metin)
+profiles.hp_institution   → çalıştığı kurum (opsiyonel)
+profiles.hp_declared_at   → beyan onay tarihi
+profiles.points_balance   → kullanıcı puan bakiyesi (1 puan ≈ 1 TL)
+profiles.phone_verified   → SMS OTP doğrulanmış mı
+```
+
+**Klinik akademi alanları:**
+```
+clinics.is_educator                   → eğitmen yetkisi
+clinics.educator_application_status   → 'none'|'pending'|'approved'|'rejected'
+clinics.educator_application_message  → başvuru mesajı
+clinics.educator_decided_at, educator_decision_note
+clinics.educator_bio                  → public eğitmen bio
+```
 
 **Kritik kısıtlamalar:**
 ```
 scores.score_type          → CHECK IN ('web','device','doctor_approved','final')
 notification_queue.type    → CHECK IN ('email','sms','push')
 appointments.status        → ENUM (pending,confirmed,in_progress,completed,cancelled)
-appointments.procedure_notes, recommendations → text (klinik yazar, hasta okur)
-analyses.web_ai_raw        → JSONB  |  analyses.web_scores → JSONB
+analyses.web_ai_raw        → JSONB
+analyses.web_scores        → JSONB
 analyses.appointment_id    → uuid (ziyarete bağlı analiz; null ise bağımsız)
 analyses.doctor_approved_scores → JSONB { tetkik, ileri_analiz_c250, hekim_skoru }
+course_purchases.status    → CHECK IN ('pending','paid','failed','refunded')
+course_videos.stream_status → CHECK IN ('pending','processing','ready','error')
 ```
 
-**RPC:** `consume_jeton(p_clinic_id, p_appointment_id, p_description)` · `generate_referral_code(p_user_id)` · `decrement_product_stock` · `adjust_points(p_user_id, p_amount, p_type, p_reference_type, p_reference_id, p_description)`
+**RPC:** `consume_jeton · generate_referral_code · decrement_product_stock · adjust_points · add_jeton`
 
-**Kullanıcı Puan Sistemi:** `profiles.points_balance` (1 puan = 1 TL eşdeğeri) + `point_transactions` ledger (signup_bonus / referral_signup / referral_appointment / referral_order / gamification / redeem_shop / redeem_clinic / admin_adjust / refund_revert). Otomatik tetikleyiciler: yeni profil → +20 hoşgeldin (BEFORE INSERT trigger), randevu completed → davet eden'e +50 (AFTER UPDATE), sipariş paid → davet eden'e %5 (AFTER UPDATE). Referral attribution `profiles.referred_by`. Referans kodu kayıt sayfasında opsiyonel + `/r/[code]` redirect cookie set + `/kayit?ref=` URL param.
+**Klinik Kredi Sistemi:** `clinics.free_appointments_remaining` (default 20 hediye), `appointment_credit_price`, `paid_appointments_this_month`, `paid_mode_accepted_at`. `consume_jeton` RPC önce ücretsiz haktan, sonra `jeton_balance`'tan düşer. View: `clinics_with_credit_status`. `/randevu` listesi `total_credit_balance > 0` filtreli — krediler tükenmiş klinikler hasta yönlendirme dışı.
 
-**Klinik Kredi Sistemi:** `clinics` tablosuna eklendi → `free_appointments_remaining` (default 20, Estelongy hediyesi), `appointment_credit_price` (numeric, şimdilik 1 TL placeholder), `paid_appointments_this_month`, `paid_mode_accepted_at`. `consume_jeton` RPC önce ücretsiz haktan, sonra `jeton_balance`'tan düşer. View: `clinics_with_credit_status` (total_credit_balance, credit_status: ok/warning/depleted). `/randevu` listesi `total_credit_balance > 0` filtresi uygular — krediler tükenmiş klinikler hasta yönlendirme dışı bırakılır.
+**Puan Sistemi:** `points_balance` + `point_transactions` ledger. Otomatik tetikleyiciler: yeni profil → +20 hoşgeldin, randevu completed → davet eden'e +50, sipariş paid → davet eden'e %5. Referral attribution `profiles.referred_by`.
 
 ---
 
@@ -118,23 +118,25 @@ analyses.doctor_approved_scores → JSONB { tetkik, ileri_analiz_c250, hekim_sko
 
 ```
 NEXT_PUBLIC_SUPABASE_URL · NEXT_PUBLIC_SUPABASE_ANON_KEY · SUPABASE_SERVICE_ROLE_KEY
-OPENAI_API_KEY · STRIPE_SECRET_KEY · STRIPE_WEBHOOK_SECRET · NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-RESEND_API_KEY · CRON_SECRET · NEXT_PUBLIC_SENTRY_DSN · SENTRY_ORG · SENTRY_PROJECT
+OPENAI_API_KEY
+STRIPE_SECRET_KEY · STRIPE_WEBHOOK_SECRET · NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+RESEND_API_KEY · FROM_EMAIL
+CRON_SECRET
+NEXT_PUBLIC_SENTRY_DSN · SENTRY_ORG · SENTRY_PROJECT
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
 NETGSM_USER · NETGSM_PASSWORD · NETGSM_MSGHEADER
 UPSTASH_REDIS_REST_URL · UPSTASH_REDIS_REST_TOKEN
+NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE · CLOUDFLARE_ACCOUNT_ID · CLOUDFLARE_STREAM_TOKEN
 ```
 
-> **SMS/OTP canlı:** Netgsm + Upstash Redis Production'da. `/api/otp/send` + `/api/otp/verify` aktif. `/kayit` flow'unda Phone OTP zorunlu. `/klinik/basvur` ve `/satici/basvur`'da yok.
-> **Stripe:** Vestoriq OÜ Estonya kurulu → EUR bazlı, min €0.50 (~16 TL). 250 TL altı satışlar `amount_too_small` riski. Şu an test mode; live KYC Estonya vergi belgelerine bağlı.
+> Stripe canlı durumu: test mode aktif. Live KYC Vestoriq Estonya belgelerine bağlı.
+> Stripe min TRY satış: ~16 TL (€0.50 eşdeğeri).
 
 ---
 
 ## AI — gpt-5.4-mini Vision + Estelongy Algoritması
 
 `POST /api/analiz` (rate limit: IP başına 5/saat) → Base64 → gpt-5.4-mini → 5 bileşen → EA → skor
-Response: `{ ok, result, usedFallback, analysisId }` — analysisId frontend'de `/skor?analysisId=...` yönlendirmesi için kullanılır.
-
-**Ağırlıklar:**
 
 | Bileşen | Ağırlık | Yön |
 |---------|---------|-----|
@@ -150,65 +152,38 @@ Response: `{ ok, result, usedFallback, analysisId }` — analysisId frontend'de 
 
 ## Longevity Anketi (Tek Kaynak)
 
-**Yer:** `/skor?analysisId=xxx&open=anket` — tam ekran modal wizard
-**DB:** `longevity_surveys` (answers JSONB) + `scores` (hasta_anket_puani)
+**Yer:** `/skor?analysisId=xxx&open=anket` · **DB:** `longevity_surveys` + `scores.hasta_anket_puani`
 **Soru kaynağı:** `src/lib/anket-sorular.ts`
 
-**Hasta Anketi (5 soru, sıra: beslenme → cilt → uyku → stres → aktivite):**
-- Slider 0-100 ölçek
-- Tüm sorular "20 yaşınızdan bu yana ... 0-100 arasında puanlayın" formatında
-- Wizard adımları: -1 (intro) → 0..4 (sorular) → submit
-- **Ağırlıklı katkı (max +3.6 puan):**
+**Hasta Anketi (5 soru — beslenme/cilt/uyku/stres/aktivite, 0-100 slider):**
+- Ağırlıklı katkı (max **+3.6 puan**): beslenme 0.9 · cilt 1.0 · uyku 0.7 · stres 0.5 · aktivite 0.5
+- `katki = (cevap/100) × maxKatki`
 
-| # | Soru | maxKatki |
-|---|------|----------|
-| 1 | 🥗 Beslenme | 0.9 |
-| 2 | ✨ Cilt | 1.0 |
-| 3 | 😴 Uyku | 0.7 |
-| 4 | 🧘 Stres | 0.5 |
-| 5 | 🏃 Aktivite | 0.5 |
+**Klinik Ek Anketi (5 soru — sigara/alkol/aile/kronik/güneş):**
+- Ağırlıklar (max +3.6 — geçici, finalize edilecek): 1.1/0.5/0.4/0.6/1.0
+- **Toplam klinik anketi (10 soru) max katkı: +7.2**
 
-`katki = (cevap/100) × maxKatki` — sabit `HASTA_ANKET_MAX_TOPLAM = 3.6`
-
-**Klinik Ek Anketi (5 soru, klinik akışında):**
-- sigara · alkol · aile_gecmisi · kronik_hastalik · gunes_maruziyeti
-- Aynı 0-100 ölçek, ağırlıklı (max +3.6 — geçici, kullanıcı düzeltecek):
-
-| # | Soru | maxKatki |
-|---|------|----------|
-| 1 | 🚭 Sigara | 1.1 |
-| 2 | 🍷 Alkol | 0.5 |
-| 3 | 👨‍👩‍👧 Aile geçmişi | 0.4 |
-| 4 | 🏥 Kronik hastalık | 0.6 |
-| 5 | ☀️ Güneş maruziyeti | 1.0 |
-
-**Toplam klinik anketi (10 soru) max katkı: +7.2** (`klinikAnketPuani`, sabit `KLINIK_ANKET_MAX_TOPLAM`)
-
-**Skor mantığı:**
-- Hasta anketi dolmuşsa ve klinik anketinde aynı 5 soru yeniden cevaplanırsa hasta anket puanı düşülür, klinik toplamı eklenir
-- Hasta anketi boşsa klinik anketi direkt eklenir
-- Ek 5 klinik sorusu her zaman ek olarak eklenir
+**Skor mantığı:** Hasta anketi dolmuşsa klinik anketi tekrar cevaplandığında hasta puanı düşülür, klinik toplamı eklenir. Hasta anketi boşsa direkt eklenir.
 
 ---
 
-## Hasta Paneli Mimari (3 Bölge)
+## Hasta Paneli (3 Bölge)
 
-`/panel` sade ve net — 5 saniyede anlaşılır:
-
+`/panel` sade ve net:
 ```
-[1] SKOR DURUMU       Büyük skor barı + faz rozeti + "Skor Detayı →" link
+[1] SKOR DURUMU       Skor barı + faz rozeti + "Skor Detayı →"
 [2] SIRADAKİ ADIM     Faza göre tek dinamik CTA (gradient kart)
-[3] YÖNETİM GRID      8 ikonik kart (Hesabım/Analizler/Randevular/...)
+[3] YÖNETİM GRID      8 ikonik kart
 ```
 
-**Sıradaki Adım CTA mantığı (`src/app/panel/page.tsx`):**
+**CTA mantığı (`src/app/panel/page.tsx`):**
 1. Hiç analiz yok → "İlk analizinizi yapın" → `/analiz`
 2. Klinik onaylı → "Skorun hazır, paylaş veya yeniden ölç"
 3. Aktif randevu var → "Randevunuz var: [tarih]" → `/panel/randevularim`
 4. Anket dolu, randevu yok → "Klinik randevusu alın" → `/randevu`
 5. Ön analiz var, anket yok → "Anketinizi doldurun, +10 puan" → `/skor?...&open=anket`
 
-**Geçmiş analizler ve ziyaret zaman çizelgesi** panelden çıktı, `/panel/analizlerim`'e taşındı.
+> **Health Professional modu:** aynı sayfa emerald tema. Sidebar farklı: Akademi/Kurslarım/Mağaza/Topluluk görünür, Yeni Analiz/Randevu/Geçmişim gizli. Çıkış butonu sidebar altında kırmızı.
 
 ---
 
@@ -216,147 +191,113 @@ Response: `{ ok, result, usedFallback, analysisId }` — analysisId frontend'de 
 
 `/klinik/panel/randevu/[appointmentId]` → `KlinikAkisWizard`
 
-- `src/components/KlinikAkisWizard.tsx`
-- `src/lib/anket-sorular.ts` · `src/lib/tetkik-params.ts` · `src/lib/egs.ts`
-- `src/app/klinik/panel/randevu/[appointmentId]/page.tsx` (server actions)
+Akış: Kabul → Hasta Anketi → Klinik Anketi → Tetkik → İleri Analiz → Hekim Onayı
+**Final = (toplam × 0.85) + (hekim_puanı × 0.15)**
 
-Akış: Kabul → Hasta Anketi → Klinik Anketi → Tetkik → İleri Analiz → Hekim Onayı  
-Final = (toplam × 0.85) + (hekim_puanı × 0.15)
+`finalOnay` sağlamlığı: Promise.all yok, sequential await + rows-affected check. `kabulEt` ve `finalOnay` sonunda `revalidatePath('/klinik/panel/takvim')` + `revalidatePath('/klinik/panel')`.
 
-**`finalOnay` sağlamlığı (2026 Mayıs):** Promise.all kaldırıldı. Önce `appointments` update edilir → 0 satır dönerse `throw` (kullanıcı redirect olmaz, hatayı görür). Sonra analiz + skor güncellenir. Sonunda `revalidatePath('/klinik/panel/takvim')` + `revalidatePath('/klinik/panel')` → redirect. `kabulEt` da aynı revalidate çağrılarını yapar.
-
-**Takvim filtreleri (`/klinik/panel/takvim`):** 7 tıklanabilir pill (Bugün / Bekleyen / Görüşmede / Onaylı / Tamamlanan / İptal / Gelmedi). İptal+gelmedi iş listelerinden (Bugün/Bekleyen/Görüşmede/Onaylı) **dışlanır**, sadece kendi filtrelerinde görünür. Inline aksiyon butonları: Onayla / Reddet / Hasta Geldi / Akışı Sürdür / Gelmedi.
+**Takvim (`/klinik/panel/takvim`):** 7 tıklanabilir filter pill (Bugün/Bekleyen/Görüşmede/Onaylı/Tamamlanan/İptal/Gelmedi). İptal+gelmedi iş listelerinde gizli. Inline aksiyonlar: Onayla / Reddet / Hasta Geldi / Akışı Sürdür / Gelmedi.
 
 ---
 
-## Klinik Panel V2 — 3 Katmanlı Dashboard (2026 Mayıs)
+## Klinik Panel V2 (Mimari Özet)
 
-`/klinik/panel` ana sayfa **felsefe + mimari + interaktif sistemler**.
+**Sidebar:** Gmail tarzı hover-expand (72px → 264px), pin (localStorage), logo = `/klinik/panel`.
 
-### Felsefe
-"5 saniyede özet, 60 saniyede tarama, premium sessizlik" — Architectural Digest karanlık modu, Bloomberg değil. Hekim psikolojisine üç değer ekseni:
-- **Artı değer** (Estelongy'siz alamayacağı: yönlendirme, Δ, klinik onayı)
-- **Kolaylık** (operasyon yükünü düşür)
-- **Kişisel gelişim + topluluk** (klinik dışı insan olarak büyüme)
+**3 Katman dashboard:**
+- **ŞIMDI** — Bugünün Akışı kartı (full-width)
+- **BU AY** — 3 sabit kart: Üretimin / Akreditasyon Yolu / Sonuç Vitrini
+- **SENIN SEÇTİKLERIN** — 8 kart kütüphane / max 4 tercihli
 
-### Sidebar — Gmail tarzı hover-expand
-- `src/components/KlinikSidebar.tsx`
-- Default 72px ikon-only, hover → 264px overlay (ana içerik kaymaz)
-- Pin butonu (localStorage), açık modda ince scrollbar / kapalı modda gizli
-- Logo = `/klinik/panel` linki (panele dön kuralı garantisi)
+**Akreditasyon (4 faz, on-the-fly hesap, cache'siz):**
+| Faz | Etiket | Kriter |
+|-----|--------|--------|
+| 0 | Yeni Klinik | — |
+| 1 | Doğrulanmış Hekim | Profil tam, müsaitlik tanımlı, ≥5 onaylı randevu |
+| 2 | Estelongy Hekimi | ≥20 onaylı, ≥5 klinik onayı |
+| 3 | Estelongy Uzmanı | ≥100 onaylı, ≥30 klinik onayı |
 
-### 3 Katman
-- **Katman 1 ŞIMDI:** Bugünün Akışı kartı (full-width, navigate → `/klinik/panel/takvim`)
-- **Katman 2 BU AY:** 3 sabit kart yan yana
-  - **Üretimin** — gerçek metrikler (yönlendirilen, kabul oranı, klinik onayı, geçen aya delta), navigate → `/rapor`. Asla "ciro/para/komisyon" demez.
-  - **Akreditasyon Yolu** — gerçek faz hesaplama, expand-modal
-  - **Sonuç Vitrini** — KVKK rızalı vakalar, expand-modal
-- **Katman 3 SENIN SEÇTIKLERIN:** 8 kart kütüphane / max 4 tercihli (8 toplam limit)
+**Onboarding (4 adım banner):** Profil → Müsaitlik → İlk randevu → İlk klinik onayı. Ödüller: rozet/kredi/içerik unlock.
 
-### Kart Davranış Tipleri (sabit, hekim seçemez)
-- `navigate` — ilgili sayfaya gider
-- `expand-modal` — overlay açılır, X ile kapanır, body scroll lock
+**Editöryel CMS (`/admin/icerik`):** kategori bazlı post (akademi/duyuru/topluluk/bilim/resmi/sosyal). Hekim panelindeki 6 tercihli kart bu kategorilerden beslenir.
 
-### Sabit "Panele Dön" Kuralı (3 katman garantisi)
-1. Sidebar'da en üstte logo = `/klinik/panel`
-2. Sub-route'larda üst sticky header'da `← Panel` (mevcut)
-3. Modal/expand katmanlarında üst sağ X kapat
+**Sonuç Vitrini (KVKK rıza akışı):** `shared_cases` tablosu. hekim → "izin iste" → hasta `/panel`'de banner → anonimlik seç (initials/firstname/full_anon) → onay/red. Onaylı vakalar dashboard'da en yüksek Δ ile gösterilir.
 
-### Akreditasyon Sistemi
-`src/lib/clinic-accreditation.ts` — on-the-fly hesaplama, cache yok.
+---
 
-| Faz | Etiket | Kriterler |
-|-----|--------|-----------|
-| **0** | Yeni Klinik | Faz 1 kriterlerini karşılayamayan |
-| **1** | Doğrulanmış Hekim | Profil tam, müsaitlik tanımlı, ≥5 onaylı randevu |
-| **2** | Estelongy Hekimi | ≥20 onaylı randevu, ≥5 klinik onayı |
-| **3** | Estelongy Uzmanı | ≥100 onaylı randevu, ≥30 klinik onayı |
+## Akademi MVP (Mimari Özet)
 
-Sonraki faza ilerleme % (kısmi sayısal kriterler dahil hesaplanır). `AkreditasyonKart` client component → modal.
+**Felsefe:** KOL marketplace — eğitmen klinikler video paketleri yükler, sağlık profesyonelleri satın alıp izler. **%70 eğitmen / %30 Estelongy**. Algoritma kalite eler.
 
-### Onboarding Flow (4 Adım)
-`src/lib/clinic-onboarding.ts` — yeni klinikler için banner.
+**Eğitmen tarafı (klinik):**
+- `/klinik/panel/akademi/basvur` → başvuru formu (≥50 char mesaj)
+- Admin `/admin/klinikler` → onay/red + bilgilendirme notu
+- Onaylananlar: `/klinik/panel/akademi/paketler` → paket + video CRUD, publish/unpublish
+- Server action guard: `requireEducatorClinic()` (sequential await + rows-affected check)
 
-1. Profil tamamla → "Doğrulanmış Hekim" rozeti
-2. Müsaitlik takvimi → 20 hediye kredi açılır
-3. İlk randevu kabul → Akademi içeriği unlocked
-4. İlk klinik onayı → "Estelongy Hekimi" rozeti + Faz 1
+**Alıcı tarafı (sağlık pro / hasta da satın alabilir):**
+- `/akademi` public discovery (kategori/seviye filtre, 4 sıralama: kalite/satış/puan/yeni)
+- `/akademi/[slug]` paket detay + içerik listesi + Satın Al
+- `/api/akademi/checkout` → Stripe Checkout Session (TRY, %70/%30 split metadata)
+- Stripe webhook (`kind=akademi_purchase`) → status=paid, total_purchases++, idempotent
 
-`OnboardingBanner` → kompakt accordion, üstte ilerleme barı, 4/4'te kutlama (1 kez, localStorage). Eski `KlinikWelcome` ekranı kaldırıldı.
+**İzleme:**
+- `/panel/kurslarim` → sahip olunan paketler + ilerleme barı
+- `/panel/kurslarim/[slug]` → Cloudflare Stream iframe player + sağda video listesi
+- `course_progress` upsert (user_id, video_id unique) + manuel "tamamlandı" toggle
+- Stream env yoksa "video hazırlanıyor" placeholder
 
-### Editöryel İçerik Sistemi
-`src/lib/editorial-posts.ts` + `editorial_posts` tablosu.
+**Kalite skoru cron (`/api/cron/akademi-quality-score`, günlük 03:00):**
+```
+quality_score = avg_rating × 12 + min(purchases,200)/200 × 20 + completion × 0.15 − refund × 0.5
++ Bayesian shrinkage (<5 yorum → global ortalamaya çek)
+```
 
-Admin `/admin/icerik` sayfasından kategori bazlı post girer (başlık + özet + body + dış link + görsel). Hekim panelindeki 6 tercihli kart bu kategorilerden beslenir:
-- akademi → Akademi Vitrini
-- duyuru → Estelongy Duyuruları
-- topluluk → Topluluk Pulse
-- bilim → Bilimsel Haber Akışı
-- resmi → Resmi Duyurular
-- sosyal → Sosyal Medya Akışı
+**Komisyon:** `splitCommission(amount)` → `{educator_share, platform_share}`. Stripe Connect TR yok → ay sonu manuel IBAN transfer.
 
-Her kart son 3 post mini önizleme + "Hepsini gör →" expand-modal.
+---
 
-### Sonuç Vitrini Rıza Akışı (KVKK)
-`src/lib/shared-cases.ts` + `shared_cases` tablosu + `vitrine-actions.ts`.
+## Kayıt Güvenlik Politikası (Cross-cutting)
 
-**Akış:**
-1. Hekim → hasta detay (`/klinik/panel/hasta/[userId]`) → `VitrinePaylasimSection` → "Paylaşım izni iste"
-2. `shared_cases` insert (status=pending, score snapshot)
-3. Hasta `/panel`'de `PaylasimRizaBanner` görür → anonimlik seç (initials/firstname/full_anon) → kabul/red
-4. Onaylı vakalar dashboard `Sonuç Vitrini` kartında en yüksek Δ ile gösterilir
-5. Hekim revoke edebilir, hasta da reddedebilir
+`src/lib/signup-policy.ts` — tüm kayıt endpoint'lerinde merkezi:
+- Disposable email blocklist (50+ domain: 10minutemail, mailinator, vb.)
+- IP başına saatte 3 kayıt rate-limit (Upstash)
+- E-posta sözdizimi + format validasyonu
+- Şifre min 6 karakter (UX tercihi)
+- SMS OTP zorunlu: hasta + sağlık profesyoneli + klinik + satıcı (Netgsm + Upstash)
 
-RLS politikaları: hekim kendi kliniği yönetir, hasta kendi cevaplar, public sadece approved okur.
-
-### Tercihli Kart Yönetimi
-`TercihliKartlarSection` (client) — localStorage `estelongy_klinik_panel_cards`. Default açık 3 kart (Akademi, Duyurular, Topluluk). "+" buton → mini palet (kapalı kartlar listesi). X ile kaldır. Max 4 tercihli aktif.
-
-**Henüz placeholder olan tercihli kartlar:**
-- Hastalarım Vitrini (kendi data, ayrı sistem)
-- Estelongy Avantajları (partner programı henüz yok — Shell/Rixos/THY anlaşmaları Faz 3'te)
+**Endpoint'ler:**
+- `/api/kayit` — hasta
+- `/api/kurumsal/kayit` — klinik & satıcı (yetkili telefon SMS OTP)
+- `/api/saglik-profesyoneli/kayit` — sağlık profesyoneli (ünvan/uzmanlık/beyan/KVKK)
 
 ---
 
 ## Ziyaret Zaman Çizelgesi
 
-Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel`) tarafında ziyaret bazlı birleşik kart akışı.
+Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel/analizlerim`) tarafında ziyaret bazlı birleşik kart akışı.
 
 - **Ortak bileşen:** `src/components/ZiyaretKarti.tsx`
-- **Server action:** `src/app/klinik/panel/hasta/[userId]/ziyaret-actions.ts` → `saveVisitNotesAction`
-- **Kart içeriği:** geliş sebebi · klinik notu · **yapılan işlem** (klinik edit) · **hekim önerileri** (klinik edit) · ön analiz C250 · tetkik sonuçları (referans aralığı + renk) · ileri analiz cihaz ölçümü · hekim değerlendirmesi + doktor notları · önceki ziyarete göre skor farkı rozeti
-- **Birleştirme mantığı:** `analyses.appointment_id` ile eşleşen analizler ziyaret kartı içine; eşleşmeyenler "Bağımsız Ön Analiz" kartı olarak ayrı.
-- **RLS:** `appointments_clinic_update` (mevcut) yeterli — `procedure_notes` ve `recommendations` aynı politikayla yazılabiliyor.
+- **Birleştirme:** `analyses.appointment_id` ile eşleşenler ziyaret kartı içine, eşleşmeyenler "Bağımsız Ön Analiz"
+- **Journeys:** `journeys` tablosu — randevu completed → journey otomatik kapanır. Yeni selfie aktif journey'e bağlanır.
 
 ---
 
-## Terminoloji (Sabit — Tutarlı Kullan)
+## Terminoloji (Sabit)
 
-| Terim | Kime/neye | Aralık | Not |
-|-------|-----------|--------|-----|
-| **Skor** | kişi (hasta) | 0–100 | "Estelongy Gençlik Skoru ®" — "EGS" ❌ |
-| **EGP** | nesne (ürün, işlem, klinik) | 0–10 | Estelongy Gençlik Puanı |
+| Terim | Kime | Aralık | Not |
+|-------|------|--------|-----|
+| **Skor** | hasta | 0–100 | "Estelongy Gençlik Skoru ®" |
+| **EGP** | nesne (ürün/işlem/klinik) | 0–10 | Estelongy Gençlik Puanı |
 
-**Skor bölgeleri (YENİ — eski barem kullanma):**
-
-| Aralık | Etiket | Renk |
-|--------|--------|------|
-| < 55 | Çok Düşük | kırmızı |
-| 56–65 | Düşük | turuncu |
-| 66–79 | Normal | amber |
-| 80–89 | İyi | yeşil |
-| > 90 | Harika | cyan |
+**Skor bölgeleri:** <55 Çok Düşük (kırmızı) · 56–65 Düşük (turuncu) · 66–79 Normal (amber) · 80–89 İyi (yeşil) · >90 Harika (cyan)
 
 **Skor durumları:** `tahmini` (amber) · `guncelleniyor` (violet/pulse) · `klinik_onayli` (emerald)
 
-**Estelog** = Skor bazlı çalışan, protokol odaklı estetik hekim (yeni meslek tanımı)
+**Estelog** = Skor bazlı, protokol odaklı estetik hekim (yeni meslek tanımı)
 
-**EGP formülü:** `doctor×0.4 + user×0.35 + manufacturer×0.15 + scientific×0.10`  
-`products` tablosunda `doctor_score`, `user_score`, `manufacturer_score`, `scientific_score` mevcut.
-
-**Başlangıç katalog değerleri** (treatments tablosu kurulduğunda seed olacak):
-- HA Dolgu **9.2** · Skin Booster **8.5** · Botoks **7.0** · Altın İğne **6.5**
-- Güneş Koruyucu (genel) **8.5**
+**EGP formülü:** `doctor×0.4 + user×0.35 + manufacturer×0.15 + scientific×0.10`
+**Başlangıç katalog:** HA Dolgu 9.2 · Skin Booster 8.5 · Botoks 7.0 · Altın İğne 6.5 · Güneş Koruyucu 8.5
 
 ---
 
@@ -367,349 +308,279 @@ Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel`) tarafında ziya
 - Auth callback `next` param: sadece `/` ile başlıyorsa geçerli (open redirect koruması)
 - AI down → fallback skor göster, sessiz başarısızlık yok
 - Server action'larda `redirect()` try/catch **dışında** olmalı
-- **Server action'larda `Promise.all` ile birden fazla supabase write yapma** — biri sessizce fail ederse (RLS / auth) diğeri yine de geçer ve veri tutarsız kalır. Sequential `await` + `.select('id')` ile rows-affected kontrol et, 0 satır = `throw`.
-- **Status değiştiren server action'larda** ilgili tüm cache path'lerine `revalidatePath` çağır (`from 'next/cache'`) — özellikle `/klinik/panel`, `/klinik/panel/takvim` listeleri force-dynamic olsa bile cache invalidation ister.
+- **Server action'larda `Promise.all` ile birden fazla supabase write yapma** — sequential `await` + `.select('id')` rows-affected kontrolü zorunlu, 0 satır = `throw`
+- Status değiştiren server action'larda ilgili tüm path'lere `revalidatePath` çağır
+- **JSX text içinde apostrof escape:** `'` yerine `&apos;` kullan (ESLint `react/no-unescaped-entities`)
+- **JSDoc comment içinde `*/` kombinasyonu yasak** (yorum bloğunu erken kapatır — `/api/*/...` yazma, alternatif kullan)
 
 ---
 
-## Bekleyen Görevler — Sıralı Öncelik
+# 📋 Bekleyen Görevler — Sıralı Öncelik
 
-> **Klinik Panel V2 tamam (2026 Mayıs):** Faz 1+2 (sidebar/dashboard/akreditasyon/onboarding/CMS/rıza) — bkz. "Tamamlanan Yapısal İşler". Klinik tarafı lansmana mimari olarak hazır.
+## 👤 0. SENİN YAPACAKLARIN — Manuel Lansman Checklist
 
----
+> Kod yok, sadece dış servis kayıt + Vercel env + canlı test. Lansmandan önce hepsi bitmeli.
 
-### 👤 0. SENİN YAPACAKLARIN — Manuel Lansman Checklist
+### A. Vercel Env Vars (Production)
+- [ ] `RESEND_API_KEY` + `FROM_EMAIL` — yoksa welcome/bildirim email sessiz fail
+- [ ] `OPENAI_API_KEY` — analiz için (varsa doğrula)
+- [ ] `CRON_SECRET` — rastgele 32-char string, hem env hem cron header'da
+- [ ] `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_ORG` + `SENTRY_PROJECT` — sentry.io'da estelongy projesi yarat
+- [ ] `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` — Search Console verification
+- [ ] `NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE` + `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_STREAM_TOKEN` — Stream subscription sonrası
 
-> Kod yok, sadece dış servis kayıtları + Vercel env'e ekleme + canlı test. Lansmandan önce hepsi bitmeli. Yan yana 1 oturumda halledilebilir (~1-2 saat).
+### B. Cloudflare Stream
+- [ ] Subscribe ($5/ay, 1000 dk hosting + sınırsız izleme)
+- [ ] API token (Stream:Edit izinli) + customer code'u Vercel env'e
+- [ ] Production redeploy → akademi video oynatma aktifleşir
 
-#### A. Vercel Environment Variables (Production scope)
-- [ ] **`RESEND_API_KEY`** — yoksa welcome email + sipariş onay email + bildirim sessiz fail. resend.com → API key oluştur, Vercel'e ekle.
-- [ ] **`FROM_EMAIL`** — `noreply@estelongy.com` (DNS kaydı yapıldıysa) yoksa default
-- [ ] **`OPENAI_API_KEY`** — analiz için (zaten var olabilir, doğrula)
-- [ ] **`CRON_SECRET`** — cron'lar header'da bunu istiyor; rasgele 32-char string üret, hem Vercel env'e hem cron job header'larına ekle
-- [ ] **`NEXT_PUBLIC_SENTRY_DSN`** + **`SENTRY_ORG`** + **`SENTRY_PROJECT`** — sentry.io'da "estelongy" projesi yarat → DSN al → Vercel env. Test hatası fırlat, dashboard'da gör.
-- [ ] **`NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`** — Search Console verification kodu
-- [ ] **`NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE`** — Cloudflare Dashboard → Stream → "Customer code" (özel iframe domain'i için). Yoksa video oynatma "hazırlanıyor" placeholder'ı kalır.
-- [ ] **`CLOUDFLARE_ACCOUNT_ID`** + **`CLOUDFLARE_STREAM_TOKEN`** — eğitmen video upload (henüz UI yok ama yakında)
+### C. Stripe Live Mode (Vestoriq KYC sonrası)
+- [ ] Vestoriq Estonya vergi belgeleri tamamlandığında Stripe → Activate Live → KYC
+- [ ] Live key'leri Vercel env'e (test mode üzerine)
+- [ ] Webhook endpoint: `https://estelongy.com/api/stripe/webhook` → Stripe'a kaydet, signing secret al
+- [ ] Akademi otomatik live olur
 
-#### B. Cloudflare Stream Subscription
-- [ ] Cloudflare Stream subscribe ($5/ay, 1000 dk hosting + sınırsız izleme)
-- [ ] API token oluştur: Stream:Edit izniyle
-- [ ] Customer code'u kopyala
-- [ ] Yukarıdaki 3 env var'ı Vercel'e ekle → Production redeploy
+### D. Search Console + SEO Manuel
+- [ ] Google Search Console property + sitemap submit
+- [ ] Bing Webmaster Tools site + sitemap
+- [ ] `src/app/layout.tsx` `sameAs` URL'leri gerçek sosyal medya hesaplarıyla güncelle
 
-#### C. Stripe Live Mode (Vestoriq KYC sonrası)
-- [ ] Vestoriq OÜ Estonya vergi belgeleri tamamlandığında Stripe Dashboard → Activate Live mode → KYC formu
-- [ ] Onaylanınca live `STRIPE_SECRET_KEY` + `STRIPE_PUBLISHABLE_KEY` + `STRIPE_WEBHOOK_SECRET` Vercel'e (test mode'un üzerine yaz)
-- [ ] Webhook endpoint URL'i: `https://estelongy.com/api/stripe/webhook` — Stripe'a kaydet, signing secret al
-- [ ] **Akademi otomatik live olur** (TRY çalışıyor, jeton paketleri EUR)
+### E. Supabase Auth
+- [ ] Google OAuth provider etkinleştir
+- [ ] Google Cloud Console OAuth Client → Supabase'e Client ID + Secret
+- [ ] Redirect URI: `https://dcmnxmqzimrgmholktid.supabase.co/auth/v1/callback`
 
-#### D. Search Console + SEO
-- [ ] **Google Search Console** → property ekle (`estelongy.com`) → DNS verification al → `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` env
-- [ ] Search Console → Sitemaps → `https://estelongy.com/sitemap.xml` submit
-- [ ] **Bing Webmaster Tools** → site ekle → sitemap submit
-- [ ] `src/app/layout.tsx` içindeki `sameAs` URL'lerini gerçek sosyal medya hesaplarıyla güncelle (instagram/twitter/linkedin) — şu an placeholder
+### F. Vercel Hijyen
+- [ ] İki proje karışıklığı (`faz1` vs `faz-1`) — birini sil, domain tek projede
+- [ ] Vercel Pro'ya geçince saatlik cron etkinleşir
 
-#### E. Supabase Auth Konfigürasyonu
-- [ ] Supabase Dashboard → Authentication → Providers → **Google OAuth** etkinleştir
-- [ ] Google Cloud Console → OAuth Client ID oluştur → Client ID + Secret'ı Supabase'e yapıştır
-- [ ] Authorized redirect URI: `https://dcmnxmqzimrgmholktid.supabase.co/auth/v1/callback`
+### G. Lansman Öncesi Canlı Smoke Testleri
+- [ ] Hasta kayıt — `/kayit` → SMS OTP → welcome email
+- [ ] Klinik kayıt — `/kurumsal/giris` → Klinik → Kayıt Ol → SMS OTP → `/klinik/basvur`
+- [ ] Satıcı kayıt — `/kurumsal/giris` → Satıcı → Kayıt Ol → SMS OTP → `/satici/basvur`
+- [ ] Sağlık Pro kayıt — `/kurumsal/giris` → Sağlık Profesyoneli → dedicated form → `/panel` (emerald)
+- [ ] Sidebar Çıkış — sağlık pro olarak giriş → kırmızı Çıkış butonu
+- [ ] Akademi alıcı akışı (Stream env sonrası) — `/akademi` → Satın Al → Stripe test → `/panel/kurslarim` → video oynar
+- [ ] Eğitmen başvuru — klinik panel → "Eğitmen Ol" → admin onay → "Eğitmen Paneli" linki çıkar
 
-#### F. Vercel Hijyen
-- [ ] **İki proje karışıklığı** (`faz1` vs `faz-1`) — birini sil, domain tek projede toplansın. Domain `estelongy.com` doğru projeye bağlansın.
-- [ ] Vercel Pro'ya geçerse: bildirim 1h hatırlatma cron'u saatlik etkinleşir
-- [ ] Production deploy alarmı (Discord/Slack webhook integration — opsiyonel)
-
-#### G. Lansman Öncesi Canlı Smoke Testleri
-- [ ] **Hasta kayıt** — `/kayit` formu → SMS OTP → kayıt → welcome email geliyor mu
-- [ ] **Klinik kayıt** — `/kurumsal/giris` → Klinik kartı → Kayıt Ol → form + SMS OTP → `/klinik/basvur` açılıyor mu
-- [ ] **Satıcı kayıt** — `/kurumsal/giris` → Satıcı kartı → Kayıt Ol → form + SMS OTP → `/satici/basvur` açılıyor mu
-- [ ] **Sağlık Profesyoneli kayıt** — `/kurumsal/giris` → Sağlık Profesyoneli → Kayıt Ol → dedicated form + SMS OTP → `/panel` (emerald sidebar) açılıyor mu, welcome email "Akademi'ye Hoş Geldiniz" geliyor mu
-- [ ] **Sidebar Çıkış** — sağlık profesyoneli olarak giriş → sidebar altındaki kırmızı Çıkış butonu çalışıyor mu
-- [ ] **Akademi alıcı akışı** (Stream env eklendikten sonra) — `/akademi`'de paket gör → Satın Al → Stripe (test mode) → `/panel/kurslarim`'da görünüyor mu → video oynatılıyor mu
-- [ ] **Eğitmen başvuru** — klinik panel → "Eğitmen Ol" → form → admin'de görünüyor mu → onaylama → klinik panele "Eğitmen Paneli" linki çıkıyor mu
-
-#### H. Soft Launch / Tanıtım Hazırlığı (opsiyonel)
-- [ ] İlk 5-10 KOL hekime kişisel davet → eğitmen olun + ilk paketinizi yükleyin (anchor strategy)
-- [ ] Instagram + LinkedIn kurumsal hesap kuruluşu
-- [ ] İlk basın bültenleri / blog yazıları taslakları
+### H. Soft Launch (Opsiyonel)
+- [ ] İlk 5-10 KOL hekime kişisel davet (anchor strategy)
+- [ ] Instagram + LinkedIn kurumsal hesap
+- [ ] Basın bülteni / blog yazısı taslakları
 
 ---
 
-### 🥇 1. Tetkik Puanı Algoritması (Sıradaki — Aktif İş)
-Skor algoritmasının kalan parçası. Anket bitti, şimdi tetkik. **Lansman blokeri** — kullanıcı tarafının %90'ı bitti, algoritma bekleniyor.
+## 🥇 1. Tetkik Puanı Algoritması (Aktif İş, Lansman Blokeri)
+
+Skor algoritmasının kalan parçası. Anket bitti, şimdi tetkik. Kullanıcı tarafının %90'ı hazır, algoritma bekleniyor.
+
 - [ ] `src/lib/tetkik-params.ts` parametre listesi gözden geçirilecek
-- [ ] Her parametre için skor katkısı kuralı belirlenecek (referans aralığı içi/dışı, yakınlık etkisi)
+- [ ] Her parametre için skor katkısı kuralı (referans aralığı içi/dışı, yakınlık etkisi)
 - [ ] Tetkik max toplam katkısı belirlenecek (anket gibi 3.6 mı, daha fazla mı?)
 - [ ] `scores.tetkik_puani` kolonuna otomatik yazılacak
 - [ ] Hekim onayı %15 ağırlık formülü netleştirilecek (mevcut: `final = ara_toplam × 0.85 + hekim × 0.15`)
+- [ ] Klinik ek anketi 5 ağırlık (1.1/0.5/0.4/0.6/1.0) bilimsel araştırma ile finalize
 
-### 🥈 2. Bildirim Sistemi (Aktif)
-- [x] `/api/notifications/process` cron **günlük 09:00** (`0 9 * * *`) — Vercel Hobby plan kısıtı (Pro: saatlik)
-- [x] Randevu klinik tarafından onaylanınca → anında `appointment_confirmed` (e-posta + SMS) enqueue
-- [x] 24h önce → `appointment_reminder_24h` (e-posta + SMS) scheduled
-- [x] Score update bildirimi (e-posta + SMS) — KlinikAkışWizard hekim onay step'inden enqueue
-- [x] SMS altyapısı — Netgsm `sendInfoSms` (`/sms/rest/v2/send`) + Upstash Redis (OTP)
-- [ ] `RESEND_API_KEY` Vercel'e eklenmeli (Manuel) — yoksa e-posta sessiz başarısız
-- [ ] **1h hatırlatma** — Vercel Pro'ya geçince saatlik cron eklenecek (şimdilik atlandı)
+---
+
+## 2. Bildirim Sistemi (Aktif, Çoğu Hazır)
+
+Cron `0 9 * * *` (Hobby plan) çalışıyor. SMS+email enqueue: `appointment_confirmed`, 24h hatırlatma, score_update.
+
+**Kalan:**
+- [ ] `RESEND_API_KEY` Vercel'e (Madde 0/A) — yoksa email sessiz fail
+- [ ] 1h hatırlatma (Vercel Pro saatlik cron olunca)
 - [ ] Hekim önerileri değişince ayrı bildirim (procedure_notes/recommendations diff trigger)
-- [ ] Push notification (FCM) — Faz 3
 
-### 🥉 3. Sentry Kurulumu (Manuel — kod yok, 10 dk)
-Production hata yakalama. Şu an `@sentry/nextjs` paketi yüklü ve `sentry.*.config.ts` dosyaları hazır, AMA env var yok → hatalar uçuyor.
-- [ ] sentry.io'da "estelongy" projesi yarat → DSN al
-- [ ] Vercel env'e ekle: `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`
-- [ ] Bir test hatası fırlat, dashboard'da görünüyor mu kontrol et
+---
 
-### 4. SEO — Manuel İşler (kod tamam, 5 dk)
-Profesyonel SEO altyapısı kuruldu (JSON-LD, dynamic sitemap, manifest, robots, breadcrumbs). Geriye sadece dış servis kayıtları kaldı.
-- [ ] **Google Search Console** → property ekle (`estelongy.com`) → verification kodu al → Vercel env'e `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` ekle
-- [ ] Search Console'a `https://estelongy.com/sitemap.xml` submit et
-- [ ] **Bing Webmaster Tools** kayıt (Türkiye'de %10 pazar payı)
-- [ ] `src/app/layout.tsx` içindeki `sameAs` URL'lerini gerçek sosyal medya hesaplarıyla güncelle (şu an placeholder: instagram/twitter/linkedin)
-- [ ] Ürün listesi (`/magaza`) ve detay (`/magaza/[slug]`) sayfalarındaki `<img>` etiketleri `next/image` ile değiştirilecek (build warning + LCP iyileştirme)
-- [ ] `/rehber/*` makaleleri için `opengraph-image.tsx` template (her makale için özel OG görseli)
-- [ ] Klinik sayfası açılırsa (`/klinik/[slug]`) → sitemap'e ekle + LocalBusiness JSON-LD
+## 3. Akademi Tamamlama (MVP canlıda, kalan parçalar)
 
-### 5. EGS → Skor Rename (Kozmetik temizlik)
-Component/type rename'leri yapılmış. Sadece yorumlar ve dosya adı kalmış (kullanıcı UI'da hiç "EGS" görmüyor).
-- [x] `EGSScoreBar` → `ScoreBar`, `EGSScoreChart` → `ScoreChart`, `EGSFixedBadge` → `ScoreFixedBadge`
-- [x] `EGSPhase` → `ScorePhase`
-- [ ] `src/lib/egs.ts` dosya adı → `src/lib/skor.ts` rename + tüm import'ların güncellenmesi
-- [ ] 8 yerde kalan EGS yorumları temizlenecek
-- [ ] Tetkik params'ta "EGS toplam skora katkı" yorumu güncellensin
-- [ ] SEO meta, OG image, PaylasModal'da kalan EGS metinleri (varsa) kontrol edilecek
+- [ ] Cloudflare Stream env'leri (Madde 0/B) — videolar oynar hale gelsin
+- [ ] Eğitmen video upload UI'ı — TUS direct upload (şu an manuel `stream_uid` girme)
+- [ ] Kurs içi puan verme (`course_reviews`, 1-5 ★ + opsiyonel yorum)
+- [ ] İade akışı — 14 gün içinde, izlenme %30'dan az → otomatik refund
+- [ ] Eğitmen kazanç dashboard (satış, gelir, paket performansı)
+- [ ] Aylık IBAN transfer toplu raporu (admin)
 
-### 6. Diğer Manuel (Kod Gerektirmeyen)
-- [ ] Supabase → Auth → Google OAuth etkinleştir
-- [ ] Vercel Env: `OPENAI_API_KEY` · `CRON_SECRET` · `RESEND_API_KEY`
-- [ ] Stripe live mode → Vestoriq OÜ Estonya vergi belgeleri tamam olunca KYC
-- [ ] Vercel iki proje karışıklığı (`faz1` vs `faz-1`) — birini sil, domain tek projede toplansın
-- [ ] **Klinik ek anketi ağırlıkları** bilimsel araştırma ile finalize edilecek (şu an geçici: 1.1/0.5/0.4/0.6/1.0)
+---
 
-### 7. Ziyaret Akışı İyileştirmeleri
-- [ ] Klinik akışı tamamlanınca `analyses.appointment_id` otomatik dolsun (şu an manuel backfill gerekti)
-- [ ] "İşlem sonrası takip" — hasta 10 gün sonra yeni ön analiz yaptığında, sonraki randevuya otomatik ilişkilendir ve öncekinin kartında "takip sonucu" olarak göster
-- [ ] Kart içinde "öncekine göre" grafik mini-sparkline (nem, kırışıklık trend)
+## 4. Klinik Deneyim / Yorum Sistemi (Faz 1)
 
-### 8. Hesabım Tamamlama
-- [ ] **Hesabı sil** şu an `is_active=false` set ediyor — gerçek silme için service role admin endpoint (Faz 2)
-- [ ] **E-posta değişikliği** şu an "destek ekibiyle iletişime geç" placeholder — Supabase auth.updateUser({ email }) ile flow eklenecek
+**Felsefe:** Yorum platformu değil, **ölçüm platformu**. Hekim sanatı puanlanmaz, sonucu sistem ölçer (skor Δ). 4 objektif boyut + NPS + tacir filtresi.
 
-### 9. Klinik Deneyim Sistemi — "Hekim Dostu Model"
+**Yorum formu (randevu completed sonrası):**
+- 4 ★ boyutu: hijyen, personel, randevu uyumu, iletişim
+- Puanlanmayan: NPS (0-4), "ihtiyacın olmayan iş önerildi mi" (yes/no), "tekrar gelir miydin" (yes/maybe/no)
+- Serbest metin: pozitif / iyileştirme / anonim toggle
 
-**Felsefe:** Estelongy yorum platformu değil, ölçüm platformudur. Hekim sanatı **puanlanmaz**, sonucu sistem ölçer. Yıldızlı yorumdan kaçınıp **tacir kliniği veriden ayrıştıran** sinyaller kullanılır. Hedef yol: **akreditasyon** ama 3 fazlı.
-
-#### Yorum formu (randevu completed sonrası)
-
-**Puanlanan boyutlar (sadece objektif, 1-5 ★):**
-- 🧹 Klinik hijyeni & ortam
-- 👥 Karşılama & personel
-- ⏱️ Randevu uyumu
-- 💬 Bilgilendirme & iletişim
-
-**Puanlanmayan ama sorulan:**
-- 💚 NPS — "Tavsiye eder misin?" (0-4 ölçek)
-- 🛡️ Tacir filtresi — "Sana ihtiyacın olmayan işlem önerildi mi?" (yes/no)
-- 🔁 Sadakat — "Aynı işlem için tekrar gelir miydin?" (evet/belki/hayır)
-
-**Serbest metin (opsiyonel):**
-- ✅ İyi olan tarafı?
-- ⚠️ İyileştirilmesi gereken?
-- ☐ Anonim paylaşım toggle
-
-**Hekim sanatı / sonuç memnuniyeti ASLA puanlanmaz.** Sonuç sistem tarafından otomatik ölçülür: `klinik_onayli_skor − on_analiz_skor` farkı.
-
-#### Klinik EGP formülü (REVİZE)
-
+**Klinik EGP formülü:**
 ```
-Klinik EGP = Sonuç Etkinliği    × 0.35   ← skor Δ (objektif, hasta beyanı değil)
-           + NPS Score          × 0.25   ← bipolar memnuniyet
-           + Operasyonel Puan   × 0.20   ← 4 yıldız ortalaması
-           + Estelongy Onayı    × 0.15   ← editöryel/sertifika
-           + Profesyonellik     × 0.05   ← hekim deneyimi, lisans
-
-× confidence_factor  (yorum sayısı 5'ten azsa Bayesian smoothing)
+EGP = Sonuç Etkinliği × 0.35   ← skor Δ (objektif)
+    + NPS × 0.25
+    + Operasyonel (4 ★ ort) × 0.20
+    + Estelongy Onayı × 0.15
+    + Profesyonellik × 0.05
+× confidence_factor (Bayesian smoothing <5 yorum)
 × son 6 ay zaman ağırlığı
 ```
 
-**Tercih sıklığı EGP'ye GİRMEZ** — ayrı `popularity_score` kolonu, listede tiebreaker + rozet ("🔥 Bu ay 87 randevu").
+**Akreditasyon yolu:** Faz 1 (Ölçüm 6-12 ay, sertifika yok, otomatik veri rozetleri) → Faz 2 (Algoritmik rozet, başvuru yok) → Faz 3 (**ELS — Estelongy Longevity Standartları**, kurumsal sertifika kuruluşu, 4 seviye Bronze→Platinum). ELS = asıl moat.
 
-**Bölge** — EGP global hesaplanır, listeleme şehir/ilçe öncelikli, iki rozet ("Kadıköy'ün en iyisi" + "Türkiye Top 20").
-
-#### Akreditasyona Giden Yol — 3 Faz
-
-**🥇 Faz 1: Ölçüm Dönemi (6-12 ay)**
-- Veri toplama, sertifika YOK
-- Yorum formu canlıya alınır
-- Otomatik veri rozetleri: 📈 Yüksek sonuç etkinliği · 💚 Yüksek tavsiye · 🛡️ Doğru endikasyon (>%90)
-- Hedef: 50-100 aktif klinik, 1000+ değerlendirilmiş randevu
-
-**🥈 Faz 2: Algoritmik Rozet (12-18 ay sonra)**
-- Veri olgunlaşınca otomatik kademeleme
-- 🥉 Estelongy Onaylı / 🥈 Önerilen / 🥇 Premium
-- Henüz "akreditasyon" değil, başvuru süreci yok — algoritma rozet üretir
-- İhlalde otomatik geri alınır
-
-**💎 Faz 3: ELS — Estelongy Longevity Standartları (2-3 yıl sonra)**
-- Kurumsal sertifika kuruluşu — SKS modelinde
-- 4 seviye: 🥉 Bronze → 🥈 Silver → 🥇 Gold → 💎 Platinum
-- Başvuru, denetim, yıllık yenileme
-- Tıbbi danışma kurulu + hukuki altyapı
-- **Estelongy'nin asıl moat'ı bu** — başkası kopyalayamaz çünkü standartı sen koyuyorsun
-
-**Felsefi pozisyon:**
-> "Yemeksepeti restoran sıralıyor. Estelongy klinik akrediteliyor. SKS'in longevity versiyonuyuz."
-
-#### DB Şeması (Faz 1'de oluşturulacak)
-
-```sql
-CREATE TABLE clinic_reviews (
-  id, appointment_id (UNIQUE), clinic_id, user_id,
-  -- Operasyonel (1-5)
-  hygiene_rating, staff_rating, punctuality_rating, communication_rating,
-  -- Tacir filtresi
-  nps_score          smallint CHECK (BETWEEN 0 AND 4),
-  unnecessary_offered boolean,                    -- "ihtiyacım olmayan iş önerildi mi"
-  would_return       text CHECK (IN ('yes','maybe','no')),
-  -- Metin
-  positive_text, improvement_text, is_anonymous,
-  -- Klinik cevabı
-  clinic_response, clinic_responded_at, clinic_responded_by,
-  -- Moderasyon
-  is_hidden, reported_count,
-  created_at, updated_at
-);
-
-ALTER TABLE clinics ADD COLUMN
-  egp                  numeric(3,1),
-  popularity_score     int,
-  result_effectiveness numeric(4,2),  -- ortalama skor Δ
-  nps_score            int,
-  operational_avg      numeric(3,1),
-  els_level            text,           -- bronze|silver|gold|platinum (Faz 3)
-  els_certified_until  date;
-```
-
-#### Faz 1 İş Listesi
-- [ ] `clinic_reviews` tablosu + RLS politikaları + indexler
-- [ ] `/panel/randevularim/[id]/degerlendir` sayfası (yorum formu)
+**Faz 1 İş Listesi:**
+- [ ] `clinic_reviews` tablosu + RLS + indexler
+- [ ] `/panel/randevularim/[id]/degerlendir` yorum formu
 - [ ] Yorum kaydetme server action (7 gün düzenleme penceresi)
-- [ ] `clinics` tablosuna agregate kolonları + cron (günlük EGP hesaplama)
-- [ ] Klinik public sayfası `/klinik/[slug]` (yorum listesi + EGP rozeti + alt boyutlar)
-- [ ] Randevu listesinde klinik kartında EGP gösterimi
-- [ ] Klinik panelinde yorum listesi + tek-seferlik cevap hakkı
-- [ ] Otomatik veri rozeti sistemi (📈/💚/🛡️)
-- [ ] Bildirim entegrasyonu — randevu completed + 6 saat sonra "deneyimini paylaş" e-postası (bildirim sistemi tamamlandıktan sonra)
+- [ ] `clinics` agregate kolonları + günlük EGP cron
+- [ ] Klinik public sayfası `/klinik/[slug]` (yorum + EGP rozet)
+- [ ] Randevu listesinde EGP gösterimi
+- [ ] Klinik panelinde yorum listesi + tek-seferlik cevap
+- [ ] Otomatik veri rozeti (📈/💚/🛡️)
+- [ ] Bildirim: completed + 6 saat sonra "deneyimini paylaş"
 
-> **Sıralama:** Bu iş **bildirim sisteminden sonra** başlar (çünkü yorum tetikleyici e-posta gerekir). Tetkik algoritması → bildirim → klinik deneyim sistemi.
-
-### 🎓 10. Akademi MVP — Sağlık Profesyoneli & KOL Marketplace (LANSMAN SCOPE)
-
-**Felsefe:** Açık marketplace — eğitmen klinikler video paketleri yükler, sağlık profesyonelleri satın alıp izler. **%30 Estelongy / %70 hoca**. Algoritma kalite eler (puan + satış + tamamlanma + iade). Aynı trust altyapısı (rehber sıralaması) eğitmen sıralamasını da besler. Faz 0 anchor: 5 KOL hocayla pilot, sonra ölçek.
-
-**Tamamlanan (sağlık profesyoneli kullanıcı tipi):**
-- [x] `health_professional` rolü → `pathForRole` /panel'e yönlendirir
-- [x] `/panel` layout'ta health_professional erişim açıldı
-- [x] `/api/saglik-profesyoneli/kayit` route — service-role, `app_metadata.role` + `profiles.role` 'health_professional' set, e-posta doğrulaması atlanır (beyan bazlı)
-- [x] `/kurumsal/giris` 3. seçenek (emerald renk Sağlık Profesyoneli kartı + form + auto-login)
-- [x] Welcome email şablonu (Akademi temalı)
-
-**Test edilecekler (lansman öncesi tur):**
-- [ ] `/kurumsal/giris` açılıyor, 3 kart görünüyor (klinik / satıcı / sağlık profesyoneli)
-- [ ] Sağlık Profesyoneli kartı tıklanınca emerald form açılıyor
-- [ ] Kayıt Ol → Ad Soyad + email + şifre → `/api/saglik-profesyoneli/kayit` 200 dönüyor
-- [ ] `app_metadata.role` ve `profiles.role` 'health_professional' olarak yazılıyor
-- [ ] Otomatik giriş + `/panel`'e yönlendirme çalışıyor
-- [ ] Welcome email "Estelongy Akademi'ye Hoş Geldiniz 🎓" geliyor
-- [ ] Tekrar giriş yapınca direkt `/panel`'e atıyor (rol kontrolü)
-- [ ] Mevcut hasta + klinik + satıcı kayıt akışları bozulmadı (regresyon)
-
-**Devam edecekler (lansman scope):**
-- [ ] Eğitmen rolü — klinik kullanıcısı üstüne `is_educator` flag (admin tarafından "hocam ol" daveti)
-- [ ] Eğitmen paneli — paket oluşturma (başlık + video listesi + fiyat + açıklama)
-- [ ] **Cloudflare Stream** entegrasyonu (video hosting + DRM, Mux/Vimeo değil)
-- [ ] `/akademi` keşif sayfası — paket listesi + filtre + sıralama (puan/satış/yenilik)
-- [ ] Paket detay + satın alma akışı (Stripe → Vestoriq)
-- [ ] `/panel/kurslarim` sekmesi — video player + ilerleme + puan verme (hasta + sağlık profesyoneli için)
-- [ ] Kalite algoritması: puan (1-5) + satış sayısı + tamamlanma oranı + iade oranı → sıralama skoru
-- [ ] %70/%30 split — başlangıçta manuel IBAN transfer (ay sonu), Stripe Connect TR desteklemiyor
-- [ ] Eğitmen dashboard — satış, gelir, paket performansı
-
-**Faz 2 (lansman sonrası):**
-- [ ] Webinar (canlı yayın) altyapısı
-- [ ] Firma kapısı — sponsored content, ürün tanıtım, sayfa analytics (Allergan/Galderma/Sinclair)
-- [ ] Kore/global eğitmen erişimi (lokalizasyon altyapısı, alt yazı/çeviri)
-- [ ] Diploma doğrulama — beyan'dan belge yüklemeye geçiş (operasyonel onay süreci)
-- [ ] Mentörlük (saatlik 1-1) ve vaka takibi formatları
+> **Sıra:** Tetkik → Bildirim Resend → Klinik Deneyim Sistemi.
 
 ---
 
-### 11. Klinik Portal Faz B (lansman sonrası 2-4 hafta)
+## 5. Hesabım Tamamlama
 
-Faz A iskeleti canlıda. Yer tutucular dolması gereken modüller:
+- [ ] Hesabı sil — şu an `is_active=false` (soft). Gerçek silme için service-role admin endpoint
+- [ ] E-posta değişikliği — şu an "destek ile iletişim" placeholder. `auth.updateUser({email})` flow
 
-**📰 Akademi:**
-- [x] **Editöryel CMS** — `/admin/icerik` admin sayfası (kategori bazlı post girişi, yayınla/gizle/sil) — `editorial_posts` tablosu
-- [x] **Hekim panel besleme** — Akademi Vitrini, Bilimsel Haber, Resmi Duyurular kartları admin'den çekiyor
-- [x] **Klinik vakaları anonim paylaşım** — Sonuç Vitrini rıza akışı (Faz 2d), `shared_cases` tablosu, KVKK uyumlu (initials/firstname/full_anon)
-- [ ] Kongre takvimi (manuel CRUD + tarih bazlı sıralama) — şu an `topluluk` kategorisinde post olarak girilebilir, ayrı tablo yok
+---
+
+## 6. Ziyaret Akışı İyileştirmeleri
+
+- [ ] Klinik akışı tamamlanınca `analyses.appointment_id` otomatik dolsun (manuel backfill gerekti)
+- [ ] "İşlem sonrası takip" — 10 gün sonra yeni ön analiz → otomatik ilişkilendir
+- [ ] Kart içinde "öncekine göre" mini-sparkline (nem, kırışıklık trend)
+
+---
+
+## 7. Kozmetik Temizlik
+
+- [ ] `src/lib/egs.ts` → `src/lib/skor.ts` rename + import güncelleme
+- [ ] 8 yerde kalan EGS yorum/string temizliği
+- [ ] `<img>` → `next/image` mağaza sayfalarında (LCP)
+- [ ] `/rehber/*` makaleleri için özel `opengraph-image.tsx`
+
+---
+
+## 8. Klinik Portal Faz B (Lansman Sonrası 2-4 Hafta)
+
+**📰 Akademi (klinik panelinde):**
+- Editöryel CMS ✅ canlı, hekim panel besleme ✅ canlı
+- [ ] Kongre takvimi (manuel CRUD)
 - [ ] Protokol kütüphanesi (skor bandına göre)
-- [ ] PubMed E-utilities entegrasyonu (otomatik bilimsel makale çekme)
+- [ ] PubMed E-utilities entegrasyonu
 
 **📱 Pazarlama:**
-- [ ] WhatsApp şablon kütüphanesi (randevu hatırlatma, sonuç paylaşım, tekrar randevu)
-- [ ] Klinik onaylı skor paylaşım kartı görsel jeneratörü (Instagram/Twitter/WhatsApp boyutları)
-- [ ] AI gönderi yazarı (klinik için Estelongy AI — ayrı OpenAI maliyet bütçesi)
-- [ ] Performans raporu (link tıklama, mesaj dönüşümü)
+- [ ] WhatsApp şablon kütüphanesi
+- [ ] Skor paylaşım kartı görsel jeneratörü (IG/Twitter/WA boyutları)
+- [ ] AI gönderi yazarı (klinik için, ayrı OpenAI bütçesi)
+- [ ] Performans raporu
 
 **💬 Topluluk:**
-- [x] **Topluluk Pulse kartı** — admin'den girilen tartışma/etkinlik postları
-- [x] **Anonim vaka paylaşımı** — Sonuç Vitrini ile entegre (Faz 2d)
-- [ ] Branş kanalları (dermatoloji/plastik/longevity/estelongy duyuruları) — şu an tek kategori, branş ayrımı yok
-- [ ] Klinik rehberi (şehir + EGP filtreli liste)
+- Topluluk Pulse + anonim vaka paylaşımı ✅ canlı
+- [ ] Branş kanalları (dermatoloji/plastik/longevity)
+- [ ] Klinik rehberi (şehir + EGP filtreli)
 - [ ] Aylık webinar kayıt + arşiv
 
 **🛟 Destek:**
-- [x] E-posta + WhatsApp + SSS aktif
-- [ ] Canlı destek (Crisp/Intercom embed)
-
-### Faz 3
-- [ ] Mobil App (React Native / Expo)
-- [ ] Redis (Upstash) — rate limiting prod
-- [ ] Push/SMS provider (FCM / Netgsm)
-- [ ] AI fine-tuning
-- [ ] API Platformu · Çoklu dil (EN)
-- [ ] EGP UI: mağaza rozeti + sıralama + "nasıl hesaplandı" şeffaflık
-- [ ] Misafir checkout (geçici şifreyle hesap oluşturma) — şu an üyelik zorunlu
-- [ ] **ELS — Estelongy Longevity Standartları** (akreditasyon kuruluşu) — bkz. Madde 9 Faz 3
+- E-posta + WhatsApp + SSS ✅ canlı
+- [ ] Canlı destek (Crisp/Intercom)
 
 ---
 
-## ✅ Tamamlanan Yapısal İşler (referans)
+## 9. Akademi Faz 2 (Lansman Sonrası)
 
-- **Anket sistemi:** İki ayrı flow (`/anket` + `/skor`) tek sistemde birleştirildi → `/anket` silindi
-- **Soru sıralaması:** beslenme → cilt → uyku → stres → aktivite (kullanıcı kararı)
-- **Soru metinleri:** "20 yaşınızdan bu yana ..." formatında, 0-100 ölçek
-- **Skor merkezi (`/skor`):** Tam ekran modal kart sistemi (Anket / Randevu / Ürün), `?open=` query param desteği
-- **Panel mimari:** 3 bölge (Skor Durumu / Sıradaki Adım / Yönetim Grid), 565 → 270 satır
-- **Yeni alt sayfalar:** `/panel/hesabim`, `/panel/analizlerim`, `/panel/randevularim`
-- **Hesabım:** Profil düzenle + telefon SMS OTP + şifre değiştir + hesap pasifleştir
-- **Landing kapıları:** Kapı 1 ve 2 → `/giris?next=...` (girişli kullanıcı next'e yönlenir)
-- **Production branch:** `claude/priceless-ellis` (main silindi, GitHub default değiştirildi)
-- **SMS/OTP altyapısı:** Netgsm + Upstash Redis Production, `/api/otp/send` + `/verify` canlı
-- **Stripe Connect:** test mode aktif (live KYC Vestoriq Estonya belgelerine bağlı)
-- **AI:** `gpt-5.4-mini` Vision Production'a entegre, fallback Math.random + `usedFallback: true`
-- **Klinik Portal Faz A:** Sticky sol sidebar (`KlinikSidebar`) + ortak `layout.tsx` (auth/clinic/approval kontrolü tek yerde) + 5 yeni modül (Hastalarım/Profil/Akademi/Pazarlama/Topluluk/Destek).
-- **Klinik Panel V2 (2026 Mayıs):** Tam yeniden inşa — bkz. yukarıdaki "Klinik Panel V2 — 3 Katmanlı Dashboard" bölümü.
-  - Sidebar Gmail tarzı hover-expand + pin (localStorage)
-  - 3 katmanlı dashboard (ŞIMDI / BU AY / SENIN SEÇTIKLERIN)
-  - 4 sabit + max 4 tercihli kart, 8 kartlık kütüphane, "+" buton + palet
-  - **Faz 2a Akreditasyon:** Gerçek 4 faz sistemi (Yeni→Doğrulanmış→Estelongy Hekimi→Uzman), `clinic_accreditation` cache'siz on-the-fly
-  - **Faz 2b Onboarding:** 4 adımlı banner (profil→müsaitlik→ilk randevu→ilk onay), nitelikli ödüller (rozet/kredi/içerik unlock)
-  - **Faz 2c İçerik CMS:** `editorial_posts` tablosu + `/admin/icerik` admin sayfası + 6 tercihli kart gerçek içerik beslemesi
-  - **Faz 2d Sonuç Vitrini Rıza:** `shared_cases` tablosu + KVKK uyumlu hekim→hasta→hekim akışı + anonimlik seçimi
-  - Eski `KlinikWelcome` ayrı ekranı kaldırıldı, yeni klinikler dashboard'u görüyor (banner aktif)
-- **Bildirim sistemi:** Cron `0 9 * * *` (Hobby plan), `appointment_confirmed` + 24h hatırlatma + `score_update` enqueue. SMS+e-posta (telefon doğrulanmışsa).
-- **Anasayfa auth-aware:** Login varsa "Hesabım" + 3 kapı linkleri direkt destination. Login yoksa "Giriş/Kayıt" + `/giris?next=...`.
-- **Panel 3 kapı:** Skor üstünde Skoru Güncelle / Klinik Randevu Al / Mağaza kartları (anasayfa görsel diliyle paralel).
+- [ ] Webinar (canlı yayın) altyapısı
+- [ ] Firma kapısı — sponsored content, ürün tanıtım, analytics (Allergan/Galderma/Sinclair)
+- [ ] Kore/global eğitmen erişimi (lokalizasyon, alt yazı/çeviri)
+- [ ] Diploma doğrulama (beyan'dan belge yüklemeye geçiş)
+- [ ] Mentörlük (saatlik 1-1) ve vaka takibi
+
+---
+
+## 10. Faz 3 (Vizyoner)
+
+- [ ] Mobil App (React Native / Expo)
+- [ ] Push notification (FCM)
+- [ ] AI fine-tuning
+- [ ] API Platformu · Çoklu dil (EN)
+- [ ] Misafir checkout (geçici şifreyle hesap)
+- [ ] **ELS — Estelongy Longevity Standartları** (akreditasyon kuruluşu, asıl moat)
+
+---
+
+# ✅ Tamamlanan & Kararlı Çalışan (Referans Özet)
+
+> Bu modüller production'da, denenmiş ve sorunsuz. Detayları yukarıdaki mimari bölümlerinde.
+
+**Auth & Kayıt:**
+- 4 rol kayıt akışı: Hasta / Klinik / Satıcı / Sağlık Profesyoneli — hepsi SMS OTP zorunlu
+- Merkezi güvenlik politikası (`signup-policy.ts`): disposable email blok + IP rate-limit
+- Supabase Auth + service-role admin user creation
+- SMS OTP (Netgsm + Upstash) production, OTP rate-limit (3dk/saat)
+- Çıkış butonu sidebar altında (her sayfada erişilebilir)
+
+**Hasta Tarafı:**
+- 3 bölgeli panel (Skor/CTA/Grid)
+- Yeni Analiz (gpt-5.4-mini Vision + EA)
+- Longevity Anketi (10 soru, 2 aşamalı: hasta 5 + klinik 5)
+- Skor merkezi `/skor` (Anket/Randevu/Ürün modal kartları)
+- Geçmişim — journey sistemi + ZiyaretKarti birleşik akış
+- Hesabım (profil + telefon SMS + şifre + hesap pasifleştir)
+- Sipariş/İade/Adres yönetimi
+- Referral + leaderboard
+- 18+ doğum yılı kontrolü, KVKK/sözleşme onayı
+
+**Sağlık Profesyoneli:**
+- Beyan bazlı kayıt (ünvan + uzmanlık + kurum)
+- Emerald tema panel (analiz/randevu gizli, akademi/mağaza odaklı)
+- Akademi kurs satın alma + izleme
+
+**Klinik Tarafı:**
+- Klinik Panel V2 — 3 katmanlı dashboard (ŞIMDI/BU AY/SENIN SEÇTIKLERIN)
+- Sidebar Gmail tarzı hover-expand + pin
+- Akreditasyon (4 faz) + Onboarding (4 adım banner)
+- Editöryel CMS + 6 tercihli kart sistemi
+- Sonuç Vitrini KVKK rıza akışı (`shared_cases`)
+- Takvim 7 filter pill + inline aksiyonlar
+- 6 adımlı KlinikAkisWizard (Promise.all yok, race-safe)
+- Hasta detay + ZiyaretKarti birleşik akış
+- Jeton (kredi) sistemi + Stripe Checkout (EUR)
+- Eğitmen başvuru + paket/video CRUD + publish
+
+**Satıcı Tarafı:**
+- Ürün/stok/sipariş/kazanç/iade/ödeme hesabı
+- Stripe Connect (test mode aktif, live KYC bekliyor)
+- Çoklu satıcı transfer (destination charge OR manual transfer)
+
+**Akademi MVP:**
+- Public discovery + paket detay + Stripe checkout + webhook
+- `/panel/kurslarim` listesi + Cloudflare Stream player + ilerleme
+- Kalite skoru cron (Bayesian shrinkage)
+- Eğitmen başvuru + onay + paket/video yönetim
+- %70/%30 split, manuel IBAN transfer
+
+**Mağaza:**
+- Ürün listesi + detay + sepet + checkout + sipariş takibi
+- İade sistemi + kupon + referral komisyon
+
+**Admin:**
+- Klinik/Satıcı onay + Eğitmen başvuru onay
+- Editöryel CMS (`/admin/icerik`)
+- Kullanıcı/ürün/kupon/iade yönetim
+
+**Bildirim:**
+- Cron `0 9 * * *` (Hobby) — appointment_confirmed + 24h hatırlatma + score_update
+- Email (Resend) + SMS (Netgsm)
+- Welcome email 4 rol için
+
+**Altyapı:**
+- Production branch `claude/priceless-ellis` → `estelongy-clean.vercel.app`
+- Stripe webhook (jeton + marketplace + akademi)
+- Supabase RLS politikaları
+- Sentry config dosyaları (DSN bekliyor)
+- SEO altyapısı (JSON-LD, sitemap, manifest, robots, breadcrumbs) — dış kayıt bekliyor
