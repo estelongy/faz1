@@ -273,6 +273,52 @@ quality_score = avg_rating × 12 + min(purchases,200)/200 × 20 + completion × 
 
 ---
 
+## Admin Güvenliği (Canlı)
+
+- **Admin login → SMS OTP zorunlu** (canlı). Şifre doğru → telefon kayıtlıysa /giris/admin-otp'ye yönlendir → SMS kod → 30dk Upstash session.
+- `src/lib/admin-otp.ts` — markVerified/isVerified/isFresh helper'ları
+- `/api/admin-otp/{send,verify}` — telefon DB'den okunur (kullanıcı veremez)
+- Middleware: `/admin/*` için `admin_otp:verified:<userId>` Upstash key zorunlu
+- `/admin/hesap` — şifre değiştir + telefon görüntüle (maskeli)
+- 2 admin: estelongy@gmail.com (+9054*****003) ve dr.izzetgok@gmail.com (+9054*****003) — ikisinin de telefonu doğrulanmış
+
+---
+
+## Güvenlik Yapılacaklar (Backlog — öncelik sırası)
+
+### A. Yarım gün — yüksek etki
+- **A1. Step-up auth** — kritik admin aksiyonlarında son 5 dk taze SMS şartı. `set_user_role`, vendor onay, `app_settings`, toplu silme. `isAdminOtpFresh()` helper hazır, sadece wrapper. ~2 saat
+- **A2. Login rate limit** — `/giris` IP başına dakikada 10 yanlış deneme → 15 dk kilit. Upstash Ratelimit. ~1 saat
+- **A3. Security headers** — `next.config.js` üzerinden CSP, HSTS, X-Frame-Options DENY, X-Content-Type-Options nosniff. ~2 saat
+
+### B. Sprint B — Vendor KYC (1-2 gün)
+Vendor başvuru formu ve `vendors` tablosu derinleştirme:
+- Vergi levhası, imza sirküleri, IBAN + banka onayı, KEP adresi
+- Marka tescil (kozmetik), ITS belgesi (sarf), üretim/ithal izni
+- Sözleşme onayı (KVKK + satıcı kontratı)
+- Vendor için SMS OTP
+- DB: `documents` JSONB + Supabase Storage bucket
+- Admin onay kartında belge önizleme (tıkla aç)
+- Kategori bazlı zorunlu belge listesi
+
+### C. Hafta içi — orta efor
+- **Audit log yazımı** — rol değişimi, vendor onay, ürün/hesap silme, app_settings → `audit_logs` tablosuna kim/ne/IP/ne zaman. ~3 saat
+- **Hesap silme cascade** (KVKK gereği) — gerçek silme tüm bağımlı tablolar + auth.users. ~4 saat
+- **E-posta değiştirme akışı** — eski + yeni adresten çift onay. ~4 saat
+- **Storage bucket validasyonu** — magic byte check, max boyut, MIME whitelist. ~1 saat
+- **Failed login → e-posta uyarısı** — admin'e ve hesap sahibine. ~2 saat
+- **Şifre min 8 + breached password check** — haveibeenpwned API (k-anonymity). ~2 saat
+
+### D. Sonraki sprint — daha derin
+- **TOTP** (Google Authenticator) — SMS bağımlılığını kaldır. otplib + QR + recovery code listesi. ~6 saat
+- **RLS otomatik pen test** — her tablo için "kullanıcı sadece kendi datasına erişebiliyor mu" otomatik test seti (CI). ~1 gün
+- **`security.txt` + bug bounty politikası**. ~1 saat
+- **Stripe Live mode + 3DS zorunlu** — Vestoriq Estonya KYC bekliyor. ~4 saat
+- **KVKK politika sayfası + veri saklama süreleri** (yazılı). ~4 saat
+- **Supabase Site URL whitelist düzelt** — reset linklerinin eski preview URL'lerine gitmesi sorunu (manuel: Dashboard → Auth → URL Configuration)
+
+---
+
 ## Ziyaret Zaman Çizelgesi
 
 Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel/analizlerim`) tarafında ziyaret bazlı birleşik kart akışı.
