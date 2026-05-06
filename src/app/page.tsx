@@ -120,8 +120,12 @@ export default async function Home() {
                 className="hidden sm:block text-slate-400 hover:text-white text-sm transition-colors">
                 Gençlik Rehberi
               </Link>
+              <Link href="/akademi"
+                className="hidden sm:flex items-center gap-1 text-slate-400 hover:text-emerald-300 text-sm transition-colors">
+                <span>🎓</span> Akademi
+              </Link>
               <Link href="/klinik/basvur"
-                className="hidden md:block text-slate-400 hover:text-white text-sm transition-colors">
+                className="hidden lg:block text-slate-400 hover:text-white text-sm transition-colors">
                 Klinik Başvurusu
               </Link>
               {isLoggedIn ? (
