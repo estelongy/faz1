@@ -41,25 +41,44 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
   const { data: packages } = await query
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
+    <>
       {/* Hero */}
       <section className="border-b border-slate-800 bg-slate-900/60">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-xs text-slate-500 mb-4">
+            <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
+            <span>›</span>
+            <span className="text-slate-400">Klinik Mağazası</span>
+            <span>›</span>
+            <span className="text-slate-300">Akademi</span>
+          </nav>
+
+          {/* Üst kavram — Klinik Mağazası */}
+          <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-2">
+            🛒 Estelongy Klinik Mağazası
+          </p>
           <div className="flex items-center gap-3 mb-3">
             <span className="text-3xl">🎓</span>
-            <h1 className="text-3xl sm:text-4xl font-bold">Estelongy Akademi</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold">Akademi — Eğitim Paketleri</h1>
           </div>
           <p className="text-slate-400 text-base sm:text-lg max-w-2xl mb-4">
-            Sektörün en deneyimli hekimlerinden video eğitim paketleri. Tek seferlik ödeme, ömür boyu erişim.
+            Sektörün KOL hekimlerinden video eğitim paketleri. Tek seferlik ödeme, ömür boyu erişim.
           </p>
-          <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-emerald-300 text-xs leading-relaxed">
-            <span className="shrink-0">🔒</span>
-            <span>
-              Bu içerik <strong>sağlık profesyonelleri ve klinikler</strong> içindir. Satın alma için
-              {' '}
-              <Link href="/kurumsal/saglik-profesyoneli/kayit" className="underline hover:text-white">Sağlık Profesyoneli kaydı</Link>
-              {' '}gerekir.
-            </span>
+
+          <div className="flex flex-wrap gap-2">
+            <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-emerald-300 text-xs leading-relaxed">
+              <span className="shrink-0">🔒</span>
+              <span>
+                <strong>Sağlık profesyonelleri ve klinikler</strong> içindir.{' '}
+                <Link href="/kurumsal/saglik-profesyoneli/kayit" className="underline hover:text-white">Sağlık Profesyoneli kaydı</Link>
+                {' '}gerekir.
+              </span>
+            </div>
+            <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-slate-800/50 border border-slate-700 text-slate-400 text-xs leading-relaxed">
+              <span className="shrink-0">🚀</span>
+              <span>Yakında: <strong>tıbbi ürün, dolgu, sarf malzeme</strong> kategorileri</span>
+            </div>
           </div>
         </div>
       </section>
@@ -185,6 +204,6 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
           </div>
         )}
       </section>
-    </main>
+    </>
   )
 }

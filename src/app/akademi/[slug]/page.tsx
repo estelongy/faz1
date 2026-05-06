@@ -72,14 +72,14 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
   const categoryLabel = AKADEMI_KATEGORILER.find(c => c.value === pkg.category)?.label ?? pkg.category
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <Link
-          href="/akademi"
-          className="inline-flex items-center text-slate-400 hover:text-white text-sm mb-6 transition-colors"
-        >
-          ← Akademi&apos;ye Dön
-        </Link>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6">
+          <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
+          <span>›</span>
+          <Link href="/akademi" className="hover:text-white transition-colors">Klinik Mağazası — Akademi</Link>
+          <span>›</span>
+          <span className="text-slate-300 truncate">{pkg.title}</span>
+        </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Sol: Paket görseli + bilgiler */}
@@ -115,11 +115,16 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
 
               <h1 className="text-2xl sm:text-3xl font-bold mb-3">{pkg.title}</h1>
 
-              {clinic && (
-                <p className="text-slate-400 text-sm">
-                  Eğitmen: <span className="text-emerald-400 font-medium">{clinic.name}</span>
+              <div className="space-y-1 text-sm">
+                <p className="text-slate-400">
+                  Satıcı: <span className="text-white font-medium">Estelongy Klinik Mağazası</span>
                 </p>
-              )}
+                {clinic && (
+                  <p className="text-slate-400">
+                    İçerik Hazırlayan: <span className="text-emerald-400 font-medium">{clinic.name}</span>
+                  </p>
+                )}
+              </div>
             </div>
 
             {pkg.description && (
@@ -233,6 +238,5 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
           </div>
         </div>
       </div>
-    </main>
   )
 }

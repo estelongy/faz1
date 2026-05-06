@@ -46,14 +46,14 @@ const HASTA_NAV: NavGroup[] = [
   },
 ]
 
-// Sağlık Profesyoneli — analiz/randevu YOK, Akademi/Mağaza/Topluluk var
+// Sağlık Profesyoneli — analiz/randevu YOK, Klinik Mağazası/Topluluk var
 const HEALTH_PRO_NAV: NavGroup[] = [
   {
     items: [
       { href: '/panel',                icon: '🏠', label: 'Panel', exact: true },
       { href: '/panel/kurslarim',      icon: '🎓', label: 'Kurslarım', badge: 'new' },
-      { href: '/akademi',              icon: '📚', label: 'Akademi Keşfet' },
-      { href: '/magaza',               icon: '🛒', label: 'Mağaza' },
+      { href: '/akademi',              icon: '🛒', label: 'Klinik Mağaza' },
+      { href: '/magaza',               icon: '🧴', label: 'Hasta Mağaza' },
     ],
   },
   {
