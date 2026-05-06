@@ -120,10 +120,6 @@ export default async function Home() {
                 className="hidden sm:block text-slate-400 hover:text-white text-sm transition-colors">
                 Gençlik Rehberi
               </Link>
-              <Link href="/akademi"
-                className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
-                <span>🛒</span> Klinik Mağaza
-              </Link>
               <Link href="/klinik/basvur"
                 className="hidden lg:block text-slate-400 hover:text-white text-sm transition-colors">
                 Klinik Başvurusu
@@ -304,28 +300,6 @@ export default async function Home() {
             </Link>
           </div>
 
-          {/* Klinik Mağazası CTA — sağlık profesyonelleri ve klinikler için */}
-          <div className="mt-10 max-w-3xl mx-auto">
-            <Link
-              href="/akademi"
-              className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-emerald-500/10 hover:border-emerald-400/60 transition-all"
-            >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shrink-0">
-                🛒
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-white font-bold text-sm sm:text-base">
-                  <span className="text-emerald-400">Estelongy Klinik Mağazası</span> — Sağlık profesyonelleri için
-                </p>
-                <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                  Şu an: <strong>Akademi</strong> eğitim paketleri. Yakında: tıbbi ürün, dolgu, sarf malzemeleri.
-                </p>
-              </div>
-              <svg className="w-5 h-5 text-emerald-400 group-hover:translate-x-0.5 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
         </div>
       </section>
 

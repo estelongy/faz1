@@ -49,14 +49,14 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
           <nav className="flex items-center gap-2 text-xs text-slate-500 mb-4">
             <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
             <span>›</span>
-            <span className="text-slate-400">Klinik Mağazası</span>
+            <span className="text-slate-400">EsteStore</span>
             <span>›</span>
             <span className="text-slate-300">Akademi</span>
           </nav>
 
-          {/* Üst kavram — Klinik Mağazası */}
+          {/* Üst kavram — EsteStore */}
           <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-2">
-            🛒 Estelongy Klinik Mağazası
+            🛒 EsteStore
           </p>
           <div className="flex items-center gap-3 mb-3">
             <span className="text-3xl">🎓</span>

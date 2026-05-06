@@ -76,7 +76,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
         <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6">
           <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
           <span>›</span>
-          <Link href="/akademi" className="hover:text-white transition-colors">Klinik Mağazası — Akademi</Link>
+          <Link href="/akademi" className="hover:text-white transition-colors">EsteStore — Akademi</Link>
           <span>›</span>
           <span className="text-slate-300 truncate">{pkg.title}</span>
         </nav>
@@ -117,7 +117,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
 
               <div className="space-y-1 text-sm">
                 <p className="text-slate-400">
-                  Satıcı: <span className="text-white font-medium">Estelongy Klinik Mağazası</span>
+                  Satıcı: <span className="text-white font-medium">Estelongy EsteStore</span>
                 </p>
                 {clinic && (
                   <p className="text-slate-400">
