@@ -121,7 +121,7 @@ export default async function Home() {
                 Gençlik Rehberi
               </Link>
               <Link href="/akademi"
-                className="hidden sm:flex items-center gap-1 text-slate-400 hover:text-emerald-300 text-sm transition-colors">
+                className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
                 <span>🎓</span> Akademi
               </Link>
               <Link href="/klinik/basvur"
@@ -300,6 +300,29 @@ export default async function Home() {
               Nasıl çalışır?
               <svg className="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </Link>
+          </div>
+
+          {/* Sağlık profesyoneli için Akademi CTA */}
+          <div className="mt-10 max-w-3xl mx-auto">
+            <Link
+              href="/akademi"
+              className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-emerald-500/10 hover:border-emerald-400/60 transition-all"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shrink-0">
+                🎓
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-bold text-sm sm:text-base">
+                  Sağlık profesyoneli misin? <span className="text-emerald-400">Estelongy Akademi</span>
+                </p>
+                <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                  Sektörün KOL hekimlerinden video eğitim paketleri. Tek seferlik ödeme, ömür boyu erişim.
+                </p>
+              </div>
+              <svg className="w-5 h-5 text-emerald-400 group-hover:translate-x-0.5 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
           </div>
