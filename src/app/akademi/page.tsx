@@ -49,9 +49,18 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
             <span className="text-3xl">🎓</span>
             <h1 className="text-3xl sm:text-4xl font-bold">Estelongy Akademi</h1>
           </div>
-          <p className="text-slate-400 text-base sm:text-lg max-w-2xl">
+          <p className="text-slate-400 text-base sm:text-lg max-w-2xl mb-4">
             Sektörün en deneyimli hekimlerinden video eğitim paketleri. Tek seferlik ödeme, ömür boyu erişim.
           </p>
+          <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-emerald-300 text-xs leading-relaxed">
+            <span className="shrink-0">🔒</span>
+            <span>
+              Bu içerik <strong>sağlık profesyonelleri ve klinikler</strong> içindir. Satın alma için
+              {' '}
+              <Link href="/kurumsal/saglik-profesyoneli/kayit" className="underline hover:text-white">Sağlık Profesyoneli kaydı</Link>
+              {' '}gerekir.
+            </span>
+          </div>
         </div>
       </section>
 

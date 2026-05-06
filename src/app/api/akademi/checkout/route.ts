@@ -28,6 +28,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Giriş yapmanız gerekiyor.' }, { status: 401 })
     }
 
+    // Rol gate: sadece sağlık profesyoneli + klinik satın alabilir
+    const role = (user.app_metadata as Record<string, string>)?.role
+    if (role !== 'health_professional' && role !== 'clinic') {
+      return NextResponse.json({
+        error: 'Akademi eğitimleri sağlık profesyonelleri ve klinikler içindir. Sağlık Profesyoneli olarak kayıt olmak için /kurumsal/saglik-profesyoneli/kayit adresine gidin.',
+      }, { status: 403 })
+    }
+
     const { package_id } = await req.json() as { package_id?: string }
     if (!package_id) {
       return NextResponse.json({ error: 'Paket ID eksik.' }, { status: 400 })

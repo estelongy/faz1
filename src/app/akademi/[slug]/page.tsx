@@ -55,7 +55,9 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
   // Mevcut kullanıcı paketi satın aldı mı?
   const { data: { user } } = await supabase.auth.getUser()
   let alreadyOwned = false
+  let userRole: string | null = null
   if (user) {
+    userRole = (user.app_metadata as Record<string, string>)?.role ?? null
     const { data: purchase } = await supabase
       .from('course_purchases')
       .select('id, status')
@@ -65,6 +67,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
       .maybeSingle()
     alreadyOwned = !!purchase
   }
+  const canBuy = userRole === 'health_professional' || userRole === 'clinic'
 
   const categoryLabel = AKADEMI_KATEGORILER.find(c => c.value === pkg.category)?.label ?? pkg.category
 
@@ -185,15 +188,27 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
                 >
                   Kursumu İzle →
                 </Link>
-              ) : user ? (
-                <BuyButton packageId={pkg.id} />
-              ) : (
+              ) : !user ? (
                 <Link
                   href={`/giris?next=${encodeURIComponent(`/akademi/${pkg.slug}`)}`}
                   className="block w-full text-center py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors"
                 >
                   Satın Almak için Giriş Yap
                 </Link>
+              ) : canBuy ? (
+                <BuyButton packageId={pkg.id} />
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs leading-relaxed">
+                    Bu eğitim sağlık profesyonelleri ve klinikler içindir. Satın almak için Sağlık Profesyoneli kaydı oluşturun.
+                  </div>
+                  <Link
+                    href="/kurumsal/saglik-profesyoneli/kayit"
+                    className="block w-full text-center py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors"
+                  >
+                    Sağlık Profesyoneli Kaydı →
+                  </Link>
+                </div>
               )}
 
               <div className="pt-3 border-t border-slate-800 space-y-2 text-xs text-slate-400">
