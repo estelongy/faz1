@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import KlinikAkisWizard from '@/components/KlinikAkisWizard'
@@ -41,6 +42,8 @@ async function kabulEt(apptId: string): Promise<{ ok: boolean; error?: string }>
     .eq('id', apptId)
     .eq('clinic_id', clinic.id)
 
+  revalidatePath('/klinik/panel/takvim')
+  revalidatePath('/klinik/panel')
   return { ok: true }
 }
 
@@ -255,21 +258,32 @@ async function finalOnay(apptId: string, analysisId: string, aralikSkor: number,
       }, hekimSkor)
     : Math.min(100, Math.round((aralikSkor * 0.85) + (hekimSkor * 0.15)))
 
-  await Promise.all([
-    supabase.from('analyses').update({
-      final_overall: Math.round(finalScore),
-      clinic_id: clinic.id,
-      status: 'completed',
-      completed_at: new Date().toISOString(),
-    }).eq('id', analysisId),
-
-    supabase.from('appointments').update({
+  // 1) Önce appointment'ı tamamla — başarısız olursa redirect etme, durdur
+  const { data: apptUpdated, error: apptErr } = await supabase
+    .from('appointments')
+    .update({
       status: 'completed',
       completed_at: new Date().toISOString(),
       clinic_notes: clinicNotes || null,
       final_score_id: s?.id ?? null,
-    }).eq('id', apptId).eq('clinic_id', clinic.id),
-  ])
+    })
+    .eq('id', apptId)
+    .eq('clinic_id', clinic.id)
+    .select('id')
+
+  if (apptErr || !apptUpdated || apptUpdated.length === 0) {
+    console.error('finalOnay appointment update failed:', { apptErr, apptUpdated, apptId, clinicId: clinic.id })
+    throw new Error(`Randevu güncellenemedi: ${apptErr?.message ?? 'kayıt bulunamadı'}`)
+  }
+
+  // 2) Analizi tamamla
+  const { error: anErr } = await supabase.from('analyses').update({
+    final_overall: Math.round(finalScore),
+    clinic_id: clinic.id,
+    status: 'completed',
+    completed_at: new Date().toISOString(),
+  }).eq('id', analysisId)
+  if (anErr) console.error('finalOnay analysis update failed:', anErr)
 
   if (s) {
     await supabase.from('scores').update({
@@ -304,6 +318,8 @@ async function finalOnay(apptId: string, analysisId: string, aralikSkor: number,
     console.error('Score notification error:', e)
   }
 
+  revalidatePath('/klinik/panel/takvim')
+  revalidatePath('/klinik/panel')
   redirect('/klinik/panel')
 }
 
