@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { ensureAdminOtpFresh } from '@/lib/admin-otp'
 import UrunOnayActions from './UrunOnayActions'
 
 export const metadata: Metadata = { title: 'Ürün Onayları — Admin' }
@@ -15,6 +16,9 @@ async function urunOnayAction(productId: string, status: 'approved' | 'rejected'
   if (!user) redirect('/giris')
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role !== 'admin') redirect('/panel')
+
+  // Ürün onay/red kritik — yayınlanırsa görünür
+  await ensureAdminOtpFresh(user.id, '/admin/urunler')
 
   await supabase
     .from('products')

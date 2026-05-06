@@ -11,11 +11,12 @@ export const metadata = {
 }
 
 interface Props {
-  searchParams: Promise<{ next?: string }>
+  searchParams: Promise<{ next?: string; reason?: string }>
 }
 
 export default async function AdminOtpPage({ searchParams }: Props) {
-  const { next } = await searchParams
+  const { next, reason } = await searchParams
+  const isStepUp = reason === 'step-up'
   const safeNext = next && next.startsWith('/admin') ? next : '/admin'
 
   const supabase = await createClient()
@@ -25,10 +26,17 @@ export default async function AdminOtpPage({ searchParams }: Props) {
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role !== 'admin') redirect('/panel')
 
-  // Zaten OTP doğrulanmışsa direkt admin'e gönder
-  if (await isAdminOtpVerified(user.id)) {
+  // Step-up DEĞİLse ve OTP zaten doğrulanmışsa direkt admin'e gönder
+  // Step-up modunda zaten "fresh" değil → tazeleme istenir, atlama
+  if (!isStepUp && (await isAdminOtpVerified(user.id))) {
     redirect(safeNext)
   }
+
+  const title = isStepUp ? 'Tekrar Doğrula' : 'Admin Doğrulama'
+  const description = isStepUp
+    ? 'Bu kritik aksiyon için son SMS doğrulamanın üzerinden 5 dakikadan fazla geçmiş. Lütfen tekrar onay kodunuzu girin.'
+    : 'Yönetici paneline girmek için kayıtlı telefonunuza gönderilen kodu girin.'
+  const badgeLabel = isStepUp ? 'Step-up Doğrulama' : 'Ek Güvenlik'
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -41,19 +49,19 @@ export default async function AdminOtpPage({ searchParams }: Props) {
               </svg>
             </div>
             <p className="inline-block px-2.5 py-0.5 mb-3 text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-full">
-              Ek Güvenlik
+              {badgeLabel}
             </p>
-            <h1 className="text-2xl font-bold text-white">Admin Doğrulama</h1>
-            <p className="text-slate-400 text-sm mt-2">
-              Yönetici paneline girmek için kayıtlı telefonunuza gönderilen kodu girin.
-            </p>
+            <h1 className="text-2xl font-bold text-white">{title}</h1>
+            <p className="text-slate-400 text-sm mt-2">{description}</p>
           </div>
 
           <AdminOtpForm next={safeNext} />
 
           <div className="mt-6 pt-4 border-t border-slate-700 text-center">
             <p className="text-slate-500 text-xs">
-              Bu adım her admin oturumu için bir kez gereklidir. Doğrulama 30 dakika geçerlidir.
+              {isStepUp
+                ? 'Doğrulamadan sonra ilgili sayfaya geri yönlendirileceksin. Aksiyonu tekrar tıklamak yeterli.'
+                : 'Bu adım her admin oturumu için bir kez gereklidir. Doğrulama 30 dakika geçerlidir; kritik aksiyonlar için 5 dakikadan eski doğrulama tazelenir.'}
             </p>
           </div>
         </div>

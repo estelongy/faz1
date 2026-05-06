@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { ensureAdminOtpFresh } from '@/lib/admin-otp'
 
 export const metadata: Metadata = {
   title: 'Kullanıcılar',
@@ -40,6 +41,10 @@ async function changeRole(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+
+  // KRİTİK aksiyon — son 5 dk içinde SMS doğrulanmış olmalı
+  await ensureAdminOtpFresh(user.id, '/admin/kullanicilar')
+
   const userId = formData.get('userId') as string
   const role = formData.get('role') as UserRole
   // app_metadata.role tek kaynak — set_user_role RPC profiles.role'u da senkronlar
@@ -52,6 +57,10 @@ async function toggleActive(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+
+  // Hesap aktif/pasif yapma — kritik
+  await ensureAdminOtpFresh(user.id, '/admin/kullanicilar')
+
   const userId = formData.get('userId') as string
   const current = formData.get('current') === 'true'
   await supabase.from('profiles').update({ is_active: !current }).eq('id', userId)

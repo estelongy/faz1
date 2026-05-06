@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { redirect } from 'next/navigation'
+import { ensureAdminOtpFresh } from '@/lib/admin-otp'
 
 export const metadata: Metadata = {
   title: 'Satıcılar',
@@ -52,6 +53,10 @@ async function updateVendor(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+
+  // KRİTİK — vendor onay/red para akışını açar
+  await ensureAdminOtpFresh(user.id, '/admin/saticilar')
+
   const vendorId = formData.get('vendorId') as string
   const status = formData.get('status') as ApprovalStatus
   const isActive = status === 'approved'

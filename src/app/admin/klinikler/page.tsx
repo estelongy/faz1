@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { ensureAdminOtpFresh } from '@/lib/admin-otp'
 
 export const metadata: Metadata = {
   title: 'Klinikler',
@@ -40,6 +41,7 @@ async function updateClinic(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+  await ensureAdminOtpFresh(user.id, '/admin/klinikler')
   const clinicId = formData.get('clinicId') as string
   const status = formData.get('status') as ApprovalStatus
   const isActive = status === 'approved'
@@ -92,6 +94,7 @@ async function toggleEducator(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+  await ensureAdminOtpFresh(user.id, '/admin/klinikler')
 
   const clinicId = formData.get('clinicId') as string
   const makeEducator = formData.get('makeEducator') === 'true'
@@ -116,6 +119,7 @@ async function decideEducatorApplication(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+  await ensureAdminOtpFresh(user.id, '/admin/klinikler')
 
   const clinicId = formData.get('clinicId') as string
   const decision = formData.get('decision') as 'approve' | 'reject'
@@ -153,6 +157,7 @@ async function addJeton(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+  await ensureAdminOtpFresh(user.id, '/admin/klinikler')
 
   const clinicId = formData.get('clinicId') as string
   const amount   = parseInt(formData.get('amount') as string, 10)
