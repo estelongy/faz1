@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
+import { validateEmail, validatePassword, checkSignupRateLimit } from '@/lib/signup-policy'
 
 export async function POST(req: NextRequest) {
   try {
+    // IP rate-limit (saatte 3 kayıt/IP)
+    const rl = await checkSignupRateLimit(req.headers)
+    if (!rl.ok) {
+      return NextResponse.json({ error: rl.reason }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } })
+    }
+
     const body = await req.json()
     const {
       email, password, phone, first_name, last_name, birth_year, phone_verified,
@@ -12,6 +19,10 @@ export async function POST(req: NextRequest) {
     if (!email || !password || !phone || !first_name) {
       return NextResponse.json({ error: 'Eksik alanlar.' }, { status: 400 })
     }
+    const emailCheck = validateEmail(email)
+    if (!emailCheck.ok) return NextResponse.json({ error: emailCheck.reason }, { status: 400 })
+    const passCheck = validatePassword(password)
+    if (!passCheck.ok) return NextResponse.json({ error: passCheck.reason }, { status: 400 })
 
     const admin = createServiceClient()
     const fullName = `${first_name}${last_name ? ' ' + last_name : ''}`

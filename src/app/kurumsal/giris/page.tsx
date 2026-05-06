@@ -5,19 +5,32 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { pathForRole } from '@/lib/auth-redirect'
+import PhoneOtpStep from '@/components/PhoneOtpStep'
 
 type AccountType = 'klinik' | 'satici' | 'saglik_profesyoneli' | null
+type Step = 'form' | 'otp'
 
 export default function KurumsalGirisPage() {
   const router = useRouter()
   const [accountType, setAccountType] = useState<AccountType>(null)
   const [mode, setMode] = useState<'giris' | 'kayit'>('giris')
-  const [email, setEmail] = useState('')
+  const [step, setStep] = useState<Step>('form')
+
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [phone, setPhone]       = useState('')
+
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [emailSent, setEmailSent] = useState(false)
+  const [error, setError]     = useState<string | null>(null)
+  const [otpPhone, setOtpPhone] = useState('')
+
+  function formatPhone(raw: string) {
+    const d = raw.replace(/\D/g, '')
+    if (d.startsWith('90')) return `+${d}`
+    if (d.startsWith('0')) return `+90${d.slice(1)}`
+    return `+90${d}`
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -34,7 +47,6 @@ export default function KurumsalGirisPage() {
       }
       const role = (loginData.user?.app_metadata as Record<string, string>)?.role
 
-      // Rol atanmışsa direkt ilgili panele git
       if (role === 'admin' || role === 'clinic' || role === 'vendor' || role === 'health_professional') {
         router.push(pathForRole(role))
         router.refresh()
@@ -42,79 +54,81 @@ export default function KurumsalGirisPage() {
       }
 
       // Rol yok (user) → seçilen hesap tipine göre başvuru akışı
-      if (accountType === 'klinik') {
-        router.push('/klinik/basvur')
-      } else if (accountType === 'satici') {
-        router.push('/satici/basvur')
-      } else if (accountType === 'saglik_profesyoneli') {
-        // Halihazırda 'user' rolüyle giriş yapıyorsa: panele yönlendir,
-        // sağlık profesyoneli rolüne geçmek için yeni kayıt gerekli
-        router.push('/panel')
-      } else {
-        router.push('/panel')
-      }
+      if (accountType === 'klinik') router.push('/klinik/basvur')
+      else if (accountType === 'satici') router.push('/satici/basvur')
+      else router.push('/panel')
       router.refresh()
-    } else {
-      if (password.length < 6) { setError('Şifre en az 6 karakter olmalıdır.'); setLoading(false); return }
-
-      // Sağlık Profesyoneli — service-role API ile rol doğrudan set ediliyor
-      if (accountType === 'saglik_profesyoneli') {
-        const res = await fetch('/api/saglik-profesyoneli/kayit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, full_name: fullName }),
-        })
-        const result = await res.json()
-        if (!res.ok) {
-          setError(result.error || 'Hesap oluşturulamadı.')
-          setLoading(false)
-          return
-        }
-        // Hesap oluştu (email_confirm:true) → direkt giriş + panele yönlendir
-        const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password })
-        if (signInErr) {
-          setError('Hesap oluşturuldu ancak giriş yapılamadı. Lütfen giriş yapmayı deneyin.')
-          setLoading(false)
-          setMode('giris')
-          return
-        }
-        router.push('/panel')
-        router.refresh()
-        return
-      }
-
-      // Klinik / Satıcı — normal signUp + e-posta doğrulama + başvuru akışı
-      const { data, error: err } = await supabase.auth.signUp({
-        email, password,
-        options: { data: { full_name: fullName }, emailRedirectTo: `${location.origin}/auth/callback` },
-      })
-      if (err) { setError(err.message); setLoading(false); return }
-      if (data.user && !data.session) {
-        setEmailSent(true)
-        setLoading(false)
-        return
-      }
-      router.push(accountType === 'klinik' ? '/klinik/basvur' : '/satici/basvur')
-      router.refresh()
+      return
     }
+
+    // ─── Kayıt akışı ────────────────────────────────────────────────
+    // Sağlık Profesyoneli: dedicated sayfa
+    if (accountType === 'saglik_profesyoneli') {
+      router.push('/kurumsal/saglik-profesyoneli/kayit')
+      return
+    }
+
+    // Klinik / Satıcı — form validation, sonra SMS OTP'ye geç
+    if (!fullName.trim()) { setError('Ad Soyad zorunludur.'); setLoading(false); return }
+    if (phone.replace(/\D/g, '').length < 10) { setError('Geçerli bir telefon numarası girin.'); setLoading(false); return }
+    if (password.length < 6) { setError('Şifre en az 6 karakter olmalıdır.'); setLoading(false); return }
+
+    setOtpPhone(formatPhone(phone))
+    setStep('otp')
+    setLoading(false)
   }
 
-  if (emailSent) return (
+  // OTP doğrulandıktan SONRA hesap oluştur
+  async function handleOtpVerified() {
+    setError(null)
+    setLoading(true)
+    const e164 = formatPhone(phone)
+
+    const res = await fetch('/api/kurumsal/kayit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        password,
+        phone: e164,
+        full_name: fullName.trim(),
+        account_type: accountType,
+        phone_verified: true,
+      }),
+    })
+    const result = await res.json()
+    if (!res.ok) {
+      setError(result.error || 'Hesap oluşturulamadı.')
+      setLoading(false)
+      setStep('form')
+      return
+    }
+
+    const supabase = createClient()
+    const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password })
+    setLoading(false)
+    if (signInErr) {
+      setError('Hesap oluşturuldu ancak otomatik giriş başarısız. Lütfen giriş yapmayı deneyin.')
+      setStep('form')
+      setMode('giris')
+      return
+    }
+    router.push(accountType === 'klinik' ? '/klinik/basvur' : '/satici/basvur')
+    router.refresh()
+  }
+
+  // ─── SMS OTP ekranı ──────────────────────────────────────────────────
+  if (step === 'otp') return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 text-center">
-          <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2">E-postanızı doğrulayın</h2>
-          <p className="text-slate-400 mb-2"><span className="text-violet-400 font-medium">{email}</span> adresine doğrulama bağlantısı gönderdik.</p>
-          <p className="text-slate-500 text-sm mb-6">E-postanızı doğruladıktan sonra giriş yaparak başvurunuza devam edebilirsiniz.</p>
-          <button onClick={() => { setEmailSent(false); setMode('giris') }}
-            className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
-            Giriş Yap
-          </button>
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">
+          <PhoneOtpStep
+            phone={otpPhone}
+            onVerified={handleOtpVerified}
+            onBack={() => { setStep('form'); setError(null) }}
+          />
+          {error && <p className="text-red-400 text-sm text-center mt-4">{error}</p>}
+          {loading && <p className="text-slate-400 text-sm text-center mt-4">Hesap oluşturuluyor…</p>}
         </div>
       </div>
     </main>
@@ -228,47 +242,90 @@ export default function KurumsalGirisPage() {
               }`}>
                 {accountType === 'klinik' ? 'Klinik Hesabı' : accountType === 'satici' ? 'Satıcı Hesabı' : 'Sağlık Profesyoneli'}
               </span>
-              <button onClick={() => setAccountType(null)} className="ml-auto text-slate-500 hover:text-white transition-colors">
+              <button onClick={() => { setAccountType(null); setError(null) }} className="ml-auto text-slate-500 hover:text-white transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
 
-            {/* Giriş / Kayıt toggle */}
-            <div className="flex rounded-xl bg-slate-900 p-1 mb-6">
-              <button onClick={() => setMode('giris')}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${mode === 'giris' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
-                Giriş Yap
-              </button>
-              <button onClick={() => setMode('kayit')}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${mode === 'kayit' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
-                Kayıt Ol
-              </button>
-            </div>
+            {/* Sağlık Profesyoneli için kayıt sayfasına yönlendirme banneri */}
+            {accountType === 'saglik_profesyoneli' && mode === 'kayit' ? (
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-sm text-slate-300 leading-relaxed">
+                  Sağlık profesyoneli kaydı için ünvan, uzmanlık alanı ve beyan bilgileri istenir.
+                  Ayrıntılı kayıt formuna geçin.
+                </div>
+                <Link
+                  href="/kurumsal/saglik-profesyoneli/kayit"
+                  className="block w-full text-center py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl text-sm transition-all"
+                >
+                  Detaylı Kayıt Formuna Git →
+                </Link>
+                <button
+                  onClick={() => setMode('giris')}
+                  className="w-full text-center py-2 text-slate-400 hover:text-white text-sm transition-colors"
+                >
+                  Hesabım var, giriş yap
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Giriş / Kayıt toggle */}
+                <div className="flex rounded-xl bg-slate-900 p-1 mb-6">
+                  <button onClick={() => { setMode('giris'); setError(null) }}
+                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${mode === 'giris' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+                    Giriş Yap
+                  </button>
+                  <button onClick={() => { setMode('kayit'); setError(null) }}
+                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${mode === 'kayit' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+                    Kayıt Ol
+                  </button>
+                </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {mode === 'kayit' && (
-                <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)}
-                  placeholder="Ad Soyad"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
-              )}
-              <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="E-posta"
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
-              <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
-                placeholder="Şifre"
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
-              {error && <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{error}</div>}
-              <button type="submit" disabled={loading}
-                className={`w-full py-3 disabled:opacity-50 text-white font-semibold rounded-xl transition-all text-sm ${
-                  accountType === 'klinik'
-                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500'
-                    : accountType === 'satici'
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400'
-                    : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500'
-                }`}>
-                {loading ? 'Yükleniyor...' : mode === 'giris' ? 'Giriş Yap' : 'Devam Et'}
-              </button>
-            </form>
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  {mode === 'kayit' && (
+                    <>
+                      <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)}
+                        placeholder="Ad Soyad (yetkili)"
+                        className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
+
+                      <div className="flex gap-2">
+                        <div className="flex items-center gap-1.5 px-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 text-sm shrink-0 select-none">
+                          🇹🇷 <span>+90</span>
+                        </div>
+                        <input type="tel" required value={phone}
+                          onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                          placeholder="5xx xxx xx xx"
+                          className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
+                      </div>
+                    </>
+                  )}
+                  <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                    placeholder="E-posta"
+                    className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
+                  <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
+                    placeholder={mode === 'kayit' ? 'Şifre (en az 6 karakter)' : 'Şifre'}
+                    className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
+                  {error && <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{error}</div>}
+                  {mode === 'kayit' && (
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Devam ederek{' '}
+                      <Link href="/hakkinda/sozlesme" target="_blank" className="text-violet-400 hover:text-violet-300 underline">Üyelik Sözleşmesi</Link>
+                      &apos;ni ve{' '}
+                      <Link href="/hakkinda/aydinlatma" target="_blank" className="text-violet-400 hover:text-violet-300 underline">KVKK Aydınlatma Metni</Link>
+                      &apos;ni okuyup kabul etmiş olursunuz. Telefonunuza SMS ile doğrulama kodu gönderilecektir.
+                    </p>
+                  )}
+                  <button type="submit" disabled={loading}
+                    className={`w-full py-3 disabled:opacity-50 text-white font-semibold rounded-xl transition-all text-sm ${
+                      accountType === 'klinik'
+                        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500'
+                        : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400'
+                    }`}>
+                    {loading ? 'Yükleniyor...' : mode === 'giris' ? 'Giriş Yap' : 'SMS Doğrulamaya Geç'}
+                  </button>
+                </form>
+              </>
+            )}
           </div>
         )}
       </div>

@@ -12,6 +12,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role && role !== 'user' && role !== 'health_professional') redirect(pathForRole(role))
 
+  const sidebarRole: 'user' | 'health_professional' = role === 'health_professional' ? 'health_professional' : 'user'
+
   // Profil — isim ve puan için
   const { data: profile } = await supabase
     .from('profiles')
@@ -34,6 +36,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         userName={profile?.full_name ?? user.email ?? null}
         pointsBalance={profile?.points_balance ?? 0}
         hasClinicAccess={hasClinicAccess}
+        role={sidebarRole}
       />
 
       {/* Sidebar collapsed = 72px offset (desktop). Mobile: full width. */}

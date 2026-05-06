@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { signOutAction } from '@/app/panel/actions'
 
 interface NavItem {
   href: string
@@ -17,7 +18,8 @@ interface NavGroup {
   items: NavItem[]
 }
 
-const NAV_GROUPS: NavGroup[] = [
+// Hasta (default) — randevu/analiz/geçmiş + mağaza + topluluk
+const HASTA_NAV: NavGroup[] = [
   {
     items: [
       { href: '/panel',                icon: '🏠', label: 'Panel', exact: true },
@@ -44,15 +46,44 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ]
 
+// Sağlık Profesyoneli — analiz/randevu YOK, Akademi/Mağaza/Topluluk var
+const HEALTH_PRO_NAV: NavGroup[] = [
+  {
+    items: [
+      { href: '/panel',                icon: '🏠', label: 'Panel', exact: true },
+      { href: '/panel/kurslarim',      icon: '🎓', label: 'Kurslarım', badge: 'new' },
+      { href: '/akademi',              icon: '📚', label: 'Akademi Keşfet' },
+      { href: '/magaza',               icon: '🛒', label: 'Mağaza' },
+    ],
+  },
+  {
+    title: 'Yönetim',
+    items: [
+      { href: '/panel/hesabim',        icon: '👤', label: 'Hesabım' },
+      { href: '/panel/siparislerim',   icon: '📦', label: 'Siparişlerim' },
+      { href: '/panel/iadelerim',      icon: '↩', label: 'İadelerim' },
+      { href: '/panel/adreslerim',     icon: '📍', label: 'Adreslerim' },
+    ],
+  },
+  {
+    title: 'Topluluk',
+    items: [
+      { href: '/panel/referral',       icon: '🎁', label: 'Davet & Puan' },
+      { href: '/panel/leaderboard',    icon: '🏆', label: 'Sıralama' },
+    ],
+  },
+]
+
 interface Props {
   userName: string | null
   pointsBalance: number
   hasClinicAccess: boolean
+  role?: 'user' | 'health_professional'
 }
 
 const PIN_KEY = 'estelongy_hasta_sidebar_pinned'
 
-export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess }: Props) {
+export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess, role = 'user' }: Props) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [pinned, setPinned] = useState(false)
@@ -74,6 +105,8 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess 
   }
 
   const expanded = pinned || hovered
+  const NAV_GROUPS = role === 'health_professional' ? HEALTH_PRO_NAV : HASTA_NAV
+  const isHealthPro = role === 'health_professional'
 
   const isActive = (href: string, exact?: boolean) =>
     exact ? pathname === href : pathname === href || pathname.startsWith(href + '/')
@@ -109,14 +142,26 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess 
         {/* Kullanıcı kimlik kartı */}
         <div className="border-b border-slate-800 shrink-0">
           <Link href="/panel" className="flex items-center gap-2.5 p-4 group" onClick={() => setMobileOpen(false)}>
-            <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+              isHealthPro
+                ? 'bg-gradient-to-br from-emerald-500 to-teal-600'
+                : 'bg-gradient-to-br from-violet-500 to-purple-600'
+            }`}>
+              {isHealthPro ? (
+                <span className="text-white text-base">🎓</span>
+              ) : (
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+              )}
             </div>
             <div className={`min-w-0 transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0 lg:hidden'}`}>
-              <p className="text-white font-bold text-sm truncate group-hover:text-violet-400 transition-colors">{userName ?? 'Kullanıcı'}</p>
-              <p className="text-slate-500 text-[10px] uppercase tracking-widest">Estelongy</p>
+              <p className={`font-bold text-sm truncate transition-colors ${
+                isHealthPro ? 'text-white group-hover:text-emerald-400' : 'text-white group-hover:text-violet-400'
+              }`}>{userName ?? 'Kullanıcı'}</p>
+              <p className="text-slate-500 text-[10px] uppercase tracking-widest">
+                {isHealthPro ? 'Sağlık Profesyoneli' : 'Estelongy'}
+              </p>
             </div>
           </Link>
 
@@ -156,7 +201,9 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess 
                       title={!expanded ? item.label : undefined}
                       className={`group/item relative flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm transition-colors ${
                         active
-                          ? 'bg-violet-500/15 text-white border border-violet-500/30'
+                          ? isHealthPro
+                            ? 'bg-emerald-500/15 text-white border border-emerald-500/30'
+                            : 'bg-violet-500/15 text-white border border-violet-500/30'
                           : 'text-slate-400 hover:bg-slate-800/60 hover:text-white border border-transparent'
                       } ${expanded ? '' : 'justify-center'}`}
                     >
@@ -181,13 +228,15 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess 
           ))}
         </nav>
 
-        {/* Alt: Pin + Klinik geçişi + Anasayfa */}
+        {/* Alt: Pin + Klinik geçişi + Anasayfa + Çıkış */}
         <div className="p-3 border-t border-slate-800 space-y-1 shrink-0">
           <button
             onClick={togglePin}
             className={`hidden lg:flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
               pinned
-                ? 'text-violet-300 bg-violet-500/10 border border-violet-500/30'
+                ? isHealthPro
+                  ? 'text-emerald-300 bg-emerald-500/10 border border-emerald-500/30'
+                  : 'text-violet-300 bg-violet-500/10 border border-violet-500/30'
                 : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 border border-transparent'
             } ${expanded ? '' : 'justify-center'}`}
             title={pinned ? 'Açık moddan çık' : 'Sürekli açık tut'}
@@ -221,6 +270,20 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess 
             <span className="shrink-0">⌂</span>
             <span className={`transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0 hidden'}`}>Anasayfa</span>
           </Link>
+
+          {/* Çıkış — kalıcı, her sayfada erişilebilir */}
+          <form action={signOutAction}>
+            <button
+              type="submit"
+              className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors ${expanded ? '' : 'justify-center'}`}
+              title={!expanded ? 'Çıkış Yap' : undefined}
+            >
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span className={`transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0 hidden'}`}>Çıkış Yap</span>
+            </button>
+          </form>
         </div>
       </aside>
     </>
