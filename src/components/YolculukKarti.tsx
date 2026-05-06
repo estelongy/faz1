@@ -54,6 +54,8 @@ export interface YolculukView {
   index: number
   /** Toplam yolculuk sayısı (numaralandırma için) */
   total: number
+  /** Klinik deneyim yorumu durumu */
+  reviewState?: 'none' | 'editable' | 'locked'
 }
 
 const C250_LABELS: Array<[string, string]> = [
@@ -185,6 +187,42 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
           <Link href={nextStep.href}
             className="block w-full text-center py-2.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-sm font-bold transition-colors">
             {nextStep.label} →
+          </Link>
+        </div>
+      )}
+
+      {/* Klinik deneyim değerlendirme CTA */}
+      {y.appointment?.status === 'completed' && y.reviewState === 'none' && (
+        <div className="px-5 pb-4">
+          <Link
+            href={`/panel/degerlendir/${y.appointment.id}`}
+            className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 hover:border-amber-400/60 transition-colors"
+          >
+            <span className="text-xl shrink-0">⭐</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-amber-200 text-sm font-bold leading-tight">Deneyimini paylaş</p>
+              <p className="text-amber-300/70 text-xs mt-0.5">Klinik için 1 dakikalık değerlendirme</p>
+            </div>
+            <svg className="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      )}
+      {y.appointment?.status === 'completed' && y.reviewState === 'editable' && (
+        <div className="px-5 pb-4">
+          <Link
+            href={`/panel/degerlendir/${y.appointment.id}`}
+            className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700 hover:border-slate-600 transition-colors"
+          >
+            <span className="text-xl shrink-0">✏️</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-slate-200 text-sm font-medium leading-tight">Yorumunu düzenle</p>
+              <p className="text-slate-500 text-xs mt-0.5">7 günlük düzenleme penceresi açık</p>
+            </div>
+            <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </Link>
         </div>
       )}

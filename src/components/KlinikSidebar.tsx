@@ -22,6 +22,7 @@ function buildNavGroups(isEducator: boolean): NavGroup[] {
     { href: '/klinik/panel',           icon: '🏠', label: 'Panel', exact: true },
     { href: '/klinik/panel/randevular', icon: '📅', label: 'Randevular' },
     { href: '/klinik/panel/hastalarim', icon: '👥', label: 'Hastalarım' },
+    { href: '/klinik/panel/yorumlar',   icon: '💬', label: 'Yorumlar', badge: 'new' },
     { href: '/klinik/panel/jeton',      icon: '💳', label: 'Krediler' },
     { href: '/klinik/panel/rapor',      icon: '📊', label: 'Raporlar' },
   ]

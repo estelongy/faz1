@@ -7,6 +7,14 @@
     {
       "path": "/api/cron/akademi-quality-score",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/clinic-egp",
+      "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/cron/review-reminder",
+      "schedule": "30 9 * * *"
     }
   ]
 }

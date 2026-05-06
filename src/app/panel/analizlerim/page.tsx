@@ -52,6 +52,25 @@ export default async function GecmisimPage() {
   const apptsById = new Map<string, NonNullable<typeof apptsRaw>[number]>()
   ;(apptsRaw ?? []).forEach(a => apptsById.set(a.id, a))
 
+  // ─── Tamamlanmış randevular için yorum durumu ─────────────────
+  const completedApptIds = (apptsRaw ?? [])
+    .filter(a => a.status === 'completed')
+    .map(a => a.id)
+
+  const { data: reviewsRaw } = completedApptIds.length > 0
+    ? await supabase
+        .from('clinic_reviews')
+        .select('appointment_id, edit_window_until')
+        .in('appointment_id', completedApptIds)
+    : { data: [] }
+
+  const reviewByApptId = new Map<string, { editLocked: boolean }>()
+  ;(reviewsRaw ?? []).forEach(r => {
+    reviewByApptId.set(r.appointment_id, {
+      editLocked: new Date(r.edit_window_until) < new Date(),
+    })
+  })
+
   // ─── Per journey: pre/clinic/post analizleri ayır ──────────────
   type RawA = NonNullable<typeof analysesRaw>[number]
   const toYA = (a: RawA): YolculukAnalysis => ({
@@ -112,6 +131,13 @@ export default async function GecmisimPage() {
       recommendations: apt.recommendations,
     } : null
 
+    // Yorum durumu — completed randevu varsa
+    let reviewState: YolculukView['reviewState'] = undefined
+    if (apt && apt.status === 'completed') {
+      const r = reviewByApptId.get(apt.id)
+      reviewState = r ? (r.editLocked ? 'locked' : 'editable') : 'none'
+    }
+
     return {
       id: j.id,
       status: j.status as YolculukView['status'],
@@ -124,6 +150,7 @@ export default async function GecmisimPage() {
       // En eski yolculuk #1, en yeni #N
       index: totalJourneys - idxFromNewest,
       total: totalJourneys,
+      reviewState,
     }
   })
 
