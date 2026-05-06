@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { isAdminOtpVerified } from '@/lib/admin-otp'
 
 // Giriş gerektiren rotalar (prefix eşleşmesi)
 // /randevu herkese açık — girişsiz kullanıcılar saat seçtikten sonra modal'dan email-OTP ile kaydolup onaylar
@@ -11,6 +12,9 @@ const AUTH_ONLY = ['/giris', '/kayit', '/kurumsal/giris']
 
 // Sadece admin rolüne açık rotalar (prefix eşleşmesi)
 const ADMIN_ONLY = ['/formlestelongy', '/rehber/genclik-skoru-nasil-hesaplanir']
+
+// Admin OTP zorunlu rotalar — buraya girmeden önce SMS doğrulanmalı
+const ADMIN_OTP_REQUIRED = ['/admin']
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } })
@@ -60,6 +64,25 @@ export async function middleware(request: NextRequest) {
     if (role !== 'admin') {
       const url = request.nextUrl.clone()
       url.pathname = '/panel'
+      return NextResponse.redirect(url)
+    }
+  }
+
+  // /admin/* için admin rolü + ek SMS OTP zorunlu
+  const isAdminOtpRequired = ADMIN_OTP_REQUIRED.some(p => pathname.startsWith(p))
+  if (isAdminOtpRequired && session) {
+    const role = (session.user.app_metadata as Record<string, string>)?.role
+    if (role !== 'admin') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/panel'
+      return NextResponse.redirect(url)
+    }
+    // OTP doğrulanmış mı? (Upstash 30 dk TTL)
+    const verified = await isAdminOtpVerified(session.user.id)
+    if (!verified) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/giris/admin-otp'
+      url.searchParams.set('next', pathname)
       return NextResponse.redirect(url)
     }
   }
