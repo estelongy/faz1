@@ -4,17 +4,28 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { urunEkleAction } from './urun-ekle-action'
 import ProductImageUploader from '@/components/ProductImageUploader'
+import TierBuilder from '@/components/TierBuilder'
+import type { EsteStoreCategory, PricingTiers } from '@/lib/estestore'
 
-const CATEGORIES = [
-  { value: 'botox',       label: 'Botoks' },
-  { value: 'filler',      label: 'Dolgu' },
-  { value: 'mezo',        label: 'Mezoterapi' },
-  { value: 'laser',       label: 'Lazer' },
-  { value: 'gold_needle', label: 'Altın İğne' },
-  { value: 'peeling',     label: 'Peeling' },
+const ANA_KATEGORI = [
+  { value: 'kozmetik', label: '🧴 Kozmetik', help: 'Tüketici tarafına da satılabilir. Profesyonel indirim opsiyonel.' },
+  { value: 'sarf_medikal', label: '💉 Sarf & Medikal', help: 'Yalnızca klinik / sağlık profesyonellerine satılır.' },
+] as const
+
+const ALT_KATEGORILER = [
   { value: 'serum',       label: 'Serum' },
+  { value: 'krem',        label: 'Krem' },
+  { value: 'maske',       label: 'Maske' },
+  { value: 'temizleyici', label: 'Temizleyici' },
+  { value: 'gunes',       label: 'Güneş Koruyucu' },
   { value: 'supplement',  label: 'Takviye' },
-  { value: 'device',      label: 'Cihaz' },
+  { value: 'mezoterapi',  label: 'Mezoterapi' },
+  { value: 'dolgu',       label: 'Dolgu' },
+  { value: 'botoks',      label: 'Botoks' },
+  { value: 'altin_igne',  label: 'Altın İğne' },
+  { value: 'peeling',     label: 'Peeling' },
+  { value: 'lazer',       label: 'Lazer' },
+  { value: 'cihaz',       label: 'Cihaz' },
   { value: 'other',       label: 'Diğer' },
 ]
 
@@ -23,12 +34,14 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
   const [open, setOpen] = useState(false)
 
   const [name,          setName]          = useState('')
-  const [category,      setCategory]      = useState('serum')
+  const [category,      setCategory]      = useState<EsteStoreCategory>('kozmetik')
+  const [subcategory,   setSubcategory]   = useState('serum')
   const [treatmentType, setTreatmentType] = useState<'product' | 'treatment'>('product')
   const [description,   setDescription]   = useState('')
   const [price,         setPrice]         = useState('')
   const [ingredients,   setIngredients]   = useState('')
   const [images,        setImages]        = useState<string[]>([])
+  const [tiers,         setTiers]         = useState<PricingTiers>([])
 
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState<string | null>(null)
@@ -47,11 +60,13 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
     const res = await urunEkleAction({
       name: name.trim(),
       category,
+      subcategory,
       treatmentType,
       description: description.trim(),
       price: price ? Number(price) : null,
       ingredients: ingsArr,
       images,
+      pricingTiers: tiers,
     })
 
     if (!res.ok) {
@@ -62,7 +77,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
     setSuccess(true)
     setLoading(false)
-    setName(''); setDescription(''); setPrice(''); setIngredients(''); setImages([])
+    setName(''); setDescription(''); setPrice(''); setIngredients(''); setImages([]); setTiers([])
     router.refresh()
     setTimeout(() => { setSuccess(false); setOpen(false) }, 2000)
   }
@@ -76,6 +91,8 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
       </button>
     )
   }
+
+  const numericPrice = price ? Number(price) : 0
 
   return (
     <form onSubmit={handleSubmit} className="p-6 bg-slate-800/50 border border-violet-500/30 rounded-2xl space-y-4">
@@ -117,13 +134,37 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
         />
       </div>
 
-      {/* Kategori */}
+      {/* Ana kategori (EsteStore) */}
+      {treatmentType === 'product' && (
+        <div>
+          <label className="block text-slate-400 text-xs mb-2">EsteStore Mağazası</label>
+          <div className="grid grid-cols-2 gap-2">
+            {ANA_KATEGORI.map(c => (
+              <button
+                key={c.value}
+                type="button"
+                onClick={() => setCategory(c.value)}
+                className={`p-3 rounded-xl text-left border transition-all ${
+                  category === c.value
+                    ? 'bg-violet-500/15 border-violet-500/50 text-white'
+                    : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
+                }`}
+              >
+                <p className="font-bold text-sm">{c.label}</p>
+                <p className="text-[11px] mt-1 opacity-80">{c.help}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Alt kategori */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Kategori</label>
+        <label className="block text-slate-400 text-xs mb-1">Alt Kategori</label>
         <select
-          value={category} onChange={e => setCategory(e.target.value)}
+          value={subcategory} onChange={e => setSubcategory(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500">
-          {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+          {ALT_KATEGORILER.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select>
       </div>
 
@@ -131,11 +172,23 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
       <div>
         <label className="block text-slate-400 text-xs mb-1">Fiyat (₺) <span className="text-slate-600">(isteğe bağlı)</span></label>
         <input
-          type="number" min={0} value={price} onChange={e => setPrice(e.target.value)}
+          type="number" min={0} step={0.01} value={price} onChange={e => setPrice(e.target.value)}
           placeholder="ör. 450"
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500 transition-colors"
         />
       </div>
+
+      {/* Tier — sadece ürün modunda */}
+      {treatmentType === 'product' && numericPrice > 0 && (
+        <div className="p-4 bg-slate-900/40 rounded-xl border border-slate-800">
+          <TierBuilder
+            basePrice={numericPrice}
+            category={category}
+            value={tiers}
+            onChange={setTiers}
+          />
+        </div>
+      )}
 
       {/* Açıklama */}
       <div>

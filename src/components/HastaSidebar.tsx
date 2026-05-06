@@ -67,7 +67,7 @@ const HEALTH_PRO_NAV: NavGroup[] = [
   {
     title: 'Topluluk',
     items: [
-      { href: '/akademi',              icon: '🛒', label: 'EsteStore' },
+      { href: '/estestore',            icon: '🛒', label: 'EsteStore' },
       { href: '/panel/referral',       icon: '🎁', label: 'Davet & Puan' },
       { href: '/panel/leaderboard',    icon: '🏆', label: 'Sıralama' },
     ],

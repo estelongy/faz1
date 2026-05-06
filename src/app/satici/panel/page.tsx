@@ -10,6 +10,10 @@ import UrunEkleForm from './UrunEkleForm'
 export const metadata: Metadata = { title: 'Satıcı Paneli — Estelongy' }
 
 const CATEGORY_LABELS: Record<string, string> = {
+  // EsteStore ana kategoriler
+  kozmetik: 'Kozmetik',
+  sarf_medikal: 'Sarf & Medikal',
+  // Eski/legacy değerler için fallback
   botox: 'Botoks', filler: 'Dolgu', mezo: 'Mezoterapi', laser: 'Lazer',
   gold_needle: 'Altın İğne', peeling: 'Peeling', serum: 'Serum',
   supplement: 'Takviye', device: 'Cihaz', other: 'Diğer',

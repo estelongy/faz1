@@ -60,7 +60,8 @@ export default async function UrunDuzenlePage({ params }: { params: Promise<{ id
           product={{
             id:            product.id,
             name:          product.name,
-            category:      product.category ?? 'other',
+            category:      product.category ?? 'kozmetik',
+            subcategory:   product.subcategory,
             description:   product.description ?? '',
             price:         product.price,
             stock:         product.stock,
@@ -68,6 +69,7 @@ export default async function UrunDuzenlePage({ params }: { params: Promise<{ id
             images:        product.images ?? [],
             is_active:     product.is_active ?? false,
             approval_status: product.approval_status,
+            pricing_tiers: Array.isArray(product.pricing_tiers) ? product.pricing_tiers : [],
           }}
         />
       </div>

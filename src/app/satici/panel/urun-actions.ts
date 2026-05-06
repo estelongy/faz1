@@ -3,6 +3,23 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import {
+  validatePricingTiers,
+  type EsteStoreCategory,
+  type PricingTiers,
+} from '@/lib/estestore'
+
+async function getMinKozmetikDiscount(): Promise<number> {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('app_settings')
+    .select('value')
+    .eq('key', 'min_professional_discount_kozmetik')
+    .maybeSingle()
+  const v = data?.value as number | string | undefined
+  const num = typeof v === 'number' ? v : Number(v)
+  return Number.isFinite(num) && num > 0 ? num : 0.1
+}
 
 // Ortak: yetki + vendor + ürün ownership kontrolü
 async function assertOwnership(productId: string) {
@@ -62,13 +79,15 @@ export async function urunSilAction(productId: string): Promise<{ ok: boolean; e
 export type UrunGuncelleInput = {
   id: string
   name?: string
-  category?: string
+  category?: EsteStoreCategory
+  subcategory?: string | null
   description?: string
   price?: number | null
   stock?: number | null
   ingredients?: string[]
   images?: string[]
   is_active?: boolean
+  pricingTiers?: PricingTiers
 }
 
 export async function urunGuncelleAction(input: UrunGuncelleInput): Promise<{ ok: boolean; error?: string }> {
@@ -78,18 +97,38 @@ export async function urunGuncelleAction(input: UrunGuncelleInput): Promise<{ ok
 
   const patch: Record<string, unknown> = {}
   if (input.name !== undefined)        patch.name = input.name.trim()
-  if (input.category !== undefined)    patch.category = input.category
+  if (input.category !== undefined) {
+    if (input.category !== 'kozmetik' && input.category !== 'sarf_medikal') {
+      return { ok: false, error: 'Geçersiz kategori.' }
+    }
+    patch.category = input.category
+  }
+  if (input.subcategory !== undefined) patch.subcategory = input.subcategory?.trim() || null
   if (input.description !== undefined) patch.description = input.description.trim() || null
   if (input.price !== undefined)       patch.price = input.price
   if (input.stock !== undefined)       patch.stock = input.stock
   if (input.ingredients !== undefined) patch.ingredients = input.ingredients.length > 0 ? input.ingredients : null
-  if (input.images !== undefined)      patch.images = input.images.length > 0 ? input.images : null
+  if (input.images !== undefined) {
+    patch.images = input.images.length > 0 ? input.images : null
+    patch.cover_image_url = input.images.length > 0 ? input.images[0] : null
+  }
   if (input.is_active !== undefined)   patch.is_active = input.is_active
+  if (input.pricingTiers !== undefined) {
+    if (input.pricingTiers.length > 0) {
+      const category = (input.category ?? 'kozmetik') as EsteStoreCategory
+      const minDiscount = await getMinKozmetikDiscount()
+      const errs = validatePricingTiers(input.pricingTiers, category, minDiscount)
+      if (errs.length > 0) {
+        return { ok: false, error: errs.map(e => e.message).join(' · ') }
+      }
+    }
+    patch.pricing_tiers = input.pricingTiers
+  }
 
   if (Object.keys(patch).length === 0) return { ok: true }
 
   // Satıcı değiştirince yeniden onaya düşsün (kritik alanlar değiştiyse)
-  const contentChanged = ['name','category','description','images','ingredients'].some(k => k in patch)
+  const contentChanged = ['name','category','subcategory','description','images','ingredients'].some(k => k in patch)
   if (contentChanged) {
     patch.approval_status = 'pending'
     patch.is_active = false
@@ -101,5 +140,6 @@ export async function urunGuncelleAction(input: UrunGuncelleInput): Promise<{ ok
   revalidatePath('/satici/panel')
   revalidatePath('/satici/panel/urunler')
   revalidatePath(`/satici/panel/urunler/${input.id}/duzenle`)
+  revalidatePath('/estestore')
   return { ok: true }
 }

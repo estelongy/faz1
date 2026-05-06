@@ -3,18 +3,29 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import ProductImageUploader from '@/components/ProductImageUploader'
+import TierBuilder from '@/components/TierBuilder'
 import { urunGuncelleAction, urunSilAction } from '../../../urun-actions'
+import type { EsteStoreCategory, PricingTiers } from '@/lib/estestore'
 
-const CATEGORIES = [
-  { value: 'botox',       label: 'Botoks' },
-  { value: 'filler',      label: 'Dolgu' },
-  { value: 'mezo',        label: 'Mezoterapi' },
-  { value: 'laser',       label: 'Lazer' },
-  { value: 'gold_needle', label: 'Altın İğne' },
-  { value: 'peeling',     label: 'Peeling' },
+const ANA_KATEGORI: { value: EsteStoreCategory; label: string }[] = [
+  { value: 'kozmetik',     label: '🧴 Kozmetik' },
+  { value: 'sarf_medikal', label: '💉 Sarf & Medikal' },
+]
+
+const ALT_KATEGORILER = [
   { value: 'serum',       label: 'Serum' },
+  { value: 'krem',        label: 'Krem' },
+  { value: 'maske',       label: 'Maske' },
+  { value: 'temizleyici', label: 'Temizleyici' },
+  { value: 'gunes',       label: 'Güneş Koruyucu' },
   { value: 'supplement',  label: 'Takviye' },
-  { value: 'device',      label: 'Cihaz' },
+  { value: 'mezoterapi',  label: 'Mezoterapi' },
+  { value: 'dolgu',       label: 'Dolgu' },
+  { value: 'botoks',      label: 'Botoks' },
+  { value: 'altin_igne',  label: 'Altın İğne' },
+  { value: 'peeling',     label: 'Peeling' },
+  { value: 'lazer',       label: 'Lazer' },
+  { value: 'cihaz',       label: 'Cihaz' },
   { value: 'other',       label: 'Diğer' },
 ]
 
@@ -22,6 +33,7 @@ interface Product {
   id: string
   name: string
   category: string
+  subcategory?: string | null
   description: string
   price: number | null
   stock: number | null
@@ -29,6 +41,7 @@ interface Product {
   images: string[]
   is_active: boolean
   approval_status: string
+  pricing_tiers?: PricingTiers
 }
 
 interface Props {
@@ -36,18 +49,25 @@ interface Props {
   product: Product
 }
 
+function normalizeCategory(c: string): EsteStoreCategory {
+  if (c === 'kozmetik' || c === 'sarf_medikal') return c
+  return 'kozmetik'
+}
+
 export default function UrunDuzenleForm({ vendorId, product }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
   const [name,        setName]        = useState(product.name)
-  const [category,    setCategory]    = useState(product.category)
+  const [category,    setCategory]    = useState<EsteStoreCategory>(normalizeCategory(product.category))
+  const [subcategory, setSubcategory] = useState(product.subcategory ?? 'serum')
   const [description, setDescription] = useState(product.description)
   const [price,       setPrice]       = useState(product.price?.toString() ?? '')
   const [stock,       setStock]       = useState(product.stock?.toString() ?? '')
   const [ingredients, setIngredients] = useState(product.ingredients.join(', '))
   const [images,      setImages]      = useState<string[]>(product.images)
   const [isActive,    setIsActive]    = useState(product.is_active)
+  const [tiers,       setTiers]       = useState<PricingTiers>(product.pricing_tiers ?? [])
 
   const [error,   setError]   = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -67,12 +87,14 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
         id: product.id,
         name: name.trim(),
         category,
+        subcategory,
         description: description.trim(),
         price: price ? Number(price) : null,
         stock: stock ? Number(stock) : null,
         ingredients: ingsArr,
         images,
         is_active: isActive,
+        pricingTiers: tiers,
       })
       if (!res.ok) {
         setError(res.error ?? 'Güncellenemedi.')
@@ -106,6 +128,8 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
     ? { label: 'Reddedildi', cls: 'bg-red-500/20 text-red-400' }
     : { label: 'Admin İncelemesinde', cls: 'bg-amber-500/20 text-amber-400' }
 
+  const numericPrice = price ? Number(price) : 0
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Durum */}
@@ -134,12 +158,33 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
       </div>
 
-      {/* Kategori */}
+      {/* Ana kategori */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Kategori</label>
-        <select value={category} onChange={e => setCategory(e.target.value)}
+        <label className="block text-slate-400 text-xs mb-2">EsteStore Mağazası</label>
+        <div className="grid grid-cols-2 gap-2">
+          {ANA_KATEGORI.map(c => (
+            <button
+              key={c.value}
+              type="button"
+              onClick={() => setCategory(c.value)}
+              className={`py-2.5 rounded-xl text-sm font-semibold border transition-all ${
+                category === c.value
+                  ? 'bg-violet-500/15 border-violet-500/50 text-white'
+                  : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Alt kategori */}
+      <div>
+        <label className="block text-slate-400 text-xs mb-1">Alt Kategori</label>
+        <select value={subcategory} onChange={e => setSubcategory(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500">
-          {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+          {ALT_KATEGORILER.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select>
       </div>
 
@@ -157,6 +202,18 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
             className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
         </div>
       </div>
+
+      {/* Tier builder */}
+      {numericPrice > 0 && (
+        <div className="p-4 bg-slate-900/40 rounded-xl border border-slate-800">
+          <TierBuilder
+            basePrice={numericPrice}
+            category={category}
+            value={tiers}
+            onChange={setTiers}
+          />
+        </div>
+      )}
 
       {/* Açıklama */}
       <div>

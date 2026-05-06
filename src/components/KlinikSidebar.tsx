@@ -37,7 +37,7 @@ function buildNavGroups(isEducator: boolean): NavGroup[] {
     {
       title: 'Topluluk',
       items: [
-        { href: '/akademi',                 icon: '🛒', label: 'EsteStore' },
+        { href: '/estestore',               icon: '🛒', label: 'EsteStore' },
         { href: '/klinik/panel/akademi',    icon: '📰', label: 'Akademi',     badge: 'soon' },
         { href: '/klinik/panel/pazarlama',  icon: '📱', label: 'Pazarlama',   badge: 'soon' },
         { href: '/klinik/panel/topluluk',   icon: '💬', label: 'Topluluk',    badge: 'soon' },

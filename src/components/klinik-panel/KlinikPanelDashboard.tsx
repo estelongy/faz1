@@ -70,7 +70,7 @@ export default function KlinikPanelDashboard({
             </svg>
             {totalCredit} Kredi
           </Link>
-          <Link href="/akademi"
+          <Link href="/estestore"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-bold hover:bg-violet-500/20 transition-colors">
             <span>🛒</span>
             EsteStore
@@ -80,7 +80,7 @@ export default function KlinikPanelDashboard({
 
       {/* ─── EsteStore Geniş Kart — klinik için pazaryeri girişi ───── */}
       <Link
-        href="/akademi"
+        href="/estestore"
         className="group block relative overflow-hidden rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/10 via-fuchsia-500/5 to-violet-500/10 hover:border-violet-400/60 transition-all p-5"
       >
         <div className="flex items-center gap-4">
@@ -92,7 +92,7 @@ export default function KlinikPanelDashboard({
               <span className="text-violet-300">EsteStore</span> — Klinikler için pazaryeri
             </p>
             <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-              Şu an: <strong>Akademi</strong> eğitim paketleri. Yakında: tıbbi ürün, dolgu, sarf malzemeleri.
+              Kozmetik, sarf & medikal ve akademik eğitim paketleri tek çatıda. Profesyonel fiyat ve toplu alım baremi.
             </p>
           </div>
           <svg className="w-5 h-5 text-violet-300 group-hover:translate-x-0.5 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
