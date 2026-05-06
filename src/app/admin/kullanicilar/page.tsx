@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Kullanıcılar',
 }
 
-type UserRole = 'user' | 'clinic' | 'vendor' | 'admin'
+type UserRole = 'user' | 'clinic' | 'health_professional' | 'vendor' | 'admin'
 
 interface Profile {
   id: string
@@ -22,6 +22,7 @@ interface Profile {
 const ROLE_COLOR: Record<UserRole, string> = {
   user: 'bg-slate-700 text-slate-300',
   clinic: 'bg-blue-500/20 text-blue-400',
+  health_professional: 'bg-emerald-500/20 text-emerald-400',
   vendor: 'bg-amber-500/20 text-amber-400',
   admin: 'bg-red-500/20 text-red-400',
 }
@@ -29,6 +30,7 @@ const ROLE_COLOR: Record<UserRole, string> = {
 const ROLE_LABEL: Record<UserRole, string> = {
   user: 'Kullanıcı',
   clinic: 'Klinik',
+  health_professional: 'Sağlık Prof.',
   vendor: 'Satıcı',
   admin: 'Admin',
 }
@@ -83,8 +85,8 @@ export default async function KullanicilarPage() {
       </div>
 
       {/* Rol dağılımı */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
-        {(['user', 'clinic', 'vendor', 'admin'] as UserRole[]).map(role => (
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+        {(['user', 'clinic', 'health_professional', 'vendor', 'admin'] as UserRole[]).map(role => (
           <div key={role} className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center">
             <div className="text-2xl font-bold text-white">{roleCounts[role] ?? 0}</div>
             <div className={`text-xs mt-1 px-2 py-0.5 rounded-full inline-block ${ROLE_COLOR[role]}`}>{ROLE_LABEL[role]}</div>
@@ -152,6 +154,7 @@ export default async function KullanicilarPage() {
                       >
                         <option value="user">Kullanıcı</option>
                         <option value="clinic">Klinik</option>
+                        <option value="health_professional">Sağlık Prof.</option>
                         <option value="vendor">Satıcı</option>
                         <option value="admin">Admin</option>
                       </select>
