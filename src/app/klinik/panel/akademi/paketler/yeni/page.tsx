@@ -117,7 +117,7 @@ export default async function YeniPaketPage() {
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">₺</span>
             </div>
             <p className="text-xs text-slate-500 mt-1.5">
-              Bu fiyatın <span className="text-emerald-400 font-medium">%70'i (eğitmen payı)</span> size, %30'u Estelongy'ye gider. Ödemeler ay sonu IBAN'a transfer edilir.
+              Bu fiyatın <span className="text-emerald-400 font-medium">%70&apos;i (eğitmen payı)</span> size, %30&apos;u Estelongy&apos;ye gider. Ödemeler ay sonu IBAN&apos;a transfer edilir.
             </p>
           </div>
 

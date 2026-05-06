@@ -69,7 +69,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
           <h1 className="text-2xl font-bold text-white">Estelongy Akademi Eğitmenliği</h1>
         </div>
         <p className="text-slate-400 text-sm leading-relaxed">
-          Tecrübenizi platform üzerinden video paketleriyle paylaşın, diğer hekimlere satın. Estelongy %30 platform payı, eğitmen %70 gelir payı alır. Ödemeler ay sonu IBAN'a transfer edilir.
+          Tecrübenizi platform üzerinden video paketleriyle paylaşın, diğer hekimlere satın. Estelongy %30 platform payı, eğitmen %70 gelir payı alır. Ödemeler ay sonu IBAN&apos;a transfer edilir.
         </p>
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
