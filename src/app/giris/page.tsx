@@ -47,18 +47,27 @@ function GirisInner() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    const supabase = createClient()
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError(error.message === 'Invalid login credentials' ? 'E-posta veya şifre hatalı.' : error.message)
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(json.error ?? 'Giriş yapılamadı.')
+        setLoading(false)
+        return
+      }
+      const role = json.role as string | null
+      const next = searchParams.get('next')
+      const dest = (next && next.startsWith('/')) ? next : pathForRole(role ?? undefined)
+      router.push(dest)
+      router.refresh()
+    } catch {
+      setError('Ağ hatası. Lütfen tekrar deneyin.')
       setLoading(false)
-      return
     }
-    const role = (data.user?.app_metadata as Record<string, string>)?.role
-    const next = searchParams.get('next')
-    const dest = (next && next.startsWith('/')) ? next : pathForRole(role)
-    router.push(dest)
-    router.refresh()
   }
 
   async function handlePasswordReset(e: React.FormEvent) {

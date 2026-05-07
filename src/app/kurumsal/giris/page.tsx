@@ -36,29 +36,39 @@ export default function KurumsalGirisPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    const supabase = createClient()
 
     if (mode === 'giris') {
-      const { data: loginData, error: err } = await supabase.auth.signInWithPassword({ email, password })
-      if (err) {
-        setError('E-posta veya şifre hatalı.')
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        })
+        const json = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          setError(json.error ?? 'Giriş yapılamadı.')
+          setLoading(false)
+          return
+        }
+        const role = json.role as string | null
+
+        if (role === 'admin' || role === 'clinic' || role === 'vendor' || role === 'health_professional') {
+          router.push(pathForRole(role))
+          router.refresh()
+          return
+        }
+
+        // Rol yok (user) → seçilen hesap tipine göre başvuru akışı
+        if (accountType === 'klinik') router.push('/klinik/basvur')
+        else if (accountType === 'satici') router.push('/satici/basvur')
+        else router.push('/panel')
+        router.refresh()
+        return
+      } catch {
+        setError('Ağ hatası. Lütfen tekrar deneyin.')
         setLoading(false)
         return
       }
-      const role = (loginData.user?.app_metadata as Record<string, string>)?.role
-
-      if (role === 'admin' || role === 'clinic' || role === 'vendor' || role === 'health_professional') {
-        router.push(pathForRole(role))
-        router.refresh()
-        return
-      }
-
-      // Rol yok (user) → seçilen hesap tipine göre başvuru akışı
-      if (accountType === 'klinik') router.push('/klinik/basvur')
-      else if (accountType === 'satici') router.push('/satici/basvur')
-      else router.push('/panel')
-      router.refresh()
-      return
     }
 
     // ─── Kayıt akışı ────────────────────────────────────────────────

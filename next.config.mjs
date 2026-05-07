@@ -12,19 +12,44 @@ const nextConfig = {
 
   // Güvenlik başlıkları
   async headers() {
+    // Content-Security-Policy — XSS / data exfiltration savunması.
+    // Next.js inline script ve Tailwind JIT için 'unsafe-inline' gerekiyor;
+    // bu olmadan sayfa render olmaz. Production-pragmatic seviyede.
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://*.sentry.io https://browser.sentry-cdn.com",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' data:",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://api.stripe.com",
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+      "worker-src 'self' blob:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests",
+    ].join('; ')
+
     return [
       {
         source: '/(.*)',
         headers: [
-          // XSS koruması
+          // İçerik tipi sniffing engeli
           { key: 'X-Content-Type-Options',   value: 'nosniff' },
-          { key: 'X-Frame-Options',           value: 'SAMEORIGIN' },
-          { key: 'X-XSS-Protection',          value: '1; mode=block' },
+          // Clickjacking — iframe'lemeyi tamamen yasakla (CSP frame-ancestors 'none' modern eşdeğeri)
+          { key: 'X-Frame-Options',           value: 'DENY' },
+          // X-XSS-Protection deprecated — '0' önerilen (modern browser CSP kullanıyor)
+          { key: 'X-XSS-Protection',          value: '0' },
           { key: 'Referrer-Policy',           value: 'strict-origin-when-cross-origin' },
-          // HSTS (Vercel HTTPS enforce)
-          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
-          // İzin politikası — kamerayı yalnızca analiz sayfasında kullan
-          { key: 'Permissions-Policy',        value: 'camera=(self), microphone=(), geolocation=()' },
+          // HSTS — preload ekle, 2 yıl
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          // İzin politikası
+          { key: 'Permissions-Policy',        value: 'camera=(self), microphone=(), geolocation=(), payment=(self), usb=(), interest-cohort=()' },
+          // Cross-Origin izolasyonu
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          // CSP
+          { key: 'Content-Security-Policy',   value: csp },
         ],
       },
       // API route'larına cache yok
