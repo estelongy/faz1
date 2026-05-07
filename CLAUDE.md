@@ -1,632 +1,1338 @@
-# CLAUDE.md — Estelongy Proje Rehberi
+# CLAUDE.md — Estelongy Sistem Devir Dokümanı
 
-## Proje Özeti
+> Bu dosyayı okuyan kişi, **arsadan mutfaktaki tablonun yerine kadar** tüm süreci anlayabilmelidir. Hangi servis, hangi env var, hangi dosya, hangi RPC nerede, hangi cron ne yapar — hepsi burada.
 
-**Estelongy** — Estetik sağlık alanında AI destekli klinik yönetim, hasta takip ve KOL eğitim platformu.
-**Stack:** Next.js 14 (App Router) · Tailwind · Supabase PostgreSQL (RLS) · OpenAI gpt-5.4-mini · Stripe · Resend · Sentry · Cloudflare Stream · Vercel
-
-### Git & Deploy Akışı (KRİTİK)
-
-```
-Production branch:  claude/priceless-ellis  →  estelongy-clean.vercel.app
-```
-
-- Push → Vercel **preview** build (target: null)
-- Production'a geçirmek için: `vercel promote <deployment_id> --yes`
-- **ASLA `main`'e push etme** — main production değil
-- Vercel proje: `prj_qQ0N5SSfH8kqaY61qyiAFIOy9pVS` · team: `team_6KIGU5JvMoWBV5To6nncBNnc`
-- Supabase proje: `dcmnxmqzimrgmholktid`
+**Son güncelleme:** 2026-05-08
+**Aktif branch:** `claude/priceless-ellis` (production)
 
 ---
 
-## Kullanıcı Rolleri
+## 0. Proje Kimliği
 
-| Rol | Yetkiler | Panel |
-|-----|----------|-------|
-| `user` | Analiz, Anket, Randevu, Sipariş, Skor takibi | `/panel` (violet tema) |
-| `health_professional` | Akademi (kurs satın al/izle), Mağaza, Topluluk | `/panel` (emerald tema) |
-| `clinic` | Hasta listesi, Takvim, Analiz onay, Jeton, Akademi eğitmenliği | `/klinik/panel` |
-| `vendor` | Ürün, Stok, Sipariş, İade, Komisyon | `/satici/panel` |
-| `admin` | Tüm kaynaklar | `/admin` |
+**Estelongy** — estetik sağlık ve longevity (uzun ömür) odaklı 5 katmanlı dikey platform.
 
-> Klinik/Vendor başvurusu beklerken `user` rolüyle çalışır.
-> Sağlık profesyoneli kayıt: beyan bazlı (diploma istenmez), ünvan + uzmanlık + SMS OTP zorunlu.
+| Katman | Ne yapar |
+|---|---|
+| 1. **Standart** | "Estelongy Gençlik Skoru" — selfie + anket + (klinik tetkik) → 0-100 sağlık-cilt skoru |
+| 2. **Ekosistem** | Klinik (estetik hekimi) + Sağlık Pro (KOL/eğitmen) + Vendor (kozmetik/sarf satıcısı) + Hasta birbirine bağlı |
+| 3. **Yolculuk** | Her hasta için randevu → analiz → tetkik → hekim onayı zincirli ziyaret kartları |
+| 4. **Marketplace** | EsteStore (kozmetik & sarf medikal) — vendor 3-baremli tier pricing, profesyonele indirimli |
+| 5. **SaaS** | Akademi — eğitmen klinikler video paketleri satar (%70/%30 split) |
 
----
+**Pozisyonlama:** "Genç görünmek değil **sağlıklı görünmek**". IMDb'nin sinema için yaptığını estetik için yapar (ölçer, sıralar, akredite eder).
 
-## Sayfa Haritası
+**Ana moat:** ELS — Estelongy Longevity Standartları (akreditasyon kuruluşu, lansman sonrası faz 3).
 
-```
-/                        → Landing (3 kapı: Analiz / Randevu / Mağaza) + nav: Rehber/Akademi/Klinik
-/giris  /kayit           → Auth (Hasta — SMS OTP zorunlu)
-/kurumsal/giris          → Klinik & Satıcı & Sağlık Pro hesap tipi seçimi
-/kurumsal/saglik-profesyoneli/kayit → SP dedicated kayıt (ünvan/uzmanlık/SMS OTP/beyan/KVKK)
-
-/panel                   → Hasta paneli (3 bölge: Skor / Sıradaki Adım / Yönetim Grid)
-                            └ health_professional ise emerald tema, Akademi/Mağaza odaklı
-/panel/hesabim/analizlerim/randevularim/siparislerim/iadelerim/adreslerim/referral/leaderboard
-/panel/kurslarim         → Sağlık pro: satın alınan kurslar (ilerleme barı)
-/panel/kurslarim/[slug]  → Video player + sidebar (CF Stream iframe)
-
-/analiz · /skor · /randevu · /magaza · /sepet · /siparis/[no]
-
-/akademi                 → Public discovery (filtre: kategori/seviye/sıralama)
-/akademi/[slug]          → Paket detay + içerik listesi + Satın Al
-
-/klinik/basvur · /klinik/panel
-/klinik/panel/akademi/basvur     → Eğitmen başvurusu
-/klinik/panel/akademi/paketler   → Eğitmen paneli (paket + video CRUD)
-
-/satici/basvur · /satici/panel
-/admin · /admin/icerik (editöryel CMS) · /admin/klinikler (klinik + eğitmen onay)
-/rehber · /hakkinda/*
-```
+**Kurucu:** Dr. İzzet Gök (estetik hekimi). İletişim: estelongy@gmail.com
 
 ---
 
-## Supabase
+## 1. Hesap & Servis Envanteri
 
-- **ID:** `dcmnxmqzimrgmholktid` · **URL:** `https://dcmnxmqzimrgmholktid.supabase.co`
-- **Edge Function:** `send-appointment-email`
+> Kullanıcının kayıt olduğu ama isim hatırlamadığı tüm dış servisler. Her biri için: **giriş adresi, hesap mail'i, kritik veriler.**
 
-**Tablolar (özet):** `profiles · clinics · vendors · appointments · analyses · scores · longevity_surveys · products · orders · order_items · addresses · carts · cart_items · returns · transactions · jeton_transactions · reviews · notification_queue · audit_logs · clinic_availability · user_badges · user_activity_streaks · referral_codes · referral_uses · coupons · clinic_patient_notes · point_transactions · editorial_posts · shared_cases · journeys`
+### 1.1 Vercel (hosting, deploy, edge functions)
+- **Hesap:** estelongy@gmail.com
+- **Team ID:** `team_6KIGU5JvMoWBV5To6nncBNnc`
+- **Slug:** `estelongy-3655s-projects`
+- **Projeler:**
+  - `faz-1` (prj_qQ0N5SSfH8kqaY61qyiAFIOy9pVS) — **AKTİF** (production)
+  - `drizzetgok-site` — ayrı (kurucu kişisel sayfa, izzetgok.vercel.app)
+- **Production URL:** `https://estelongy-clean.vercel.app` (faz-1 projesinin alias'ı)
+- **Custom domain:** `estelongy.com` — domain alındı, henüz projeye bağlanmadı (5 dk iş)
+- **Plan:** Hobby (saatlik cron yok — günlük 9:00 UTC çalışır)
 
-**Akademi tabloları:** `course_packages · course_videos · course_purchases · course_progress · course_reviews`
+### 1.2 Supabase (DB + Auth + Storage)
+- **Hesap:** estelongy@gmail.com
+- **Project ref:** `dcmnxmqzimrgmholktid`
+- **URL:** `https://dcmnxmqzimrgmholktid.supabase.co`
+- **Dashboard:** https://supabase.com/dashboard/project/dcmnxmqzimrgmholktid
+- **Plan:** Free (production trafiğinde Pro'ya çıkılmalı)
+- **Edge Function:** `send-appointment-email` (deployed)
 
-**Profile rol alanları:**
-```
-profiles.role             → 'user' | 'health_professional' | 'clinic' | 'vendor' | 'admin'
-profiles.hp_title         → Dr./Uz.Dr./Op.Dr./Prof./Doç./Diş.Hek./Hemşire/Eczacı/Tıp.Öğr./Diğer
-profiles.hp_specialty     → uzmanlık alanı (serbest metin)
-profiles.hp_institution   → çalıştığı kurum (opsiyonel)
-profiles.hp_declared_at   → beyan onay tarihi
-profiles.points_balance   → kullanıcı puan bakiyesi (1 puan ≈ 1 TL)
-profiles.phone_verified   → SMS OTP doğrulanmış mı
-```
+### 1.3 Stripe (ödeme)
+- **Hesap işleten şirket:** Vestoriq OÜ (Estonya — kurulum sürecinde)
+- **Mod:** TEST (live key Vestoriq KYC sonrası)
+- **Min satış:** €0.50 (~16 TL) — küçük tutarlı ürünlerde sorun olabilir
+- **Hesap mail:** estelongy@gmail.com
+- **Webhook URL (live):** `https://estelongy-clean.vercel.app/api/stripe/webhook`
+- **Connect:** Vendor satışları için Connect Express hesapları
 
-**Klinik akademi alanları:**
-```
-clinics.is_educator                   → eğitmen yetkisi
-clinics.educator_application_status   → 'none'|'pending'|'approved'|'rejected'
-clinics.educator_application_message  → başvuru mesajı
-clinics.educator_decided_at, educator_decision_note
-clinics.educator_bio                  → public eğitmen bio
-```
+### 1.4 Postmark (transactional email)
+- **Hesap:** estelongy@gmail.com
+- **Server ID:** 19148696 ("My First Server")
+- **Sender domain:** estelongy.com (DKIM + SPF + Return-Path doğrulandı)
+- **From adres:** `noreply@estelongy.com` (mailbox değil, sender signature)
+- **Stream:** `outbound` (Default Transactional)
+- **Durum:** `pending approval` — Postmark hesap onayı bekleniyor (1 iş günü). Onay gelene kadar sadece `@estelongy.com` adresine mail uçar.
 
-**Kritik kısıtlamalar:**
-```
-scores.score_type          → CHECK IN ('web','device','doctor_approved','final')
-notification_queue.type    → CHECK IN ('email','sms','push')
-appointments.status        → ENUM (pending,confirmed,in_progress,completed,cancelled)
-analyses.web_ai_raw        → JSONB
-analyses.web_scores        → JSONB
-analyses.appointment_id    → uuid (ziyarete bağlı analiz; null ise bağımsız)
-analyses.doctor_approved_scores → JSONB { tetkik, ileri_analiz_c250, hekim_skoru }
-course_purchases.status    → CHECK IN ('pending','paid','failed','refunded')
-course_videos.stream_status → CHECK IN ('pending','processing','ready','error')
-```
+### 1.5 Netgsm (SMS sağlayıcı)
+- **Hesap:** İzzet Gök
+- **Header:** ESTELONGY
+- **API:** Netgsm SMS API (https://api.netgsm.com.tr)
+- **Kullanım:** OTP kayıt + admin OTP step-up + randevu hatırlatma
 
-**RPC:** `consume_jeton · generate_referral_code · decrement_product_stock · adjust_points · add_jeton`
+### 1.6 Upstash Redis (rate limit + OTP storage)
+- **Hesap:** estelongy@gmail.com
+- **Plan:** Free
+- **Kullanım:** OTP kodu, OTP rate limit, login brute-force lockout, admin OTP fresh check, failed login uyarı counter
 
-**Klinik Kredi Sistemi:** `clinics.free_appointments_remaining` (default 20 hediye), `appointment_credit_price`, `paid_appointments_this_month`, `paid_mode_accepted_at`. `consume_jeton` RPC önce ücretsiz haktan, sonra `jeton_balance`'tan düşer. View: `clinics_with_credit_status`. `/randevu` listesi `total_credit_balance > 0` filtreli — krediler tükenmiş klinikler hasta yönlendirme dışı.
+### 1.7 OpenAI (gpt-4o-mini Vision)
+- **Hesap:** estelongy@gmail.com
+- **Kullanım:** `/api/analiz` endpoint'inde selfie analizi (5 cilt bileşeni → C250 formülü)
+- **Aylık limit:** prepaid $5-10 yeterli (rate limit 5 istek/saat/IP)
 
-**Puan Sistemi:** `points_balance` + `point_transactions` ledger. Otomatik tetikleyiciler: yeni profil → +20 hoşgeldin, randevu completed → davet eden'e +50, sipariş paid → davet eden'e %5. Referral attribution `profiles.referred_by`.
+### 1.8 Cloudflare Stream (video hosting)
+- **Hesap:** estelongy@gmail.com
+- **Plan:** SUBSCRIBE EDİLMEDİ — akademi videoları için $5/ay gerekli
+- **Kullanım:** Akademi paket videoları, iframe player
+
+### 1.9 Sentry (hata izleme)
+- **Hesap:** estelongy@gmail.com
+- **Org:** estelongy
+- **Project:** estelongy
+- **Durum:** SDK kurulu, DSN env'e girildiyse aktif
+
+### 1.10 Cloudflare (DNS + Email Routing)
+- **Domain:** estelongy.com NS olarak Vercel DNS kullanıyor (`ns1.vercel-dns.com`, `ns2.vercel-dns.com`)
+- **Email Routing:** önerildi ama henüz kurulmadı. Şu an `admin@`, `info@`, `kvkk@`, `guvenlik@`, `destek@` gibi mail adresleri var **sayılır** (DNS'te tanımlı değil) — security.txt ve KVKK politikasında geçiyor ama gerçek mailbox yok. **Yapılacak:** Cloudflare Email Routing → estelongy@gmail.com'a forward.
+
+### 1.11 GitHub (code hosting)
+- **Repo:** Bilinmiyor — Vercel doğrudan branch deploy ediyor (Git tarafı dolaylı)
+- **Aktif branch:** `claude/priceless-ellis`
+- **Master:** kullanılmıyor
 
 ---
 
-## Env Variables
+## 2. Stack & Teknoloji
 
 ```
-NEXT_PUBLIC_SUPABASE_URL · NEXT_PUBLIC_SUPABASE_ANON_KEY · SUPABASE_SERVICE_ROLE_KEY
-OPENAI_API_KEY
-STRIPE_SECRET_KEY · STRIPE_WEBHOOK_SECRET · NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-RESEND_API_KEY · FROM_EMAIL
-CRON_SECRET
-NEXT_PUBLIC_SENTRY_DSN · SENTRY_ORG · SENTRY_PROJECT
-NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-NETGSM_USER · NETGSM_PASSWORD · NETGSM_MSGHEADER
-UPSTASH_REDIS_REST_URL · UPSTASH_REDIS_REST_TOKEN
-NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE · CLOUDFLARE_ACCOUNT_ID · CLOUDFLARE_STREAM_TOKEN
+Framework:        Next.js 14.2.35 (App Router, RSC, server actions)
+Dil:              TypeScript 5.x
+Stil:             Tailwind CSS 3 (slate/violet palet)
+DB:               Supabase PostgreSQL 17 + RLS
+Auth:             Supabase Auth (@supabase/ssr cookie tabanlı)
+Storage:          Supabase Storage (S3 uyumlu, RLS'li)
+AI:               OpenAI gpt-4o-mini (Vision)
+Ödeme:            Stripe (Checkout + Connect Express + Webhook)
+E-posta:          Postmark API (X-Postmark-Server-Token, MessageStream='outbound')
+SMS:              Netgsm REST API
+Cache/RL:         Upstash Redis REST + @upstash/ratelimit
+Video:            Cloudflare Stream (iframe player)
+Hata izleme:      Sentry (@sentry/nextjs)
+Hosting:          Vercel (production: estelongy-clean.vercel.app)
+Branş yönetimi:   Vercel native git deploy + manuel `vercel --prod --yes`
 ```
-
-> Stripe canlı durumu: test mode aktif. Live KYC Vestoriq Estonya belgelerine bağlı.
-> Stripe min TRY satış: ~16 TL (€0.50 eşdeğeri).
 
 ---
 
-## AI — gpt-5.4-mini Vision + Estelongy Algoritması
+## 3. Repo Yapısı
 
-`POST /api/analiz` (rate limit: IP başına 5/saat) → Base64 → gpt-5.4-mini → 5 bileşen → EA → skor
+```
+estelongy-faz1/
+├── public/
+│   ├── .well-known/security.txt   ← RFC 9116 sorumlu açıklama
+│   └── ... (manifest, robots, opengraph)
+├── src/
+│   ├── app/                        ← Next.js App Router
+│   │   ├── (public)/               ← /, /rehber, /hakkinda, /guvenlik
+│   │   ├── giris, kayit            ← Auth
+│   │   ├── kurumsal/giris          ← Klinik/Satıcı/Sağlık Pro hesap tipi
+│   │   ├── kurumsal/saglik-profesyoneli/kayit
+│   │   ├── auth/update-password    ← Şifre sıfırlama landing
+│   │   ├── analiz                  ← Selfie analiz akışı
+│   │   ├── skor                    ← Skor merkezi (anket modal)
+│   │   ├── randevu                 ← Klinik listesi + randevu
+│   │   ├── magaza, sepet, siparis  ← E-ticaret (eski mağaza)
+│   │   ├── estestore               ← YENİ marketplace (3 tier)
+│   │   ├── akademi                 ← KOL eğitim marketplace
+│   │   ├── panel/                  ← Hasta paneli
+│   │   │   ├── hesabim             ← Profil + KYC + hesap silme
+│   │   │   ├── analizlerim, randevularim, siparislerim, iadelerim
+│   │   │   ├── adreslerim, kurslarim, referral, leaderboard
+│   │   │   ├── degerlendir         ← Klinik yorum (placeholder)
+│   │   │   └── ...
+│   │   ├── klinik/
+│   │   │   ├── basvur              ← Klinik başvuru
+│   │   │   └── panel/              ← Klinik dashboard V2
+│   │   │       ├── takvim, hastalarim, randevu/[id]
+│   │   │       ├── akademi/basvur, akademi/paketler
+│   │   │       └── ...
+│   │   ├── satici/
+│   │   │   ├── basvur
+│   │   │   └── panel/
+│   │   │       ├── kyc             ← YENİ: vergi levhası, IBAN, KEP, sözleşme
+│   │   │       ├── urunler, urun-actions, siparisler, kazanc, iadeler
+│   │   │       └── odeme-hesabi    ← Stripe Connect onboarding
+│   │   ├── admin/
+│   │   │   ├── kullanicilar, klinikler, saticilar, urunler
+│   │   │   ├── kuponlar, iadeler, icerik
+│   │   │   ├── audit               ← YENİ: audit log viewer
+│   │   │   └── hesap               ← Admin şifre + Postmark test
+│   │   └── api/                    ← Tüm endpoint'ler (bkz. Bölüm 13)
+│   ├── components/                 ← Reusable UI
+│   ├── lib/
+│   │   ├── supabase/
+│   │   │   ├── server.ts           ← @supabase/ssr server (cookie tabanlı)
+│   │   │   ├── client.ts           ← Browser client
+│   │   │   └── service.ts          ← service_role (RLS bypass, server-only)
+│   │   ├── auth-redirect.ts        ← pathForRole(role) → /admin, /klinik/panel, vs.
+│   │   ├── admin-otp.ts            ← Admin OTP fresh-check helper'ları
+│   │   ├── audit.ts                ← writeAuditLog() helper
+│   │   ├── login-ratelimit.ts      ← Brute-force lockout + failed login email helper
+│   │   ├── ratelimit.ts            ← Eski memory rate limit (analiz, auth)
+│   │   ├── redis.ts                ← Upstash Redis singleton + Ratelimit factory
+│   │   ├── notifications.ts        ← sendEmail (Postmark) + tmpl* fonksiyonları
+│   │   ├── email-templates.ts      ← tmplFailedLoginAlert
+│   │   ├── welcome-email.ts        ← 4 rol için hoş geldin maili
+│   │   ├── signup-policy.ts        ← Kayıt validasyonu (e-posta, şifre, IP RL)
+│   │   ├── netgsm.ts               ← SMS gönderme
+│   │   ├── estestore.ts            ← 3-tier pricing + RBAC matris
+│   │   ├── journeys.ts             ← Ziyaret yolculuk yönetimi
+│   │   ├── jeton.ts                ← Klinik kredi sistemi
+│   │   ├── egs.ts                  ← Skor formülü (clamp, colorZone)
+│   │   ├── anket-sorular.ts        ← Longevity anketi soruları
+│   │   ├── tetkik-params.ts        ← Tetkik parametre listesi (algoritma yarım)
+│   │   └── ...
+│   ├── middleware.ts               ← Admin OTP gate
+│   └── instrumentation.ts          ← Sentry init
+├── next.config.mjs                 ← Security headers + CSP
+├── package.json
+└── CLAUDE.md                       ← bu dosya
+```
 
+---
+
+## 4. Ortam Değişkenleri (Tam Liste)
+
+> Hepsi Vercel Production environment'a girilmeli. Eksik olanların etkileri belirtildi.
+
+### 4.1 Zorunlu (eksikse uygulama çöker)
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://dcmnxmqzimrgmholktid.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...               # public, RLS'li
+SUPABASE_SERVICE_ROLE_KEY=eyJ...                   # GİZLİ — RLS bypass
+```
+
+### 4.2 Ödeme
+```bash
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...     # şu an test
+STRIPE_SECRET_KEY=sk_test_...                       # GİZLİ
+STRIPE_WEBHOOK_SECRET=whsec_...                     # webhook signature
+```
+
+### 4.3 E-posta (Postmark)
+```bash
+POSTMARK_API_TOKEN=<server token>                   # GİZLİ — Postmark My First Server
+FROM_EMAIL=noreply@estelongy.com                    # sender signature (mailbox değil)
+```
+Eksikse: Mail sessiz fail (`console.warn` + return false). Welcome/OTP/randevu mailleri uçmaz.
+
+### 4.4 SMS (Netgsm)
+```bash
+NETGSM_USERCODE=<usercode>
+NETGSM_PASSWORD=<password>                          # GİZLİ
+NETGSM_MSGHEADER=ESTELONGY
+```
+Eksikse: SMS OTP çalışmaz → kayıt akışı kırılır.
+
+### 4.5 Rate limit / OTP cache
+```bash
+UPSTASH_REDIS_REST_URL=https://...upstash.io
+UPSTASH_REDIS_REST_TOKEN=<token>                    # GİZLİ
+```
+Eksikse: OTP rate limit çalışmaz, login brute-force korumasız, admin step-up auth bozulur.
+
+### 4.6 OpenAI
+```bash
+OPENAI_API_KEY=sk-proj-...                          # GİZLİ
+```
+Eksikse: `/api/analiz` fallback (rastgele) skor üretir.
+
+### 4.7 Sentry
+```bash
+NEXT_PUBLIC_SENTRY_DSN=https://...@o....ingest.sentry.io/...
+SENTRY_ORG=estelongy
+SENTRY_PROJECT=estelongy
+```
+Eksikse: Hata izleme yok ama uygulama çalışır.
+
+### 4.8 Cron
+```bash
+CRON_SECRET=<32-char-rastgele>                       # cron header doğrulaması
+```
+Eksikse: Cron endpointleri reddedilir.
+
+### 4.9 Cloudflare Stream (akademi video)
+```bash
+NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE=<customer_code>
+CLOUDFLARE_ACCOUNT_ID=<account_id>
+CLOUDFLARE_STREAM_TOKEN=<api_token>                  # GİZLİ
+```
+Eksikse: Akademi videosu "video hazırlanıyor" placeholder gösterir.
+
+### 4.10 SEO
+```bash
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=<google_verify_code>
+```
+Eksikse: Search Console doğrulama yapılamaz.
+
+---
+
+## 5. Veritabanı Şeması
+
+### 5.1 Şema haritası — ana tablolar
+
+```
+auth.users (Supabase Auth) ←→ public.profiles (1:1, FK profiles.id = auth.users.id)
+                                      │
+              ┌───────────────────────┼─────────────────────────┐
+              │                       │                         │
+         vendors                  clinics                  health_pro
+         (vendor user_id)         (clinic user_id)         (rolü hp olan profiles)
+              │                       │
+        ┌─────┴─────┐           ┌────┴─────────┐
+     products    orders    appointments     analyses
+        │           │            │              │
+   product_imgs  order_items  scores       longevity_surveys
+        │                          │
+   tier_pricing                journeys
+```
+
+### 5.2 Profiles (kullanıcı kimliği)
+```sql
+profiles (
+  id              uuid PK = auth.users.id
+  role            user_role ENUM
+                  → 'user' | 'health_professional' | 'clinic' | 'vendor' | 'admin'
+  full_name       text
+  phone           text         -- E.164 (+905XX...)
+  phone_verified  boolean      -- SMS OTP doğrulandı mı
+  birth_year      smallint     -- 18+ kontrolü
+  avatar_url      text
+  is_active       boolean
+  points_balance  integer      -- 1 puan ≈ 1 TL
+  referred_by     uuid → profiles(id) ON DELETE SET NULL
+  signup_bonus_applied         boolean  -- +20 puan
+  first_appointment_bonus_applied boolean -- davet eden +50
+  first_order_bonus_applied    boolean   -- davet eden %5
+  hp_title        text  -- 'Dr.', 'Uz.Dr.', 'Op.Dr.', 'Prof.', 'Doç.', 'Diş.Hek.', 'Hemşire', 'Eczacı', 'Tıp.Öğr.'
+  hp_specialty    text
+  hp_institution  text
+  hp_declared_at  timestamptz
+)
+```
+
+**Rol senkronizasyonu:** `app_metadata.role` (auth.users) **tek kaynak**. `profiles.role` ondan türetilir. RPC: `set_user_role(target_user_id, new_role)` ikisini de günceller.
+
+### 5.3 Vendors (satıcı + KYC)
+```sql
+vendors (
+  id                       uuid PK
+  user_id                  uuid → profiles(id) (NO ACTION)
+  company_name             text NOT NULL
+  approval_status          ENUM 'pending'|'approved'|'rejected'
+  is_active                boolean
+  balance                  numeric  -- birikmiş kazanç (anlık)
+  commission_rate          numeric  -- default 0.12
+
+  -- Stripe Connect
+  stripe_account_id        text
+  stripe_charges_enabled   boolean
+  stripe_payouts_enabled   boolean
+  stripe_details_submitted boolean
+
+  -- KYC (Sprint B)
+  kyc_status               text 'not_submitted'|'pending'|'approved'|'rejected' DEFAULT 'not_submitted'
+  kyc_submitted_at         timestamptz
+  kyc_reviewed_at          timestamptz
+  kyc_reviewer_id          uuid → profiles(id)
+  kyc_review_note          text
+
+  -- Belgeler (vendor-kyc bucket içinde path)
+  tax_certificate_url      text  -- vergi levhası
+  contract_signed_url      text  -- ıslak imzalı sözleşme PDF (opsiyonel)
+  its_certificate_url      text  -- ITS belgesi (tıbbi ürün için zorunlu)
+
+  -- Banka
+  iban                     text
+  iban_holder_name         text
+  bank_name                text
+
+  -- Kurumsal kimlik
+  tax_number               text  -- vergi/T.C. no (10-11 hane)
+  trade_registry_no        text
+  mersis_no                text  -- 16 hane
+  kep_address              text
+  company_address          text
+  sells_medical_products   boolean DEFAULT false  -- ITS zorunluluk şartı
+  phone                    text
+)
+```
+
+**Trigger:** `enforce_vendor_kyc_before_approval()` — `kyc_status='approved'` olmadan `approval_status='approved'` yapılamaz.
+
+### 5.4 Clinics (klinik + akreditasyon)
+```sql
+clinics (
+  id                            uuid PK
+  user_id                       uuid → profiles(id)
+  name, slug, location, bio, specialties, phone, certificate_url
+  approval_status               ENUM
+  is_active                     boolean
+  clinic_type                   text
+
+  -- Akademi eğitmen
+  is_educator                   boolean
+  educator_application_status   text 'none'|'pending'|'approved'|'rejected'
+  educator_application_message  text  -- ≥50 char
+  educator_bio                  text  -- public eğitmen bio
+  educator_marked_at, educator_decided_at, educator_decision_note
+
+  -- Klinik kredi sistemi (jeton)
+  jeton_balance                 integer
+  jeton_settings                jsonb
+  free_appointments_remaining   integer DEFAULT 20  -- yeni kliniğe hediye
+  appointment_credit_price      numeric              -- ücretli mod fiyatı
+  paid_appointments_this_month  integer
+  paid_mode_accepted_at         timestamptz
+
+  -- EGP (klinik puanı)
+  review_count, avg_operational, avg_nps, clinic_egp, clinic_egp_updated_at
+)
+-- VIEW: clinics_with_credit_status (total_credit_balance hesaplanmış)
+```
+
+### 5.5 Skor zinciri
+```sql
+analyses (
+  id, user_id (profiles), doctor_id, clinic_id, appointment_id
+  web_ai_raw           jsonb  -- gpt-4o-mini ham çıktısı
+  web_scores           jsonb  -- C250 hesap detayları
+  doctor_approved_scores jsonb  -- { tetkik, ileri_analiz_c250, hekim_skoru }
+  doctor_notes         text
+  selfie_url           text   -- analyses bucket
+)
+
+scores (
+  id, user_id, clinic_id, appointment_id, analysis_id
+  score_type           CHECK IN ('web','device','doctor_approved','final')
+  toplam_puan          numeric        -- 0-100
+  ham_puan             numeric        -- C250 ham
+  yas_faktor           numeric        -- 0.88-1.02
+  hasta_anket_puani    numeric        -- max +3.6
+  klinik_anket_puani   numeric        -- max +7.2 (10 soru)
+  tetkik_puan          numeric        -- ALGORİTMA YARIM — bekleniyor
+  ileri_analiz_c250    numeric
+  hekim_skoru          numeric        -- klinik hekim subjektif (0-100)
+  notes                text
+)
+
+longevity_surveys (
+  id, user_id, analysis_id
+  cevaplar             jsonb  -- 10 soru için cevap (0-100 slider)
+  tipi                 'hasta' | 'klinik'  -- 5+5
+)
+
+journeys (
+  id, user_id, baslangic_at, son_aktivite_at, status, ozet
+  -- Yeni selfie aktif journey'e bağlanır
+  -- Randevu completed → journey kapanır
+)
+```
+
+**Final skor formülü:**
+```
+ara_toplam = ham_C250 × yas_faktor + hasta_anket + klinik_anket + tetkik
+final      = ara_toplam × 0.85 + hekim_skoru × 0.15
+```
+
+### 5.6 E-ticaret + EsteStore
+```sql
+products (
+  id, vendor_id, name, slug, description, ingredients (text[])
+  category text  -- 'kozmetik' | 'sarf_medikal' (yeni) ya da 'botox|filler|mezo|laser|gold_needle|peeling|serum|supplement|device|other' (eski)
+  treatment_type text 'product' | 'treatment'  -- treatment = klinik işlemi (cam reklam)
+  price numeric, stock integer
+  pricing_tiers jsonb
+    -- [{min, max, price, label}, ...]  -- 3-baremli, ilk bareem profesyonel indirimi
+  approval_status, is_active, images (text[])
+  egp jsonb { doctor, user, manufacturer, scientific }
+  final_score numeric  -- doctor*0.4 + user*0.35 + manufacturer*0.15 + scientific*0.10
+)
+
+product-images bucket  -- public, 5MB, image/* (jpeg/png/webp)
+```
+
+**EsteStore RBAC matrisi (`src/lib/estestore.ts`):**
+- Anonim: `pricing_tiers` görünmez, sadece tek "perakende" fiyat
+- `user`: aynı (perakende fiyat)
+- `health_professional`, `clinic`: tüm baremler + çizili eski fiyat
+- `vendor`: kendi ürünlerini düzenleyebilir
+- `admin`: tüm ürünler, onay yetkisi
+
+**Akademi paketleri (ayrı):**
+```sql
+course_packages (id, clinic_id, slug, title, description, price, level, category, ...)
+course_videos (id, package_id, stream_uid, stream_status, order_index, title)
+course_purchases (id, user_id (SET NULL), package_id, status, paid_at, ...)
+course_progress (id, user_id, video_id UNIQUE, progress_pct, completed)
+course_reviews (id, user_id (SET NULL), package_id, rating, comment)
+```
+
+### 5.7 Bildirim + audit
+```sql
+notification_queue (id, user_id, type ENUM('email','sms','push'), payload jsonb, status, scheduled_at, error_message)
+
+audit_logs (
+  id, user_id (profiles, SET NULL),
+  action text  -- 'role_change' | 'vendor_approval' | 'clinic_approval' | ...
+  table_name, record_id
+  old_data, new_data jsonb
+  ip_address, user_agent
+  created_at timestamptz
+)
+```
+
+### 5.8 RPC fonksiyonları (kritik)
+```sql
+set_user_role(target_user_id uuid, new_role user_role)
+  -- app_metadata.role + profiles.role senkron günceller
+
+consume_jeton(p_clinic_id uuid)
+  -- Önce free_appointments_remaining'den düşer
+  -- Sonra jeton_balance'tan düşer
+  -- Hiçbiri yoksa exception fırlatır
+  -- jeton_transactions kaydı oluşturur
+
+generate_referral_code(p_user_id uuid)
+decrement_product_stock(p_product_id uuid, p_quantity integer)
+adjust_points(p_user_id uuid, p_delta integer, p_reason text)
+add_jeton(p_clinic_id uuid, p_amount integer, p_description text)
+
+app_delete_account_cascade(p_user_id uuid) RETURNS jsonb
+  -- KVKK/GDPR cascade silme — Bölüm 11 detayında
+```
+
+### 5.9 Trigger'lar
+- `enforce_vendor_kyc_before_approval` — vendor approve'a KYC zorunlu
+- `set_updated_at` — generic timestamp güncelleyici (birden fazla tabloda)
+
+---
+
+## 6. Storage (Supabase)
+
+| Bucket | Public? | Limit | MIME | Kullanım |
+|---|---|---|---|---|
+| `analyses` | ❌ private | 8 MB | image/* + heic/heif | Selfie analizi (şu an base64 üzerinden GPT'ye gidiyor, bucket pratik kullanılmıyor) |
+| `product-images` | ✅ public | 5 MB | image/jpeg, png, webp | Ürün görselleri |
+| `vendor-kyc` | ❌ private | 10 MB | image/* + application/pdf | Vergi levhası, ITS, sözleşme |
+
+**RLS (vendor-kyc):**
+- INSERT/SELECT/DELETE: vendor kendi `<vendor_id>/...` klasörüne erişebilir
+- SELECT: admin tüm bucket'ı görebilir
+- Path konvansiyonu: `vendor-kyc/<vendor_id>/<slot>-<timestamp>.<ext>`
+
+Admin signed URL'leri 1 saat geçerli (`createSignedUrls` ile).
+
+---
+
+## 7. Auth Akışı
+
+### 7.1 Kayıt akışları (4 farklı)
+
+| Endpoint | Rol | Akış |
+|---|---|---|
+| `/kayit` | `user` (hasta) | E-posta + şifre + telefon → SMS OTP → `auth.signUp` → +20 puan + welcome mail |
+| `/kurumsal/saglik-profesyoneli/kayit` | `health_professional` | E-posta + şifre + tel + ünvan + uzmanlık + KVKK onayı → SMS OTP → `auth.signUp` (rol app_metadata) |
+| `/kurumsal/giris` (mode=kayit) | `clinic` veya `vendor` | E-posta + şifre + tel + isim → SMS OTP → `/api/kurumsal/kayit` → role 'user' (sonra başvuru) |
+| **(Yok)** | `admin` | Sadece DB seviyesinde manuel: `set_user_role(uid, 'admin')` |
+
+**Tüm kayıtlarda ortak (`src/lib/signup-policy.ts`):**
+- E-posta sözdizimi + disposable blocklist (50+ domain: 10minutemail, mailinator, vb.)
+- IP başına saatte 3 kayıt rate-limit (Upstash sliding window)
+- Şifre min 8 karakter + yaygın parola listesi blok
+- SMS OTP zorunlu (Netgsm + Upstash, 3 dk pencere, saatte 5 deneme)
+
+### 7.2 Login akışı
+
+`/giris` (hasta) ve `/kurumsal/giris` (kurumsal) — ikisi de `/api/auth/login` POST eder.
+
+```
+POST /api/auth/login { email, password }
+  ├─ IP brute-force kontrolü (Upstash)
+  │     └─ 10 yanlış/dk → 15 dk lockout
+  ├─ Supabase signInWithPassword (server-side, cookie set eder)
+  ├─ Başarılı → fail counter sıfırla, role döndür
+  └─ Başarısız → IP counter++ + (kullanıcı varsa) hesap counter++
+        └─ 3+ hatalı/24h → kullanıcıya uyarı maili (cooldown 24h)
+```
+
+**`pathForRole()` (`src/lib/auth-redirect.ts`):**
+- `admin` → `/admin`
+- `clinic` → `/klinik/panel`
+- `vendor` → `/satici/panel`
+- `health_professional` → `/panel`
+- `user` (default) → `/panel`
+
+### 7.3 Admin OTP (step-up auth)
+
+**Admin login akışı:**
+1. Şifre doğru → `/api/admin-otp/send` → telefon DB'den okunur → SMS gönderilir
+2. `/giris/admin-otp` → 6 haneli kod → `/api/admin-otp/verify`
+3. Başarılı → Upstash `admin_otp:verified:<userId>` 30 dk TTL
+4. Middleware `/admin/*` için bu key'i zorunlu kılar
+
+**Step-up (kritik aksiyonlar):**
+`ensureAdminOtpFresh(userId, returnTo, maxAgeSec=300)` — son 5 dk içinde OTP doğrulanmamışsa `/giris/admin-otp?reason=step-up&next=<returnTo>` redirect.
+
+Kapsadığı aksiyonlar:
+- `set_user_role`, `toggleActive` (kullanıcılar)
+- `updateVendor`, `decideKyc` (satıcılar)
+- `updateClinic`, `toggleEducator`, `decideEducatorApplication`, `addJeton` (klinikler)
+- `urunOnayAction` (ürünler)
+
+---
+
+## 8. Güvenlik Katmanı (canlıda)
+
+### 8.1 HTTP başlıkları (`next.config.mjs`)
+- **CSP:** `default-src 'self'`; script: self + unsafe-inline + js.stripe.com + sentry.io; connect: supabase.co + upstash.io + sentry + stripe; frame: stripe; `frame-ancestors 'none'`; `upgrade-insecure-requests`
+- **HSTS:** `max-age=63072000; includeSubDomains; preload` (2 yıl)
+- **X-Frame-Options:** `DENY`
+- **X-Content-Type-Options:** `nosniff`
+- **Referrer-Policy:** `strict-origin-when-cross-origin`
+- **Permissions-Policy:** `camera=(self), microphone=(), geolocation=(), payment=(self), usb=(), interest-cohort=()`
+- **Cross-Origin-Opener-Policy:** `same-origin`
+- **API route'larında Cache-Control:** `no-store`
+
+### 8.2 Brute-force koruması
+- **IP başına:** 10 yanlış/dk → 15 dk lockout (`login_lockout:<ip>` Upstash)
+- **Hesap başına:** 3+ yanlış/24h → uyarı maili (cooldown 24h)
+- **Lockout TTL:** otomatik sona erer
+
+### 8.3 RLS politikaları (özet)
+- `profiles`: kullanıcı sadece kendi profilini günceller, admin tümü
+- `analyses`, `scores`, `appointments`: kullanıcı sadece kendi kayıtları + (klinik için) atandığı klinik
+- `vendors`, `products`: vendor sadece kendi kaydı
+- `audit_logs`: kullanıcı asla göremez, service_role + admin sadece SELECT
+
+### 8.4 Audit log (`src/lib/audit.ts`)
+8 kritik admin aksiyonu wired:
+- `role_change`, `user_active_toggle`
+- `vendor_approval` (KYC + final approval)
+- `clinic_approval`, `clinic_educator_toggle`, `clinic_educator_decision`, `clinic_jeton_grant`
+- `product_approval`
+- `gdpr_kvkk_delete` (DB cascade içinden)
+
+Viewer: `/admin/audit` — filtreli (aksiyon, aktör, limit), JSON old/new diff.
+
+### 8.5 Şifre politikası
+- Min 8, max 128 karakter
+- Kompozisyon kuralı yok (NIST 800-63B uyumlu)
+- Yaygın parola blocklist: `12345678`, `password`, `qwerty12`, `11111111`, `password1`, vs.
+- `validatePassword()` (`src/lib/signup-policy.ts`) tüm endpoint'lerde
+
+### 8.6 Sorumlu açıklama
+- `/.well-known/security.txt` — RFC 9116
+- `/guvenlik` — politika sayfası, KVKK iletişim, scope, kapsam dışı kurallar
+- İletişim: `guvenlik@estelongy.com` (DNS kurulmadı, fallback `estelongy@gmail.com`)
+
+---
+
+## 9. KVKK / GDPR Uyumluluk
+
+### 9.1 Hesap silme cascade
+
+`/panel/hesabim` → "Hesabımı Sil" → `deleteAccountAction` → DB function `app_delete_account_cascade(uuid)` → Supabase admin API `auth.admin.deleteUser()`.
+
+**Veri kategorileri:**
+| Hard delete | Anonimize (mali) | Anonimize (public) | İşletme askıya |
+|---|---|---|---|
+| addresses | orders | clinic_reviews | vendors (is_active=false, phone null) |
+| analyses | course_purchases | course_reviews | clinics (is_active=false, phone null) |
+| appointments | returns | reviews | |
+| carts | transactions (FK SET NULL) | shared_cases | |
+| journeys | | editorial_posts.created_by | |
+| longevity_surveys | | coupons.created_by | |
+| user_activity_streaks | | | |
+| user_badges, referral_codes | | | |
+| profiles (CASCADE: scores, point_transactions, notification_queue, course_progress, clinic_patient_notes) | | | |
+
+**Kontroller:**
+- Aktif sipariş varsa silme reddedilir (`status NOT IN completed/cancelled/refunded`)
+- Admin kendini silemez
+- VUK 5 yıl saklama: orders/transactions/course_purchases anonimize ama veri durur
+
+### 9.2 Diğer KVKK altyapısı
+- Hesap silme kullanıcı tarafından, destek müdahalesi gerektirmez
+- `audit_logs` 12 ay tutulur (manuel temizlik)
+- Sözleşme metni `/satici/panel/kyc` formunda inline (10 madde)
+- **Eksik:** Resmi KVKK politika sayfası (yasal metin yazılmadı)
+
+---
+
+## 10. Modüller (Kullanıcı Tarafları)
+
+### 10.1 Hasta Paneli (`/panel`)
+
+**3 bölgeli landing:**
+1. **Skor Durumu** — bar + faz rozeti + "Detay →"
+2. **Sıradaki Adım** — duruma göre tek dinamik CTA:
+   - Hiç analiz yok → "İlk analizini yap"
+   - Klinik onaylı → "Skorun hazır, paylaş"
+   - Aktif randevu → "Randevun: [tarih]"
+   - Anket dolu, randevu yok → "Klinik randevusu al"
+   - Ön analiz var, anket yok → "Anketi doldur, +10 puan"
+3. **Yönetim Grid** — 8 ikon kart (Hesabım, Analizlerim, Randevularım, Siparişlerim, Adreslerim, İadelerim, Referrals, Lider Tablosu)
+
+**Sağlık profesyoneli modu:** Aynı sayfa emerald tema. Sidebar farklı: Akademi/Kurslarım/Mağaza/Topluluk görünür, Yeni Analiz/Randevu gizli.
+
+**Hesabım sayfası (`/panel/hesabim`):**
+- Profil bilgisi (ad/soyad/doğum yılı)
+- E-posta değiştirme akışı (Supabase çift onay)
+- Telefon değiştirme (SMS OTP yeniden)
+- Şifre değiştir (min 8)
+- **Hesabımı Kalıcı Sil** (KVKK cascade)
+
+### 10.2 Analiz Akışı (`/analiz`)
+
+```
+Selfie çek (kamera) → base64
+  → POST /api/analiz (rate limit IP başına 5/saat)
+    → gpt-4o-mini Vision call (5 cilt bileşeni)
+    → C250 formülü → ham skor
+    → yaş faktörü ile çarpım → final ham skor
+  → analyses + scores tablolarına yaz
+  → /skor?analysisId=xxx&open=anket → Longevity anketi açılır
+```
+
+**C250 ağırlıkları (`src/app/api/analiz/route.ts`):**
 | Bileşen | Ağırlık | Yön |
-|---------|---------|-----|
-| hydration | 0.25 | yüksek = iyi |
-| tone_uniformity | 0.25 | yüksek = iyi |
-| wrinkles | 0.25 | ters (100−değer) |
-| pigmentation | 0.15 | ters (100−değer) |
-| under_eye | 0.10 | yüksek = iyi |
+|---|---|---|
+| hydration | 0.25 | yüksek=iyi |
+| tone_uniformity | 0.25 | yüksek=iyi |
+| wrinkles | 0.25 | ters (100-değer) |
+| pigmentation | 0.15 | ters |
+| under_eye | 0.10 | yüksek=iyi |
 
 **Yaş faktörü:** ≤25→1.02 · ≤35→1.00 · ≤45→0.97 · ≤55→0.93 · 56+→0.88
 
----
+### 10.3 Skor Merkezi (`/skor`)
+- Anket modal (5 hasta sorusu, 0-100 slider)
+- Randevu CTA modal
+- Ürün önerileri modal (skora göre)
+- Skor paylaş kartı
 
-## Longevity Anketi (Tek Kaynak)
+**Skor bölgeleri:**
+- <55 Çok Düşük (kırmızı)
+- 56-65 Düşük (turuncu)
+- 66-79 Normal (amber)
+- 80-89 İyi (yeşil)
+- ≥90 Harika (cyan)
 
-**Yer:** `/skor?analysisId=xxx&open=anket` · **DB:** `longevity_surveys` + `scores.hasta_anket_puani`
-**Soru kaynağı:** `src/lib/anket-sorular.ts`
+**Skor durumları:** `tahmini` (amber) · `guncelleniyor` (violet) · `klinik_onayli` (emerald)
 
-**Hasta Anketi (5 soru — beslenme/cilt/uyku/stres/aktivite, 0-100 slider):**
-- Ağırlıklı katkı (max **+3.6 puan**): beslenme 0.9 · cilt 1.0 · uyku 0.7 · stres 0.5 · aktivite 0.5
-- `katki = (cevap/100) × maxKatki`
+### 10.4 Klinik Paneli (`/klinik/panel`)
 
-**Klinik Ek Anketi (5 soru — sigara/alkol/aile/kronik/güneş):**
-- Ağırlıklar (max +3.6 — geçici, finalize edilecek): 1.1/0.5/0.4/0.6/1.0
-- **Toplam klinik anketi (10 soru) max katkı: +7.2**
+**Sidebar V2:** Gmail tarzı hover-expand (72px → 264px), pin (localStorage), logo = `/klinik/panel`.
 
-**Skor mantığı:** Hasta anketi dolmuşsa klinik anketi tekrar cevaplandığında hasta puanı düşülür, klinik toplamı eklenir. Hasta anketi boşsa direkt eklenir.
-
----
-
-## Hasta Paneli (3 Bölge)
-
-`/panel` sade ve net:
-```
-[1] SKOR DURUMU       Skor barı + faz rozeti + "Skor Detayı →"
-[2] SIRADAKİ ADIM     Faza göre tek dinamik CTA (gradient kart)
-[3] YÖNETİM GRID      8 ikonik kart
-```
-
-**CTA mantığı (`src/app/panel/page.tsx`):**
-1. Hiç analiz yok → "İlk analizinizi yapın" → `/analiz`
-2. Klinik onaylı → "Skorun hazır, paylaş veya yeniden ölç"
-3. Aktif randevu var → "Randevunuz var: [tarih]" → `/panel/randevularim`
-4. Anket dolu, randevu yok → "Klinik randevusu alın" → `/randevu`
-5. Ön analiz var, anket yok → "Anketinizi doldurun, +10 puan" → `/skor?...&open=anket`
-
-> **Health Professional modu:** aynı sayfa emerald tema. Sidebar farklı: Akademi/Kurslarım/Mağaza/Topluluk görünür, Yeni Analiz/Randevu/Geçmişim gizli. Çıkış butonu sidebar altında kırmızı.
-
----
-
-## Klinik Akış (6 Adım)
-
-`/klinik/panel/randevu/[appointmentId]` → `KlinikAkisWizard`
-
-Akış: Kabul → Hasta Anketi → Klinik Anketi → Tetkik → İleri Analiz → Hekim Onayı
-**Final = (toplam × 0.85) + (hekim_puanı × 0.15)**
-
-`finalOnay` sağlamlığı: Promise.all yok, sequential await + rows-affected check. `kabulEt` ve `finalOnay` sonunda `revalidatePath('/klinik/panel/takvim')` + `revalidatePath('/klinik/panel')`.
-
-**Takvim (`/klinik/panel/takvim`):** 7 tıklanabilir filter pill (Bugün/Bekleyen/Görüşmede/Onaylı/Tamamlanan/İptal/Gelmedi). İptal+gelmedi iş listelerinde gizli. Inline aksiyonlar: Onayla / Reddet / Hasta Geldi / Akışı Sürdür / Gelmedi.
-
----
-
-## Klinik Panel V2 (Mimari Özet)
-
-**Sidebar:** Gmail tarzı hover-expand (72px → 264px), pin (localStorage), logo = `/klinik/panel`.
-
-**3 Katman dashboard:**
-- **ŞIMDI** — Bugünün Akışı kartı (full-width)
+**3 katmanlı dashboard:**
+- **ŞIMDI** — Bugünün Akışı (full-width)
 - **BU AY** — 3 sabit kart: Üretimin / Akreditasyon Yolu / Sonuç Vitrini
 - **SENIN SEÇTİKLERIN** — 8 kart kütüphane / max 4 tercihli
 
-**Akreditasyon (4 faz, on-the-fly hesap, cache'siz):**
+**Akreditasyon (4 faz, on-the-fly hesap):**
 | Faz | Etiket | Kriter |
-|-----|--------|--------|
+|---|---|---|
 | 0 | Yeni Klinik | — |
-| 1 | Doğrulanmış Hekim | Profil tam, müsaitlik tanımlı, ≥5 onaylı randevu |
+| 1 | Doğrulanmış Hekim | Profil tam, müsaitlik, ≥5 onaylı randevu |
 | 2 | Estelongy Hekimi | ≥20 onaylı, ≥5 klinik onayı |
 | 3 | Estelongy Uzmanı | ≥100 onaylı, ≥30 klinik onayı |
 
-**Onboarding (4 adım banner):** Profil → Müsaitlik → İlk randevu → İlk klinik onayı. Ödüller: rozet/kredi/içerik unlock.
+**Klinik akış wizard (`/klinik/panel/randevu/[id]`):**
+6 adım: Kabul → Hasta Anketi → Klinik Anketi → Tetkik → İleri Analiz → Hekim Onayı
 
-**Editöryel CMS (`/admin/icerik`):** kategori bazlı post (akademi/duyuru/topluluk/bilim/resmi/sosyal). Hekim panelindeki 6 tercihli kart bu kategorilerden beslenir.
+Final = ara_toplam × 0.85 + hekim_skoru × 0.15
 
-**Sonuç Vitrini (KVKK rıza akışı):** `shared_cases` tablosu. hekim → "izin iste" → hasta `/panel`'de banner → anonimlik seç (initials/firstname/full_anon) → onay/red. Onaylı vakalar dashboard'da en yüksek Δ ile gösterilir.
+**Önemli kural:** server action'larda **`Promise.all` ile birden fazla supabase write yapma**. Sequential `await` + `.select('id')` rows-affected check zorunlu, 0 satır = `throw`.
 
----
+**Takvim (`/klinik/panel/takvim`):** 7 filter pill (Bugün/Bekleyen/Görüşmede/Onaylı/Tamamlanan/İptal/Gelmedi). Inline aksiyonlar.
 
-## Akademi MVP (Mimari Özet)
+**Klinik kredi sistemi:**
+- `free_appointments_remaining` (default 20 hediye)
+- `appointment_credit_price` (ücretli mod)
+- `paid_appointments_this_month`, `paid_mode_accepted_at`
+- `consume_jeton` RPC önce ücretsiz haktan, sonra `jeton_balance`'tan düşer
+- View: `clinics_with_credit_status`
+- `/randevu` listesi `total_credit_balance > 0` filtreli — tükenenler gizli
 
-**Felsefe:** KOL marketplace — eğitmen klinikler video paketleri yükler, sağlık profesyonelleri satın alıp izler. **%70 eğitmen / %30 Estelongy**. Algoritma kalite eler.
+**Eğitmen başvuru:**
+- `/klinik/panel/akademi/basvur` — ≥50 char mesaj
+- Admin `/admin/klinikler` → onay/red + not
+- Onaylananlar → `/klinik/panel/akademi/paketler` → paket + video CRUD
+- Server action guard: `requireEducatorClinic()`
 
-**Eğitmen tarafı (klinik):**
-- `/klinik/panel/akademi/basvur` → başvuru formu (≥50 char mesaj)
-- Admin `/admin/klinikler` → onay/red + bilgilendirme notu
-- Onaylananlar: `/klinik/panel/akademi/paketler` → paket + video CRUD, publish/unpublish
-- Server action guard: `requireEducatorClinic()` (sequential await + rows-affected check)
+### 10.5 Satıcı Paneli (`/satici/panel`)
 
-**Alıcı tarafı (sağlık pro / hasta da satın alabilir):**
-- `/akademi` public discovery (kategori/seviye filtre, 4 sıralama: kalite/satış/puan/yeni)
-- `/akademi/[slug]` paket detay + içerik listesi + Satın Al
-- `/api/akademi/checkout` → Stripe Checkout Session (TRY, %70/%30 split metadata)
-- Stripe webhook (`kind=akademi_purchase`) → status=paid, total_purchases++, idempotent
+**Akış:** başvuru → KYC → admin onay → satışa başla
+
+**KYC (`/satici/panel/kyc`):** 3 bölümlü form
+1. **Kurumsal Kimlik:** vergi/T.C. no (10-11 hane), ticaret sicil, MERSIS (16 hane), KEP, adres, "tıbbi ürün satıcısı mıyım"
+2. **Banka:** IBAN (TR + 24 hane), hesap sahibi, banka adı
+3. **Belgeler:** vergi levhası (ZORUNLU), ITS belgesi (tıbbi ürün için zorunlu), imzalı sözleşme PDF (opsiyonel)
+
+**Sözleşme:** 10 madde inline, e-onay yeterli (ıslak imzalı PDF hızlandırır):
+1. Taraflar (Vestoriq OÜ — Estonya)
+2. Konu — pazaryeri altyapısı
+3. Komisyon — varsayılan %12
+4. Ödeme — teslimat sonrası 7 iş günü içinde IBAN'a
+5. Belge yükümlülüğü — satıcı fatura keser
+6. İade — 6502 sayılı kanun, 14 gün
+7. Yasaklı ürünler — reçeteli, sahte, lisanssız
+8. KVKK — müşteri verisi sadece teslimat
+9. Fesih — 30 gün önceden bildirim
+10. Uyuşmazlık — Tallinn mahkemeleri
+
+**Sayfalar:**
+- `/satici/panel` — ana panel (KYC kontrolü + ürün listesi + sipariş özeti)
+- `/satici/panel/urunler/[id]/duzenle` — ürün düzenle (tier pricing dahil)
+- `/satici/panel/siparisler` — sipariş listesi
+- `/satici/panel/iadeler` — iade yönetimi
+- `/satici/panel/kazanc` — komisyon raporu
+- `/satici/panel/odeme-hesabi` — Stripe Connect onboarding
+
+**Ürün ekle/düzenle (`UrunEkleForm`, `UrunDuzenleForm`):**
+- Kategori (kozmetik / sarf_medikal / treatment_type=treatment için klinik işlemi)
+- Görsel galerisi (max 8, ProductImageUploader)
+- Tier pricing (`TierBuilder`):
+  - Bareem 1 (1-5 adet, profesyonel indirimli) — kozmetik için min %10 indirim
+  - Bareem 2 (6-15 adet)
+  - Bareem 3 (16+ adet)
+- İçerik maddeleri, EGP bileşenleri (doctor/user/manufacturer/scientific)
+- Onay durumu pending → admin onayı sonrası is_active=true
+
+### 10.6 Akademi (KOL Marketplace)
+
+**Felsefe:** Eğitmen klinikler video paketleri yükler, sağlık profesyonelleri satın alıp izler.
+
+**%70 eğitmen / %30 platform** (Stripe Connect TR yok → manuel IBAN transfer)
+
+**Discovery:** `/akademi` (kategori/seviye/sıralama: kalite/satış/puan/yeni)
+
+**Detay:** `/akademi/[slug]` — paket içerik listesi + Satın Al
+
+**Satın alma:**
+1. `/akademi/[slug]` → Satın Al
+2. `/api/akademi/checkout` → Stripe Checkout Session (TRY, %70/%30 metadata)
+3. Stripe webhook (`kind=akademi_purchase`) → `course_purchases.status='paid'`, idempotent
 
 **İzleme:**
-- `/panel/kurslarim` → sahip olunan paketler + ilerleme barı
-- `/panel/kurslarim/[slug]` → Cloudflare Stream iframe player + sağda video listesi
-- `course_progress` upsert (user_id, video_id unique) + manuel "tamamlandı" toggle
-- Stream env yoksa "video hazırlanıyor" placeholder
+- `/panel/kurslarim` — sahip olunan paketler + ilerleme barı
+- `/panel/kurslarim/[slug]` — Cloudflare Stream iframe player + sağda video listesi
+- `course_progress` upsert (user_id, video_id unique)
 
-**Kalite skoru cron (`/api/cron/akademi-quality-score`, günlük 03:00):**
+**Kalite skoru cron (`/api/cron/akademi-quality-score`, 03:00 UTC):**
 ```
-quality_score = avg_rating × 12 + min(purchases,200)/200 × 20 + completion × 0.15 − refund × 0.5
-+ Bayesian shrinkage (<5 yorum → global ortalamaya çek)
+quality = avg_rating × 12
+        + min(purchases, 200)/200 × 20
+        + completion × 0.15
+        − refund × 0.5
+        + Bayesian shrinkage (<5 yorum → global ortalama)
 ```
 
-**Komisyon:** `splitCommission(amount)` → `{educator_share, platform_share}`. Stripe Connect TR yok → ay sonu manuel IBAN transfer.
+### 10.7 EsteStore (`/estestore`)
+
+3 katmanlı marketplace — yeni mağaza yapısı (eski `/magaza` legacy):
+- `/estestore` — kozmetik default + ProfessionalToggle
+- `/estestore/[category]` — kozmetik / sarf_medikal / akademi (akademi /akademi'ye redirect)
+- `/estestore/[category]/[slug]` — ürün detay
+
+**ProductCard rol-aware:**
+- Anonim/user: tek perakende fiyat
+- health_professional/clinic: çizili eski fiyat + indirimli yeni fiyat + 3 baremli tablo
+
+### 10.8 Admin Paneli (`/admin`)
+
+| Sayfa | Kapsam |
+|---|---|
+| `/admin` | Dashboard — son aktivite, pending sayaç |
+| `/admin/kullanicilar` | 100 kullanıcı listele, rol değiştir, aktif/pasif (step-up auth) |
+| `/admin/klinikler` | Onay + eğitmen başvuru + jeton yükleme (step-up auth) |
+| `/admin/saticilar` | Onay + KYC kararı + Stripe Connect durum + şüphe bayrakları (step-up auth) |
+| `/admin/urunler` | Onay/red (step-up auth) |
+| `/admin/kuponlar` | Kupon CRUD |
+| `/admin/iadeler` | İade onay/red |
+| `/admin/icerik` | Editöryel CMS (kategori bazlı post) |
+| `/admin/audit` | Audit log viewer (filtreli) |
+| `/admin/hesap` | Şifre değiştir + telefon (maskeli) + Postmark test butonu |
+
+**Vendor onay kartı (`/admin/saticilar` pending tab):**
+- E-posta, telefon, vergi no, Stripe Connect durumu, hesap kayıt zamanı, son giriş
+- **Şüphe bayrakları:** Sahte e-posta handle, sahte vergi no deseni (1234567, 0000000), şüpheli firma adı (suck/test/asd), kayıt sonrası anında giriş ve kayıp, Stripe başlatılmamış
+- **KYC bloğu:** IBAN, banka, KEP, MERSIS, ticaret sicil, adres, sells_medical badge
+- **Belgeler:** signed URL ile aç (vergi levhası, ITS, imzalı sözleşme)
+- **Aksiyon:** KYC Onayla / KYC Reddet (notla) → sonra Vendor Onayla (DB trigger zorunlu kılar)
 
 ---
 
-## Kayıt Güvenlik Politikası (Cross-cutting)
+## 11. API & Server Action Envanteri
 
-`src/lib/signup-policy.ts` — tüm kayıt endpoint'lerinde merkezi:
-- Disposable email blocklist (50+ domain: 10minutemail, mailinator, vb.)
-- IP başına saatte 3 kayıt rate-limit (Upstash)
-- E-posta sözdizimi + format validasyonu
-- Şifre min 6 karakter (UX tercihi)
-- SMS OTP zorunlu: hasta + sağlık profesyoneli + klinik + satıcı (Netgsm + Upstash)
+### 11.1 Public API endpointleri (`src/app/api/...`)
 
-**Endpoint'ler:**
-- `/api/kayit` — hasta
-- `/api/kurumsal/kayit` — klinik & satıcı (yetkili telefon SMS OTP)
-- `/api/saglik-profesyoneli/kayit` — sağlık profesyoneli (ünvan/uzmanlık/beyan/KVKK)
+```
+POST /api/auth/login                     ← brute-force korumalı login
+POST /api/kayit                          ← hasta kayıt
+POST /api/kurumsal/kayit                 ← klinik/satıcı kayıt
+POST /api/saglik-profesyoneli/kayit      ← sağlık prof kayıt
 
----
+POST /api/otp/send                       ← SMS OTP gönder
+POST /api/otp/verify                     ← OTP doğrula
 
-## Admin Güvenliği (Canlı)
+POST /api/admin-otp/send                 ← admin SMS OTP gönder (telefon DB'den)
+POST /api/admin-otp/verify               ← admin OTP doğrula → 30dk session
 
-- **Admin login → SMS OTP zorunlu** (canlı). Şifre doğru → telefon kayıtlıysa /giris/admin-otp'ye yönlendir → SMS kod → 30dk Upstash session.
-- `src/lib/admin-otp.ts` — markVerified/isVerified/isFresh helper'ları
-- `/api/admin-otp/{send,verify}` — telefon DB'den okunur (kullanıcı veremez)
-- Middleware: `/admin/*` için `admin_otp:verified:<userId>` Upstash key zorunlu
-- `/admin/hesap` — şifre değiştir + telefon görüntüle (maskeli)
-- 2 admin: estelongy@gmail.com (+9054*****003) ve dr.izzetgok@gmail.com (+9054*****003) — ikisinin de telefonu doğrulanmış
+POST /api/admin/test-email               ← admin Postmark test (kendine mail)
 
----
+POST /api/analiz                         ← gpt-4o-mini Vision (rate limit 5/h/IP)
 
-## Güvenlik Yapılacaklar (Backlog — öncelik sırası)
+POST /api/akademi/checkout               ← Stripe Checkout Session
+POST /api/stripe/webhook                 ← Stripe events (jeton + marketplace + akademi)
+GET  /api/stripe/connect/account-link    ← Vendor onboarding link
+GET  /api/stripe/connect/account-status  ← Vendor Connect durumu
 
-### A. Yarım gün — yüksek etki
-- **A1. Step-up auth** — kritik admin aksiyonlarında son 5 dk taze SMS şartı. `set_user_role`, vendor onay, `app_settings`, toplu silme. `isAdminOtpFresh()` helper hazır, sadece wrapper. ~2 saat
-- **A2. Login rate limit** — `/giris` IP başına dakikada 10 yanlış deneme → 15 dk kilit. Upstash Ratelimit. ~1 saat
-- **A3. Security headers** — `next.config.js` üzerinden CSP, HSTS, X-Frame-Options DENY, X-Content-Type-Options nosniff. ~2 saat
+POST /api/randevu                        ← Randevu oluştur (jeton tüket)
+POST /api/iade                           ← İade talebi
 
-### B. Sprint B — Vendor KYC (1-2 gün)
-Vendor başvuru formu ve `vendors` tablosu derinleştirme:
-- Vergi levhası, imza sirküleri, IBAN + banka onayı, KEP adresi
-- Marka tescil (kozmetik), ITS belgesi (sarf), üretim/ithal izni
-- Sözleşme onayı (KVKK + satıcı kontratı)
-- Vendor için SMS OTP
-- DB: `documents` JSONB + Supabase Storage bucket
-- Admin onay kartında belge önizleme (tıkla aç)
-- Kategori bazlı zorunlu belge listesi
+GET  /api/cron/notifications             ← 09:00 UTC günlük (Hobby plan)
+GET  /api/cron/clinic-egp                ← Klinik EGP günlük hesap
+GET  /api/cron/akademi-quality-score     ← 03:00 UTC akademi kalite
 
-### C. Hafta içi — orta efor
-- **Audit log yazımı** — rol değişimi, vendor onay, ürün/hesap silme, app_settings → `audit_logs` tablosuna kim/ne/IP/ne zaman. ~3 saat
-- **Hesap silme cascade** (KVKK gereği) — gerçek silme tüm bağımlı tablolar + auth.users. ~4 saat
-- **E-posta değiştirme akışı** — eski + yeni adresten çift onay. ~4 saat
-- **Storage bucket validasyonu** — magic byte check, max boyut, MIME whitelist. ~1 saat
-- **Failed login → e-posta uyarısı** — admin'e ve hesap sahibine. ~2 saat
-- **Şifre min 8 + breached password check** — haveibeenpwned API (k-anonymity). ~2 saat
+GET  /sitemap.xml                        ← dinamik sitemap
+GET  /robots.txt                         ← static
+```
 
-### D. Sonraki sprint — daha derin
-- **TOTP** (Google Authenticator) — SMS bağımlılığını kaldır. otplib + QR + recovery code listesi. ~6 saat
-- **RLS otomatik pen test** — her tablo için "kullanıcı sadece kendi datasına erişebiliyor mu" otomatik test seti (CI). ~1 gün
-- **`security.txt` + bug bounty politikası**. ~1 saat
-- **Stripe Live mode + 3DS zorunlu** — Vestoriq Estonya KYC bekliyor. ~4 saat
-- **KVKK politika sayfası + veri saklama süreleri** (yazılı). ~4 saat
-- **Supabase Site URL whitelist düzelt** — reset linklerinin eski preview URL'lerine gitmesi sorunu (manuel: Dashboard → Auth → URL Configuration)
+### 11.2 Önemli server action'lar
+
+| Dosya | Action | Step-up |
+|---|---|---|
+| `src/app/admin/kullanicilar/page.tsx` | `changeRole`, `toggleActive` | ✓ |
+| `src/app/admin/saticilar/page.tsx` | `updateVendor`, `decideKyc` | ✓ |
+| `src/app/admin/klinikler/page.tsx` | `updateClinic`, `toggleEducator`, `decideEducatorApplication`, `addJeton` | ✓ |
+| `src/app/admin/urunler/page.tsx` | `urunOnayAction` | ✓ |
+| `src/app/satici/panel/kyc/actions.ts` | `submitKycAction` | — |
+| `src/app/panel/hesabim/actions.ts` | `updateProfileAction`, `deleteAccountAction` | — |
+| `src/app/satici/panel/urun-actions.ts` | ürün CRUD | — |
+| `src/app/klinik/panel/randevu/[id]/actions.ts` | `kabulEt`, `finalOnay` (6-adım wizard) | — |
 
 ---
 
-## Ziyaret Zaman Çizelgesi
+## 12. Skor Sistemi (Tetkik Yarım)
 
-Hem klinik (`/klinik/panel/hasta/[userId]`) hem hasta (`/panel/analizlerim`) tarafında ziyaret bazlı birleşik kart akışı.
+### 12.1 Kaynak veriler
+- `analyses.web_scores` (gpt-4o-mini C250 hesabı)
+- `longevity_surveys.cevaplar` (10 soru, 5 hasta + 5 klinik)
+- `scores.tetkik_puan` (eksik — bekleniyor)
+- `scores.hekim_skoru` (klinik wizard subjektif)
 
-- **Ortak bileşen:** `src/components/ZiyaretKarti.tsx`
-- **Birleştirme:** `analyses.appointment_id` ile eşleşenler ziyaret kartı içine, eşleşmeyenler "Bağımsız Ön Analiz"
-- **Journeys:** `journeys` tablosu — randevu completed → journey otomatik kapanır. Yeni selfie aktif journey'e bağlanır.
+### 12.2 Anket katkısı
+
+**Hasta anketi (5 soru, 0-100 slider):**
+- beslenme: max +0.9
+- cilt: max +1.0
+- uyku: max +0.7
+- stres: max +0.5
+- aktivite: max +0.5
+- **Toplam max: +3.6**
+
+`katki = (cevap/100) × maxKatki`
+
+**Klinik ek anketi (5 soru, geçici ağırlıklar — bilimsel revizyon bekliyor):**
+- sigara: 1.1
+- alkol: 0.5
+- aile öyküsü: 0.4
+- kronik hastalık: 0.6
+- güneş maruziyeti: 1.0
+- **Toplam max: +3.6**
+
+**Hasta + Klinik (10 soru) toplam max: +7.2**
+
+### 12.3 Yarım kalan iş — Tetkik puanı
+- `src/lib/tetkik-params.ts` — parametre listesi (kan tahlilleri, hormonlar) gözden geçirilecek
+- Her parametre için skor katkısı kuralı (referans aralık içi/dışı, yakınlık etkisi)
+- Tetkik max toplam katkısı belirlenecek (3.6 mı, daha fazla mı?)
+- `scores.tetkik_puan` kolonuna otomatik yazılacak
+- **Bilimsel araştırma bekleniyor** (kullanıcı tarafında)
+
+### 12.4 Final formülü
+```
+ara_toplam = ham_C250 × yas_faktor + hasta_anket + klinik_anket + tetkik
+final      = ara_toplam × 0.85 + hekim_skoru × 0.15
+```
 
 ---
 
-## Terminoloji (Sabit)
+## 13. Ödeme Akışları
 
-| Terim | Kime | Aralık | Not |
-|-------|------|--------|-----|
-| **Skor** | hasta | 0–100 | "Estelongy Gençlik Skoru ®" |
-| **EGP** | nesne (ürün/işlem/klinik) | 0–10 | Estelongy Gençlik Puanı |
+### 13.1 Stripe entegrasyonları
 
-**Skor bölgeleri:** <55 Çok Düşük (kırmızı) · 56–65 Düşük (turuncu) · 66–79 Normal (amber) · 80–89 İyi (yeşil) · >90 Harika (cyan)
+| Akış | Endpoint | Mod |
+|---|---|---|
+| Klinik jeton satın alma | `/api/stripe/jeton-checkout` | EUR (~€5/jeton) |
+| Akademi paket satın alma | `/api/akademi/checkout` | TRY |
+| Mağaza ürün satın alma | `/api/checkout` | TRY |
+| Vendor Connect onboarding | `/api/stripe/connect/account-link` | — |
 
-**Skor durumları:** `tahmini` (amber) · `guncelleniyor` (violet/pulse) · `klinik_onayli` (emerald)
+### 13.2 Webhook (`/api/stripe/webhook`)
 
-**Estelog** = Skor bazlı, protokol odaklı estetik hekim (yeni meslek tanımı)
+İdempotent olay işleme:
+- `checkout.session.completed` (kind=akademi_purchase) → `course_purchases.status='paid'`
+- `checkout.session.completed` (kind=jeton_purchase) → `add_jeton` RPC
+- `checkout.session.completed` (kind=order) → orders + order_items
+- `account.updated` → vendor Stripe Connect durumu güncelle
 
-**EGP formülü:** `doctor×0.4 + user×0.35 + manufacturer×0.15 + scientific×0.10`
-**Başlangıç katalog:** HA Dolgu 9.2 · Skin Booster 8.5 · Botoks 7.0 · Altın İğne 6.5 · Güneş Koruyucu 8.5
+**Signature verify:** `STRIPE_WEBHOOK_SECRET` ile.
+
+### 13.3 Komisyon
+- Vendor satışı: `commission_rate` (default 0.12) × tutar = platform payı
+- Akademi: %70 eğitmen / %30 platform (`splitCommission`)
+- Stripe Connect TR olmadığı için **manuel IBAN transfer** (ay sonu rapor + admin müdahale)
+
+### 13.4 Puan Sistemi (1 puan ≈ 1 TL)
+- Yeni profil → +20 hoşgeldin (signup_bonus_applied)
+- İlk randevu completed → davet eden'e +50 (first_appointment_bonus_applied)
+- İlk sipariş paid → davet eden'e %5 (first_order_bonus_applied)
+- `point_transactions` ledger
+- Referral attribution `profiles.referred_by`
+- `adjust_points` RPC (atomik, ledger + bakiye)
 
 ---
 
-## Geliştirme Kuralları
+## 14. Bildirim Sistemi
 
+### 14.1 E-posta (Postmark)
+
+**Helper:** `src/lib/notifications.ts`
+- `sendEmail(to, subject, html)` → boolean
+- `sendEmailDetailed(to, subject, html)` → `{ok, messageId, error}`
+- Header: `X-Postmark-Server-Token`
+- Body: `{From, To, Subject, HtmlBody, MessageStream: 'outbound'}`
+
+**Şablonlar (`tmpl*` fonksiyonları):**
+- `tmplAppointmentConfirmed` — randevu onaylandı
+- `tmplAppointmentReminder` — randevu hatırlatma (24h, 1h)
+- `tmplScoreUpdate` — skor güncellemesi
+- `tmplFailedLoginAlert` (`src/lib/email-templates.ts`) — başarısız giriş uyarısı
+- Welcome mailler (`src/lib/welcome-email.ts`) — 4 rol için ayrı şablon
+
+### 14.2 SMS (Netgsm)
+
+**Helper:** `src/lib/netgsm.ts`
+- OTP gönderme (`/api/otp/send`)
+- Admin OTP (`/api/admin-otp/send`)
+- Türkçe karaktersiz, max 155 char
+
+**Şablonlar:**
+- `smsAppointmentConfirmed`
+- `smsAppointmentReminder`
+- `smsScoreUpdate`
+- OTP kodu (sadece kod + brand)
+
+### 14.3 Cron (`/api/cron/notifications`)
+
+**Tetik:** Vercel Hobby plan günlük 09:00 UTC (saatlik için Pro gerekli).
+
+**İş:** `notification_queue` tablosundan `scheduled_at <= now()` olan pending kayıtları işler:
+- email → Postmark
+- sms → Netgsm
+- başarılı → status='sent', başarısız → status='failed' + error_message
+
+**Header doğrulaması:** `Authorization: Bearer ${CRON_SECRET}`.
+
+**Otomatik enqueue tetikleyicileri:**
+- Randevu confirmed → email + sms
+- Randevu 24h öncesi → hatırlatma email + sms
+- Randevu 1h öncesi → hatırlatma (Pro plan saatlik gerekli)
+- Skor güncellemesi → email + sms
+
+---
+
+## 15. Cron İşleri
+
+| Path | Sıklık | Ne yapar |
+|---|---|---|
+| `/api/cron/notifications` | 09:00 UTC günlük | notification_queue işle |
+| `/api/cron/clinic-egp` | 03:00 UTC günlük | clinic.clinic_egp güncelle (Bayesian smoothing) |
+| `/api/cron/akademi-quality-score` | 03:00 UTC günlük | course_packages.quality_score güncelle |
+
+**`vercel.json` cron tanımı:** mevcut.
+
+---
+
+## 16. Geliştirme Kuralları (Sık Tuzaklar)
+
+### 16.1 Server-side
 - `'use client'` bileşenlerinde `export const dynamic = 'force-dynamic'` **KULLANMA**
-- `router.refresh()` → insert/update sonrası cache temizleme
-- Auth callback `next` param: sadece `/` ile başlıyorsa geçerli (open redirect koruması)
-- AI down → fallback skor göster, sessiz başarısızlık yok
-- Server action'larda `redirect()` try/catch **dışında** olmalı
-- **Server action'larda `Promise.all` ile birden fazla supabase write yapma** — sequential `await` + `.select('id')` rows-affected kontrolü zorunlu, 0 satır = `throw`
+- Server action'larda `redirect()` try/catch **dışında** olmalı (Next throw eder)
+- Server action'larda **`Promise.all` ile birden fazla supabase write yapma** — sequential await + `.select('id')` rows-affected check, 0 satır = `throw`
 - Status değiştiren server action'larda ilgili tüm path'lere `revalidatePath` çağır
-- **JSX text içinde apostrof escape:** `'` yerine `&apos;` kullan (ESLint `react/no-unescaped-entities`)
-- **JSDoc comment içinde `*/` kombinasyonu yasak** (yorum bloğunu erken kapatır — `/api/*/...` yazma, alternatif kullan)
+- `router.refresh()` → insert/update sonrası cache temizleme
+
+### 16.2 RSC + Cookies
+- `await cookies()` — Next 15+ ile artık async
+- `createClient()` server-side ASYNC — `await createClient()`
+
+### 16.3 JSX
+- Apostrof escape: `'` yerine `&apos;` (ESLint `react/no-unescaped-entities`)
+- Tırnak escape: `"` yerine `&quot;`
+
+### 16.4 JSDoc
+- Yorum içinde `*/` kombinasyonu yorum bloğunu erken kapatır
+- `/api/*/...` yazma → `/api/<resource>/...`
+
+### 16.5 Auth callback
+- `next` query param: sadece `/` ile başlıyorsa kabul (open redirect koruması)
+- Aksi halde `pathForRole(role)` fallback
+
+### 16.6 AI fallback
+- gpt-4o-mini down → `generateFallback()` rastgele skor üretir, sessiz başarısızlık YOK (kullanıcıya gösterilir)
+
+### 16.7 Resend → Postmark migration
+- `RESEND_API_KEY` artık kullanılmıyor (eski kod referans olabilir, hep `sendEmail()` çağrı kullan)
+- Postmark "pending approval" döneminde sadece `@estelongy.com` adresine mail uçar — yabancı domain'e 422 [412] hata alır
 
 ---
 
-# 📋 Bekleyen Görevler — Sıralı Öncelik
+## 17. Deploy & Operasyon
 
-## 👤 0. SENİN YAPACAKLARIN — Manuel Lansman Checklist
+### 17.1 Production deploy
 
-> Kod yok, sadece dış servis kayıt + Vercel env + canlı test. Lansmandan önce hepsi bitmeli.
+```bash
+# 1. Branch'te çalış
+git checkout claude/priceless-ellis
 
-### A. Vercel Env Vars (Production)
-- [ ] `RESEND_API_KEY` + `FROM_EMAIL` — yoksa welcome/bildirim email sessiz fail
-- [ ] `OPENAI_API_KEY` — analiz için (varsa doğrula)
-- [ ] `CRON_SECRET` — rastgele 32-char string, hem env hem cron header'da
-- [ ] `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_ORG` + `SENTRY_PROJECT` — sentry.io'da estelongy projesi yarat
-- [ ] `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` — Search Console verification
-- [ ] `NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE` + `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_STREAM_TOKEN` — Stream subscription sonrası
+# 2. Değişiklikleri commit
+git add -A
+git commit -m "Açıklayıcı mesaj"
 
-### B. Cloudflare Stream
-- [ ] Subscribe ($5/ay, 1000 dk hosting + sınırsız izleme)
-- [ ] API token (Stream:Edit izinli) + customer code'u Vercel env'e
-- [ ] Production redeploy → akademi video oynatma aktifleşir
+# 3. Build kontrol (ZORUNLU)
+npm run build
 
-### C. Stripe Live Mode (Vestoriq KYC sonrası)
-- [ ] Vestoriq Estonya vergi belgeleri tamamlandığında Stripe → Activate Live → KYC
-- [ ] Live key'leri Vercel env'e (test mode üzerine)
-- [ ] Webhook endpoint: `https://estelongy.com/api/stripe/webhook` → Stripe'a kaydet, signing secret al
-- [ ] Akademi otomatik live olur
-
-### D. Search Console + SEO Manuel
-- [ ] Google Search Console property + sitemap submit
-- [ ] Bing Webmaster Tools site + sitemap
-- [ ] `src/app/layout.tsx` `sameAs` URL'leri gerçek sosyal medya hesaplarıyla güncelle
-
-### E. Supabase Auth
-- [ ] Google OAuth provider etkinleştir
-- [ ] Google Cloud Console OAuth Client → Supabase'e Client ID + Secret
-- [ ] Redirect URI: `https://dcmnxmqzimrgmholktid.supabase.co/auth/v1/callback`
-
-### F. Vercel Hijyen
-- [ ] İki proje karışıklığı (`faz1` vs `faz-1`) — birini sil, domain tek projede
-- [ ] Vercel Pro'ya geçince saatlik cron etkinleşir
-
-### G. Lansman Öncesi Canlı Smoke Testleri
-- [ ] Hasta kayıt — `/kayit` → SMS OTP → welcome email
-- [ ] Klinik kayıt — `/kurumsal/giris` → Klinik → Kayıt Ol → SMS OTP → `/klinik/basvur`
-- [ ] Satıcı kayıt — `/kurumsal/giris` → Satıcı → Kayıt Ol → SMS OTP → `/satici/basvur`
-- [ ] Sağlık Pro kayıt — `/kurumsal/giris` → Sağlık Profesyoneli → dedicated form → `/panel` (emerald)
-- [ ] Sidebar Çıkış — sağlık pro olarak giriş → kırmızı Çıkış butonu
-- [ ] Akademi alıcı akışı (Stream env sonrası) — `/akademi` → Satın Al → Stripe test → `/panel/kurslarim` → video oynar
-- [ ] Eğitmen başvuru — klinik panel → "Eğitmen Ol" → admin onay → "Eğitmen Paneli" linki çıkar
-
-### H. Soft Launch (Opsiyonel)
-- [ ] İlk 5-10 KOL hekime kişisel davet (anchor strategy)
-- [ ] Instagram + LinkedIn kurumsal hesap
-- [ ] Basın bülteni / blog yazısı taslakları
-
----
-
-## 🥇 1. Tetkik Puanı Algoritması (Aktif İş, Lansman Blokeri)
-
-Skor algoritmasının kalan parçası. Anket bitti, şimdi tetkik. Kullanıcı tarafının %90'ı hazır, algoritma bekleniyor.
-
-- [ ] `src/lib/tetkik-params.ts` parametre listesi gözden geçirilecek
-- [ ] Her parametre için skor katkısı kuralı (referans aralığı içi/dışı, yakınlık etkisi)
-- [ ] Tetkik max toplam katkısı belirlenecek (anket gibi 3.6 mı, daha fazla mı?)
-- [ ] `scores.tetkik_puani` kolonuna otomatik yazılacak
-- [ ] Hekim onayı %15 ağırlık formülü netleştirilecek (mevcut: `final = ara_toplam × 0.85 + hekim × 0.15`)
-- [ ] Klinik ek anketi 5 ağırlık (1.1/0.5/0.4/0.6/1.0) bilimsel araştırma ile finalize
-
----
-
-## 2. Bildirim Sistemi (Aktif, Çoğu Hazır)
-
-Cron `0 9 * * *` (Hobby plan) çalışıyor. SMS+email enqueue: `appointment_confirmed`, 24h hatırlatma, score_update.
-
-**Kalan:**
-- [ ] `RESEND_API_KEY` Vercel'e (Madde 0/A) — yoksa email sessiz fail
-- [ ] 1h hatırlatma (Vercel Pro saatlik cron olunca)
-- [ ] Hekim önerileri değişince ayrı bildirim (procedure_notes/recommendations diff trigger)
-
----
-
-## 3. Akademi Tamamlama (MVP canlıda, kalan parçalar)
-
-- [ ] Cloudflare Stream env'leri (Madde 0/B) — videolar oynar hale gelsin
-- [ ] Eğitmen video upload UI'ı — TUS direct upload (şu an manuel `stream_uid` girme)
-- [ ] Kurs içi puan verme (`course_reviews`, 1-5 ★ + opsiyonel yorum)
-- [ ] İade akışı — 14 gün içinde, izlenme %30'dan az → otomatik refund
-- [ ] Eğitmen kazanç dashboard (satış, gelir, paket performansı)
-- [ ] Aylık IBAN transfer toplu raporu (admin)
-
----
-
-## 4. Klinik Deneyim / Yorum Sistemi (Faz 1)
-
-**Felsefe:** Yorum platformu değil, **ölçüm platformu**. Hekim sanatı puanlanmaz, sonucu sistem ölçer (skor Δ). 4 objektif boyut + NPS + tacir filtresi.
-
-**Yorum formu (randevu completed sonrası):**
-- 4 ★ boyutu: hijyen, personel, randevu uyumu, iletişim
-- Puanlanmayan: NPS (0-4), "ihtiyacın olmayan iş önerildi mi" (yes/no), "tekrar gelir miydin" (yes/maybe/no)
-- Serbest metin: pozitif / iyileştirme / anonim toggle
-
-**Klinik EGP formülü:**
-```
-EGP = Sonuç Etkinliği × 0.35   ← skor Δ (objektif)
-    + NPS × 0.25
-    + Operasyonel (4 ★ ort) × 0.20
-    + Estelongy Onayı × 0.15
-    + Profesyonellik × 0.05
-× confidence_factor (Bayesian smoothing <5 yorum)
-× son 6 ay zaman ağırlığı
+# 4. Production deploy
+vercel --prod --yes
 ```
 
-**Akreditasyon yolu:** Faz 1 (Ölçüm 6-12 ay, sertifika yok, otomatik veri rozetleri) → Faz 2 (Algoritmik rozet, başvuru yok) → Faz 3 (**ELS — Estelongy Longevity Standartları**, kurumsal sertifika kuruluşu, 4 seviye Bronze→Platinum). ELS = asıl moat.
+**ASLA `main`'e push etme** — main production değil.
 
-**Faz 1 İş Listesi:**
-- [ ] `clinic_reviews` tablosu + RLS + indexler
-- [ ] `/panel/randevularim/[id]/degerlendir` yorum formu
-- [ ] Yorum kaydetme server action (7 gün düzenleme penceresi)
-- [ ] `clinics` agregate kolonları + günlük EGP cron
-- [ ] Klinik public sayfası `/klinik/[slug]` (yorum + EGP rozet)
-- [ ] Randevu listesinde EGP gösterimi
-- [ ] Klinik panelinde yorum listesi + tek-seferlik cevap
-- [ ] Otomatik veri rozeti (📈/💚/🛡️)
-- [ ] Bildirim: completed + 6 saat sonra "deneyimini paylaş"
+### 17.2 DB migration
 
-> **Sıra:** Tetkik → Bildirim Resend → Klinik Deneyim Sistemi.
+```bash
+# Supabase MCP üzerinden:
+# Tool: mcp__...__apply_migration
+# project_id: dcmnxmqzimrgmholktid
+# query: <SQL>
+```
 
----
+Veya Dashboard → SQL Editor.
 
-## 5. Hesabım Tamamlama
+### 17.3 Env değişkeni ekleme
 
-- [ ] Hesabı sil — şu an `is_active=false` (soft). Gerçek silme için service-role admin endpoint
-- [ ] E-posta değişikliği — şu an "destek ile iletişim" placeholder. `auth.updateUser({email})` flow
+```bash
+vercel env add VAR_NAME production
+# Vercel CLI prompt → değer gir → Production seç
+# Sonrası: vercel --prod --yes (rebuild)
+```
 
----
+### 17.4 Rollback
 
-## 6. Ziyaret Akışı İyileştirmeleri
+```bash
+# Eski deployment'a alias çevir:
+vercel alias set <eski-deployment-url> estelongy-clean.vercel.app
+```
 
-- [ ] Klinik akışı tamamlanınca `analyses.appointment_id` otomatik dolsun (manuel backfill gerekti)
-- [ ] "İşlem sonrası takip" — 10 gün sonra yeni ön analiz → otomatik ilişkilendir
-- [ ] Kart içinde "öncekine göre" mini-sparkline (nem, kırışıklık trend)
+### 17.5 Logs
 
----
+```bash
+# Vercel runtime logs:
+vercel logs <deployment-url>
 
-## 7. Kozmetik Temizlik
-
-- [ ] `src/lib/egs.ts` → `src/lib/skor.ts` rename + import güncelleme
-- [ ] 8 yerde kalan EGS yorum/string temizliği
-- [ ] `<img>` → `next/image` mağaza sayfalarında (LCP)
-- [ ] `/rehber/*` makaleleri için özel `opengraph-image.tsx`
+# Sentry → estelongy.io dashboard
+```
 
 ---
 
-## 8. Klinik Portal Faz B (Lansman Sonrası 2-4 Hafta)
+## 18. Lansman Checklist
 
-**📰 Akademi (klinik panelinde):**
-- Editöryel CMS ✅ canlı, hekim panel besleme ✅ canlı
-- [ ] Kongre takvimi (manuel CRUD)
-- [ ] Protokol kütüphanesi (skor bandına göre)
-- [ ] PubMed E-utilities entegrasyonu
+### 🔴 BLOKER (lansman yapılamaz)
 
-**📱 Pazarlama:**
-- [ ] WhatsApp şablon kütüphanesi
-- [ ] Skor paylaşım kartı görsel jeneratörü (IG/Twitter/WA boyutları)
-- [ ] AI gönderi yazarı (klinik için, ayrı OpenAI bütçesi)
-- [ ] Performans raporu
+- [ ] **Postmark account approval** — form gönderildi, hesap inceleniyor (1 iş günü)
+- [ ] **Stripe Live mode** — Vestoriq Estonya KYC tamamlanması gerek
+- [ ] **Tetkik puanı algoritması** — bilimsel araştırma sürüyor (kullanıcı tarafı)
+- [ ] **estelongy.com domain → Vercel projesine bağla** (Settings → Domains → Add, 5 dk)
 
-**💬 Topluluk:**
-- Topluluk Pulse + anonim vaka paylaşımı ✅ canlı
-- [ ] Branş kanalları (dermatoloji/plastik/longevity)
-- [ ] Klinik rehberi (şehir + EGP filtreli)
-- [ ] Aylık webinar kayıt + arşiv
+### 🟡 ÇOK ÖNEMLİ (lansmanı geciktirmez ama yapılmalı)
 
-**🛟 Destek:**
-- E-posta + WhatsApp + SSS ✅ canlı
-- [ ] Canlı destek (Crisp/Intercom)
+- [ ] **Cloudflare Email Routing** kur — `admin@`, `info@`, `kvkk@`, `guvenlik@`, `destek@` mailbox'ları estelongy@gmail.com'a forward
+- [ ] **Resmi KVKK politika sayfası** yaz (avukat onaylı metin) — şu an /guvenlik var ama formal politika değil
+- [ ] **Cloudflare Stream subscription** ($5/ay) — akademi videoları için
+- [ ] **Sentry DSN** Vercel env'e (eklendi mi kontrol et)
+- [ ] **Google Search Console + sitemap submit**
+- [ ] Vercel iki proje karışıklığı: drizzetgok-site bağımsız tut, faz-1 ana proje
 
----
+### 🟢 KOD TARAFI (canlıda, kontrol edilebilir)
 
-## 9. Akademi Faz 2 (Lansman Sonrası)
+- [x] Auth (4 rol, SMS OTP, brute-force korumalı)
+- [x] Step-up auth (5 dk taze SMS)
+- [x] Login rate limit (10/dk → 15dk lockout)
+- [x] Security headers (CSP, HSTS, X-Frame DENY)
+- [x] KVKK hesap silme cascade
+- [x] Audit log (8 kritik aksiyon)
+- [x] Şifre min 8 + yaygın blocklist
+- [x] Failed login uyarı maili
+- [x] E-posta değiştirme akışı
+- [x] Storage bucket validasyonu
+- [x] Vendor KYC (sprint B tam)
+- [x] security.txt + /guvenlik
+- [x] Postmark entegrasyon (approval bekliyor)
 
-- [ ] Webinar (canlı yayın) altyapısı
-- [ ] Firma kapısı — sponsored content, ürün tanıtım, analytics (Allergan/Galderma/Sinclair)
-- [ ] Kore/global eğitmen erişimi (lokalizasyon, alt yazı/çeviri)
-- [ ] Diploma doğrulama (beyan'dan belge yüklemeye geçiş)
-- [ ] Mentörlük (saatlik 1-1) ve vaka takibi
+### 🔵 LANSMAN SONRASI
 
----
-
-## 10. Faz 3 (Vizyoner)
-
-- [ ] Mobil App (React Native / Expo)
+- [ ] TOTP (Google Authenticator) — SMS bağımlılığını kaldır
+- [ ] RLS otomatik pen test (CI suite)
+- [ ] Bug bounty programı (security.txt yayında, formal program yok)
+- [ ] Supabase Site URL whitelist düzelt
+- [ ] Klinik yorum sistemi Faz 1 (`clinic_reviews`)
+- [ ] Klinik EGP cron (`/api/cron/clinic-egp` aktivasyonu)
+- [ ] Mobil app (React Native / Expo)
 - [ ] Push notification (FCM)
-- [ ] AI fine-tuning
-- [ ] API Platformu · Çoklu dil (EN)
-- [ ] Misafir checkout (geçici şifreyle hesap)
+- [ ] Çoklu dil (EN)
 - [ ] **ELS — Estelongy Longevity Standartları** (akreditasyon kuruluşu, asıl moat)
 
 ---
 
-# ✅ Tamamlanan & Kararlı Çalışan (Referans Özet)
+## 19. Yol Haritası (Hedefler)
 
-> Bu modüller production'da, denenmiş ve sorunsuz. Detayları yukarıdaki mimari bölümlerinde.
+### Faz 1 — Soft Launch (Q2 2026)
+- 5-10 KOL hekime özel davet (anchor strategy)
+- Tetkik puanı algoritması bilimsel finalizasyon
+- Postmark + Stripe Live aktivasyon
+- Domain kurulumu
+- İlk gerçek vendor KYC onayı
 
-**Auth & Kayıt:**
-- 4 rol kayıt akışı: Hasta / Klinik / Satıcı / Sağlık Profesyoneli — hepsi SMS OTP zorunlu
-- Merkezi güvenlik politikası (`signup-policy.ts`): disposable email blok + IP rate-limit
-- Supabase Auth + service-role admin user creation
-- SMS OTP (Netgsm + Upstash) production, OTP rate-limit (3dk/saat)
-- Çıkış butonu sidebar altında (her sayfada erişilebilir)
+### Faz 2 — Public Launch (Q3 2026)
+- Instagram + LinkedIn kurumsal hesap
+- Basın bülteni + blog
+- Akademi Cloudflare Stream + ilk eğitmen paketleri
+- WhatsApp şablon kütüphanesi
+- Klinik yorum sistemi
 
-**Hasta Tarafı:**
-- 3 bölgeli panel (Skor/CTA/Grid)
-- Yeni Analiz (gpt-5.4-mini Vision + EA)
-- Longevity Anketi (10 soru, 2 aşamalı: hasta 5 + klinik 5)
-- Skor merkezi `/skor` (Anket/Randevu/Ürün modal kartları)
-- Geçmişim — journey sistemi + ZiyaretKarti birleşik akış
-- Hesabım (profil + telefon SMS + şifre + hesap pasifleştir)
-- Sipariş/İade/Adres yönetimi
-- Referral + leaderboard
-- 18+ doğum yılı kontrolü, KVKK/sözleşme onayı
+### Faz 3 — Vizyon (2027+)
+- ELS akreditasyon kuruluşu (Bronze → Platinum 4 seviye)
+- Mobile app
+- Çoklu dil (EN, KR)
+- Webinar + canlı yayın
+- API platformu
 
-**Sağlık Profesyoneli:**
-- Beyan bazlı kayıt (ünvan + uzmanlık + kurum)
-- Emerald tema panel (analiz/randevu gizli, akademi/mağaza odaklı)
-- Akademi kurs satın alma + izleme
+---
 
-**Klinik Tarafı:**
-- Klinik Panel V2 — 3 katmanlı dashboard (ŞIMDI/BU AY/SENIN SEÇTIKLERIN)
-- Sidebar Gmail tarzı hover-expand + pin
-- Akreditasyon (4 faz) + Onboarding (4 adım banner)
-- Editöryel CMS + 6 tercihli kart sistemi
-- Sonuç Vitrini KVKK rıza akışı (`shared_cases`)
-- Takvim 7 filter pill + inline aksiyonlar
-- 6 adımlı KlinikAkisWizard (Promise.all yok, race-safe)
-- Hasta detay + ZiyaretKarti birleşik akış
-- Jeton (kredi) sistemi + Stripe Checkout (EUR)
-- Eğitmen başvuru + paket/video CRUD + publish
+## 20. Sorun Giderme — Sık Görülen
 
-**Satıcı Tarafı:**
-- Ürün/stok/sipariş/kazanç/iade/ödeme hesabı
-- Stripe Connect (test mode aktif, live KYC bekliyor)
-- Çoklu satıcı transfer (destination charge OR manual transfer)
+### "Mail gitmedi"
+1. `POSTMARK_API_TOKEN` Vercel env'de var mı? `vercel env ls production`
+2. Postmark Activity → Delivered/Bounced göster
+3. Pending approval ise sadece `@estelongy.com`'a uçar
+4. DKIM/SPF/Return-Path Postmark Dashboard → Sender Signatures'da yeşil mi?
 
-**Akademi MVP:**
-- Public discovery + paket detay + Stripe checkout + webhook
-- `/panel/kurslarim` listesi + Cloudflare Stream player + ilerleme
-- Kalite skoru cron (Bayesian shrinkage)
-- Eğitmen başvuru + onay + paket/video yönetim
-- %70/%30 split, manuel IBAN transfer
+### "SMS gitmedi"
+1. `NETGSM_*` env tam mı?
+2. Telefon E.164 formatında mı? (`+90...`)
+3. Netgsm panel → bakiye var mı?
+4. Upstash rate limit: 3 dk içinde aynı numaraya 1 SMS
 
-**Mağaza:**
-- Ürün listesi + detay + sepet + checkout + sipariş takibi
-- İade sistemi + kupon + referral komisyon
+### "Login lockout"
+- Upstash Console → `login_lockout:<ip>` key'i sil
+- Veya 15 dk bekle (otomatik TTL)
 
-**Admin:**
-- Klinik/Satıcı onay + Eğitmen başvuru onay
-- Editöryel CMS (`/admin/icerik`)
-- Kullanıcı/ürün/kupon/iade yönetim
+### "Admin OTP istemiyor"
+- `admin_otp:verified:<userId>` key süresi geçti, yeniden giriş yap
 
-**Bildirim:**
-- Cron `0 9 * * *` (Hobby) — appointment_confirmed + 24h hatırlatma + score_update
-- Email (Resend) + SMS (Netgsm)
-- Welcome email 4 rol için
+### "Vendor approve edilmiyor"
+- DB trigger zorlar: `kyc_status='approved'` olmalı önce
+- Hata mesajı: `KYC onayı tamamlanmadan satıcı onaylanamaz`
 
-**Altyapı:**
-- Production branch `claude/priceless-ellis` → `estelongy-clean.vercel.app`
-- Stripe webhook (jeton + marketplace + akademi)
-- Supabase RLS politikaları
-- Sentry config dosyaları (DSN bekliyor)
-- SEO altyapısı (JSON-LD, sitemap, manifest, robots, breadcrumbs) — dış kayıt bekliyor
+### "RLS hatası"
+- Auth context server-side var mı? `await createClient()` ile cookie'li client kullan
+- Service role gerekiyorsa `createServiceClient()` (sadece server-side, gizli key)
+
+### "Hesap silme reddedildi"
+- Aktif sipariş var (`status NOT IN completed/cancelled/refunded`)
+- Önce siparişler tamamlanmalı
+
+### "Build error: react/no-unescaped-entities"
+- JSX'te `'` veya `"` → `&apos;` / `&quot;` ile değiştir
+
+---
+
+## 21. İletişim & Destek
+
+- **Kurucu / Karar Verici:** İzzet Gök — estelongy@gmail.com
+- **Admin hesapları:**
+  - estelongy@gmail.com (telefon +90 5*****5003)
+  - dr.izzetgok@gmail.com (telefon +90 5*****5003)
+- **DPO / KVKK:** kvkk@estelongy.com (mailbox kurulacak)
+- **Güvenlik:** guvenlik@estelongy.com (security.txt)
+- **Genel destek:** destek@estelongy.com
+
+---
+
+## 22. Terminoloji Sözlüğü
+
+| Terim | Tanım | Aralık |
+|---|---|---|
+| **Skor** | Estelongy Gençlik Skoru® — hastaya ait | 0-100 |
+| **EGP** | Estelongy Gençlik Puanı — nesneye (ürün/işlem/klinik) ait | 0-10 |
+| **Estelog** | Skor bazlı, protokol odaklı estetik hekim (yeni meslek tanımı) | — |
+| **C250** | gpt-4o-mini Vision'dan türetilen ham EGS (ağırlıklı 5 bileşen) | 0-100 |
+| **EGS** | Estelongy Gençlik Skoru — eski isim, yer yer kodda kalmış (`src/lib/egs.ts`) | — |
+| **Jeton** | Klinik kredi birimi (1 jeton = 1 randevu hakkı) | — |
+| **EGP formülü** | `doctor×0.4 + user×0.35 + manufacturer×0.15 + scientific×0.10` | — |
+| **ELS** | Estelongy Longevity Standartları (akreditasyon kuruluşu, faz 3) | — |
+| **KOL** | Key Opinion Leader (eğitmen klinik / hekim) | — |
+| **Step-up auth** | Kritik aksiyonda son 5 dk içinde taze SMS doğrulama | — |
+| **C** sprintleri | Güvenlik backlog — A=Sprint A (kritik), B=Vendor KYC, C=hardening, D=lansman sonrası | — |
+
+---
+
+## 23. Mimari Kararlar (Neden Böyle?)
+
+### 23.1 Neden Postmark?
+Resend → Postmark geçişi: deliverability test sonuçları. Postmark transactional için endüstri standardı, daha sıkı abuse policy → daha temiz IP reputation.
+
+### 23.2 Neden Vercel + Supabase?
+- Next.js 14 server actions için en iyi platform Vercel
+- Supabase = Postgres + Auth + Storage + Realtime tek pakette
+- Türkiye'de düşük latency CDN
+
+### 23.3 Neden Vestoriq Estonya?
+Türkiye'de Stripe yok (yasal kısıt). Estonya AB üyesi, e-residency ile uzaktan kurulum, vergi avantajı, Stripe destekleniyor.
+
+### 23.4 Neden 3-tier pricing?
+Vendor tek ürünü hem perakende hem toptan satabilsin. Profesyoneller (klinik/sağlık prof) doğal olarak büyük adetli alır → indirim. Kozmetikte min %10 ilk barem zorunlu (admin politikası).
+
+### 23.5 Neden ayrı Akademi tablosu (course_*)?
+Akademi entry point ayrı (`/akademi`), satış akışı farklı (Stripe TRY, Cloudflare Stream player). EsteStore ile karıştırmamak için ayrı tablo.
+
+### 23.6 Neden DB function ile cascade silme?
+Atomic — yarım silme yok. Tek transaction içinde tüm tablolar. Hata olursa rollback. Ayrıca trigger gibi davranır — RLS bypass için SECURITY DEFINER.
+
+### 23.7 Neden Upstash Redis (in-memory yerine)?
+Vercel serverless edge → her request farklı pod → in-memory rate limit çalışmaz. Upstash REST tabanlı, edge'de çalışır, hızlı.
+
+### 23.8 Neden CSP'de unsafe-inline?
+Next.js inline script + Tailwind JIT → nonce'suz çalışmıyor. Production-pragmatic: unsafe-inline kalsın, frame-ancestors none + script-src whitelist ile saldırı yüzeyini daralt.
+
+---
+
+**Bu doküman canlıdır.** Yeni özellik eklendiğinde, env vars değiştiğinde, akış güncellendiğinde **buraya yansıt.**
+
+Son ekleme: KVKK cascade · Audit log · Şifre 8 · Storage validasyon · Failed login uyarı · E-posta değiştirme · security.txt · Vendor KYC sprint B (DB + form + admin paneli + trigger).
