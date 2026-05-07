@@ -36,8 +36,8 @@ export default function UpdatePasswordPage() {
       setError('Şifreler eşleşmiyor.')
       return
     }
-    if (password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır.')
+    if (password.length < 8) {
+      setError('Şifre en az 8 karakter olmalıdır.')
       return
     }
     setLoading(true)
@@ -98,10 +98,10 @@ export default function UpdatePasswordPage() {
                 <input
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  placeholder="En az 6 karakter"
+                  placeholder="En az 8 karakter"
                   className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
                 />
               </div>
@@ -110,7 +110,7 @@ export default function UpdatePasswordPage() {
                 <input
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={confirm}
                   onChange={e => setConfirm(e.target.value)}
                   placeholder="Şifreyi tekrarlayın"
@@ -141,10 +141,10 @@ export default function UpdatePasswordPage() {
                     ))}
                   </div>
                   <p className="text-slate-500 text-xs">
-                    {password.length < 3 ? 'Çok zayıf'
-                      : password.length < 6 ? 'Zayıf'
-                      : password.length < 9 ? 'Orta'
-                      : password.length < 12 ? 'Güçlü'
+                    {password.length < 6 ? 'Çok zayıf'
+                      : password.length < 8 ? 'Zayıf'
+                      : password.length < 12 ? 'Orta'
+                      : password.length < 16 ? 'Güçlü'
                       : 'Çok güçlü'}
                   </p>
                 </div>

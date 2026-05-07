@@ -12,8 +12,8 @@ export default function AdminHesapClient() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setMsg(null)
-    if (newPassword.length < 6) {
-      setMsg({ type: 'err', text: 'Şifre en az 6 karakter olmalı.' })
+    if (newPassword.length < 8) {
+      setMsg({ type: 'err', text: 'Şifre en az 8 karakter olmalı.' })
       return
     }
     if (newPassword !== confirmPassword) {
@@ -40,7 +40,7 @@ export default function AdminHesapClient() {
         <input
           type="password"
           required
-          minLength={6}
+          minLength={8}
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500"
@@ -51,7 +51,7 @@ export default function AdminHesapClient() {
         <input
           type="password"
           required
-          minLength={6}
+          minLength={8}
           value={confirmPassword}
           onChange={e => setConfirmPassword(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500"

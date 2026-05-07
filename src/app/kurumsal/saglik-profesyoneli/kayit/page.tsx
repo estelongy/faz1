@@ -54,7 +54,7 @@ export default function SaglikProfesyoneliKayitPage() {
     if (!firstName.trim() || !lastName.trim()) { setError('Ad ve soyad zorunludur.'); return }
     if (!email.trim()) { setError('E-posta zorunludur.'); return }
     if (phone.replace(/\D/g, '').length < 10) { setError('Geçerli bir telefon girin.'); return }
-    if (password.length < 6) { setError('Şifre en az 6 karakter olmalıdır.'); return }
+    if (password.length < 8) { setError('Şifre en az 8 karakter olmalıdır.'); return }
     if (!hpTitle) { setError('Ünvan seçimi zorunludur.'); return }
     if (hpSpecialty.trim().length < 3) { setError('Uzmanlık/çalışma alanı zorunludur (en az 3 karakter).'); return }
     if (!declaration) { setError('Sağlık profesyoneli beyanını onaylamanız gerekli.'); return }

@@ -64,7 +64,7 @@ export default async function AdminHesapPage() {
         <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
           <h2 className="text-white font-bold text-base mb-1">Şifre Değiştir</h2>
           <p className="text-slate-500 text-xs mb-4">
-            Yeni şifren en az 6 karakter olmalı. Kayıt sonrası SMS OTP zaten ek koruma sağlar — yine de uzun şifre kullanman önerilir.
+            Yeni şifren en az 8 karakter olmalı. Kayıt sonrası SMS OTP zaten ek koruma sağlar — yine de uzun, eşsiz bir parola kullan.
           </p>
           <AdminHesapClient />
         </section>

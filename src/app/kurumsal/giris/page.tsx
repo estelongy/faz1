@@ -81,7 +81,7 @@ export default function KurumsalGirisPage() {
     // Klinik / Satıcı — form validation, sonra SMS OTP'ye geç
     if (!fullName.trim()) { setError('Ad Soyad zorunludur.'); setLoading(false); return }
     if (phone.replace(/\D/g, '').length < 10) { setError('Geçerli bir telefon numarası girin.'); setLoading(false); return }
-    if (password.length < 6) { setError('Şifre en az 6 karakter olmalıdır.'); setLoading(false); return }
+    if (password.length < 8) { setError('Şifre en az 8 karakter olmalıdır.'); setLoading(false); return }
 
     setOtpPhone(formatPhone(phone))
     setStep('otp')
@@ -313,7 +313,7 @@ export default function KurumsalGirisPage() {
                     placeholder="E-posta"
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
                   <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
-                    placeholder={mode === 'kayit' ? 'Şifre (en az 6 karakter)' : 'Şifre'}
+                    placeholder={mode === 'kayit' ? 'Şifre (en az 8 karakter)' : 'Şifre'}
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
                   {error && <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{error}</div>}
                   {mode === 'kayit' && (

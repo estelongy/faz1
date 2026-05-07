@@ -68,8 +68,8 @@ function KayitInner() {
       setError('Geçerli bir telefon numarası girin.')
       return
     }
-    if (password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır.')
+    if (password.length < 8) {
+      setError('Şifre en az 8 karakter olmalıdır.')
       return
     }
     if (!agreed) {
@@ -277,7 +277,7 @@ function KayitInner() {
                     ))}
                   </div>
                   <p className="text-slate-500 text-xs">
-                    {password.length < 3 ? 'Çok zayıf' : password.length < 6 ? 'Zayıf' : password.length < 9 ? 'Orta' : password.length < 12 ? 'Güçlü' : 'Çok güçlü'}
+                    {password.length < 6 ? 'Çok zayıf' : password.length < 8 ? 'Zayıf' : password.length < 12 ? 'Orta' : password.length < 16 ? 'Güçlü' : 'Çok güçlü'}
                   </p>
                 </div>
               )}

@@ -66,13 +66,22 @@ export function validateEmail(input: unknown): EmailValidation {
 }
 
 /**
- * Şifre asgari kuralı — kasıtlı olarak gevşek (min 6).
- * UX > güvenlik trade-off'u; bot koruması Turnstile + rate-limit'te.
+ * Şifre asgari kuralı — KVKK/NIST 800-63B güncel öneri:
+ *   - Min 8 karakter
+ *   - Max 128 karakter
+ *   - Kompozisyon kuralı (büyük/küçük/rakam/özel) İSTEMİYORUZ — NIST artık karşı.
+ *   - Yaygın/sızdırılmış parolalar HaveIBeenPwned ile sonradan kontrol edilebilir.
  */
 export function validatePassword(input: unknown): { ok: boolean; reason?: string } {
   if (typeof input !== 'string') return { ok: false, reason: 'Şifre geçersiz.' }
-  if (input.length < 6) return { ok: false, reason: 'Şifre en az 6 karakter olmalıdır.' }
+  if (input.length < 8) return { ok: false, reason: 'Şifre en az 8 karakter olmalıdır.' }
   if (input.length > 128) return { ok: false, reason: 'Şifre çok uzun.' }
+  // Yaygın zayıf parolalar
+  const lower = input.toLowerCase()
+  const COMMON = ['12345678','password','qwerty12','11111111','00000000','password1','1qaz2wsx']
+  if (COMMON.includes(lower)) {
+    return { ok: false, reason: 'Bu şifre çok yaygın, başka bir tane seçin.' }
+  }
   return { ok: true }
 }
 

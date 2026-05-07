@@ -70,3 +70,34 @@ export function getClientIp(req: Request): string {
   if (real) return real.trim()
   return 'unknown'
 }
+
+// ── Hesap-bazlı başarısız deneme uyarısı ─────────────────────────────────
+const USER_FAIL_KEY = (uid: string) => `login_user_fail:${uid}`
+const USER_FAIL_EMAIL_SENT_KEY = (uid: string) => `login_user_fail_emailed:${uid}`
+const USER_FAIL_THRESHOLD = 3
+const USER_FAIL_WINDOW_SEC = 24 * 60 * 60   // 24 saat
+const USER_FAIL_EMAIL_COOLDOWN_SEC = 24 * 60 * 60
+
+/**
+ * Belirli bir hesap için başarısız deneme sayacını arttır.
+ * Eşik aşıldığında ve cooldown bittiğinde mail göndermek üzere `true` döner.
+ */
+export async function recordUserLoginFailAndShouldEmail(userId: string): Promise<boolean> {
+  const fails = await redis.incr(USER_FAIL_KEY(userId))
+  if (fails === 1) {
+    await redis.expire(USER_FAIL_KEY(userId), USER_FAIL_WINDOW_SEC)
+  }
+  if (fails < USER_FAIL_THRESHOLD) return false
+
+  // Cooldown — son 24h'te zaten gönderildiyse tekrar gönderme
+  const alreadySent = await redis.get(USER_FAIL_EMAIL_SENT_KEY(userId))
+  if (alreadySent) return false
+
+  await redis.set(USER_FAIL_EMAIL_SENT_KEY(userId), 1, { ex: USER_FAIL_EMAIL_COOLDOWN_SEC })
+  return true
+}
+
+/** Başarılı login → hesap-bazlı sayacı sıfırla */
+export async function clearUserLoginFails(userId: string): Promise<void> {
+  await redis.del(USER_FAIL_KEY(userId))
+}

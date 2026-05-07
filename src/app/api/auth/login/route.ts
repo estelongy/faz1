@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import {
   checkLoginLock,
   recordLoginFail,
   clearLoginFails,
+  recordUserLoginFailAndShouldEmail,
+  clearUserLoginFails,
   getClientIp,
 } from '@/lib/login-ratelimit'
+import { sendEmail } from '@/lib/notifications'
+import { tmplFailedLoginAlert } from '@/lib/email-templates'
 
 const LOCKOUT_FALLBACK = 900
 
@@ -53,8 +58,13 @@ export async function POST(req: Request): Promise<Response> {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    // 4a. Başarısız → sayacı arttır
+    // 4a. Başarısız → IP sayacı + (opsiyonel) hesap sayacı arttır
     const result = await recordLoginFail(ip)
+
+    // Hesap-bazlı uyarı: e-posta gerçek bir hesaba aitse mail gönder
+    // (Saldırgan kendi mail'ine denemiyor → enumeration sızıntısı yok)
+    void notifyAccountIfThreshold(email, ip).catch(() => {})
+
     if (result.locked) {
       return NextResponse.json(
         {
@@ -77,9 +87,39 @@ export async function POST(req: Request): Promise<Response> {
     )
   }
 
-  // 4b. Başarılı → fail sayacını sıfırla
+  // 4b. Başarılı → fail sayacını sıfırla (IP + hesap)
   await clearLoginFails(ip)
+  if (data.user?.id) await clearUserLoginFails(data.user.id)
 
   const role = (data.user?.app_metadata as Record<string, string> | undefined)?.role ?? null
   return NextResponse.json({ ok: true, role })
+}
+
+/**
+ * Verilen e-posta gerçek bir hesaba aitse ve son 24h'te 3+ başarısız deneme
+ * varsa hesap sahibine uyarı maili gönder. Cooldown 24h. Hata yutulur — ana
+ * akış asla bloklanmaz.
+ */
+async function notifyAccountIfThreshold(email: string, ip: string): Promise<void> {
+  const admin = createServiceClient()
+  // Direct auth.users lookup (service role bypasses RLS)
+  const { data: rows } = await admin
+    .schema('auth' as never)
+    .from('users' as never)
+    .select('id')
+    .eq('email', email)
+    .limit(1) as { data: { id: string }[] | null }
+
+  const userId = rows?.[0]?.id
+  if (!userId) return
+
+  const shouldEmail = await recordUserLoginFailAndShouldEmail(userId)
+  if (!shouldEmail) return
+
+  const tmpl = tmplFailedLoginAlert({
+    email,
+    ip,
+    when: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' }),
+  })
+  await sendEmail(email, tmpl.subject, tmpl.html)
 }
