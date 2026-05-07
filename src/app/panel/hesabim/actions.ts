@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 export async function updateProfileAction(formData: FormData) {
   const supabase = await createClient()
@@ -31,19 +32,62 @@ export async function updateProfileAction(formData: FormData) {
   return { ok: true }
 }
 
-export async function deleteAccountAction() {
+/**
+ * KVKK / GDPR uyumlu hesap silme.
+ *
+ *   - Kişisel veriler hard delete (analiz, randevu, adres, sepet, skor, vs.)
+ *   - Mali kayıtlar anonimize (sipariş, kurs satın alma, iade) — yasal saklama
+ *   - Public içerik anonimize (yorum, paylaşım) — kullanıcı bağı kopar
+ *   - Vendor / klinik kullanıcısı ise işletme askıya alınır, mali geçmiş kalır
+ *   - auth.users kalıcı silinir
+ *   - Aktif (henüz tamamlanmamış) sipariş varsa silme reddedilir
+ *
+ * Admin hesabı kendini silemez — başka admin'e devretmesi gerekir.
+ */
+export async function deleteAccountAction(): Promise<
+  | { ok: true }
+  | { ok: false; error: string }
+> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
 
-  // NOT: Gerçek hesap silme için service role gerekiyor — bu basit versiyonda
-  // profili pasif yapıp oturumu kapatıyoruz.
-  // Tam silme için admin endpoint eklenmeli (Faz 2).
-  await supabase
-    .from('profiles')
-    .update({ is_active: false })
-    .eq('id', user.id)
+  // Admin self-delete yok
+  const role = (user.app_metadata as Record<string, string>)?.role
+  if (role === 'admin') {
+    return { ok: false, error: 'Admin hesabı kendini silemez. Başka bir admin ile iletişime geçin.' }
+  }
 
+  const admin = createServiceClient()
+
+  // 1) Public şema: cascade fonksiyonu (anonimize + hard delete)
+  const { data: cascadeResult, error: cascadeErr } = await admin
+    .rpc('app_delete_account_cascade', { p_user_id: user.id })
+
+  if (cascadeErr) {
+    return { ok: false, error: `Silme başarısız: ${cascadeErr.message}` }
+  }
+
+  const result = cascadeResult as { ok: boolean; error?: string; count?: number } | null
+  if (!result?.ok) {
+    if (result?.error === 'active_orders_exist') {
+      return {
+        ok: false,
+        error: `${result.count ?? 'Birkaç'} aktif siparişiniz var. Önce iptal/teslimat tamamlanmalı.`,
+      }
+    }
+    return { ok: false, error: result?.error ?? 'Silme başarısız' }
+  }
+
+  // 2) Auth tarafı: kalıcı silme
+  const { error: authErr } = await admin.auth.admin.deleteUser(user.id)
+  if (authErr) {
+    // Public şema temizlendi ama auth user duruyor → manuel müdahale gerek
+    console.error('[deleteAccount] auth.users silinemedi', authErr)
+    return { ok: false, error: 'Auth tarafı silinemedi. Destek ekibiyle iletişime geçin.' }
+  }
+
+  // 3) Oturumu kapat
   await supabase.auth.signOut()
   redirect('/?deleted=1')
 }

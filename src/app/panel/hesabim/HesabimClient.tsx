@@ -39,6 +39,7 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteText, setDeleteText] = useState('')
   const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   function formatPhone(raw: string) {
     const d = raw.replace(/\D/g, '')
@@ -95,7 +96,13 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
   async function handleDelete() {
     if (deleteText !== 'SİL') return
     setDeleting(true)
-    await deleteAccountAction()
+    setDeleteError(null)
+    const res = await deleteAccountAction()
+    // Başarılıysa zaten redirect olur, buraya düşmez
+    if (res && !res.ok) {
+      setDeleteError(res.error)
+      setDeleting(false)
+    }
   }
 
   return (
@@ -231,8 +238,15 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
 
       {/* HESABI SİL */}
       <section className="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
-        <h2 className="text-red-300 font-bold text-lg mb-1">Tehlikeli Bölge</h2>
-        <p className="text-slate-400 text-sm mb-5">Hesabınızı silmek geri alınamaz. Tüm verileriniz pasif duruma alınır.</p>
+        <h2 className="text-red-300 font-bold text-lg mb-1">Hesabı Kalıcı Sil</h2>
+        <p className="text-slate-400 text-sm mb-3">
+          KVKK ve GDPR kapsamındaki <strong className="text-slate-300">unutulma hakkınız</strong>:
+        </p>
+        <ul className="text-slate-400 text-xs space-y-1 mb-5 list-disc pl-5">
+          <li><strong className="text-slate-300">Silinir:</strong> Profil, telefon, e-posta, analizler, randevular, skorlar, adresler, sepet, yorumlar (anonimleşir), bildirimler.</li>
+          <li><strong className="text-slate-300">Anonim kalır:</strong> Tamamlanmış siparişler, faturalar (vergi mevzuatı 5 yıl saklama zorunlu) — kişisel bağ kopar.</li>
+          <li><strong className="text-slate-300">Aktif sipariş varsa:</strong> Önce teslimat/iptal tamamlanmalı.</li>
+        </ul>
         {!showDeleteConfirm ? (
           <button onClick={() => setShowDeleteConfirm(true)}
             className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 font-semibold rounded-xl transition-colors">
@@ -243,8 +257,13 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
             <p className="text-slate-300 text-sm">Onay için aşağıya <strong className="text-red-400 font-mono">SİL</strong> yazın:</p>
             <input type="text" value={deleteText} onChange={e => setDeleteText(e.target.value)} placeholder="SİL"
               className="w-full px-4 py-3 bg-slate-900 border border-red-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-red-500" />
+            {deleteError && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+                {deleteError}
+              </div>
+            )}
             <div className="flex gap-2">
-              <button onClick={() => { setShowDeleteConfirm(false); setDeleteText('') }}
+              <button onClick={() => { setShowDeleteConfirm(false); setDeleteText(''); setDeleteError(null) }}
                 className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors">
                 Vazgeç
               </button>
