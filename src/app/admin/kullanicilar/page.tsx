@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ensureAdminOtpFresh } from '@/lib/admin-otp'
+import { writeAuditLog } from '@/lib/audit'
 
 export const metadata: Metadata = {
   title: 'Kullanıcılar',
@@ -47,8 +48,26 @@ async function changeRole(formData: FormData) {
 
   const userId = formData.get('userId') as string
   const role = formData.get('role') as UserRole
+
+  // Eski rolü logla
+  const { data: before } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .single()
+
   // app_metadata.role tek kaynak — set_user_role RPC profiles.role'u da senkronlar
   await supabase.rpc('set_user_role', { target_user_id: userId, new_role: role })
+
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'role_change',
+    tableName: 'profiles',
+    recordId: userId,
+    oldData: { role: before?.role ?? null },
+    newData: { role },
+  })
+
   redirect('/admin/kullanicilar')
 }
 
@@ -64,6 +83,16 @@ async function toggleActive(formData: FormData) {
   const userId = formData.get('userId') as string
   const current = formData.get('current') === 'true'
   await supabase.from('profiles').update({ is_active: !current }).eq('id', userId)
+
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'user_active_toggle',
+    tableName: 'profiles',
+    recordId: userId,
+    oldData: { is_active: current },
+    newData: { is_active: !current },
+  })
+
   redirect('/admin/kullanicilar')
 }
 

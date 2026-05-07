@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ensureAdminOtpFresh } from '@/lib/admin-otp'
+import { writeAuditLog } from '@/lib/audit'
 
 export const metadata: Metadata = {
   title: 'Klinikler',
@@ -86,6 +87,16 @@ async function updateClinic(formData: FormData) {
   }
 
   await triggerWelcomeIfApproved()
+
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'clinic_approval',
+    tableName: 'clinics',
+    recordId: clinicId,
+    oldData: { approval_status: current?.approval_status ?? null },
+    newData: { approval_status: status, is_active: isActive, user_id: current?.user_id ?? null },
+  })
+
   redirect('/admin/klinikler')
 }
 
@@ -110,6 +121,14 @@ async function toggleEducator(formData: FormData) {
       educator_decided_at: makeEducator ? new Date().toISOString() : null,
     })
     .eq('id', clinicId)
+
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'clinic_educator_toggle',
+    tableName: 'clinics',
+    recordId: clinicId,
+    newData: { is_educator: makeEducator },
+  })
 
   redirect('/admin/klinikler')
 }
@@ -149,6 +168,14 @@ async function decideEducatorApplication(formData: FormData) {
       .eq('id', clinicId)
   }
 
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'clinic_educator_decision',
+    tableName: 'clinics',
+    recordId: clinicId,
+    newData: { decision, note },
+  })
+
   redirect('/admin/klinikler')
 }
 
@@ -172,6 +199,15 @@ async function addJeton(formData: FormData) {
     amount,
     type: 'manual',
     description: `Admin tarafından ${amount} kredi yüklendi`,
+  })
+
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'clinic_jeton_grant',
+    tableName: 'clinics',
+    recordId: clinicId,
+    oldData: { jeton_balance: clinic?.jeton_balance ?? 0 },
+    newData: { jeton_balance: newBalance, amount },
   })
 
   redirect('/admin/klinikler')

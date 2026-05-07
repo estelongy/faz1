@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { ensureAdminOtpFresh } from '@/lib/admin-otp'
+import { writeAuditLog } from '@/lib/audit'
 import UrunOnayActions from './UrunOnayActions'
 
 export const metadata: Metadata = { title: 'Ürün Onayları — Admin' }
@@ -24,6 +25,14 @@ async function urunOnayAction(productId: string, status: 'approved' | 'rejected'
     .from('products')
     .update({ approval_status: status, is_active: status === 'approved' })
     .eq('id', productId)
+
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'product_approval',
+    tableName: 'products',
+    recordId: productId,
+    newData: { approval_status: status, is_active: status === 'approved' },
+  })
 
   revalidatePath('/admin/urunler')
 }

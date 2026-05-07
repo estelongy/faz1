@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { redirect } from 'next/navigation'
 import { ensureAdminOtpFresh } from '@/lib/admin-otp'
+import { writeAuditLog } from '@/lib/audit'
 
 export const metadata: Metadata = {
   title: 'Satıcılar',
@@ -69,6 +70,15 @@ async function updateVendor(formData: FormData) {
     const newRole = status === 'approved' ? 'vendor' : 'user'
     await supabase.rpc('set_user_role', { target_user_id: prev.user_id, new_role: newRole })
   }
+
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'vendor_approval',
+    tableName: 'vendors',
+    recordId: vendorId,
+    oldData: { approval_status: prev?.approval_status ?? null },
+    newData: { approval_status: status, is_active: isActive, user_id: prev?.user_id ?? null },
+  })
 
   if (status === 'approved' && prev?.approval_status !== 'approved' && prev?.user_id) {
     try {
