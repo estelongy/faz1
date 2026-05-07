@@ -47,7 +47,7 @@ export default async function SaticiPanelPage() {
   // Satıcı kaydını bul
   const { data: vendor } = await supabase
     .from('vendors')
-    .select('id, company_name, approval_status, stripe_account_id, stripe_charges_enabled')
+    .select('id, company_name, approval_status, kyc_status, kyc_review_note, stripe_account_id, stripe_charges_enabled')
     .eq('user_id', user.id)
     .single()
 
@@ -67,13 +67,52 @@ export default async function SaticiPanelPage() {
     )
   }
 
+  // ── KYC zorunluluğu — approved öncesi şart ──
+  if (vendor.kyc_status === 'not_submitted' || vendor.kyc_status === 'rejected') {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">📋</div>
+          <h1 className="text-white font-bold text-xl mb-2">
+            {vendor.kyc_status === 'rejected' ? 'KYC Reddedildi — Düzelt' : 'KYC Bilgileri Gerekli'}
+          </h1>
+          <p className="text-slate-400 text-sm mb-6">
+            Satışa başlamak için vergi levhası, banka bilgisi ve sözleşme onayı gerekiyor.
+          </p>
+          <Link href="/satici/panel/kyc"
+            className="inline-block px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:opacity-90 text-white font-semibold rounded-xl text-sm">
+            KYC Formuna Git →
+          </Link>
+        </div>
+      </main>
+    )
+  }
+
+  if (vendor.kyc_status === 'pending') {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">⏳</div>
+          <h1 className="text-white font-bold text-xl mb-2">KYC İncelemede</h1>
+          <p className="text-slate-400 text-sm mb-4">
+            KYC bilgileriniz admin onayında. Onay sonrası satışa başlayabilirsiniz (1-2 iş günü).
+          </p>
+          <Link href="/satici/panel/kyc" className="text-violet-400 hover:underline text-sm">
+            Gönderilen bilgileri gör →
+          </Link>
+        </div>
+      </main>
+    )
+  }
+
+  // Vendor approval (eski akış) — KYC onaylı + admin tarafından vendor approved
   if (vendor.approval_status === 'pending') {
     return (
       <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">⏳</div>
           <h1 className="text-white font-bold text-xl mb-2">Başvurunuz İnceleniyor</h1>
-          <p className="text-slate-400 text-sm">Başvurunuz admin tarafından incelendikten sonra panele erişebileceksiniz.</p>
+          <p className="text-slate-400 text-sm">KYC&apos;niz onaylandı, son admin onayı bekleniyor.</p>
         </div>
       </main>
     )

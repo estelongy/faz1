@@ -13,6 +13,8 @@ export const metadata: Metadata = {
 
 type ApprovalStatus = 'pending' | 'approved' | 'rejected'
 
+type KycStatus = 'not_submitted' | 'pending' | 'approved' | 'rejected'
+
 interface Vendor {
   id: string
   user_id: string
@@ -28,6 +30,21 @@ interface Vendor {
   stripe_details_submitted: boolean | null
   created_at: string
   profiles: { full_name: string | null } | null
+  // KYC alanları
+  kyc_status: KycStatus
+  kyc_submitted_at: string | null
+  kyc_review_note: string | null
+  trade_registry_no: string | null
+  mersis_no: string | null
+  kep_address: string | null
+  company_address: string | null
+  sells_medical_products: boolean | null
+  iban: string | null
+  iban_holder_name: string | null
+  bank_name: string | null
+  tax_certificate_url: string | null
+  contract_signed_url: string | null
+  its_certificate_url: string | null
 }
 
 interface AuthInfo {
@@ -99,6 +116,48 @@ async function updateVendor(formData: FormData) {
   redirect('/admin/saticilar')
 }
 
+async function decideKyc(formData: FormData) {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || (user.app_metadata as Record<string, string>)?.role !== 'admin') redirect('/panel')
+
+  // KRİTİK — KYC onayı para akışına ön koşul
+  await ensureAdminOtpFresh(user.id, '/admin/saticilar')
+
+  const vendorId = formData.get('vendorId') as string
+  const decision = formData.get('decision') as 'approved' | 'rejected'
+  const note = ((formData.get('note') as string) ?? '').trim() || null
+  if (!vendorId || !decision) redirect('/admin/saticilar')
+
+  const { data: prev } = await supabase
+    .from('vendors')
+    .select('kyc_status, user_id')
+    .eq('id', vendorId)
+    .single()
+
+  await supabase
+    .from('vendors')
+    .update({
+      kyc_status: decision,
+      kyc_reviewed_at: new Date().toISOString(),
+      kyc_reviewer_id: user.id,
+      kyc_review_note: note,
+    })
+    .eq('id', vendorId)
+
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'vendor_approval',
+    tableName: 'vendors',
+    recordId: vendorId,
+    oldData: { kyc_status: prev?.kyc_status ?? null },
+    newData: { kyc_status: decision, note },
+  })
+
+  redirect('/admin/saticilar')
+}
+
 function timeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime()
   const min = Math.floor(ms / 60_000)
@@ -142,6 +201,10 @@ export default async function SaticilarPage() {
       id, user_id, company_name, tax_number, phone, approval_status, is_active, balance,
       stripe_account_id, stripe_charges_enabled, stripe_payouts_enabled, stripe_details_submitted,
       created_at,
+      kyc_status, kyc_submitted_at, kyc_review_note,
+      trade_registry_no, mersis_no, kep_address, company_address, sells_medical_products,
+      iban, iban_holder_name, bank_name,
+      tax_certificate_url, contract_signed_url, its_certificate_url,
       profiles(full_name)
     `)
     .order('created_at', { ascending: false })
@@ -176,6 +239,25 @@ export default async function SaticilarPage() {
   const pending = all.filter(v => v.approval_status === 'pending')
   const approved = all.filter(v => v.approval_status === 'approved')
   const rejected = all.filter(v => v.approval_status === 'rejected')
+
+  // KYC belgeleri için signed URL (1 saat) — admin görsün diye
+  const kycUrlMap = new Map<string, string>()
+  try {
+    const admin = createServiceClient()
+    const allDocPaths = pending
+      .flatMap(v => [v.tax_certificate_url, v.contract_signed_url, v.its_certificate_url])
+      .filter((p): p is string => !!p)
+    if (allDocPaths.length > 0) {
+      const { data: signed } = await admin.storage
+        .from('vendor-kyc')
+        .createSignedUrls(allDocPaths, 3600)
+      signed?.forEach(s => {
+        if (s.path && s.signedUrl) kycUrlMap.set(s.path, s.signedUrl)
+      })
+    }
+  } catch (e) {
+    console.error('[admin/saticilar] KYC signed URL üretilemedi:', e)
+  }
 
   return (
     <div className="p-8">
@@ -267,6 +349,9 @@ export default async function SaticilarPage() {
                       <Field label="Bakiye" value={`₺${Number(v.balance ?? 0).toLocaleString('tr-TR')}`} />
                       <Field label="Vendor ID" value={v.id.slice(0, 8) + '…'} mono />
                     </div>
+
+                    {/* KYC bloğu */}
+                    <KycBlock vendor={v} kycUrlMap={kycUrlMap} />
 
                     {/* Aksiyon */}
                     <div className="flex gap-2 pt-2">
@@ -398,6 +483,148 @@ function Field({
         <span className={`text-[10px] shrink-0 ${verified ? 'text-emerald-400' : 'text-amber-400'}`}>
           {verified ? '✓ doğrulu' : '⚠ doğrulanmamış'}
         </span>
+      )}
+    </div>
+  )
+}
+
+const KYC_COLOR: Record<KycStatus, string> = {
+  not_submitted: 'bg-slate-700 text-slate-400',
+  pending: 'bg-amber-500/20 text-amber-400',
+  approved: 'bg-emerald-500/20 text-emerald-400',
+  rejected: 'bg-red-500/20 text-red-400',
+}
+const KYC_LABEL: Record<KycStatus, string> = {
+  not_submitted: 'Gönderilmedi',
+  pending: 'İncelemede',
+  approved: 'Onaylı',
+  rejected: 'Reddedildi',
+}
+
+function formatIban(raw: string | null): string {
+  if (!raw) return '—'
+  return raw.match(/.{1,4}/g)?.join(' ') ?? raw
+}
+
+function KycBlock({
+  vendor,
+  kycUrlMap,
+}: {
+  vendor: Vendor
+  kycUrlMap: Map<string, string>
+}) {
+  const status = (vendor.kyc_status ?? 'not_submitted') as KycStatus
+  const taxUrl = vendor.tax_certificate_url ? kycUrlMap.get(vendor.tax_certificate_url) : null
+  const contractUrl = vendor.contract_signed_url ? kycUrlMap.get(vendor.contract_signed_url) : null
+  const itsUrl = vendor.its_certificate_url ? kycUrlMap.get(vendor.its_certificate_url) : null
+
+  return (
+    <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-white font-bold text-sm">KYC</span>
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${KYC_COLOR[status]}`}>
+            {KYC_LABEL[status]}
+          </span>
+          {vendor.kyc_submitted_at && (
+            <span className="text-slate-500 text-xs">
+              {new Date(vendor.kyc_submitted_at).toLocaleDateString('tr-TR')}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {status === 'not_submitted' && (
+        <p className="text-slate-500 text-xs italic">
+          Satıcı KYC bilgilerini henüz göndermedi. Onay süreci için önce satıcının KYC formunu doldurması bekleniyor.
+        </p>
+      )}
+
+      {status !== 'not_submitted' && (
+        <>
+          {/* Bilgi grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+            <Field label="IBAN" value={formatIban(vendor.iban)} mono />
+            <Field label="IBAN Sahibi" value={vendor.iban_holder_name ?? '—'} />
+            <Field label="Banka" value={vendor.bank_name ?? '—'} />
+            <Field label="KEP" value={vendor.kep_address ?? '—'} mono />
+            <Field label="MERSIS" value={vendor.mersis_no ?? '—'} mono />
+            <Field label="Tic. Sicil" value={vendor.trade_registry_no ?? '—'} mono />
+            <div className="sm:col-span-2">
+              <Field label="Adres" value={vendor.company_address ?? '—'} />
+            </div>
+            {vendor.sells_medical_products && (
+              <div className="sm:col-span-2">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">
+                  ⚕ Tıbbi ürün satıcısı
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Belgeler */}
+          <div className="flex flex-wrap gap-2 pt-2">
+            {taxUrl && (
+              <a href={taxUrl} target="_blank" rel="noopener noreferrer"
+                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
+                📄 Vergi Levhası
+              </a>
+            )}
+            {itsUrl && (
+              <a href={itsUrl} target="_blank" rel="noopener noreferrer"
+                className="text-xs px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-500/30 transition-colors">
+                ⚕ ITS Belgesi
+              </a>
+            )}
+            {contractUrl && (
+              <a href={contractUrl} target="_blank" rel="noopener noreferrer"
+                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
+                📜 İmzalı Sözleşme
+              </a>
+            )}
+            {!vendor.contract_signed_url && (
+              <span className="text-xs px-3 py-1.5 rounded-lg bg-slate-800/50 text-slate-500 border border-slate-700/50">
+                Sözleşme: e-onay (ıslak imza yüklenmedi)
+              </span>
+            )}
+          </div>
+
+          {/* Önceki ret notu */}
+          {vendor.kyc_review_note && (
+            <div className="p-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-400">
+              <span className="font-semibold text-slate-300">Önceki not:</span> {vendor.kyc_review_note}
+            </div>
+          )}
+
+          {/* KYC karar butonları */}
+          {status === 'pending' && (
+            <div className="flex gap-2 pt-1">
+              <form action={decideKyc} className="flex-1 flex gap-2">
+                <input type="hidden" name="vendorId" value={vendor.id} />
+                <input type="hidden" name="decision" value="approved" />
+                <button type="submit"
+                  className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition-colors">
+                  ✓ KYC Onayla
+                </button>
+              </form>
+              <details className="flex-1">
+                <summary className="cursor-pointer py-2 px-3 bg-red-900/40 hover:bg-red-800/50 text-red-300 text-xs font-semibold rounded-lg text-center border border-red-800/50">
+                  ✕ KYC Reddet
+                </summary>
+                <form action={decideKyc} className="mt-2 space-y-2">
+                  <input type="hidden" name="vendorId" value={vendor.id} />
+                  <input type="hidden" name="decision" value="rejected" />
+                  <textarea name="note" required rows={2} placeholder="Ret nedeni — vendor görecek"
+                    className="w-full px-3 py-2 bg-slate-900 border border-red-500/30 rounded-lg text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500 resize-none" />
+                  <button type="submit"
+                    className="w-full py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded-lg transition-colors">
+                    Reddi Gönder
+                  </button>
+                </form>
+              </details>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
