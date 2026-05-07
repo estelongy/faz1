@@ -1,0 +1,66 @@
+ESTELONGY — SUPABASE MIGRATION GEÇMİŞİ
+Project ref: dcmnxmqzimrgmholktid
+Toplam: 56 migration
+
+NOT: Tam DDL'leri görmek için Supabase Dashboard → Database → Migrations
+veya supabase CLI: `supabase db pull`
+
+──────────────────────────────────────────────────────────────────────
+2026-04-14  faz1_tables                                 ← Temel şema
+2026-04-15  auth_profile_trigger                        ← Otomatik profil oluşturma
+2026-04-15  rls_profiles
+2026-04-15  rls_analyses
+2026-04-15  rls_clinics_appointments
+2026-04-15  rls_remaining_tables                        ← Tüm tablolar için RLS
+2026-04-16  enable_pg_net_appointment_webhook
+2026-04-17  add_confirmed_status_and_clinic_notes
+2026-04-17  add_jeton_system                            ← Klinik kredi
+2026-04-19  products_score_decimal_and_reviews
+2026-04-20  jeton_admin_rls_and_atomic_rpc
+2026-04-20  public_share_card_function
+2026-04-20  fix_function_search_path_v2
+2026-04-20  product_images_storage_policies
+2026-04-20  marketplace_cart_orders_addresses           ← E-ticaret omurgası
+2026-04-20  orders_insert_policies
+2026-04-20  orders_customer_update_policy
+2026-04-20  decrement_product_stock
+2026-04-20  vendors_public_read_approved
+2026-04-20  returns_table
+2026-04-20  consume_jeton_function
+2026-04-20  returns_stripe_refund_id
+2026-04-20  scores_v2_schema                            ← Skor sistem v2
+2026-04-20  appointments_egs_links
+2026-04-20  add_clinic_availability_and_appointment_noshow
+2026-04-20  add_notification_queue
+2026-04-20  add_user_badges_and_streaks
+2026-04-21  add_referral_and_coupons                    ← Puan + kupon
+2026-04-21  scores_score_type_allow_egs_chain
+2026-04-21  clinic_patient_notes_table
+2026-04-23  add_birth_year_to_profiles
+2026-04-23  fix_get_public_score_card_web_fallback
+2026-04-23  add_clinic_type_to_clinics
+2026-04-24  clinic_default_availability
+2026-04-24  profiles_phone_verified
+2026-04-28  order_number_atomic_sequence
+2026-05-02  clinic_free_credits_and_paid_invoicing      ← Klinik 20 hediye + ücretli mod
+2026-05-02  user_points_system
+2026-05-03  fix_signup_bonus_trigger_before_insert
+2026-05-03  signup_bonus_trigger_to_after_insert
+2026-05-05  editorial_posts_table                       ← Admin CMS
+2026-05-05  shared_cases_consent_table                  ← KVKK rıza
+2026-05-05  journeys_table_and_analyses_fk              ← Yolculuk
+2026-05-05  journey_auto_complete_trigger
+2026-05-05  backfill_journeys_for_legacy_analyses
+2026-05-05  journey_3_stage_lifecycle
+2026-05-05  drop_overly_permissive_profiles_clinic_select
+2026-05-06  akademi_mvp_schema                          ← Akademi
+2026-05-06  akademi_egitmen_basvuru
+2026-05-06  saglik_profesyoneli_beyan_alanlari
+2026-05-06  clinic_reviews_v1
+2026-05-06  appointments_review_reminder_marker
+2026-05-06  estestore_products_pricing_tiers            ← EsteStore tier
+2026-05-06  add_health_professional_to_user_role_enum_and_sync
+2026-05-07  account_deletion_cascade                    ← KVKK/GDPR
+2026-05-07  storage_bucket_hardening                    ← Storage MIME limit
+2026-05-07  vendor_kyc_sprint_b                         ← KYC
+──────────────────────────────────────────────────────────────────────
