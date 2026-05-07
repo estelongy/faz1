@@ -5,35 +5,65 @@
 
 import { createServiceClient } from '@/lib/supabase/service'
 
-// ── E-posta gönderici ─────────────────────────────────────────────────
+// ── E-posta gönderici (Postmark) ──────────────────────────────────────
+export interface SendEmailResult {
+  ok: boolean
+  /** Postmark MessageID — Activity'de aramak için */
+  messageId?: string
+  error?: string
+}
+
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('[notifications] RESEND_API_KEY eksik, e-posta atlandı')
-    return false
+  const res = await sendEmailDetailed(to, subject, html)
+  return res.ok
+}
+
+export async function sendEmailDetailed(
+  to: string,
+  subject: string,
+  html: string
+): Promise<SendEmailResult> {
+  const token = process.env.POSTMARK_API_TOKEN
+  if (!token) {
+    console.warn('[notifications] POSTMARK_API_TOKEN eksik, e-posta atlandı')
+    return { ok: false, error: 'POSTMARK_API_TOKEN eksik' }
   }
+  const from = process.env.FROM_EMAIL ?? 'noreply@estelongy.com'
+
   try {
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await fetch('https://api.postmarkapp.com/email', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'X-Postmark-Server-Token': token,
       },
       body: JSON.stringify({
-        from: process.env.FROM_EMAIL ?? 'noreply@estelongy.com',
-        to,
-        subject,
-        html,
+        From: from,
+        To: to,
+        Subject: subject,
+        HtmlBody: html,
+        MessageStream: 'outbound', // Default Transactional Stream
       }),
     })
-    if (!res.ok) {
-      const err = await res.text()
-      console.error('[notifications] Resend hatası:', err)
-      return false
+
+    const data = (await res.json().catch(() => ({}))) as {
+      MessageID?: string
+      ErrorCode?: number
+      Message?: string
     }
-    return true
+
+    if (!res.ok) {
+      const errMsg = `Postmark ${res.status}${data.ErrorCode ? ` [${data.ErrorCode}]` : ''}: ${data.Message ?? 'Bilinmeyen hata'}`
+      console.error('[notifications] Postmark hatası:', errMsg)
+      return { ok: false, error: errMsg }
+    }
+
+    return { ok: true, messageId: data.MessageID }
   } catch (e) {
-    console.error('[notifications] sendEmail exception:', e)
-    return false
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error('[notifications] sendEmail exception:', msg)
+    return { ok: false, error: msg }
   }
 }
 

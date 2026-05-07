@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import AdminHesapClient from './AdminHesapClient'
+import EmailTestButton from './EmailTestButton'
 
 export const metadata: Metadata = { title: 'Hesap Ayarları' }
 
@@ -47,6 +48,16 @@ export default async function AdminHesapPage() {
               Hesabınızda telefon yok — admin SMS doğrulaması çalışmaz. Yöneticiyle iletişime geçin.
             </div>
           )}
+        </section>
+
+        {/* Postmark test */}
+        <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <h2 className="text-white font-bold text-base mb-1">E-posta Sistemi Testi</h2>
+          <p className="text-slate-500 text-xs mb-4">
+            Postmark altyapısının çalışıp çalışmadığını test etmek için kendi adresinize bir mail göndertir.
+            Sender Signature: <code className="text-slate-400">{process.env.FROM_EMAIL ?? 'noreply@estelongy.com'}</code>
+          </p>
+          <EmailTestButton />
         </section>
 
         {/* Şifre değiştir */}
