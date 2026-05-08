@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'Mesajlar — Klinik Paneli',
 }
 
-type Filter = 'inbox' | 'unread' | 'wants_reply' | 'replied'
+type Filter = 'inbox' | 'unread' | 'replied'
 
 export default async function KlinikMesajlarPage({
   searchParams,
@@ -44,13 +44,11 @@ export default async function KlinikMesajlarPage({
   const all = ((rows ?? []) as ClinicReviewRow[])
 
   const unreadCount = all.filter(r => !r.private_read_at).length
-  const wantsReplyCount = all.filter(r => r.private_wants_reply && !r.private_clinic_response).length
   const repliedCount = all.filter(r => r.private_clinic_response).length
 
   const filtered = (() => {
     switch (f) {
       case 'unread':       return all.filter(r => !r.private_read_at)
-      case 'wants_reply':  return all.filter(r => r.private_wants_reply && !r.private_clinic_response)
       case 'replied':      return all.filter(r => !!r.private_clinic_response)
       default:             return all
     }
@@ -83,7 +81,6 @@ export default async function KlinikMesajlarPage({
       <nav className="flex flex-wrap gap-2 text-xs">
         <FilterTab href="?f=inbox" active={f === 'inbox'} label="Tümü" count={all.length} />
         <FilterTab href="?f=unread" active={f === 'unread'} label="Okunmamış" count={unreadCount} highlight={unreadCount > 0} />
-        <FilterTab href="?f=wants_reply" active={f === 'wants_reply'} label="Yanıt Bekliyor" count={wantsReplyCount} highlight={wantsReplyCount > 0} />
         <FilterTab href="?f=replied" active={f === 'replied'} label="Yanıtlandı" count={repliedCount} />
       </nav>
 
@@ -132,7 +129,6 @@ function FilterTab({
 
 function MessageCard({ review, userName }: { review: ClinicReviewRow; userName: string }) {
   const isUnread = !review.private_read_at
-  const wantsReply = review.private_wants_reply
   const replied = !!review.private_clinic_response
 
   return (
@@ -148,11 +144,6 @@ function MessageCard({ review, userName }: { review: ClinicReviewRow; userName: 
             {isUnread && (
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 font-bold uppercase">
                 Yeni
-              </span>
-            )}
-            {wantsReply && !replied && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold uppercase">
-                Yanıt Bekliyor
               </span>
             )}
             {replied && (
@@ -195,15 +186,13 @@ function MessageCard({ review, userName }: { review: ClinicReviewRow; userName: 
           </div>
           <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.private_clinic_response}</p>
           <p className="text-[10px] text-slate-600 mt-1.5 italic">
-            Hasta {wantsReply ? 'yanıt istedi ve' : 'yanıt istemedi ama'} yanıtın panelinde görünüyor.
+            Hastanın panelinde yanıtın görünüyor.
           </p>
         </div>
       ) : (
         <div className="space-y-2">
-          <p className={`text-[11px] italic ${wantsReply ? 'text-amber-300/80' : 'text-slate-500'}`}>
-            {wantsReply
-              ? '⚠ Hasta bu mesaja yanıt almak istedi.'
-              : 'Hasta yanıt istemedi — yine de yanıt yazabilirsin (hasta panelinde görür).'}
+          <p className="text-[11px] italic text-slate-500">
+            İstersen yanıtla — hastanın panelinde görünür. Yanıt vermek zorunlu değil.
           </p>
           <PrivateReplyForm reviewId={review.id} />
         </div>

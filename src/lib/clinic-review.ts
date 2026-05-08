@@ -38,8 +38,6 @@ export interface ClinicReviewInput {
   iyilestirmeMetni?: string | null
   /** Public yorumda isim gizli mi? Default true. */
   isAnonymous: boolean
-  /** Private mesaja klinik yanıtı istiyor mu? */
-  privateWantsReply: boolean
 }
 
 export interface ClinicReviewRow {
@@ -103,7 +101,6 @@ export function validateReviewInput(input: Partial<ClinicReviewInput>): { ok: tr
   if (typeof input.isAnonymous !== 'boolean') {
     return { ok: false, error: 'Anonim alanı eksik' }
   }
-  const privateWantsReply = !!input.privateWantsReply
   const pozitif = (input.pozitifMetin ?? '').toString().trim().slice(0, 1000)
   const iyilestirme = (input.iyilestirmeMetni ?? '').toString().trim().slice(0, 1000)
   return {
@@ -120,7 +117,6 @@ export function validateReviewInput(input: Partial<ClinicReviewInput>): { ok: tr
       pozitifMetin: pozitif || null,
       iyilestirmeMetni: iyilestirme || null,
       isAnonymous: input.isAnonymous,
-      privateWantsReply,
     },
   }
 }

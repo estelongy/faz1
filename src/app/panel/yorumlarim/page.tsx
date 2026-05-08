@@ -263,9 +263,6 @@ function RandevuYorumKarti({
             <p className="text-violet-300 text-[10px] uppercase tracking-wider font-bold">
               🔒 Özel Mesajın
             </p>
-            {review.private_wants_reply && !hasPrivateResponse && (
-              <span className="text-[10px] text-amber-400">Yanıt bekleniyor…</span>
-            )}
           </div>
           <p className="text-slate-300 text-sm whitespace-pre-wrap">{review.iyilestirme_metni}</p>
           <p className="text-[10px] text-slate-600 mt-1.5 italic">

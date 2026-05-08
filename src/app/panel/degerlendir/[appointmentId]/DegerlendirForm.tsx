@@ -47,7 +47,6 @@ export default function DegerlendirForm({
   const [iyilestirme, setIyilestirme] = useState(existingReview?.iyilestirme_metni ?? '')
   // Default: anonim AÇIK (kullanıcı çekinmesin diye, isim görünmesin)
   const [isAnonymous, setIsAnonymous] = useState(existingReview?.is_anonymous ?? true)
-  const [privateWantsReply, setPrivateWantsReply] = useState(existingReview?.private_wants_reply ?? false)
 
   const isEdit = !!existingReview
   const npsSet = nps >= 0 && nps <= 3
@@ -73,7 +72,6 @@ export default function DegerlendirForm({
       pozitifMetin: pozitif.trim() || null,
       iyilestirmeMetni: iyilestirme.trim() || null,
       isAnonymous,
-      privateWantsReply,
     }
     startTransition(async () => {
       const res = await submitReviewAction(input)
@@ -243,21 +241,9 @@ export default function DegerlendirForm({
         />
         <p className="text-[10px] text-slate-600 -mt-1 text-right">{iyilestirme.length}/1000</p>
 
-        <label className={`flex items-start gap-3 cursor-pointer ${editLocked ? 'opacity-50 cursor-not-allowed' : ''}`}>
-          <input
-            type="checkbox"
-            checked={privateWantsReply}
-            disabled={editLocked || !iyilestirme.trim()}
-            onChange={e => setPrivateWantsReply(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded border-slate-700 bg-slate-900 text-violet-500 focus:ring-violet-500"
-          />
-          <span className="text-sm text-slate-300 leading-relaxed">
-            Klinik <strong className="text-white">yanıt versin</strong> istiyorum
-            <span className="block text-xs text-slate-500 mt-0.5">
-              İşaretlemezsen klinik mesajını okur ama cevap yazmaz.
-            </span>
-          </span>
-        </label>
+        <p className="text-[11px] text-slate-500 italic">
+          Klinik mesajını okur ve dilerse yanıtlar. Yanıt gelirse panelinde görünür.
+        </p>
       </section>
 
       {/* Hata / Başarı */}
