@@ -4,7 +4,6 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   NPS_LABELS,
-  STAR_DIMENSIONS,
   TEKRAR_GELIR_LABELS,
   type ClinicReviewInput,
   type ClinicReviewRow,
@@ -32,12 +31,15 @@ export default function DegerlendirForm({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
-  const [stars, setStars] = useState({
-    hijyen: existingReview?.hijyen ?? 0,
-    personel: existingReview?.personel ?? 0,
-    randevuUyumu: existingReview?.randevu_uyumu ?? 0,
-    iletisim: existingReview?.iletisim ?? 0,
-  })
+  // NOT: Operasyonel boyutlar (4 yıldız) geçici olarak kaldırıldı.
+  // Yerine ileride akreditasyon temelli bir boyut gelecek.
+  // DB constraint'ini kırmamak için nötr varsayılan (3/5) gönderilir.
+  const stars = {
+    hijyen: existingReview?.hijyen ?? 3,
+    personel: existingReview?.personel ?? 3,
+    randevuUyumu: existingReview?.randevu_uyumu ?? 3,
+    iletisim: existingReview?.iletisim ?? 3,
+  }
   const [nps, setNps] = useState<number>(existingReview?.nps ?? -1)
   const [gereksizIslem, setGereksizIslem] = useState(existingReview?.gereksiz_islem ?? false)
   const [tekrarGelir, setTekrarGelir] = useState<TekrarGelir | ''>(existingReview?.tekrar_gelir ?? '')
@@ -46,10 +48,9 @@ export default function DegerlendirForm({
   const [isAnonymous, setIsAnonymous] = useState(existingReview?.is_anonymous ?? false)
 
   const isEdit = !!existingReview
-  const allStarsSet = Object.values(stars).every(v => v >= 1 && v <= 5)
-  const npsSet = nps >= 0 && nps <= 4
+  const npsSet = nps >= 0 && nps <= 3
   const tekrarSet = tekrarGelir !== ''
-  const canSubmit = allStarsSet && npsSet && tekrarSet && !pending && !editLocked
+  const canSubmit = npsSet && tekrarSet && !pending && !editLocked
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -106,33 +107,19 @@ export default function DegerlendirForm({
         )}
       </header>
 
-      {/* Felsefe açıklaması */}
-      <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 leading-relaxed">
-        Estelongy <strong className="text-white">ölçüm platformu</strong> — hekim sanatı puanlanmaz,
-        sonucu sistem ölçer. 4 objektif boyut + tavsiye eğilimi + tacir filtresi.
+      {/* Başlık metni */}
+      <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <p className="text-sm font-bold text-white uppercase tracking-wider">
+          Estelongy Deneyim Merkezi
+        </p>
       </div>
-
-      {/* 4 ★ Boyut */}
-      <section className="space-y-3">
-        <h2 className="text-sm font-bold text-white uppercase tracking-wider">Operasyonel Boyutlar</h2>
-        {STAR_DIMENSIONS.map(dim => (
-          <StarRow
-            key={dim.key}
-            label={dim.label}
-            icon={dim.icon}
-            value={stars[dim.key]}
-            onChange={v => setStars(s => ({ ...s, [dim.key]: v }))}
-            disabled={editLocked}
-          />
-        ))}
-      </section>
 
       {/* NPS */}
       <section>
         <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-3">
           Bu kliniği bir tanıdığına önerir misin?
         </h2>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {NPS_LABELS.map((label, i) => (
             <button
               key={i}
@@ -145,7 +132,7 @@ export default function DegerlendirForm({
                   : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
               } ${editLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <div className="text-base mb-1">{['😞', '🙁', '😐', '🙂', '🤩'][i]}</div>
+              <div className="text-base mb-1">{['🙁', '😐', '🙂', '🤩'][i]}</div>
               {label}
             </button>
           ))}
@@ -154,7 +141,7 @@ export default function DegerlendirForm({
 
       {/* Tacir filtresi */}
       <section className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-4">
-        <h2 className="text-sm font-bold text-amber-300 uppercase tracking-wider">Tacir Filtresi</h2>
+        <h2 className="text-sm font-bold text-amber-300 uppercase tracking-wider">Güven Endeksi</h2>
 
         <label className={`flex items-start gap-3 cursor-pointer ${editLocked ? 'opacity-50 cursor-not-allowed' : ''}`}>
           <input
@@ -267,39 +254,3 @@ export default function DegerlendirForm({
   )
 }
 
-// ───────────────────────────────────────────────────────────────────
-
-function StarRow({
-  label, icon, value, onChange, disabled,
-}: {
-  label: string
-  icon: string
-  value: number
-  onChange: (v: number) => void
-  disabled: boolean
-}) {
-  return (
-    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900/50 border border-slate-800">
-      <div className="flex items-center gap-2.5">
-        <span className="text-lg">{icon}</span>
-        <span className="text-sm text-white font-medium">{label}</span>
-      </div>
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map(n => (
-          <button
-            key={n}
-            type="button"
-            disabled={disabled}
-            onClick={() => onChange(n)}
-            className={`w-8 h-8 flex items-center justify-center text-xl transition-colors ${
-              n <= value ? 'text-amber-400' : 'text-slate-700 hover:text-slate-500'
-            } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-            aria-label={`${n} yıldız`}
-          >
-            ★
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}

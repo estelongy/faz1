@@ -29,7 +29,7 @@ export interface ClinicReviewInput {
   personel: number     // 1-5
   randevuUyumu: number // 1-5
   iletisim: number     // 1-5
-  nps: number          // 0-4
+  nps: number          // 0-3
   gereksizIslem: boolean
   tekrarGelir: TekrarGelir
   pozitifMetin?: string | null
@@ -82,7 +82,7 @@ export function validateReviewInput(input: Partial<ClinicReviewInput>): { ok: tr
   if (iletisim == null) return { ok: false, error: 'İletişim 1-5 arası seçilmeli' }
 
   const nps = input.nps
-  if (typeof nps !== 'number' || !Number.isInteger(nps) || nps < 0 || nps > 4) {
+  if (typeof nps !== 'number' || !Number.isInteger(nps) || nps < 0 || nps > 3) {
     return { ok: false, error: 'NPS 0-4 arası seçilmeli' }
   }
   if (typeof input.gereksizIslem !== 'boolean') {
@@ -133,13 +133,13 @@ export function operationalScoreFromReviews(reviews: ClinicReviewRow[]): number 
 }
 
 /**
- * NPS skoru: 0-4 → 0-10 ölçeği.
+ * NPS skoru: 0-3 → 0-10 ölçeği.
  */
 export function npsScoreFromReviews(reviews: ClinicReviewRow[]): number | null {
   if (reviews.length === 0) return null
   const sum = reviews.reduce((acc, r) => acc + r.nps, 0)
   const avg = sum / reviews.length
-  return Math.round((avg * 2.5) * 100) / 100 // 0-4 → 0-10
+  return Math.round((avg * (10 / 3)) * 100) / 100 // 0-3 → 0-10
 }
 
 /**
@@ -222,11 +222,10 @@ export function computeClinicEGP(args: {
 // ───────────────────────────────────────────────────────────────────
 
 export const NPS_LABELS = [
-  'Asla önermem',
-  'Önermem',
+  'Tavsiye Etmem',
   'Kararsızım',
-  'Önerebilirim',
-  'Mutlaka öneririm',
+  'Öneririm',
+  'Kesinlikle Öneririm',
 ] as const
 
 export const TEKRAR_GELIR_LABELS: Record<TekrarGelir, string> = {
