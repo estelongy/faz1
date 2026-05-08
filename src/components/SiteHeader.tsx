@@ -28,22 +28,30 @@ export default async function SiteHeader() {
             </span>
           </Link>
           <div className="flex items-center gap-3 text-sm">
-            <Link href="/klinikler" className="hidden sm:block text-slate-400 hover:text-white transition-colors">
-              Klinikler
-            </Link>
-            <Link href="/magaza" className="hidden sm:flex items-center gap-1 text-amber-400 hover:text-amber-300 font-medium transition-colors">
-              🛒 EsteStore
-            </Link>
             <Link href="/rehber" className="hidden md:block text-slate-400 hover:text-white transition-colors">
-              Rehber
+              Estelongy Rehberi
             </Link>
             {user ? (
-              <Link
-                href={panelHref}
-                className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all"
-              >
-                Hesabım
-              </Link>
+              <>
+                <Link
+                  href={panelHref}
+                  className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all"
+                >
+                  Hesabım
+                </Link>
+                <Link
+                  href="/randevu"
+                  className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all"
+                >
+                  Randevu Al
+                </Link>
+                <Link
+                  href="/magaza"
+                  className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all"
+                >
+                  EsteStore
+                </Link>
+              </>
             ) : (
               <>
                 <Link href="/giris" className="text-slate-400 hover:text-white transition-colors">
@@ -54,6 +62,18 @@ export default async function SiteHeader() {
                   className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all"
                 >
                   Kayıt Ol
+                </Link>
+                <Link
+                  href="/randevu"
+                  className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all"
+                >
+                  Randevu Al
+                </Link>
+                <Link
+                  href="/magaza"
+                  className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all"
+                >
+                  EsteStore
                 </Link>
               </>
             )}
