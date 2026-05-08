@@ -9,7 +9,7 @@ import { NPS_LABELS } from '@/lib/clinic-review'
 import GecmisTabs from '@/components/GecmisTabs'
 
 export const metadata: Metadata = {
-  title: 'Yorumlarım — Estelongy',
+  title: 'Deneyim — Estelongy',
 }
 
 interface AppointmentRow {
@@ -82,7 +82,7 @@ export default async function YorumlarimPage() {
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
           </Link>
-          <span className="text-white font-bold text-sm">Yorumlarım</span>
+          <span className="text-white font-bold text-sm">Deneyim</span>
           <span className="w-[68px]" />
         </div>
       </header>

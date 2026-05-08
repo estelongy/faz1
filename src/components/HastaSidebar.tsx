@@ -40,6 +40,7 @@ const HASTA_NAV: NavGroup[] = [
   {
     title: 'Topluluk',
     items: [
+      { href: '/panel/yorumlarim',     icon: '💬', label: 'Deneyim' },
       { href: '/panel/referral',       icon: '🎁', label: 'Davet & Puan' },
       { href: '/panel/leaderboard',    icon: '🏆', label: 'Sıralama' },
     ],

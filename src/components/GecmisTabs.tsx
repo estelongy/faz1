@@ -13,7 +13,7 @@ export default function GecmisTabs({ active, yorumCount, unrespondedReplyCount }
       <Tab
         href="/panel/yorumlarim"
         active={active === 'yorumlar'}
-        label="Yorumlarım"
+        label="Deneyim"
         count={yorumCount}
         badge={unrespondedReplyCount && unrespondedReplyCount > 0 ? unrespondedReplyCount : undefined}
       />
