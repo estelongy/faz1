@@ -96,7 +96,7 @@ export default async function Home() {
   const isLoggedIn = !!user
   // 3 kapı linkleri — login varsa direkt, yoksa /giris?next=
   const dest1 = isLoggedIn ? '/analiz' : '/giris?next=/analiz'
-  const dest2 = isLoggedIn ? '/randevu' : '/giris?next=/randevu'
+  const dest2 = '/randevu'
   // (kapı 3 zaten /magaza, login gerektirmez)
 
   return (
