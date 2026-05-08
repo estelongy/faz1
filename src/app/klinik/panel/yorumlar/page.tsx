@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import {
-  STAR_DIMENSIONS,
   NPS_LABELS,
   TEKRAR_GELIR_LABELS,
   egpBadgeColor,
@@ -77,14 +76,14 @@ export default async function KlinikYorumlarPage() {
           </span>}
         />
         <StatBox label="Toplam Yorum" value={`${clinic.review_count ?? 0}`} />
-        <StatBox label="Operasyonel Ort." value={clinic.avg_operational != null ? `${Number(clinic.avg_operational).toFixed(2)}/10` : '—'} />
+        <StatBox label="Tavsiye (NPS)" value={clinic.avg_nps != null ? `${Number(clinic.avg_nps).toFixed(2)}/10` : '—'} />
         <StatBox label="Cevap Oranı" value={`${responseRate}%`} extra={<span className="text-[10px] text-slate-500">{respondedCount}/{totalReviews}</span>} />
       </section>
 
       {/* Felsefe Notu */}
       <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 leading-relaxed">
-        Estelongy <strong className="text-white">ölçüm platformu</strong>. EGP günlük güncellenir
-        (formül: Sonuç Δ × 0.35 + NPS × 0.25 + Operasyonel × 0.20 + Akreditasyon × 0.15 + Profesyonellik × 0.05,
+        Estelongy <strong className="text-white">Deneyim Merkezi</strong>. EGP günlük güncellenir
+        (formül: Sonuç Δ × 0.55 + NPS × 0.30 + Akreditasyon × 0.10 + Profesyonellik × 0.05,
         Bayesian shrinkage ile). Az yorumlu klinikler global ortalamaya yaklaştırılır.
       </div>
 
@@ -125,13 +124,12 @@ function StatBox({ label, value, extra }: { label: string; value: string; extra?
 }
 
 function ReviewCard({ review, userName }: { review: ClinicReviewRow; userName: string | null }) {
-  const operationalAvg = (review.hijyen + review.personel + review.randevu_uyumu + review.iletisim) / 4
   const editLocked = new Date(review.edit_window_until) < new Date()
   const responded = !!review.clinic_response
 
   return (
     <article className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-      {/* Üst: kullanıcı + tarih + tacir uyarı */}
+      {/* Üst: kullanıcı + tarih */}
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-white font-bold text-sm">
@@ -143,36 +141,7 @@ function ReviewCard({ review, userName }: { review: ClinicReviewRow; userName: s
             {!editLocked && <span className="ml-2 text-amber-500">· hasta düzenleyebilir</span>}
           </p>
         </div>
-        <div className="text-right shrink-0">
-          <div className="flex items-center gap-1 text-amber-400 text-sm">
-            {[1, 2, 3, 4, 5].map(n => (
-              <span key={n} className={n <= Math.round(operationalAvg) ? '' : 'text-slate-700'}>★</span>
-            ))}
-          </div>
-          <p className="text-slate-500 text-[10px] mt-0.5">{operationalAvg.toFixed(1)}/5 ort.</p>
-        </div>
       </header>
-
-      {/* 4 boyut detay */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-        {STAR_DIMENSIONS.map(dim => {
-          const k = dim.key === 'randevuUyumu' ? 'randevu_uyumu' : dim.key
-          const v = review[k as keyof ClinicReviewRow] as number
-          return (
-            <div key={dim.key} className="p-2 rounded-lg bg-slate-800/40">
-              <div className="text-slate-500 text-[10px] mb-0.5 flex items-center gap-1">
-                <span>{dim.icon}</span>
-                {dim.label}
-              </div>
-              <div className="flex items-center gap-0.5 text-amber-400">
-                {[1, 2, 3, 4, 5].map(n => (
-                  <span key={n} className={`text-xs ${n <= v ? '' : 'text-slate-700'}`}>★</span>
-                ))}
-              </div>
-            </div>
-          )
-        })}
-      </div>
 
       {/* NPS + tekrar gelir */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">

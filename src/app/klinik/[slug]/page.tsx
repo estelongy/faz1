@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import SiteHeader from '@/components/SiteHeader'
 import Footer from '@/components/Footer'
 import {
-  STAR_DIMENSIONS,
   NPS_LABELS,
   egpBadgeColor,
   egpLabel,
@@ -109,15 +108,15 @@ export default async function PublicClinicPage({ params }: Props) {
             </div>
             <p className="text-xs font-bold uppercase tracking-wider mb-3">{egpLabel(egp)}</p>
             <p className="text-[11px] opacity-80 leading-relaxed">
-              <strong>{clinic.review_count ?? 0}</strong> deneyim · <strong>{clinic.avg_operational != null ? Number(clinic.avg_operational).toFixed(1) : '—'}</strong>/10 operasyonel · <strong>{clinic.avg_nps != null ? Number(clinic.avg_nps).toFixed(1) : '—'}</strong>/10 NPS
+              <strong>{clinic.review_count ?? 0}</strong> deneyim · <strong>{clinic.avg_nps != null ? Number(clinic.avg_nps).toFixed(1) : '—'}</strong>/10 tavsiye
             </p>
           </div>
         </header>
 
         {/* Felsefe notu */}
         <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 leading-relaxed mb-6">
-          Estelongy <strong className="text-white">ölçüm platformu</strong>. Klinik EGP; sonuç etkinliği (skor Δ),
-          tavsiye eğilimi, operasyonel boyutlar, akreditasyon ve profesyonelliği birleştirerek hesaplanır.
+          Estelongy <strong className="text-white">Deneyim Merkezi</strong>. Klinik EGP; sonuç etkinliği (skor Δ),
+          tavsiye eğilimi, akreditasyon ve profesyonelliği birleştirerek hesaplanır.
           Az yorumlu klinikler global ortalamaya yaklaştırılır (Bayesian shrinkage).
         </div>
 
@@ -166,8 +165,6 @@ export default async function PublicClinicPage({ params }: Props) {
 // ───────────────────────────────────────────────────────────────────
 
 function PublicReviewCard({ review, userName }: { review: ClinicReviewRow; userName: string | null }) {
-  const operationalAvg = (review.hijyen + review.personel + review.randevu_uyumu + review.iletisim) / 4
-
   return (
     <article className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
       <header className="flex items-start justify-between gap-3">
@@ -181,31 +178,10 @@ function PublicReviewCard({ review, userName }: { review: ClinicReviewRow; userN
           </p>
         </div>
         <div className="text-right shrink-0">
-          <div className="flex items-center gap-0.5 text-amber-400 text-base">
-            {[1, 2, 3, 4, 5].map(n => (
-              <span key={n} className={n <= Math.round(operationalAvg) ? '' : 'text-slate-700'}>★</span>
-            ))}
-          </div>
-          <p className="text-slate-500 text-[10px] mt-0.5">{operationalAvg.toFixed(1)}/5</p>
+          <p className="text-[11px] text-slate-500">Tavsiye</p>
+          <p className="text-white font-semibold text-sm">{NPS_LABELS[review.nps] ?? '—'}</p>
         </div>
       </header>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px]">
-        {STAR_DIMENSIONS.map(dim => {
-          const k = dim.key === 'randevuUyumu' ? 'randevu_uyumu' : dim.key
-          const v = review[k as keyof ClinicReviewRow] as number
-          return (
-            <div key={dim.key} className="px-2 py-1 rounded bg-slate-800/40 flex items-center justify-between">
-              <span className="text-slate-500">{dim.label}</span>
-              <span className="text-amber-400 font-bold">{v}/5</span>
-            </div>
-          )
-        })}
-      </div>
-
-      <p className="text-[11px] text-slate-500">
-        Tavsiye: <span className="text-white font-medium">{NPS_LABELS[review.nps]}</span>
-      </p>
 
       {review.pozitif_metin && (
         <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">

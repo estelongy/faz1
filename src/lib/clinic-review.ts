@@ -192,13 +192,13 @@ export function confidenceFactor(reviewCount: number): number {
 
 /**
  * Klinik EGP hesabı.
- * Ağırlıklar:
- *   Sonuç 0.35 + NPS 0.25 + Operasyonel 0.20 + Estelongy 0.15 + Profesyonel 0.05
+ * Ağırlıklar (operasyonel 4-yıldız boyutu kaldırıldıktan sonra yeniden dengelendi):
+ *   Sonuç 0.55 + NPS 0.30 + Estelongy 0.10 + Profesyonel 0.05
  */
 export function computeClinicEGP(args: {
   resultEff: number | null
   nps: number | null
-  operational: number | null
+  operational?: number | null  // DEPRECATED — geriye dönük uyumluluk için duruyor, hesaba katılmaz
   accreditation: number
   professionalism: number
   reviewCount: number
@@ -209,13 +209,11 @@ export function computeClinicEGP(args: {
   // Eksik metrikler global ortalamaya doldurulur
   const r = args.resultEff ?? args.globalAvg
   const n = args.nps ?? args.globalAvg
-  const o = args.operational ?? args.globalAvg
 
   const raw =
-    r * 0.35 +
-    n * 0.25 +
-    o * 0.20 +
-    args.accreditation * 0.15 +
+    r * 0.55 +
+    n * 0.30 +
+    args.accreditation * 0.10 +
     args.professionalism * 0.05
 
   // Bayesian shrinkage: az yorum varsa global ortalamaya yaklaş
