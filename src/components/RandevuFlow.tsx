@@ -7,7 +7,8 @@ import { FilterInput } from '@/components/FilterInput'
 import { BRANCHES, ALL_TREATMENTS, LOCATIONS, branchMatches, locationMatches } from '@/lib/randevu-filters'
 import RandevuOnayModal, { type RandevuTaslak } from '@/components/RandevuOnayModal'
 import ClinicPreviewModal from '@/components/ClinicPreviewModal'
-import { egpBadgeColor } from '@/lib/clinic-review'
+import { egpBadgeColor, egpDisplayPublic, MIN_REVIEWS_THRESHOLD } from '@/lib/clinic-review'
+import MeasuringBadge from '@/components/MeasuringBadge'
 
 interface Clinic {
   id: string
@@ -340,6 +341,9 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredClinics.map(clinic => {
                 const egp = clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null
+                const reviewCount = clinic.review_count ?? 0
+                const showMeasuring = reviewCount < MIN_REVIEWS_THRESHOLD
+                const egpPublic = egpDisplayPublic(egp, reviewCount)
                 return (
                   <button key={clinic.id} onClick={() => setPreviewClinic(clinic)}
                     className={`group text-left p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:border-violet-500/50 hover:shadow-lg hover:shadow-violet-500/10 ${
@@ -349,13 +353,15 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white shrink-0">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                       </div>
-                      {egp != null ? (
+                      {showMeasuring ? (
+                        <MeasuringBadge reviewCount={reviewCount} variant="mini" />
+                      ) : egpPublic ? (
                         <div className={`shrink-0 px-2 py-1 rounded-lg border text-center ${egpBadgeColor(egp)}`}>
-                          <div className="text-base font-black leading-none">{egp.toFixed(1)}</div>
+                          <div className="text-base font-black leading-none">{egpPublic}</div>
                           <div className="text-[8px] uppercase tracking-wider opacity-70 mt-0.5">EGP</div>
                         </div>
                       ) : (
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider px-2 py-1 rounded-lg bg-slate-800 border border-slate-700">Yeni</span>
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider px-2 py-1 rounded-lg bg-slate-800 border border-slate-700">—</span>
                       )}
                     </div>
                     <div className="text-white font-bold mb-1 group-hover:text-violet-300 transition-colors">{clinic.name}</div>

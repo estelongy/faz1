@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import SiteHeader from '@/components/SiteHeader'
 import Footer from '@/components/Footer'
-import { egpBadgeColor, egpLabel } from '@/lib/clinic-review'
+import { egpBadgeColor, egpLabel, egpDisplayPublic, MIN_REVIEWS_THRESHOLD } from '@/lib/clinic-review'
+import MeasuringBadge from '@/components/MeasuringBadge'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com'
 
@@ -218,6 +219,9 @@ export default async function KliniklerPage({
 
 function ClinicCard({ clinic }: { clinic: ClinicRow }) {
   const egp = clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null
+  const reviewCount = clinic.review_count ?? 0
+  const showMeasuring = reviewCount < MIN_REVIEWS_THRESHOLD
+  const egpPublic = egpDisplayPublic(egp, reviewCount)
   const slug = clinic.slug ?? clinic.id
   const bioPreview = clinic.bio
     ? clinic.bio.length > 140 ? clinic.bio.slice(0, 140).trim() + '…' : clinic.bio
@@ -237,10 +241,14 @@ function ClinicCard({ clinic }: { clinic: ClinicRow }) {
             <p className="text-slate-500 text-xs mt-0.5 line-clamp-1">📍 {clinic.location}</p>
           )}
         </div>
-        <div className={`shrink-0 px-2 py-1 rounded-md border text-center min-w-[60px] ${egpBadgeColor(egp)}`}>
-          <p className="text-lg font-black leading-none">{egp != null ? egp.toFixed(1) : '—'}</p>
-          <p className="text-[8px] uppercase tracking-wider opacity-70 mt-0.5">EGP</p>
-        </div>
+        {showMeasuring ? (
+          <MeasuringBadge reviewCount={reviewCount} variant="mini" />
+        ) : (
+          <div className={`shrink-0 px-2 py-1 rounded-md border text-center min-w-[60px] ${egpBadgeColor(egp)}`}>
+            <p className="text-lg font-black leading-none">{egpPublic ?? '—'}</p>
+            <p className="text-[8px] uppercase tracking-wider opacity-70 mt-0.5">EGP</p>
+          </div>
+        )}
       </header>
 
       {/* Etiketler: tip + uzmanlık */}
@@ -270,17 +278,14 @@ function ClinicCard({ clinic }: { clinic: ClinicRow }) {
       {/* Footer: stats + CTA */}
       <footer className="flex items-center justify-between pt-3 border-t border-slate-800">
         <p className="text-[11px] text-slate-500">
-          💬 <strong className="text-slate-300">{clinic.review_count ?? 0}</strong> deneyim
-          {clinic.avg_nps != null && (
-            <> · ⚡ <strong className="text-slate-300">{Number(clinic.avg_nps).toFixed(1)}/10</strong> tavsiye</>
-          )}
+          💬 <strong className="text-slate-300">{reviewCount}</strong> deneyim · son 12 ay
         </p>
         <span className="text-violet-400 group-hover:text-violet-300 text-xs font-semibold inline-flex items-center gap-1 transition-colors">
           Detay & Randevu →
         </span>
       </footer>
 
-      {egp != null && (
+      {!showMeasuring && egp != null && (
         <p className="text-[10px] text-slate-600">{egpLabel(egp)}</p>
       )}
     </Link>

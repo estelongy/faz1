@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { egpBadgeColor, egpLabel, type ClinicReviewRow } from '@/lib/clinic-review'
+import { egpBadgeColor, egpLabel, egpDisplayPublic, MIN_REVIEWS_THRESHOLD, type ClinicReviewRow } from '@/lib/clinic-review'
+import MeasuringBadge from '@/components/MeasuringBadge'
 
 /** "Ayşe Yüksel" → "A**** Y*****" — public yorum gösteriminde anonimizasyon */
 function maskName(full: string): string {
@@ -106,6 +107,9 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
   if (!clinic) return null
 
   const egp = clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null
+  const reviewCount = clinic.review_count ?? 0
+  const showMeasuring = reviewCount < MIN_REVIEWS_THRESHOLD
+  const egpPublic = egpDisplayPublic(egp, reviewCount)
 
   return (
     <div
@@ -115,14 +119,14 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
       aria-modal="true"
     >
       <div
-        className="relative w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-slate-900 sm:rounded-3xl rounded-t-3xl border border-slate-800 shadow-2xl shadow-violet-500/10 animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300"
+        className="relative w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-slate-900 sm:rounded-3xl rounded-t-3xl border border-slate-800 shadow-2xl shadow-teal-500/10 animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Hero kapak — şimdilik gradient mesh placeholder */}
         <div className="relative h-48 sm:h-56 overflow-hidden sm:rounded-t-3xl rounded-t-3xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-700 to-slate-900" />
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-500 via-emerald-600 to-slate-900" />
           <div className="absolute inset-0 opacity-40" style={{
-            backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(139,92,246,0.6), transparent 50%), radial-gradient(circle at 70% 70%, rgba(16,185,129,0.4), transparent 50%)'
+            backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(45,212,191,0.6), transparent 50%), radial-gradient(circle at 70% 70%, rgba(16,185,129,0.5), transparent 50%)'
           }} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
 
@@ -138,10 +142,21 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
           </button>
 
           {/* EGP rozet sağ üst (kapat butonunun altı) */}
-          {egp != null && (
+          {showMeasuring ? (
+            <div className="absolute top-16 right-3 px-3 py-2 rounded-2xl border backdrop-blur-md bg-slate-900/70 border-slate-700 shadow-lg flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400" />
+              </span>
+              <div>
+                <div className="text-[9px] uppercase tracking-widest text-slate-400 leading-none">Ölçülüyor</div>
+                <div className="text-xs font-bold text-slate-200 leading-tight">{reviewCount}/{MIN_REVIEWS_THRESHOLD}</div>
+              </div>
+            </div>
+          ) : egpPublic && (
             <div className={`absolute top-16 right-3 px-3 py-2 rounded-2xl border backdrop-blur-md ${egpBadgeColor(egp)} shadow-lg`}>
               <div className="text-[9px] uppercase tracking-widest opacity-80 leading-none">EGP</div>
-              <div className="text-2xl font-black leading-tight">{egp.toFixed(1)}</div>
+              <div className="text-2xl font-black leading-tight">{egpPublic}</div>
             </div>
           )}
 
@@ -168,7 +183,7 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
           {(clinic.clinic_type || (clinic.specialties && clinic.specialties.length > 0)) && (
             <div className="flex flex-wrap gap-1.5">
               {clinic.clinic_type && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-violet-500/15 text-violet-300 border border-violet-500/30">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-teal-500/15 text-teal-300 border border-teal-500/30">
                   {CLINIC_TYPE_LABEL[clinic.clinic_type] ?? clinic.clinic_type}
                 </span>
               )}
@@ -192,14 +207,12 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
           <div className="grid grid-cols-3 gap-2">
             <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-center">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Deneyim</div>
-              <div className="text-white font-bold text-lg">{clinic.review_count ?? 0}</div>
+              <div className="text-white font-bold text-lg">{reviewCount}</div>
+              <div className="text-[9px] text-slate-600">son 12 ay</div>
             </div>
             <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-center">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Tavsiye</div>
-              <div className="text-white font-bold text-lg">
-                {clinic.avg_nps != null ? Number(clinic.avg_nps).toFixed(1) : '—'}
-                <span className="text-slate-500 text-xs font-normal">/10</span>
-              </div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">Yöntem</div>
+              <div className="text-slate-300 font-bold text-xs leading-tight mt-1">NHS FFT<br/>+Bayesian</div>
             </div>
             <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-center">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Onay</div>
@@ -207,10 +220,12 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
             </div>
           </div>
 
-          {/* EGP açıklama */}
-          {egp != null && (
+          {/* EGP detay alt kart */}
+          {showMeasuring ? (
+            <MeasuringBadge reviewCount={reviewCount} variant="badge" />
+          ) : egpPublic && (
             <div className={`p-3 rounded-xl border ${egpBadgeColor(egp)} flex items-center gap-3`}>
-              <div className="text-2xl font-black">{egp.toFixed(1)}</div>
+              <div className="text-2xl font-black">{egpPublic}</div>
               <div className="flex-1 min-w-0">
                 <div className="text-[10px] uppercase tracking-widest opacity-80">Estelongy Güven Puanı</div>
                 <div className="text-xs font-bold uppercase tracking-wider">{egpLabel(egp)}</div>

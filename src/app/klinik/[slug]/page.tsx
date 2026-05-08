@@ -7,8 +7,11 @@ import {
   NPS_LABELS,
   egpBadgeColor,
   egpLabel,
+  egpDisplayPublic,
+  MIN_REVIEWS_THRESHOLD,
   type ClinicReviewRow,
 } from '@/lib/clinic-review'
+import MeasuringBadge from '@/components/MeasuringBadge'
 
 export const dynamic = 'force-dynamic'
 
@@ -75,6 +78,9 @@ export default async function PublicClinicPage({ params }: Props) {
   }
 
   const egp = clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null
+  const reviewCount = clinic.review_count ?? 0
+  const showMeasuringBadge = reviewCount < MIN_REVIEWS_THRESHOLD
+  const egpPublic = egpDisplayPublic(egp, reviewCount)
 
   return (
     <>
@@ -110,24 +116,29 @@ export default async function PublicClinicPage({ params }: Props) {
             )}
           </div>
 
-          <div className={`p-6 rounded-2xl border ${egpBadgeColor(egp)}`}>
-            <p className="text-[10px] uppercase tracking-widest opacity-80 mb-1">Klinik EGP</p>
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-5xl font-black">{egp != null ? egp.toFixed(1) : '—'}</span>
-              <span className="text-xs opacity-70">/10</span>
+          {showMeasuringBadge ? (
+            <MeasuringBadge reviewCount={reviewCount} variant="badge" />
+          ) : (
+            <div className={`p-6 rounded-2xl border ${egpBadgeColor(egp)}`}>
+              <p className="text-[10px] uppercase tracking-widest opacity-80 mb-1">Klinik EGP</p>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-5xl font-black">{egpPublic ?? '—'}</span>
+                {egpPublic && egpPublic !== '<7' && <span className="text-xs opacity-70">/10</span>}
+              </div>
+              <p className="text-xs font-bold uppercase tracking-wider mb-3">{egpLabel(egp)}</p>
+              <p className="text-[11px] opacity-80 leading-relaxed">
+                <strong>{reviewCount}</strong> deneyim · son 12 ay
+              </p>
             </div>
-            <p className="text-xs font-bold uppercase tracking-wider mb-3">{egpLabel(egp)}</p>
-            <p className="text-[11px] opacity-80 leading-relaxed">
-              <strong>{clinic.review_count ?? 0}</strong> deneyim · <strong>{clinic.avg_nps != null ? Number(clinic.avg_nps).toFixed(1) : '—'}</strong>/10 tavsiye
-            </p>
-          </div>
+          )}
         </header>
 
         {/* Felsefe notu */}
         <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 leading-relaxed mb-6">
-          Estelongy <strong className="text-white">Deneyim Merkezi</strong>. Klinik EGP; sonuç etkinliği (skor Δ),
-          tavsiye eğilimi, akreditasyon ve profesyonelliği birleştirerek hesaplanır.
-          Az yorumlu klinikler global ortalamaya yaklaştırılır (Bayesian shrinkage).
+          Estelongy <strong className="text-white">Deneyim Merkezi</strong>. Klinik EGP, son 12 ayda
+          tavsiye veren hastaların oranı (NHS FFT yöntemi) + Bayesian shrinkage (m=10, C=7) ile hesaplanır.
+          {' '}<strong className="text-white">{MIN_REVIEWS_THRESHOLD}</strong> yorum altındaki klinikler &ldquo;Ölçülüyor&rdquo; rozeti taşır.
+          Puanı 7&apos;nin altında kalan klinikler hasta tarafında <strong className="text-white">&lt;7</strong> olarak gösterilir.
         </div>
 
         {/* Yorumlar */}

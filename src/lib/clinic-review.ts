@@ -183,11 +183,64 @@ export function professionalismScore(completedCount: number, totalCount: number)
 }
 
 /**
- * Bayesian shrinkage: <5 yorum varsa global ortalamaya çek.
- * confidence_factor: review_count / (review_count + 5)
+ * Minimum yorum eşiği — bu sayının altında EGP gizlenir, "Ölçülüyor" rozeti gösterilir.
+ * Akademik referans: NHS FFT n<30, biz daha yumuşak 20.
  */
-export function confidenceFactor(reviewCount: number): number {
-  return reviewCount / (reviewCount + 5)
+export const MIN_REVIEWS_THRESHOLD = 20
+
+/**
+ * Bayesian prior weight (m). 10 sahte yorumun her biri 7 puan değerinde varsayılır.
+ * Eşiğin (20) yarısı — klinik 20'ye ulaştığında %66 kendi puanına ait olur.
+ */
+export const BAYESIAN_PRIOR_WEIGHT = 10
+
+/**
+ * Bayesian taban (C). Sektör ortalamasını proxy ediyor.
+ * 50+ klinik birikince dinamik (global avg) hale getirilecek.
+ */
+export const BAYESIAN_PRIOR_MEAN = 7
+
+/**
+ * Bayesian shrinkage: confidence_factor = N / (N + m)
+ * m=10 → 20 yorumda cf=0.667, 100'de 0.909, 1000'de 0.99
+ */
+export function confidenceFactor(reviewCount: number, m: number = BAYESIAN_PRIOR_WEIGHT): number {
+  return reviewCount / (reviewCount + m)
+}
+
+/**
+ * NHS FFT (Friends and Family Test) recommend rate.
+ * Öneririm + Kesinlikle Öneririm = recommend
+ * Kararsızım = nötr (saymaz, paydada yok ama FFT klasiğinde var — biz dahil ediyoruz)
+ * Tavsiye Etmem = detractor
+ *
+ * Formül: recommend / total × 10
+ */
+export function recommendRateFromReviews(reviews: ClinicReviewRow[]): number | null {
+  if (reviews.length === 0) return null
+  const recommendCount = reviews.filter(r => r.nps >= 2).length
+  return Math.round((recommendCount / reviews.length) * 10 * 100) / 100 // 0-10
+}
+
+/**
+ * NHS FFT + Bayesian Klinik EGP hesabı.
+ *   recRate = recommend / total × 10
+ *   EGP = (n/(n+m)) × recRate + (m/(n+m)) × C
+ *
+ * Sadece son 12 ay yorumları üzerinden hesaplanır (rolling window — Booking/Trustpilot standardı).
+ */
+export function computeClinicEGPFromRecommend(args: {
+  recommendRate: number | null  // 0-10
+  reviewCount: number            // son 12 ay yorum sayısı
+  priorMean?: number             // C, default 7
+  priorWeight?: number           // m, default 10
+}): number | null {
+  if (args.recommendRate == null || args.reviewCount === 0) return null
+  const m = args.priorWeight ?? BAYESIAN_PRIOR_WEIGHT
+  const C = args.priorMean ?? BAYESIAN_PRIOR_MEAN
+  const cf = args.reviewCount / (args.reviewCount + m)
+  const shrunk = cf * args.recommendRate + (1 - cf) * C
+  return Math.round(shrunk * 100) / 100
 }
 
 /**
@@ -248,16 +301,30 @@ export const STAR_DIMENSIONS = [
 
 export function egpBadgeColor(egp: number | null): string {
   if (egp == null) return 'bg-slate-700/30 border-slate-600 text-slate-400'
-  if (egp < 5) return 'bg-red-500/10 border-red-500/30 text-red-400'
-  if (egp < 6.5) return 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+  if (egp < 7) return 'bg-amber-500/10 border-amber-500/30 text-amber-400'
   if (egp < 8) return 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
   return 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
 }
 
 export function egpLabel(egp: number | null): string {
   if (egp == null) return 'Henüz Ölçülmedi'
-  if (egp < 5) return 'Gelişiyor'
-  if (egp < 6.5) return 'Standart'
+  if (egp < 7) return 'Standart'
   if (egp < 8) return 'İyi'
   return 'Üstün'
+}
+
+/**
+ * Hasta tarafında EGP gösterimi.
+ * Kural 1: yorum sayısı eşiğin altındaysa null döner — UI MeasuringBadge gösterir.
+ * Kural 2: EGP 7'nin altındaysa "<7" döner (klinik mahremiyeti, manipülasyon savunması).
+ * Kural 3: 7 ve üstü → tam değer (örn. "7.8")
+ *
+ * Klinik panelinde KULLANILMAZ — orada gerçek sayı gösterilir.
+ */
+export function egpDisplayPublic(egp: number | null, reviewCount: number | null): string | null {
+  const n = reviewCount ?? 0
+  if (n < MIN_REVIEWS_THRESHOLD) return null  // → MeasuringBadge
+  if (egp == null) return null
+  if (egp < 7) return '<7'
+  return egp.toFixed(1)
 }
