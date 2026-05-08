@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client'
 import { FilterInput } from '@/components/FilterInput'
 import { BRANCHES, ALL_TREATMENTS, LOCATIONS, branchMatches, locationMatches } from '@/lib/randevu-filters'
 import RandevuOnayModal, { type RandevuTaslak } from '@/components/RandevuOnayModal'
+import ClinicPreviewModal from '@/components/ClinicPreviewModal'
+import { egpBadgeColor } from '@/lib/clinic-review'
 
 interface Clinic {
   id: string
@@ -14,6 +16,9 @@ interface Clinic {
   bio: string | null
   specialties: string[] | null
   clinic_type: string | null
+  clinic_egp?: number | null
+  review_count?: number | null
+  avg_nps?: number | null
 }
 
 interface Availability {
@@ -72,6 +77,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
   const [success, setSuccess] = useState(false)
   const [showOtpModal, setShowOtpModal] = useState(false)
   const [taslak, setTaslak] = useState<RandevuTaslak | null>(null)
+  const [previewClinic, setPreviewClinic] = useState<Clinic | null>(null)
 
   const [filterUzman, setFilterUzman] = useState<string>('')
   const [filterBranch, setFilterBranch] = useState<string>(preselectedTip ?? '')
@@ -124,7 +130,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
     const supabase = createClient()
     supabase
       .from('clinics_with_credit_status')
-      .select('id, name, location, bio, specialties, clinic_type')
+      .select('id, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_nps')
       .eq('approval_status', 'approved')
       .eq('is_active', true)
       .gt('total_credit_balance', 0)
@@ -332,28 +338,46 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredClinics.map(clinic => (
-                <button key={clinic.id} onClick={() => { setSelectedClinic(clinic); setStep(2) }}
-                  className={`text-left p-5 rounded-2xl border transition-all hover:scale-[1.02] ${
-                    selectedClinic?.id === clinic.id ? 'border-violet-500 bg-violet-500/10' : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
-                  }`}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white shrink-0">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+              {filteredClinics.map(clinic => {
+                const egp = clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null
+                return (
+                  <button key={clinic.id} onClick={() => setPreviewClinic(clinic)}
+                    className={`group text-left p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:border-violet-500/50 hover:shadow-lg hover:shadow-violet-500/10 ${
+                      selectedClinic?.id === clinic.id ? 'border-violet-500 bg-violet-500/10' : 'border-slate-700 bg-slate-800/50'
+                    }`}>
+                    <div className="flex items-start justify-between mb-3 gap-2">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white shrink-0">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                      </div>
+                      {egp != null ? (
+                        <div className={`shrink-0 px-2 py-1 rounded-lg border text-center ${egpBadgeColor(egp)}`}>
+                          <div className="text-base font-black leading-none">{egp.toFixed(1)}</div>
+                          <div className="text-[8px] uppercase tracking-wider opacity-70 mt-0.5">EGP</div>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider px-2 py-1 rounded-lg bg-slate-800 border border-slate-700">Yeni</span>
+                      )}
                     </div>
-                    <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                  </div>
-                  <div className="text-white font-bold mb-1">{clinic.name}</div>
-                  {clinic.location && <div className="text-slate-400 text-xs mb-2">📍 {clinic.location}</div>}
-                  {clinic.specialties && clinic.specialties.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {clinic.specialties.slice(0, 3).map(s => (
-                        <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">{s}</span>
-                      ))}
+                    <div className="text-white font-bold mb-1 group-hover:text-violet-300 transition-colors">{clinic.name}</div>
+                    {clinic.location && <div className="text-slate-400 text-xs mb-2">📍 {clinic.location}</div>}
+                    {clinic.specialties && clinic.specialties.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {clinic.specialties.slice(0, 3).map(s => (
+                          <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">{s}</span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between text-[11px] pt-2 border-t border-slate-700/60">
+                      <span className="text-slate-500">
+                        💬 <strong className="text-slate-300">{clinic.review_count ?? 0}</strong> deneyim
+                      </span>
+                      <span className="text-violet-400 group-hover:text-violet-300 font-semibold inline-flex items-center gap-1 transition-colors">
+                        Önizle →
+                      </span>
                     </div>
-                  )}
-                </button>
-              ))}
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>
@@ -510,6 +534,18 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
           }}
         />
       )}
+
+      <ClinicPreviewModal
+        clinic={previewClinic}
+        onClose={() => setPreviewClinic(null)}
+        onSelect={() => {
+          if (previewClinic) {
+            setSelectedClinic(previewClinic)
+            setStep(2)
+            setPreviewClinic(null)
+          }
+        }}
+      />
     </>
   )
 
