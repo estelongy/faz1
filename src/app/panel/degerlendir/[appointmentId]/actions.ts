@@ -60,6 +60,7 @@ export async function submitReviewAction(input: ClinicReviewInput): Promise<Acti
         pozitif_metin: v.pozitifMetin,
         iyilestirme_metni: v.iyilestirmeMetni,
         is_anonymous: v.isAnonymous,
+        private_wants_reply: v.privateWantsReply,
       })
       .eq('id', existing.id)
       .eq('user_id', user.id)
@@ -84,6 +85,7 @@ export async function submitReviewAction(input: ClinicReviewInput): Promise<Acti
         pozitif_metin: v.pozitifMetin,
         iyilestirme_metni: v.iyilestirmeMetni,
         is_anonymous: v.isAnonymous,
+        private_wants_reply: v.privateWantsReply,
       })
       .select('id')
 

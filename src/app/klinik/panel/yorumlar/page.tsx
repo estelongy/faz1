@@ -186,17 +186,24 @@ function ReviewCard({ review, userName }: { review: ClinicReviewRow; userName: s
         </div>
       </div>
 
-      {/* Serbest metin */}
+      {/* Public yorum metni */}
       {review.pozitif_metin && (
         <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-          <p className="text-emerald-300 text-[10px] uppercase tracking-wider font-bold mb-1">Pozitif</p>
+          <p className="text-emerald-300 text-[10px] uppercase tracking-wider font-bold mb-1">Hasta Yorumu</p>
           <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.pozitif_metin}</p>
         </div>
       )}
       {review.iyilestirme_metni && (
-        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <p className="text-amber-300 text-[10px] uppercase tracking-wider font-bold mb-1">İyileştirme önerisi</p>
-          <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.iyilestirme_metni}</p>
+        <div className="p-3 rounded-lg bg-violet-500/5 border border-violet-500/20 flex items-center justify-between gap-3">
+          <p className="text-violet-300 text-xs">
+            ✉️ Bu hastadan sana <strong>özel mesaj</strong> var.
+          </p>
+          <Link
+            href="/klinik/panel/mesajlar"
+            className="text-[10px] uppercase tracking-wider px-2 py-1 rounded border border-violet-500/40 text-violet-300 hover:bg-violet-500/10"
+          >
+            Mesajlara git →
+          </Link>
         </div>
       )}
 

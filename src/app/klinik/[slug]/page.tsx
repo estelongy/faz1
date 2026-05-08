@@ -209,16 +209,10 @@ function PublicReviewCard({ review, userName }: { review: ClinicReviewRow; userN
 
       {review.pozitif_metin && (
         <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-          <p className="text-emerald-300 text-[10px] uppercase tracking-wider font-bold mb-1">Pozitif</p>
           <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.pozitif_metin}</p>
         </div>
       )}
-      {review.iyilestirme_metni && (
-        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <p className="text-amber-300 text-[10px] uppercase tracking-wider font-bold mb-1">İyileştirme önerisi</p>
-          <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.iyilestirme_metni}</p>
-        </div>
-      )}
+      {/* iyilestirme_metni private mesajdır — public sayfada gösterilmez */}
 
       {review.clinic_response && (
         <div className="p-3 rounded-lg bg-violet-500/5 border border-violet-500/20">

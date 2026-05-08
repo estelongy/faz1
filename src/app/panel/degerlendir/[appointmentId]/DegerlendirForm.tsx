@@ -45,7 +45,9 @@ export default function DegerlendirForm({
   const [tekrarGelir, setTekrarGelir] = useState<TekrarGelir | ''>(existingReview?.tekrar_gelir ?? '')
   const [pozitif, setPozitif] = useState(existingReview?.pozitif_metin ?? '')
   const [iyilestirme, setIyilestirme] = useState(existingReview?.iyilestirme_metni ?? '')
-  const [isAnonymous, setIsAnonymous] = useState(existingReview?.is_anonymous ?? false)
+  // Default: anonim AÇIK (kullanıcı çekinmesin diye, isim görünmesin)
+  const [isAnonymous, setIsAnonymous] = useState(existingReview?.is_anonymous ?? true)
+  const [privateWantsReply, setPrivateWantsReply] = useState(existingReview?.private_wants_reply ?? false)
 
   const isEdit = !!existingReview
   const npsSet = nps >= 0 && nps <= 3
@@ -71,6 +73,7 @@ export default function DegerlendirForm({
       pozitifMetin: pozitif.trim() || null,
       iyilestirmeMetni: iyilestirme.trim() || null,
       isAnonymous,
+      privateWantsReply,
     }
     startTransition(async () => {
       const res = await submitReviewAction(input)
@@ -181,35 +184,26 @@ export default function DegerlendirForm({
         </div>
       </section>
 
-      {/* Serbest metin */}
-      <section className="space-y-3">
-        <h2 className="text-sm font-bold text-white uppercase tracking-wider">Yorum (opsiyonel)</h2>
-
+      {/* PUBLIC YORUM — klinik sayfasında görünür */}
+      <section className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-3">
         <div>
-          <label className="text-xs text-emerald-400 font-medium">Pozitif</label>
-          <textarea
-            value={pozitif}
-            disabled={editLocked}
-            onChange={e => setPozitif(e.target.value.slice(0, 1000))}
-            rows={3}
-            placeholder="Beğendiğin yanları kısaca yaz…"
-            className="mt-1 w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500 resize-y disabled:opacity-50"
-          />
-          <p className="text-[10px] text-slate-600 mt-0.5 text-right">{pozitif.length}/1000</p>
+          <h2 className="text-sm font-bold text-emerald-300 uppercase tracking-wider">
+            Deneyimini Kullanıcılar ile Paylaş
+          </h2>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Bu yorum klinik sayfasında <strong className="text-emerald-300">herkese açık</strong> görünür.
+          </p>
         </div>
 
-        <div>
-          <label className="text-xs text-amber-400 font-medium">İyileştirme önerisi</label>
-          <textarea
-            value={iyilestirme}
-            disabled={editLocked}
-            onChange={e => setIyilestirme(e.target.value.slice(0, 1000))}
-            rows={3}
-            placeholder="Klinik nasıl daha iyi olabilir?"
-            className="mt-1 w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-amber-500 resize-y disabled:opacity-50"
-          />
-          <p className="text-[10px] text-slate-600 mt-0.5 text-right">{iyilestirme.length}/1000</p>
-        </div>
+        <textarea
+          value={pozitif}
+          disabled={editLocked}
+          onChange={e => setPozitif(e.target.value.slice(0, 1000))}
+          rows={4}
+          placeholder="Diğer kullanıcılara faydalı olacak deneyimini kısaca yaz…"
+          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500 resize-y disabled:opacity-50"
+        />
+        <p className="text-[10px] text-slate-600 -mt-1 text-right">{pozitif.length}/1000</p>
 
         <label className={`flex items-start gap-3 cursor-pointer ${editLocked ? 'opacity-50 cursor-not-allowed' : ''}`}>
           <input
@@ -217,12 +211,50 @@ export default function DegerlendirForm({
             checked={isAnonymous}
             disabled={editLocked}
             onChange={e => setIsAnonymous(e.target.checked)}
+            className="mt-0.5 w-4 h-4 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500"
+          />
+          <span className="text-sm text-slate-300 leading-relaxed">
+            <strong className="text-white">Anonim</strong> yayınla
+            <span className="block text-xs text-slate-500 mt-0.5">
+              İsmin yerine &quot;Estelongy Kullanıcısı&quot; yazar.
+            </span>
+          </span>
+        </label>
+      </section>
+
+      {/* PRIVATE MESAJ — sadece klinik görür */}
+      <section className="p-4 rounded-2xl bg-violet-500/5 border border-violet-500/20 space-y-3">
+        <div>
+          <h2 className="text-sm font-bold text-violet-300 uppercase tracking-wider">
+            Dilek, İstek, Şikayet, Teşekkür Kutusu
+          </h2>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Bu mesaj <strong className="text-violet-300">sadece klinik</strong> tarafından görülür. Estelongy ekibi okumaz.
+          </p>
+        </div>
+
+        <textarea
+          value={iyilestirme}
+          disabled={editLocked}
+          onChange={e => setIyilestirme(e.target.value.slice(0, 1000))}
+          rows={4}
+          placeholder="Kliniğe iletmek istediğin dilek, istek, şikayet ya da teşekkür…"
+          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500 resize-y disabled:opacity-50"
+        />
+        <p className="text-[10px] text-slate-600 -mt-1 text-right">{iyilestirme.length}/1000</p>
+
+        <label className={`flex items-start gap-3 cursor-pointer ${editLocked ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          <input
+            type="checkbox"
+            checked={privateWantsReply}
+            disabled={editLocked || !iyilestirme.trim()}
+            onChange={e => setPrivateWantsReply(e.target.checked)}
             className="mt-0.5 w-4 h-4 rounded border-slate-700 bg-slate-900 text-violet-500 focus:ring-violet-500"
           />
           <span className="text-sm text-slate-300 leading-relaxed">
-            Yorumumu <strong className="text-white">anonim</strong> yayınla
+            Klinik <strong className="text-white">yanıt versin</strong> istiyorum
             <span className="block text-xs text-slate-500 mt-0.5">
-              (İsmin görünmez, sadece &quot;Estelongy Kullanıcısı&quot; yazar.)
+              İşaretlemezsen klinik mesajını okur ama cevap yazmaz.
             </span>
           </span>
         </label>
