@@ -28,11 +28,11 @@ export default async function SiteHeader() {
             </span>
           </Link>
           <div className="flex items-center gap-3 text-sm">
-            <Link href="/estestore" className="hidden sm:flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
-              🛒 EsteStore
+            <Link href="/klinikler" className="hidden sm:block text-slate-400 hover:text-white transition-colors">
+              Klinikler
             </Link>
-            <Link href="/magaza" className="hidden sm:block text-slate-400 hover:text-white transition-colors">
-              EsteStore
+            <Link href="/magaza" className="hidden sm:flex items-center gap-1 text-amber-400 hover:text-amber-300 font-medium transition-colors">
+              🛒 EsteStore
             </Link>
             <Link href="/rehber" className="hidden md:block text-slate-400 hover:text-white transition-colors">
               Rehber

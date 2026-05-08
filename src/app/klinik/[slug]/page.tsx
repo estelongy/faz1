@@ -38,7 +38,7 @@ export default async function PublicClinicPage({ params }: Props) {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, location, bio, specialties, clinic_egp, review_count, avg_operational, avg_nps')
+    .select('id, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_operational, avg_nps')
     .eq('slug', slug)
     .eq('is_active', true)
     .maybeSingle()
@@ -74,7 +74,7 @@ export default async function PublicClinicPage({ params }: Props) {
         <nav className="flex items-center gap-2 text-xs text-slate-500 mb-4">
           <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
           <span>›</span>
-          <Link href="/randevu" className="hover:text-white transition-colors">Klinikler</Link>
+          <Link href="/klinikler" className="hover:text-white transition-colors">Klinikler</Link>
           <span>›</span>
           <span className="text-slate-300 truncate">{clinic.name}</span>
         </nav>
@@ -147,16 +147,42 @@ export default async function PublicClinicPage({ params }: Props) {
         </section>
 
         {/* CTA */}
-        <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 text-center">
-          <p className="text-white font-bold text-base mb-1">Bu klinikten randevu almak ister misin?</p>
-          <p className="text-slate-300 text-sm mb-4">
-            Estelongy ön analizinden sonra klinikler senin skor bandına göre eşleşir.
-          </p>
-          <Link href="/analiz" className="inline-block px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl transition-colors">
-            Ücretsiz Ön Analiz →
-          </Link>
+        <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-white font-bold text-base mb-1">Randevu almak ister misin?</p>
+              <p className="text-slate-300 text-sm">
+                Klinik müsaitliğini gör, doğrudan saat seç. Önceden ön analiz yapmadıysan randevu sonrası yapabilirsin.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 shrink-0">
+              <Link
+                href={`/randevu?k=${clinic.id}`}
+                className="inline-block px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
+              >
+                Randevu Al →
+              </Link>
+              <Link
+                href="/analiz"
+                className="inline-block px-4 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-sm font-medium rounded-xl transition-colors"
+              >
+                Ön Analiz
+              </Link>
+            </div>
+          </div>
         </div>
       </main>
+
+      {/* Mobil sticky CTA */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-slate-900/95 backdrop-blur-md border-t border-slate-800">
+        <Link
+          href={`/randevu?k=${clinic.id}`}
+          className="block w-full text-center px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
+        >
+          Bu Klinikten Randevu Al →
+        </Link>
+      </div>
+
       <Footer />
     </>
   )
