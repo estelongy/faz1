@@ -198,22 +198,15 @@ function MessageCard({ review, userName }: { review: ClinicReviewRow; userName: 
             Hasta {wantsReply ? 'yanıt istedi ve' : 'yanıt istemedi ama'} yanıtın panelinde görünüyor.
           </p>
         </div>
-      ) : wantsReply ? (
+      ) : (
         <div className="space-y-2">
-          <p className="text-[11px] text-amber-300/80 italic">
-            Hasta bu mesaja yanıt almak istedi.
+          <p className={`text-[11px] italic ${wantsReply ? 'text-amber-300/80' : 'text-slate-500'}`}>
+            {wantsReply
+              ? '⚠ Hasta bu mesaja yanıt almak istedi.'
+              : 'Hasta yanıt istemedi — yine de yanıt yazabilirsin (hasta panelinde görür).'}
           </p>
           <PrivateReplyForm reviewId={review.id} />
         </div>
-      ) : (
-        <details className="group">
-          <summary className="text-[11px] text-slate-500 cursor-pointer hover:text-slate-300 select-none">
-            Hasta yanıt istemedi — yine de yanıt yazmak istersen tıkla
-          </summary>
-          <div className="mt-2">
-            <PrivateReplyForm reviewId={review.id} />
-          </div>
-        </details>
       )}
     </article>
   )
