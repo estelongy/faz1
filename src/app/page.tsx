@@ -55,8 +55,8 @@ const STEPS = [
   {
     num: '04',
     color: 'from-blue-500 to-cyan-600',
-    title: 'Klinik Onayı',
-    desc: 'Uzman hekim tarafından doğrulanmış, damgalı "Klinik Onaylı Estelongy Gençlik Skoru" kartınızı paylaşın.',
+    title: 'Uzman Değerlendirmesi',
+    desc: 'Uzman hekim sizi değerlendirir; bu sürecin sonunda damgalı "Klinik Onaylı Estelongy Gençlik Skoru" kartınız oluşur ve paylaşıma hazır olur.',
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
