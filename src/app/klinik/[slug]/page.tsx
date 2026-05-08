@@ -55,14 +55,24 @@ export default async function PublicClinicPage({ params }: Props) {
 
   const reviews = (reviewsRaw ?? []) as ClinicReviewRow[]
 
-  const userIds = Array.from(new Set(reviews.filter(r => !r.is_anonymous).map(r => r.user_id)))
+  // Tüm yorumlar için profil çek — anonim olanlarda da masked görünüm üretebilelim
+  const userIds = Array.from(new Set(reviews.map(r => r.user_id)))
   const { data: profiles } = userIds.length > 0
     ? await supabase.from('profiles').select('id, full_name').in('id', userIds)
     : { data: [] }
   const profileById = new Map<string, string>()
   ;(profiles ?? []).forEach(p => {
-    profileById.set(p.id as string, (p as { full_name?: string | null }).full_name ?? 'Estelongy Kullanıcısı')
+    const fn = (p as { full_name?: string | null }).full_name
+    if (fn) profileById.set(p.id as string, fn)
   })
+
+  /** "Ayşe Yüksel" → "A**** Y*****" */
+  function maskName(full: string): string {
+    return full.trim().split(/\s+/).filter(Boolean).map(part => {
+      const first = part.charAt(0).toLocaleUpperCase('tr-TR')
+      return first + '*'.repeat(Math.max(part.length - 1, 1))
+    }).join(' ')
+  }
 
   const egp = clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null
 
@@ -135,13 +145,19 @@ export default async function PublicClinicPage({ params }: Props) {
             </div>
           ) : (
             <div className="space-y-4">
-              {reviews.map(r => (
-                <PublicReviewCard
-                  key={r.id}
-                  review={r}
-                  userName={r.is_anonymous ? null : (profileById.get(r.user_id) ?? null)}
-                />
-              ))}
+              {reviews.map(r => {
+                const fullName = profileById.get(r.user_id)
+                const displayName = r.is_anonymous
+                  ? (fullName ? maskName(fullName) : 'Estelongy Kullanıcısı')
+                  : (fullName ?? 'Estelongy Kullanıcısı')
+                return (
+                  <PublicReviewCard
+                    key={r.id}
+                    review={r}
+                    userName={displayName}
+                  />
+                )
+              })}
             </div>
           )}
         </section>

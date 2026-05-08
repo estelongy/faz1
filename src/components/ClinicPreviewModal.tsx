@@ -2,7 +2,21 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { egpBadgeColor, egpLabel, NPS_LABELS, type ClinicReviewRow } from '@/lib/clinic-review'
+import { egpBadgeColor, egpLabel, type ClinicReviewRow } from '@/lib/clinic-review'
+
+/** "Ayşe Yüksel" → "A**** Y*****" — public yorum gösteriminde anonimizasyon */
+function maskName(full: string): string {
+  return full
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(part => {
+      const first = part.charAt(0).toLocaleUpperCase('tr-TR')
+      const rest = '*'.repeat(Math.max(part.length - 1, 1))
+      return first + rest
+    })
+    .join(' ')
+}
 
 export interface ClinicPreview {
   id: string
@@ -34,6 +48,7 @@ const CLINIC_TYPE_LABEL: Record<string, string> = {
 
 export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props) {
   const [reviews, setReviews] = useState<ClinicReviewRow[]>([])
+  const [profileNames, setProfileNames] = useState<Map<string, string>>(new Map())
   const [loadingReviews, setLoadingReviews] = useState(false)
 
   // ESC tuşu ile kapat
@@ -54,20 +69,38 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
   useEffect(() => {
     if (!clinic) {
       setReviews([])
+      setProfileNames(new Map())
       return
     }
     setLoadingReviews(true)
     const supabase = createClient()
-    supabase
-      .from('clinic_reviews')
-      .select('*')
-      .eq('clinic_id', clinic.id)
-      .order('created_at', { ascending: false })
-      .limit(3)
-      .then(({ data }) => {
-        setReviews((data ?? []) as ClinicReviewRow[])
-        setLoadingReviews(false)
-      })
+    ;(async () => {
+      const { data } = await supabase
+        .from('clinic_reviews')
+        .select('*')
+        .eq('clinic_id', clinic.id)
+        .order('created_at', { ascending: false })
+        .limit(3)
+      const list = (data ?? []) as ClinicReviewRow[]
+      setReviews(list)
+
+      const userIds = Array.from(new Set(list.filter(r => !r.is_anonymous).map(r => r.user_id)))
+      if (userIds.length > 0) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds)
+        const map = new Map<string, string>()
+        ;(profs ?? []).forEach(p => {
+          const fn = (p as { full_name?: string | null }).full_name ?? ''
+          if (fn) map.set(p.id as string, fn)
+        })
+        setProfileNames(map)
+      } else {
+        setProfileNames(new Map())
+      }
+      setLoadingReviews(false)
+    })()
   }, [clinic])
 
   if (!clinic) return null
@@ -196,21 +229,31 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
               <p className="text-slate-500 text-xs italic">Henüz yorum yok — ilk deneyim senin olsun.</p>
             ) : (
               <div className="space-y-2">
-                {reviews.map(r => (
-                  <div key={r.id} className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/60">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] uppercase tracking-wider text-violet-300 font-bold">
-                        {NPS_LABELS[r.nps] ?? '—'}
-                      </span>
-                      <span className="text-[10px] text-slate-600">
-                        {new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
-                      </span>
+                {reviews.map(r => {
+                  const fullName = profileNames.get(r.user_id)
+                  let displayName: string
+                  if (r.is_anonymous) {
+                    displayName = fullName ? maskName(fullName) : 'Estelongy Kullanıcısı'
+                  } else {
+                    displayName = fullName ?? 'Estelongy Kullanıcısı'
+                  }
+                  return (
+                    <div key={r.id} className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/60">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-white font-semibold">
+                          {displayName}
+                          {r.is_anonymous && <span className="ml-1.5 text-[9px] text-slate-600 uppercase tracking-wider font-normal">Anonim</span>}
+                        </span>
+                        <span className="text-[10px] text-slate-600 shrink-0">
+                          {new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                        </span>
+                      </div>
+                      {r.pozitif_metin && (
+                        <p className="text-slate-300 text-xs leading-relaxed line-clamp-2">{r.pozitif_metin}</p>
+                      )}
                     </div>
-                    {r.pozitif_metin && (
-                      <p className="text-slate-300 text-xs leading-relaxed line-clamp-2">{r.pozitif_metin}</p>
-                    )}
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
