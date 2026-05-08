@@ -122,16 +122,17 @@ export default async function KlinikProfilPage() {
           </svg>
         </Link>
 
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-800/40 border border-slate-700 opacity-70">
+        <Link href="/klinik/panel/profil/duzenle"
+          className="flex items-center gap-3 p-4 rounded-xl bg-slate-800/40 border border-slate-700 hover:border-violet-500/40 transition-colors">
           <span className="text-2xl">✏️</span>
           <div className="flex-1 min-w-0">
             <p className="text-white text-sm font-bold">Profili Düzenle</p>
-            <p className="text-slate-500 text-xs">Bio, fotoğraf, uzmanlık alanları</p>
+            <p className="text-slate-500 text-xs">Ad, konum, bio, uzmanlık alanları</p>
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
-            Yakında
-          </span>
-        </div>
+          <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
       </div>
     </div>
   )
