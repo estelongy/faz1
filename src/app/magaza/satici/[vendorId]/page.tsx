@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ vendorId:
     .eq('id', vendorId)
     .single()
   return {
-    title: vendor?.company_name ? `${vendor.company_name} — Estelongy Mağaza` : 'Satıcı',
+    title: vendor?.company_name ? `${vendor.company_name} — EsteStore` : 'Satıcı',
   }
 }
 
@@ -54,14 +54,14 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center gap-3">
-          <Link href="/magaza" className="text-slate-400 hover:text-white transition-colors text-sm">← Mağaza</Link>
+          <Link href="/magaza" className="text-slate-400 hover:text-white transition-colors text-sm">← EsteStore</Link>
           <span className="text-slate-700">|</span>
           <span className="text-white text-sm font-bold truncate">{vendor.company_name}</span>
         </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-4 pt-24 pb-16">
-        {/* Mağaza başlık */}
+        {/* EsteStore başlık */}
         <div className="mb-10 p-8 rounded-3xl bg-gradient-to-br from-violet-600/10 via-purple-600/5 to-transparent border border-violet-500/20">
           <div className="flex items-start gap-5">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">

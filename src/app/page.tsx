@@ -118,7 +118,7 @@ export default async function Home() {
             <div className="flex items-center gap-3">
               <Link href="/rehber"
                 className="hidden sm:block text-slate-400 hover:text-white text-sm transition-colors">
-                Gençlik Rehberi
+                Estelongy Rehberi
               </Link>
               <Link href="/klinik/basvur"
                 className="hidden lg:block text-slate-400 hover:text-white text-sm transition-colors">
@@ -126,6 +126,10 @@ export default async function Home() {
               </Link>
               {isLoggedIn ? (
                 <>
+                  <Link href="/magaza"
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
+                    EsteStore
+                  </Link>
                   <Link href="/panel"
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Hesabım
@@ -139,6 +143,10 @@ export default async function Home() {
                   <Link href="/kayit"
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Ücretsiz Başla
+                  </Link>
+                  <Link href="/magaza"
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
+                    EsteStore
                   </Link>
                 </>
               )}
@@ -282,7 +290,7 @@ export default async function Home() {
                   Estelongy puanlı cilt bakım ürünleri ve klinik işlemleri. Hepsi doğrulanmış.
                 </p>
                 <div className="flex items-center gap-2 text-amber-300 font-semibold text-sm group-hover:gap-3 transition-all">
-                  <span>Mağazaya git</span>
+                  <span>EsteStore’a git</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>

@@ -253,7 +253,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               </div>
             </Link>
 
-            {/* Kapı 3 — Mağaza */}
+            {/* Kapı 3 — EsteStore */}
             <Link href="/magaza"
               className="group relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-600/15 via-orange-600/8 to-rose-500/5 p-5 transition-all hover:border-amber-400 hover:scale-[1.02]">
               <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-amber-500/10 blur-3xl group-hover:bg-amber-500/20 transition-all" />
@@ -263,7 +263,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
                 </div>
-                <h3 className="text-white font-bold text-base leading-tight mb-1">Mağaza</h3>
+                <h3 className="text-white font-bold text-base leading-tight mb-1">EsteStore</h3>
                 <p className="text-slate-400 text-xs leading-relaxed">
                   Estelongy puanlı bakım ürünleri
                 </p>

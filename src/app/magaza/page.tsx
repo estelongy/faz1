@@ -19,7 +19,7 @@ export async function generateMetadata({
 
   const title = catLabel
     ? `${catLabel} Ürünleri & İşlemleri`
-    : 'Mağaza — Estetik Ürün ve Klinik İşlemleri'
+    : 'EsteStore — Estetik Ürün ve Klinik İşlemleri'
 
   const description = catLabel
     ? `${catLabel} kategorisinde uzman ve hekim onaylı estetik ürün ve işlemler. Estelongy Gençlik Puanı (EGP) ile karşılaştır.`
@@ -103,8 +103,8 @@ export default async function MagazaPage({
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: params.kategori
-      ? `${CATEGORY_LABELS[params.kategori] ?? params.kategori} — Estelongy Mağazası`
-      : 'Estelongy Mağazası — Tüm Ürünler ve İşlemler',
+      ? `${CATEGORY_LABELS[params.kategori] ?? params.kategori} — EsteStore`
+      : 'EsteStore — Tüm Ürünler ve İşlemler',
     numberOfItems: products.length,
     itemListElement: products.map((p, i) => ({
       '@type': 'ListItem',
@@ -136,7 +136,7 @@ export default async function MagazaPage({
 
       <div className="max-w-6xl mx-auto px-4 pt-24 pb-16">
         <div className="mb-6">
-          <h1 className="text-3xl font-black text-white">Estelongy Mağazası</h1>
+          <h1 className="text-3xl font-black text-white">EsteStore</h1>
           <p className="text-slate-400 mt-1 text-sm">Bilimsel ve uzman onaylı estetik ürün & işlemler</p>
         </div>
 

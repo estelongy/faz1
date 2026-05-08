@@ -137,7 +137,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
       {/* Ana kategori (EsteStore) */}
       {treatmentType === 'product' && (
         <div>
-          <label className="block text-slate-400 text-xs mb-2">EsteStore Mağazası</label>
+          <label className="block text-slate-400 text-xs mb-2">EsteStore EsteStore</label>
           <div className="grid grid-cols-2 gap-2">
             {ANA_KATEGORI.map(c => (
               <button

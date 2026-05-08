@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 
 /**
- * Public site header — Akademi, Mağaza, Rehber gibi marketplace sayfalarında kullanılır.
+ * Public site header — Akademi, EsteStore, Rehber gibi marketplace sayfalarında kullanılır.
  * Login state'e göre "Hesabım" ya da "Giriş Yap / Kayıt Ol" gösterir.
  * Server component — kullanıcı bilgisi server-side fetch edilir.
  */
@@ -32,7 +32,7 @@ export default async function SiteHeader() {
               🛒 EsteStore
             </Link>
             <Link href="/magaza" className="hidden sm:block text-slate-400 hover:text-white transition-colors">
-              Mağaza
+              EsteStore
             </Link>
             <Link href="/rehber" className="hidden md:block text-slate-400 hover:text-white transition-colors">
               Rehber

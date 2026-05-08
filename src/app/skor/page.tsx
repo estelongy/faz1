@@ -524,7 +524,7 @@ function SkorMerkeziInner() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-bold text-base sm:text-lg leading-tight">
-                    Mağazaya göz atmak istiyorum
+                    EsteStore’a göz atmak istiyorum
                   </p>
                   <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
                     Kategori, marka ve EGP skoruna göre keşfet

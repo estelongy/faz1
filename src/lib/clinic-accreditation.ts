@@ -45,7 +45,7 @@ const PHASE_META: Record<AccreditationPhase, { label: string; color: string; rew
   2: {
     label: 'Estelongy Hekimi',
     color: 'text-emerald-300',
-    rewards: ['"Estelongy Hekimi" rozeti', 'Mağaza komisyon indirimi', 'Partner avantajları (Shell, Rixos)', 'Akademi içerik erişimi'],
+    rewards: ['"Estelongy Hekimi" rozeti', 'EsteStore komisyon indirimi', 'Partner avantajları (Shell, Rixos)', 'Akademi içerik erişimi'],
   },
   3: {
     label: 'Estelongy Uzmanı',

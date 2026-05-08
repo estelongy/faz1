@@ -22,7 +22,7 @@ const VALID_TITLES = [
  * SMS OTP doğrulaması yapılmış telefon zorunlu (`phone_verified: true`).
  *
  * Erişim: /panel (sağlık profesyoneli teması) + Akademi (kurs satın alma & izleme)
- *         + Mağaza. Hasta panel özellikleri (analiz/randevu) açılmaz.
+ *         + EsteStore. Hasta panel özellikleri (analiz/randevu) açılmaz.
  */
 export async function POST(req: NextRequest) {
   try {

@@ -18,7 +18,7 @@ export default function SepetPage() {
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/magaza" className="text-slate-400 hover:text-white transition-colors text-sm">
-              ← Mağaza
+              ← EsteStore
             </Link>
             <span className="text-slate-700">|</span>
             <span className="text-white text-sm font-bold">Sepetim</span>
@@ -48,10 +48,10 @@ export default function SepetPage() {
           <div className="py-24 text-center">
             <div className="text-slate-700 text-6xl mb-4">🛒</div>
             <p className="text-slate-400 text-lg font-medium mb-2">Sepetin boş</p>
-            <p className="text-slate-600 text-sm mb-6">Mağazadan ürün seçerek başla</p>
+            <p className="text-slate-600 text-sm mb-6">EsteStore’dan ürün seçerek başla</p>
             <Link href="/magaza"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl transition-all">
-              Mağazaya Git →
+              EsteStore’a Git →
             </Link>
           </div>
         ) : (

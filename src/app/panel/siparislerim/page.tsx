@@ -45,7 +45,7 @@ export default async function SiparislerimPage() {
             <div className="text-5xl mb-4">🛒</div>
             <p className="text-slate-400">Henüz sipariş vermedin</p>
             <Link href="/magaza" className="mt-4 inline-block text-violet-400 hover:text-violet-300 text-sm transition-colors">
-              Mağazaya Git →
+              EsteStore’a Git →
             </Link>
           </div>
         ) : (

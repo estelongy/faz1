@@ -25,7 +25,7 @@ const TYPE_LABEL: Record<string, string> = {
   referral_appointment: '🏥 Davet randevu',
   referral_order:       '🛍️ Davet alışveriş',
   gamification:         '⭐ Başarı bonusu',
-  redeem_shop:          '🛒 Mağaza harcama',
+  redeem_shop:          '🛒 EsteStore harcama',
   redeem_clinic:        '💉 Klinik harcama',
   admin_adjust:         '⚙️ Manuel düzeltme',
   refund_revert:        '↩️ İade',

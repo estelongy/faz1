@@ -150,7 +150,7 @@ export default function SaglikProfesyoneliKayitPage() {
           {/* Bilgi kutusu */}
           <div className="mb-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-slate-300 leading-relaxed">
             <strong className="text-emerald-400">Kapsam:</strong> Hesap, Akademi (eğitim videoları satın alma & izleme),
-            Mağaza ve Topluluk özelliklerine erişim sağlar. Hasta kabul / takvim modülleri açılmaz.
+            EsteStore ve Topluluk özelliklerine erişim sağlar. Hasta kabul / takvim modülleri açılmaz.
             <br /><br />
             <strong className="text-emerald-400">Beyan:</strong> Diploma yüklemesi istenmez; sağlık profesyoneli olduğunuzu
             beyan ederek kayıt oluyorsunuz. Yanlış beyan halinde hesap ve içerik erişimi iptal edilir.

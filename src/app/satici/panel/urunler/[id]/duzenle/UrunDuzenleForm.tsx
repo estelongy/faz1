@@ -141,7 +141,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
           <input type="checkbox" checked={isActive} onChange={e => setIsActive(e.target.checked)}
             disabled={product.approval_status !== 'approved'}
             className="w-4 h-4 accent-violet-600" />
-          <span className="text-sm text-slate-300">Mağazada aktif</span>
+          <span className="text-sm text-slate-300">EsteStore’da aktif</span>
         </label>
       </div>
 
@@ -160,7 +160,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
 
       {/* Ana kategori */}
       <div>
-        <label className="block text-slate-400 text-xs mb-2">EsteStore Mağazası</label>
+        <label className="block text-slate-400 text-xs mb-2">EsteStore EsteStore</label>
         <div className="grid grid-cols-2 gap-2">
           {ANA_KATEGORI.map(c => (
             <button

@@ -189,7 +189,7 @@ export default async function UrunDetayPage({
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Mağaza', item: `${SITE_URL}/magaza` },
+      { '@type': 'ListItem', position: 2, name: 'EsteStore', item: `${SITE_URL}/magaza` },
       ...(product.category ? [{
         '@type': 'ListItem',
         position: 3,
@@ -218,7 +218,7 @@ export default async function UrunDetayPage({
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <Link href="/magaza" className="text-slate-400 hover:text-white transition-colors text-sm shrink-0">← Mağaza</Link>
+            <Link href="/magaza" className="text-slate-400 hover:text-white transition-colors text-sm shrink-0">← EsteStore</Link>
             <span className="text-slate-700">|</span>
             <span className="text-white text-sm font-medium truncate">{product.name}</span>
           </div>
