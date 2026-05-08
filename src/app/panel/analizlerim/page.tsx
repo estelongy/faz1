@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import ScoreChart, { type ScorePoint } from '@/components/ScoreChart'
 import YolculukKarti, { type YolculukView, type YolculukAnalysis, type YolculukAppointment } from '@/components/YolculukKarti'
+import GecmisTabs from '@/components/GecmisTabs'
 
 export const metadata: Metadata = {
   title: 'Geçmişim — Estelongy',
@@ -183,6 +184,8 @@ export default async function GecmisimPage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 pt-24 pb-16 space-y-6">
+
+        <GecmisTabs active="yolculuklar" />
 
         {/* Skor Geçmişi Grafiği */}
         {chartPoints.length > 0 && (
