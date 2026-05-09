@@ -374,26 +374,16 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
 
                       {/* Sağ kolon */}
                       <div className="flex-1 min-w-0 flex flex-col">
-                        {/* Üst satır: rozet + konum */}
-                        <div className="flex items-start justify-between gap-2 mb-2.5">
-                          <div className="shrink-0">
-                            {showMeasuring ? (
-                              <MeasuringBadge reviewCount={reviewCount} variant="mini" />
-                            ) : egpPublic ? (
-                              <div className={`px-2.5 py-1 rounded-full border ${egpBadgeColor(egp)}`}>
-                                <span className="text-xs font-black">{egpPublic}</span>
-                                <span className="ml-1 text-[9px] uppercase tracking-wider opacity-70">EGP</span>
-                              </div>
-                            ) : null}
-                          </div>
-                          {clinic.location && (
-                            <p className="text-slate-400 text-xs inline-flex items-center gap-1 min-w-0">
-                              <svg className="w-3.5 h-3.5 shrink-0 text-rose-400/80" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
-                              </svg>
-                              <span className="truncate">{formatLocation(clinic.location)}</span>
-                            </p>
-                          )}
+                        {/* Sağ üst — sadece rozet (büyütüldü) */}
+                        <div className="flex justify-end mb-2.5">
+                          {showMeasuring ? (
+                            <MeasuringBadge reviewCount={reviewCount} variant="mini" />
+                          ) : egpPublic ? (
+                            <div className={`px-3 py-1.5 rounded-full border ${egpBadgeColor(egp)}`}>
+                              <span className="text-sm font-black">{egpPublic}</span>
+                              <span className="ml-1 text-[10px] uppercase tracking-wider opacity-70">EGP</span>
+                            </div>
+                          ) : null}
                         </div>
 
                         {/* Eyebrow — clinic_type uppercase yeşil */}
@@ -433,9 +423,17 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                       </div>
                     </div>
 
-                    {/* Alt şerit — Önizle CTA */}
-                    <div className="px-3 sm:px-4 py-2.5 border-t border-slate-700/60 flex items-center justify-end">
-                      <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-violet-600 group-hover:bg-violet-500 text-white text-xs font-semibold transition-colors shadow-md shadow-violet-600/20">
+                    {/* Alt şerit — konum sol, Önizle sağ */}
+                    <div className="px-3 sm:px-4 py-2.5 border-t border-slate-700/60 flex items-center justify-between gap-3">
+                      {clinic.location ? (
+                        <p className="text-slate-300 text-xs sm:text-sm inline-flex items-center gap-1.5 min-w-0">
+                          <svg className="w-4 h-4 shrink-0 text-rose-400/80" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+                          </svg>
+                          <span className="truncate">{formatLocation(clinic.location)}</span>
+                        </p>
+                      ) : <span />}
+                      <span className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-violet-600 group-hover:bg-violet-500 text-white text-xs font-semibold transition-colors shadow-md shadow-violet-600/20">
                         Önizle
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                       </span>

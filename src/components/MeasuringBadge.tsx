@@ -21,14 +21,12 @@ export default function MeasuringBadge({
 
   if (variant === 'mini') {
     return (
-      <div className="shrink-0 px-2 py-1 rounded-md border bg-slate-800/40 border-slate-700 text-center min-w-[60px]" title={`${n}/${MIN_REVIEWS_THRESHOLD} yorum — ölçüm devam ediyor`}>
-        <div className="flex items-center justify-center mb-0.5">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400" />
-          </span>
-        </div>
-        <p className="text-[8px] uppercase tracking-wider text-slate-400 leading-none">Ölçülüyor</p>
+      <div className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border bg-slate-800/60 border-slate-700" title={`${n}/${MIN_REVIEWS_THRESHOLD} yorum — ölçüm devam ediyor`}>
+        <span className="relative flex h-2.5 w-2.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60" />
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400" />
+        </span>
+        <p className="text-[10px] uppercase tracking-wider text-slate-300 font-bold leading-none">Ölçülüyor</p>
       </div>
     )
   }
