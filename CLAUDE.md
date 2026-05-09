@@ -1333,6 +1333,23 @@ Next.js inline script + Tailwind JIT → nonce'suz çalışmıyor. Production-pr
 
 ---
 
+## 24. Bekleyen Görevler / TODO
+
+### 24.1 Test verisi temizliği (lansman öncesi)
+Geliştirme sırasında DB'ye eklenen test klinikleri prod'a çıkmadan silinmeli.
+
+**Toplu silme (lansman öncesi çalıştır):**
+```sql
+DELETE FROM public.clinics WHERE name LIKE 'Test Klinik %';
+-- Ayrıca manuel test hesapları:
+DELETE FROM public.clinics WHERE name IN ('Claude Test Klinik', 'Debug Test Kliniği', 'otp');
+DELETE FROM auth.users WHERE email IN ('deneme1@test.com','deneme2@test.com','deneme3@test.com','claude.test.kayit.2026@gmail.com');
+```
+
+Şu an DB'de **15 adet** `Test Klinik 01..15` (default fotoyla, approved+active) ve 3 manuel test kliniği bulunuyor.
+
+---
+
 **Bu doküman canlıdır.** Yeni özellik eklendiğinde, env vars değiştiğinde, akış güncellendiğinde **buraya yansıt.**
 
 Son ekleme: KVKK cascade · Audit log · Şifre 8 · Storage validasyon · Failed login uyarı · E-posta değiştirme · security.txt · Vendor KYC sprint B (DB + form + admin paneli + trigger).
