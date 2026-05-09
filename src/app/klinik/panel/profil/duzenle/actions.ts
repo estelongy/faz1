@@ -80,12 +80,15 @@ export async function updateClinicProfileAction(formData: FormData): Promise<Upd
     return { ok: false, error: 'Geçersiz klinik tipi.' }
   }
 
-  // Specialties: virgül ile ayrılmış, trim, max 12 etiket, her biri max 40 karakter
-  const specialties = specialtiesRaw
-    .split(',')
-    .map(s => s.trim())
-    .filter(s => s.length > 0 && s.length <= 40)
-    .slice(0, 12)
+  // Specialties: virgül ile ayrılmış, trim, max 30 etiket, her biri max 40 karakter
+  const specialties = Array.from(
+    new Set(
+      specialtiesRaw
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0 && s.length <= 40),
+    ),
+  ).slice(0, 30)
 
   const update: Record<string, unknown> = {
     name,

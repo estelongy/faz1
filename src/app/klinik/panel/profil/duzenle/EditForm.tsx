@@ -1,10 +1,17 @@
 'use client'
 
-import { useState, useTransition, useRef } from 'react'
+import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { CLINIC_TYPES } from '@/lib/randevu-filters'
+import { CLINIC_TYPES, ALL_TREATMENTS } from '@/lib/randevu-filters'
 import { updateClinicProfileAction } from './actions'
+
+const MAX_SPECIALTIES = 30
+const MAX_SPECIALTY_LEN = 40
+
+function trNorm(s: string) {
+  return s.replace(/İ/g, 'i').replace(/I/g, 'i').replace(/ı/g, 'i').toLowerCase()
+}
 
 interface Initial {
   name: string
@@ -34,7 +41,44 @@ export default function EditForm({ initial }: { initial: Initial }) {
   const [clinicType, setClinicType] = useState(initial.clinic_type ?? '')
   const [bio, setBio] = useState(initial.bio ?? '')
   const [phone, setPhone] = useState(initial.phone ?? '')
-  const [specialties, setSpecialties] = useState((initial.specialties ?? []).join(', '))
+  const [specialtyTags, setSpecialtyTags] = useState<string[]>(
+    Array.from(new Set((initial.specialties ?? []).map(s => s.trim()).filter(Boolean))).slice(0, MAX_SPECIALTIES),
+  )
+  const [specialtyQuery, setSpecialtyQuery] = useState('')
+  const [specialtyOpen, setSpecialtyOpen] = useState(false)
+  const specialtyBoxRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (specialtyBoxRef.current && !specialtyBoxRef.current.contains(e.target as Node)) {
+        setSpecialtyOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handle)
+    return () => document.removeEventListener('mousedown', handle)
+  }, [])
+
+  const specialtyFiltered = (() => {
+    const q = specialtyQuery.trim()
+    if (q.length < 1) return [] as string[]
+    const qn = trNorm(q)
+    return ALL_TREATMENTS
+      .filter(s => !specialtyTags.includes(s) && trNorm(s).includes(qn))
+      .slice(0, 10)
+  })()
+
+  function addSpecialty(raw: string) {
+    const v = raw.trim().slice(0, MAX_SPECIALTY_LEN)
+    if (!v) return
+    if (specialtyTags.includes(v)) return
+    if (specialtyTags.length >= MAX_SPECIALTIES) return
+    setSpecialtyTags([...specialtyTags, v])
+    setSpecialtyQuery('')
+    setSpecialtyOpen(false)
+  }
+  function removeSpecialty(idx: number) {
+    setSpecialtyTags(specialtyTags.filter((_, i) => i !== idx))
+  }
 
   // Görsel state'leri — preview = data URL (yeni seçildi) || mevcut public URL
   const [logoPreview, setLogoPreview] = useState<string | null>(initial.logo_url)
@@ -279,23 +323,91 @@ export default function EditForm({ initial }: { initial: Initial }) {
         />
       </div>
 
-      {/* Uzmanlık alanları */}
+      {/* Uzmanlık alanları — tedavi arama motoru entegre */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Uzmanlık Alanları</label>
-        <input
-          name="specialties"
-          value={specialties}
-          onChange={e => setSpecialties(e.target.value)}
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
-          placeholder="Botoks, HA Dolgu, Skin Booster, Mezoterapi"
-        />
-        <p className="text-[11px] text-slate-600 mt-1">Virgülle ayır · Max 12 etiket · Her biri max 40 karakter</p>
-        {/* Önizleme */}
-        {specialties.trim() && (
+        <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">
+          Uzmanlık Alanları <span className="normal-case tracking-normal text-slate-600">({specialtyTags.length}/{MAX_SPECIALTIES})</span>
+        </label>
+
+        {/* Hidden input — server action virgülle ayrılmış string bekliyor */}
+        <input type="hidden" name="specialties" value={specialtyTags.join(', ')} />
+
+        <div ref={specialtyBoxRef} className="relative">
+          <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus-within:border-violet-500 transition-colors">
+            <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
+            <input
+              type="text"
+              value={specialtyQuery}
+              onChange={e => { setSpecialtyQuery(e.target.value); setSpecialtyOpen(true) }}
+              onFocus={() => { if (specialtyQuery.trim().length >= 1) setSpecialtyOpen(true) }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ',') {
+                  e.preventDefault()
+                  if (specialtyFiltered[0]) addSpecialty(specialtyFiltered[0])
+                  else if (specialtyQuery.trim()) addSpecialty(specialtyQuery)
+                } else if (e.key === 'Backspace' && !specialtyQuery && specialtyTags.length > 0) {
+                  removeSpecialty(specialtyTags.length - 1)
+                }
+              }}
+              maxLength={MAX_SPECIALTY_LEN}
+              disabled={specialtyTags.length >= MAX_SPECIALTIES}
+              placeholder={specialtyTags.length >= MAX_SPECIALTIES ? 'Limit doldu' : 'Tedavi ara… (ör: Meme dikleştirme)'}
+              className="flex-1 bg-transparent text-white placeholder-slate-500 text-sm focus:outline-none min-w-0 disabled:opacity-50"
+            />
+            {specialtyQuery && (
+              <button
+                type="button"
+                onClick={() => { setSpecialtyQuery(''); setSpecialtyOpen(false) }}
+                className="text-slate-500 hover:text-white transition-colors shrink-0"
+                aria-label="Temizle"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {specialtyOpen && specialtyFiltered.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden max-h-56 overflow-y-auto">
+              {specialtyFiltered.map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  onMouseDown={e => { e.preventDefault(); addSpecialty(s) }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors border-b border-slate-700/50 last:border-0"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <p className="text-[11px] text-slate-600 mt-1">
+          Listeden seç veya yaz + Enter · Max {MAX_SPECIALTIES} etiket · Her biri max {MAX_SPECIALTY_LEN} karakter
+        </p>
+
+        {specialtyTags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
-            {specialties.split(',').map(s => s.trim()).filter(Boolean).slice(0, 12).map((s, i) => (
-              <span key={i} className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-md bg-violet-500/10 text-violet-300 border border-violet-500/30">
+            {specialtyTags.map((s, i) => (
+              <span
+                key={`${s}-${i}`}
+                className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-1 rounded-md bg-violet-500/10 text-violet-300 border border-violet-500/30"
+              >
                 {s}
+                <button
+                  type="button"
+                  onClick={() => removeSpecialty(i)}
+                  className="text-violet-400 hover:text-white transition-colors"
+                  aria-label={`${s} kaldır`}
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </span>
             ))}
           </div>
