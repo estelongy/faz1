@@ -3,8 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
-
-const ALLOWED_TYPES = ['estetik', 'dermatoloji', 'sac_ekimi', 'lazer', 'longevity', 'diger'] as const
+import { CLINIC_TYPES } from '@/lib/randevu-filters'
 
 const ALLOWED_IMAGE_MIME = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024 // 5 MB
@@ -77,7 +76,7 @@ export async function updateClinicProfileAction(formData: FormData): Promise<Upd
   if (name.length > 120) return { ok: false, error: 'Klinik adı çok uzun (max 120).' }
   if (bio.length > 2000) return { ok: false, error: 'Hakkında metni çok uzun (max 2000 karakter).' }
   if (location.length > 200) return { ok: false, error: 'Konum çok uzun.' }
-  if (clinic_type && !ALLOWED_TYPES.includes(clinic_type as typeof ALLOWED_TYPES[number])) {
+  if (clinic_type && !CLINIC_TYPES.includes(clinic_type)) {
     return { ok: false, error: 'Geçersiz klinik tipi.' }
   }
 

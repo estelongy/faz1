@@ -3,6 +3,7 @@
 import { useState, useTransition, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { CLINIC_TYPES } from '@/lib/randevu-filters'
 import { updateClinicProfileAction } from './actions'
 
 interface Initial {
@@ -16,15 +17,8 @@ interface Initial {
   cover_image_url: string | null
 }
 
-const TYPE_OPTIONS = [
-  { value: '', label: 'Seçiniz…' },
-  { value: 'estetik', label: 'Estetik' },
-  { value: 'dermatoloji', label: 'Dermatoloji' },
-  { value: 'sac_ekimi', label: 'Saç Ekimi' },
-  { value: 'lazer', label: 'Lazer' },
-  { value: 'longevity', label: 'Longevity' },
-  { value: 'diger', label: 'Diğer' },
-]
+// Klinik tipi listesi tek kaynaktan (CLINIC_TYPES — randevu-filters.ts).
+// Klinik basvuru formuyla ayni; data tutarliligi icin onemli.
 
 const MAX_SIZE_MB = 5
 const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp']
@@ -235,19 +229,21 @@ export default function EditForm({ initial }: { initial: Initial }) {
         <p className="text-[11px] text-slate-600 mt-1">İlçe + il yazılırsa filtrelerde daha iyi eşleşir.</p>
       </div>
 
-      {/* Klinik tipi */}
+      {/* Klinik tipi (uzmanlık dalı) */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Klinik Tipi</label>
+        <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Klinik Tipi / Uzmanlık Dalı</label>
         <select
           name="clinic_type"
           value={clinicType}
           onChange={e => setClinicType(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-violet-500 transition-colors"
         >
-          {TYPE_OPTIONS.map(o => (
-            <option key={o.value} value={o.value}>{o.label}</option>
+          <option value="">Seçiniz…</option>
+          {CLINIC_TYPES.map(t => (
+            <option key={t} value={t}>{t}</option>
           ))}
         </select>
+        <p className="text-[11px] text-slate-600 mt-1">Hekim diploma branşınız — kart üzerinde isim altında görünür.</p>
       </div>
 
       {/* Telefon */}

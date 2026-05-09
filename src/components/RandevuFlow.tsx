@@ -348,41 +348,76 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                 const egpPublic = egpDisplayPublic(egp, reviewCount)
                 return (
                   <button key={clinic.id} onClick={() => setPreviewClinic(clinic)}
-                    className={`group text-left p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:border-violet-500/50 hover:shadow-lg hover:shadow-violet-500/10 ${
+                    className={`group text-left rounded-2xl border transition-all hover:border-violet-500/50 hover:shadow-lg hover:shadow-violet-500/10 overflow-hidden flex flex-col ${
                       selectedClinic?.id === clinic.id ? 'border-violet-500 bg-violet-500/10' : 'border-slate-700 bg-slate-800/50'
                     }`}>
-                    <div className="flex items-start justify-between mb-3 gap-2">
-                      {clinic.logo_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={clinic.logo_url} alt={clinic.name} className="w-10 h-10 rounded-xl object-cover shrink-0" />
-                      ) : (
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-black text-base shrink-0">
-                          {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
+                    {/* Üst blok — foto solda + sağda bilgi */}
+                    <div className="flex p-4 gap-4">
+                      {/* Foto / baş harfi avatar — 200x350 dikey portrait (4:7) */}
+                      <div className="shrink-0 w-[160px] md:w-[200px] aspect-[4/7] rounded-xl overflow-hidden bg-slate-900 border border-slate-700">
+                        {clinic.logo_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={clinic.logo_url} alt={clinic.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-black text-6xl">
+                            {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Sağ kolon — rozet, konum, isim, unvan */}
+                      <div className="flex-1 min-w-0 flex flex-col">
+                        {/* Sağ üst rozet */}
+                        <div className="flex justify-end mb-2">
+                          {showMeasuring ? (
+                            <MeasuringBadge reviewCount={reviewCount} variant="mini" />
+                          ) : egpPublic ? (
+                            <div className={`shrink-0 px-2.5 py-1.5 rounded-lg border text-center ${egpBadgeColor(egp)}`}>
+                              <div className="text-lg font-black leading-none">{egpPublic}</div>
+                              <div className="text-[9px] uppercase tracking-wider opacity-70 mt-0.5">EGP</div>
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider px-2 py-1 rounded-lg bg-slate-800 border border-slate-700">—</span>
+                          )}
                         </div>
-                      )}
-                      {showMeasuring ? (
-                        <MeasuringBadge reviewCount={reviewCount} variant="mini" />
-                      ) : egpPublic ? (
-                        <div className={`shrink-0 px-2 py-1 rounded-lg border text-center ${egpBadgeColor(egp)}`}>
-                          <div className="text-base font-black leading-none">{egpPublic}</div>
-                          <div className="text-[8px] uppercase tracking-wider opacity-70 mt-0.5">EGP</div>
-                        </div>
-                      ) : (
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider px-2 py-1 rounded-lg bg-slate-800 border border-slate-700">—</span>
-                      )}
+
+                        {/* Konum */}
+                        {clinic.location && (
+                          <p className="text-slate-400 text-sm mb-3 line-clamp-1">📍 {clinic.location}</p>
+                        )}
+
+                        {/* İsim */}
+                        <h3 className="text-white font-bold text-base sm:text-lg leading-tight mb-1.5 group-hover:text-violet-300 transition-colors line-clamp-2">
+                          {clinic.name}
+                        </h3>
+
+                        {/* Unvan (clinic_type) */}
+                        {clinic.clinic_type && (
+                          <p className="text-emerald-300/90 text-xs sm:text-sm font-medium">
+                            {clinic.clinic_type}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-white font-bold mb-1 group-hover:text-violet-300 transition-colors">{clinic.name}</div>
-                    {clinic.location && <div className="text-slate-400 text-xs mb-2">📍 {clinic.location}</div>}
+
+                    {/* Çipler — full-width foto altı */}
                     {clinic.specialties && clinic.specialties.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {clinic.specialties.slice(0, 3).map(s => (
-                          <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">{s}</span>
+                      <div className="px-4 pb-3 flex flex-wrap gap-1.5">
+                        {clinic.specialties.slice(0, 5).map(s => (
+                          <span key={s} className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                            {s}
+                          </span>
                         ))}
+                        {clinic.specialties.length > 5 && (
+                          <span className="text-[10px] text-slate-500 self-center">+{clinic.specialties.length - 5}</span>
+                        )}
                       </div>
                     )}
-                    <div className="flex items-center justify-between text-[11px] pt-2 border-t border-slate-700/60">
+
+                    {/* Alt şerit — deneyim + önizle */}
+                    <div className="mt-auto px-4 py-3 border-t border-slate-700/60 flex items-center justify-between text-xs">
                       <span className="text-slate-500">
-                        💬 <strong className="text-slate-300">{clinic.review_count ?? 0}</strong> deneyim
+                        💬 <strong className="text-slate-300">{clinic.review_count ?? 0}</strong> deneyim · son 12 ay
                       </span>
                       <span className="text-violet-400 group-hover:text-violet-300 font-semibold inline-flex items-center gap-1 transition-colors">
                         Önizle →
