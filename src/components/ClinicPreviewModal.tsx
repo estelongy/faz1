@@ -29,6 +29,8 @@ export interface ClinicPreview {
   clinic_egp?: number | null
   review_count?: number | null
   avg_nps?: number | null
+  logo_url?: string | null
+  cover_image_url?: string | null
 }
 
 interface Props {
@@ -122,13 +124,27 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
         className="relative w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-slate-900 sm:rounded-3xl rounded-t-3xl border border-slate-800 shadow-2xl shadow-teal-500/10 animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Hero kapak — şimdilik gradient mesh placeholder */}
+        {/* Hero kapak — cover_image_url varsa resim, yoksa teal gradient placeholder */}
         <div className="relative h-48 sm:h-56 overflow-hidden sm:rounded-t-3xl rounded-t-3xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-500 via-emerald-600 to-slate-900" />
-          <div className="absolute inset-0 opacity-40" style={{
-            backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(45,212,191,0.6), transparent 50%), radial-gradient(circle at 70% 70%, rgba(16,185,129,0.5), transparent 50%)'
-          }} />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+          {clinic.cover_image_url ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={clinic.cover_image_url}
+                alt={clinic.name}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent" />
+            </>
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-br from-teal-500 via-emerald-600 to-slate-900" />
+              <div className="absolute inset-0 opacity-40" style={{
+                backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(45,212,191,0.6), transparent 50%), radial-gradient(circle at 70% 70%, rgba(16,185,129,0.5), transparent 50%)'
+              }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+            </>
+          )}
 
           {/* Kapat butonu */}
           <button

@@ -41,7 +41,7 @@ export default async function PublicClinicPage({ params }: Props) {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_operational, avg_nps')
+    .select('id, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_operational, avg_nps, logo_url, cover_image_url')
     .eq('slug', slug)
     .eq('is_active', true)
     .maybeSingle()
@@ -95,10 +95,38 @@ export default async function PublicClinicPage({ params }: Props) {
           <span className="text-slate-300 truncate">{clinic.name}</span>
         </nav>
 
+        {/* Kapak hero — varsa cover, yoksa teal placeholder */}
+        <div className="relative aspect-[3/1] rounded-2xl overflow-hidden mb-4 border border-slate-800">
+          {clinic.cover_image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={clinic.cover_image_url} alt={clinic.name} className="w-full h-full object-cover" />
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-br from-teal-500 via-emerald-600 to-slate-900" />
+              <div className="absolute inset-0 opacity-40" style={{
+                backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(45,212,191,0.6), transparent 50%), radial-gradient(circle at 70% 70%, rgba(16,185,129,0.5), transparent 50%)'
+              }} />
+            </>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
+        </div>
+
         {/* Üst kart: klinik kimlik + EGP rozet */}
         <header className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900 border border-slate-800">
-            <h1 className="text-3xl font-bold text-white mb-2">{clinic.name}</h1>
+            <div className="flex items-start gap-3 mb-2">
+              {clinic.logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={clinic.logo_url} alt={clinic.name} className="w-14 h-14 rounded-2xl object-cover border border-slate-700 shrink-0" />
+              ) : (
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-black text-xl shrink-0">
+                  {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-3xl font-bold text-white">{clinic.name}</h1>
+              </div>
+            </div>
             {clinic.location && (
               <p className="text-slate-400 text-sm mb-3">📍 {clinic.location}</p>
             )}

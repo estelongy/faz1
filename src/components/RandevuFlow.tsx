@@ -20,6 +20,8 @@ interface Clinic {
   clinic_egp?: number | null
   review_count?: number | null
   avg_nps?: number | null
+  logo_url?: string | null
+  cover_image_url?: string | null
 }
 
 interface Availability {
@@ -131,7 +133,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
     const supabase = createClient()
     supabase
       .from('clinics_with_credit_status')
-      .select('id, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_nps')
+      .select('id, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_nps, logo_url, cover_image_url')
       .eq('approval_status', 'approved')
       .eq('is_active', true)
       .gt('total_credit_balance', 0)
@@ -350,9 +352,14 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                       selectedClinic?.id === clinic.id ? 'border-violet-500 bg-violet-500/10' : 'border-slate-700 bg-slate-800/50'
                     }`}>
                     <div className="flex items-start justify-between mb-3 gap-2">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                      </div>
+                      {clinic.logo_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={clinic.logo_url} alt={clinic.name} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-black text-base shrink-0">
+                          {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
+                        </div>
+                      )}
                       {showMeasuring ? (
                         <MeasuringBadge reviewCount={reviewCount} variant="mini" />
                       ) : egpPublic ? (

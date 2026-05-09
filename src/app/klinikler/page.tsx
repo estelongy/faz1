@@ -34,6 +34,8 @@ interface ClinicRow {
   clinic_egp: number | null
   review_count: number | null
   avg_nps: number | null
+  logo_url: string | null
+  cover_image_url: string | null
 }
 
 const CLINIC_TYPE_LABEL: Record<string, string> = {
@@ -66,7 +68,7 @@ export default async function KliniklerPage({
   // Tüm aktif + onaylı klinikleri çek
   let q = supabase
     .from('clinics')
-    .select('id, slug, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_nps')
+    .select('id, slug, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_nps, logo_url, cover_image_url')
     .eq('is_active', true)
     .eq('approval_status', 'approved')
 
@@ -230,16 +232,42 @@ function ClinicCard({ clinic }: { clinic: ClinicRow }) {
   return (
     <Link
       href={`/klinik/${slug}`}
-      className="group p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-violet-500/50 transition-all space-y-3"
+      className="group rounded-2xl bg-slate-900 border border-slate-800 hover:border-violet-500/50 transition-all overflow-hidden flex flex-col"
     >
+      {/* Kapak (varsa) */}
+      <div className="relative aspect-[3/1] overflow-hidden bg-slate-800">
+        {clinic.cover_image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={clinic.cover_image_url}
+            alt={clinic.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-teal-500/40 via-emerald-600/30 to-slate-900" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+      </div>
+
+      <div className="p-5 space-y-3 flex-1 flex flex-col">
       <header className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <h3 className="text-white font-bold text-base group-hover:text-violet-300 transition-colors line-clamp-1">
-            {clinic.name}
-          </h3>
-          {clinic.location && (
-            <p className="text-slate-500 text-xs mt-0.5 line-clamp-1">📍 {clinic.location}</p>
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          {clinic.logo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={clinic.logo_url} alt={clinic.name} className="w-10 h-10 rounded-xl object-cover shrink-0 border border-slate-700" />
+          ) : (
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-black text-base shrink-0">
+              {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
+            </div>
           )}
+          <div className="min-w-0 flex-1">
+            <h3 className="text-white font-bold text-base group-hover:text-violet-300 transition-colors line-clamp-1">
+              {clinic.name}
+            </h3>
+            {clinic.location && (
+              <p className="text-slate-500 text-xs mt-0.5 line-clamp-1">📍 {clinic.location}</p>
+            )}
+          </div>
         </div>
         {showMeasuring ? (
           <MeasuringBadge reviewCount={reviewCount} variant="mini" />
@@ -288,6 +316,7 @@ function ClinicCard({ clinic }: { clinic: ClinicRow }) {
       {!showMeasuring && egp != null && (
         <p className="text-[10px] text-slate-600">{egpLabel(egp)}</p>
       )}
+      </div>
     </Link>
   )
 }
