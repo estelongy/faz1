@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { CLINIC_TYPES, TREATMENTS_BY_BRANCH, LOCATIONS } from '@/lib/randevu-filters'
+import { CLINIC_TYPES, TREATMENTS_BY_BRANCH, ALL_TREATMENTS, LOCATIONS } from '@/lib/randevu-filters'
 
 interface Props {
   action: (formData: FormData) => Promise<void>
@@ -26,6 +26,55 @@ function toE164(phone: string): string {
 export default function KlinikBasvurForm({ action, hasError, isLoggedIn }: Props) {
   const [clinicType, setClinicType] = useState('')
   const treatments = clinicType ? (TREATMENTS_BY_BRANCH[clinicType] ?? []) : []
+  const branchSet = new Set(treatments)
+
+  // Hizmet seçimi — checkbox grid + ekstra (state-driven, native checkbox yerine)
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([])
+  const branchSelectedCount = selectedSpecialties.filter(t => branchSet.has(t)).length
+  const allBranchSelected = treatments.length > 0 && branchSelectedCount === treatments.length
+  const extraSpecialties = selectedSpecialties.filter(t => !branchSet.has(t))
+
+  function toggleSpecialty(t: string) {
+    setSelectedSpecialties(prev =>
+      prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t],
+    )
+  }
+  function selectAllBranch() {
+    if (allBranchSelected) {
+      setSelectedSpecialties(prev => prev.filter(t => !branchSet.has(t)))
+    } else {
+      setSelectedSpecialties(prev => Array.from(new Set([...prev, ...treatments])))
+    }
+  }
+
+  // Ayrıca Ekle — autocomplete state
+  const [extraOpen, setExtraOpen] = useState(false)
+  const [extraQuery, setExtraQuery] = useState('')
+  const [extraDropdownOpen, setExtraDropdownOpen] = useState(false)
+  const extraRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (extraRef.current && !extraRef.current.contains(e.target as Node)) setExtraDropdownOpen(false)
+    }
+    document.addEventListener('mousedown', handle)
+    return () => document.removeEventListener('mousedown', handle)
+  }, [])
+  const extraSuggestions = (() => {
+    const q = extraQuery.trim()
+    if (q.length < 1) return [] as string[]
+    const qn = trNorm(q)
+    return ALL_TREATMENTS
+      .filter(s => !selectedSpecialties.includes(s) && !branchSet.has(s) && trNorm(s).includes(qn))
+      .slice(0, 10)
+  })()
+  function addExtra(raw: string) {
+    const v = raw.trim().slice(0, 80)
+    if (!v) return
+    if (selectedSpecialties.includes(v)) return
+    setSelectedSpecialties([...selectedSpecialties, v])
+    setExtraQuery('')
+    setExtraDropdownOpen(false)
+  }
 
   // OTP state
   const [otpStep, setOtpStep]         = useState(false)
@@ -331,24 +380,154 @@ export default function KlinikBasvurForm({ action, hasError, isLoggedIn }: Props
             className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors resize-none" />
         </div>
 
-        {/* Tedavi / Hizmetler */}
+        {/* Tedavi / Hizmetler — branş checkbox grid + Tümünü Seç + Ayrıca Ekle */}
         <div>
-          <label className="block text-sm text-slate-400 mb-1">
-            Hizmetleriniz
-            {clinicType && <span className="ml-2 text-xs text-slate-500">— {treatments.length} seçenek</span>}
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm text-slate-400">
+              Hizmetleriniz
+              {clinicType && <span className="ml-2 text-xs text-slate-500">— {treatments.length} seçenek</span>}
+              {selectedSpecialties.length > 0 && <span className="ml-2 text-xs text-violet-400">· {selectedSpecialties.length} seçili</span>}
+            </label>
+            {clinicType && treatments.length > 0 && (
+              <button
+                type="button"
+                onClick={selectAllBranch}
+                className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+              >
+                {allBranchSelected ? 'Tümünü Kaldır' : 'Tümünü Seç'}
+              </button>
+            )}
+          </div>
+
+          {/* Hidden inputs — server action getAll('specialties') ile okuyor */}
+          {selectedSpecialties.map(s => (
+            <input key={s} type="hidden" name="specialties" value={s} />
+          ))}
+
           {!clinicType ? (
             <div className="p-4 rounded-xl border border-slate-700/50 border-dashed text-center text-slate-500 text-sm">
               Önce Klinik Tipi seçin
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
-              {treatments.map(s => (
-                <label key={s} className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-700 hover:border-slate-600 cursor-pointer transition-colors group">
-                  <input type="checkbox" name="specialties" value={s} className="accent-violet-500 w-4 h-4 shrink-0" />
-                  <span className="text-slate-400 group-hover:text-white text-sm transition-colors leading-snug">{s}</span>
-                </label>
-              ))}
+              {treatments.map(t => {
+                const checked = selectedSpecialties.includes(t)
+                return (
+                  <label
+                    key={t}
+                    className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors group ${
+                      checked ? 'border-violet-500/50 bg-violet-500/10' : 'border-slate-700 hover:border-slate-600'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggleSpecialty(t)}
+                      className="accent-violet-500 w-4 h-4 shrink-0"
+                    />
+                    <span className={`text-sm leading-snug transition-colors ${checked ? 'text-white' : 'text-slate-400 group-hover:text-white'}`}>
+                      {t}
+                    </span>
+                  </label>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Ayrıca Ekle */}
+          {clinicType && (
+            <div className="mt-3">
+              {!extraOpen ? (
+                <button
+                  type="button"
+                  onClick={() => setExtraOpen(true)}
+                  className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Ayrıca Ekle (diğer branşlardan)
+                </button>
+              ) : (
+                <div ref={extraRef} className="relative">
+                  <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus-within:border-violet-500 transition-colors">
+                    <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    <input
+                      type="text"
+                      value={extraQuery}
+                      onChange={e => { setExtraQuery(e.target.value); setExtraDropdownOpen(true) }}
+                      onFocus={() => { if (extraQuery.trim().length >= 1) setExtraDropdownOpen(true) }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ',') {
+                          e.preventDefault()
+                          if (extraSuggestions[0]) addExtra(extraSuggestions[0])
+                          else if (extraQuery.trim()) addExtra(extraQuery)
+                        } else if (e.key === 'Escape') {
+                          setExtraQuery(''); setExtraDropdownOpen(false); setExtraOpen(false)
+                        }
+                      }}
+                      maxLength={80}
+                      autoFocus
+                      placeholder="Tedavi ara… (ör: Meme dikleştirme)"
+                      className="flex-1 bg-transparent text-white placeholder-slate-500 text-sm focus:outline-none min-w-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => { setExtraQuery(''); setExtraDropdownOpen(false); setExtraOpen(false) }}
+                      className="text-slate-500 hover:text-white transition-colors shrink-0"
+                      aria-label="Kapat"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  {extraDropdownOpen && extraSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden max-h-56 overflow-y-auto">
+                      {extraSuggestions.map(s => (
+                        <button
+                          key={s}
+                          type="button"
+                          onMouseDown={e => { e.preventDefault(); addExtra(s) }}
+                          className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors border-b border-slate-700/50 last:border-0"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-[11px] text-slate-600 mt-1">Listeden seç veya yaz + Enter</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Ekstra (branş dışı) tag listesi */}
+          {extraSpecialties.length > 0 && (
+            <div className="mt-3">
+              <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1.5">Ekstra Tedaviler ({extraSpecialties.length})</p>
+              <div className="flex flex-wrap gap-1.5">
+                {extraSpecialties.map(s => (
+                  <span
+                    key={s}
+                    className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md bg-violet-500/10 text-violet-300 border border-violet-500/30"
+                  >
+                    {s}
+                    <button
+                      type="button"
+                      onClick={() => toggleSpecialty(s)}
+                      className="text-violet-400 hover:text-white transition-colors"
+                      aria-label={`${s} kaldır`}
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+              </div>
             </div>
           )}
         </div>
