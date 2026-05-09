@@ -24,9 +24,16 @@ import {
  * Cron secret: header `x-cron-secret`.
  */
 export async function GET(req: NextRequest) {
-  const cronSecret = req.headers.get('x-cron-secret')
-  if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // Vercel cron 'Authorization: Bearer <secret>' gonderir; manuel tetikleme icin 'x-cron-secret' de kabul edilir
+  const authHeader = req.headers.get('authorization')
+  const customHeader = req.headers.get('x-cron-secret')
+  const expected = process.env.CRON_SECRET
+  if (expected) {
+    const bearerOk = authHeader === `Bearer ${expected}`
+    const customOk = customHeader === expected
+    if (!bearerOk && !customOk) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
   }
 
   const admin = createServiceClient()
