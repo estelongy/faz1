@@ -38,7 +38,14 @@ async function submitApplication(formData: FormData) {
       phone_confirm: phoneE164 ? true : undefined,
       user_metadata: { first_name: firstName, last_name: lastName || '' },
     })
-    if (createErr || !created.user) redirect('/klinik/basvur?error=hesap')
+    if (createErr || !created.user) {
+      // Email zaten kayıtlıysa kullanıcıyı giriş ekranına yönlendir
+      const msg = (createErr?.message ?? '').toLowerCase()
+      if (msg.includes('already') || msg.includes('registered') || msg.includes('exists')) {
+        redirect('/klinik/basvur?error=email_var')
+      }
+      redirect('/klinik/basvur?error=hesap')
+    }
 
     // Profil güncelle
     if (birthYear) {
@@ -79,7 +86,8 @@ export default async function KlinikBasvurPage({
   searchParams: Promise<Record<string, string>>
 }) {
   const params    = await searchParams
-  const hasError  = !!params.error
+  const errorType = params.error ?? ''
+  const hasError  = !!errorType
   const isSuccess = params.success === '1'
   const supabase  = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -176,7 +184,7 @@ export default async function KlinikBasvurPage({
           <p className="text-slate-400 text-sm mt-1">Başvurunuz admin onayından sonra aktive edilir</p>
         </div>
 
-        <KlinikBasvurForm action={submitApplication} hasError={hasError} isLoggedIn={!!user} />
+        <KlinikBasvurForm action={submitApplication} hasError={hasError} errorType={errorType} isLoggedIn={!!user} />
       </div>
     </main>
   )

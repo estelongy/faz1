@@ -7,6 +7,7 @@ import { CLINIC_TYPES, TREATMENTS_BY_BRANCH, ALL_TREATMENTS, LOCATIONS } from '@
 interface Props {
   action: (formData: FormData) => Promise<void>
   hasError: boolean
+  errorType?: string
   isLoggedIn: boolean
 }
 
@@ -23,7 +24,7 @@ function toE164(phone: string): string {
   return '+90' + digits
 }
 
-export default function KlinikBasvurForm({ action, hasError, isLoggedIn }: Props) {
+export default function KlinikBasvurForm({ action, hasError, errorType, isLoggedIn }: Props) {
   const [clinicType, setClinicType] = useState('')
   const treatments = clinicType ? (TREATMENTS_BY_BRANCH[clinicType] ?? []) : []
   const branchSet = new Set(treatments)
@@ -539,14 +540,28 @@ export default function KlinikBasvurForm({ action, hasError, isLoggedIn }: Props
         </button>
 
         {hasError && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
-            <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-red-400 text-sm">
-              Başvuru gönderilemedi. Zaten aktif bir başvurunuz olabilir veya bir hata oluştu. Lütfen tekrar deneyin.
-            </p>
-          </div>
+          errorType === 'email_var' ? (
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+              <svg className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-amber-300 text-sm font-medium">Bu e-posta zaten kayıtlı.</p>
+                <p className="text-amber-300/80 text-xs mt-1">
+                  Daha önce başvuru yapmış olabilirsin. <a href="/giris" className="underline font-semibold">Giriş yap</a> — başvurunun durumunu paneline dönerek görebilirsin.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
+              <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-red-400 text-sm">
+                Başvuru gönderilemedi. Bir hata oluştu, lütfen tekrar deneyin.
+              </p>
+            </div>
+          )
         )}
       </form>
     </>
