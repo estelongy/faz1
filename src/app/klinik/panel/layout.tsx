@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import KlinikSidebar from '@/components/KlinikSidebar'
 import Link from 'next/link'
+import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
 
 async function handleSignOut() {
   'use server'
@@ -67,6 +68,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
         totalCredit={totalCredit}
         freeCredit={freeCredit}
         isEducator={clinic.is_educator ?? false}
+        showMuhasebe={isMuhasebeOwner(user.id)}
       />
 
       {/* Ana içerik — sidebar collapsed offset (72px), expanded sidebar overlays */}

@@ -17,7 +17,7 @@ interface NavGroup {
   items: NavItem[]
 }
 
-function buildNavGroups(isEducator: boolean): NavGroup[] {
+function buildNavGroups(isEducator: boolean, showMuhasebe: boolean): NavGroup[] {
   const main: NavItem[] = [
     { href: '/klinik/panel',           icon: '🏠', label: 'Panel', exact: true },
     { href: '/klinik/panel/randevular', icon: '📅', label: 'Randevular' },
@@ -27,6 +27,9 @@ function buildNavGroups(isEducator: boolean): NavGroup[] {
     { href: '/klinik/panel/jeton',      icon: '💳', label: 'Krediler' },
     { href: '/klinik/panel/rapor',      icon: '📊', label: 'Raporlar' },
   ]
+  if (showMuhasebe) {
+    main.push({ href: '/klinik/panel/muhasebe', icon: '📒', label: 'Muhasebe' })
+  }
   if (isEducator) {
     main.push({ href: '/klinik/panel/akademi/paketler', icon: '🎓', label: 'Eğitmen Paneli', badge: 'new' })
   } else {
@@ -59,16 +62,17 @@ interface Props {
   totalCredit: number
   freeCredit: number
   isEducator?: boolean
+  showMuhasebe?: boolean
 }
 
 const PIN_KEY = 'estelongy_klinik_sidebar_pinned'
 
-export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isEducator = false }: Props) {
+export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isEducator = false, showMuhasebe = false }: Props) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [pinned, setPinned] = useState(false)
   const [hovered, setHovered] = useState(false)
-  const navGroups = buildNavGroups(isEducator)
+  const navGroups = buildNavGroups(isEducator, showMuhasebe)
 
   // localStorage'tan pin state'i yükle
   useEffect(() => {
