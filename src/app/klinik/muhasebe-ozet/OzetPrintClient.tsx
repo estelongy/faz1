@@ -73,7 +73,7 @@ export default function OzetPrintClient({
         table { border-collapse: collapse; width: 100%; }
         th { background: #1e1b4b; color: white; border: 1px solid #312e81; padding: 9px 11px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; text-align: left; }
         td { border: 1px solid #e2e8f0; padding: 9px 11px; font-size: 13px; vertical-align: top; }
-        tbody tr:nth-child(even) td { background: #f1f5f9; }
+        tbody tr:nth-child(even) td { background: #dde4ed; }
         tbody tr:nth-child(odd) td { background: white; }
         tfoot td { background: #1e1b4b !important; color: white !important; font-weight: 900; font-size: 13px; border-color: #312e81; }
         .tag { display: inline-block; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 8px; font-size: 12px; margin: 2px 3px 2px 0; color: #334155; }
