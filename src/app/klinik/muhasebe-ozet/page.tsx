@@ -41,14 +41,13 @@ export default async function OzetPage() {
       .order('paid_at', { ascending: true }),
   ])
 
-  const patients  = patientsRes.data  ?? []
+  const patients   = patientsRes.data  ?? []
   const treatments = treatmentsRes.data ?? []
-  const products  = productsRes.data  ?? []
-  const payments  = paymentsRes.data  ?? []
+  const products   = productsRes.data  ?? []
+  const payments   = paymentsRes.data  ?? []
 
   const patientName = (id: string) => patients.find(p => p.id === id)?.name ?? '—'
 
-  // Tahsilatları işleme göre eşle
   const paymentsByTreatment = new Map<string, typeof payments>()
   const unmatchedPayments: typeof payments = []
   for (const p of payments) {
@@ -61,28 +60,26 @@ export default async function OzetPage() {
     }
   }
 
-  // İşlem satırları
   const treatmentRows = treatments.map(t => {
     const tProducts = products.filter(p => p.treatment_id === t.id)
     const tPayments = paymentsByTreatment.get(t.id) ?? []
     const billed    = Number(t.amount ?? 0)
     const collected = tPayments.reduce((s, p) => s + Number(p.amount ?? 0), 0)
     return {
-      date:      fmtDate(t.treatment_date),
-      patient:   patientName(t.patient_id),
-      name:      t.name,
-      notes:     t.notes ?? '',
-      products:  tProducts.map(p => `${p.name}${p.quantity ? ` × ${p.quantity}${p.unit ? p.unit : ''}` : ''}`),
-      billed:    fmt(billed),
-      collected: collected > 0 ? fmt(collected) : '—',
-      remaining: fmt(Math.max(0, billed - collected)),
-      hasDebt:   billed > collected,
-      billedRaw: billed,
+      date:         fmtDate(t.treatment_date),
+      patient:      patientName(t.patient_id),
+      name:         t.name,
+      notes:        t.notes ?? '',
+      products:     tProducts.map(p => `${p.name}${p.quantity ? ` × ${p.quantity}${p.unit ?? ''}` : ''}`),
+      billed:       fmt(billed),
+      collected:    collected > 0 ? fmt(collected) : '—',
+      remaining:    fmt(Math.max(0, billed - collected)),
+      hasDebt:      billed > collected,
+      billedRaw:    billed,
       collectedRaw: collected,
     }
   })
 
-  // Eşleşmeyen tahsilatlar
   const unmatchedRows = unmatchedPayments.map(p => ({
     date:    fmtDate(p.paid_at),
     patient: patientName(p.patient_id),
@@ -91,7 +88,6 @@ export default async function OzetPage() {
     notes:   p.notes ?? '',
   }))
 
-  // Genel yekün
   const totalBilled    = treatmentRows.reduce((s, r) => s + r.billedRaw, 0)
   const totalCollected = payments.reduce((s, p) => s + Number(p.amount ?? 0), 0)
   const totalRemaining = totalBilled - totalCollected

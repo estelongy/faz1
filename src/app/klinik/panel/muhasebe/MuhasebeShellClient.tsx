@@ -125,7 +125,7 @@ export default function MuhasebeShellClient({
       <div className="flex justify-end gap-2 mb-3">
         <button
           type="button"
-          onClick={() => window.open('/klinik/panel/muhasebe/ozet', '_blank')}
+          onClick={() => window.open('/klinik/muhasebe-ozet', '_blank')}
           className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-semibold rounded-xl transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
