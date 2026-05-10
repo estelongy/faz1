@@ -181,3 +181,77 @@ export async function deletePayment(id: string, patientId: string): Promise<Resu
   revalidatePath('/klinik/panel/muhasebe')
   return { ok: true }
 }
+
+// ─── Hızlı Kayıt (hasta + işlem + tahsilat tek seferde) ─────────────────
+type QuickResult = { ok: true; patientId: string } | { ok: false; error: string }
+
+export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  // Hasta — mevcut seç veya yeni oluştur
+  const existingPatientId = (formData.get('existing_patient_id') as string | null)?.trim() || null
+  const newPatientName = (formData.get('new_patient_name') as string | null)?.trim() || null
+  const newPatientPhone = (formData.get('new_patient_phone') as string | null)?.trim() || null
+
+  let patientId: string
+
+  if (existingPatientId) {
+    patientId = existingPatientId
+  } else if (newPatientName) {
+    if (newPatientName.length < 2) return { ok: false, error: 'Hasta adı en az 2 karakter.' }
+    if (newPatientName.length > 120) return { ok: false, error: 'Hasta adı çok uzun.' }
+    const { data, error } = await ctx.supabase.from('internal_patient').insert({
+      owner_id: ctx.user.id,
+      name: newPatientName,
+      phone: newPatientPhone || null,
+    }).select('id').single()
+    if (error || !data) return { ok: false, error: error?.message ?? 'Hasta oluşturulamadı.' }
+    patientId = data.id
+  } else {
+    return { ok: false, error: 'Hasta seçin veya yeni hasta adı girin.' }
+  }
+
+  // İşlem
+  const treatmentName = (formData.get('treatment_name') as string | null)?.trim() ?? ''
+  const treatmentDateStr = (formData.get('treatment_date') as string | null)?.trim() ?? ''
+  const treatmentAmountStr = (formData.get('treatment_amount') as string | null)?.trim() ?? '0'
+  const treatmentNotes = (formData.get('treatment_notes') as string | null)?.trim() || null
+
+  if (treatmentName.length < 2) return { ok: false, error: 'İşlem adı en az 2 karakter.' }
+  const treatmentAmount = Number(treatmentAmountStr.replace(',', '.'))
+  if (!Number.isFinite(treatmentAmount) || treatmentAmount < 0) return { ok: false, error: 'Geçersiz işlem ücreti.' }
+
+  const { data: treatmentData, error: treatmentErr } = await ctx.supabase.from('internal_treatment').insert({
+    owner_id: ctx.user.id,
+    patient_id: patientId,
+    name: treatmentName,
+    treatment_date: treatmentDateStr || new Date().toISOString().slice(0, 10),
+    amount: treatmentAmount,
+    notes: treatmentNotes,
+  }).select('id').single()
+  if (treatmentErr) return { ok: false, error: treatmentErr.message }
+
+  // Tahsilat (opsiyonel — tutar > 0 ise)
+  const paymentAmountStr = (formData.get('payment_amount') as string | null)?.trim() ?? '0'
+  const paymentAmount = Number(paymentAmountStr.replace(',', '.'))
+
+  if (Number.isFinite(paymentAmount) && paymentAmount > 0) {
+    const paymentDateStr = (formData.get('payment_date') as string | null)?.trim() ?? ''
+    const paymentMethod = (formData.get('payment_method') as string | null)?.trim() || null
+
+    const { error: payErr } = await ctx.supabase.from('internal_payment').insert({
+      owner_id: ctx.user.id,
+      patient_id: patientId,
+      treatment_id: treatmentData?.id ?? null,
+      amount: paymentAmount,
+      paid_at: paymentDateStr || new Date().toISOString().slice(0, 10),
+      method: paymentMethod,
+    })
+    if (payErr) return { ok: false, error: payErr.message }
+  }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
+  return { ok: true, patientId }
+}

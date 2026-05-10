@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import MuhasebeListClient from './MuhasebeListClient'
+import { addQuickEntry } from './actions'
 
 export interface PatientRow {
   id: string
@@ -66,12 +68,239 @@ function formatDayLabel(dateStr: string): string {
 export default function MuhasebeShellClient({
   rows, days, monthLabel, monthBilled, monthCollected, totalRemaining, debtorCount, patientCount,
 }: Props) {
+  const router = useRouter()
   const [tab, setTab] = useState<'gunluk' | 'hastalar'>('gunluk')
+  const [showQuick, setShowQuick] = useState(false)
+  const [pending, startTransition] = useTransition()
+  const [quickError, setQuickError] = useState<string | null>(null)
+  const [quickSuccess, setQuickSuccess] = useState(false)
+
+  // Hızlı kayıt — mevcut/yeni hasta seçimi
+  const [patientMode, setPatientMode] = useState<'existing' | 'new'>('new')
+  const [selectedPatientId, setSelectedPatientId] = useState('')
+  const [patientSearch, setPatientSearch] = useState('')
+
+  const filteredPatients = useMemo(() => {
+    if (!patientSearch.trim()) return rows.slice(0, 10)
+    const q = patientSearch.toLowerCase()
+    return rows.filter(r => r.name.toLowerCase().includes(q)).slice(0, 10)
+  }, [rows, patientSearch])
+
+  function handleQuickSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setQuickError(null)
+    setQuickSuccess(false)
+    const fd = new FormData(e.currentTarget)
+    const form = e.currentTarget
+    startTransition(async () => {
+      const res = await addQuickEntry(fd)
+      if (res.ok) {
+        form.reset()
+        setQuickSuccess(true)
+        setSelectedPatientId('')
+        setPatientSearch('')
+        setPatientMode('new')
+        router.refresh()
+        setTimeout(() => setQuickSuccess(false), 3000)
+      } else {
+        setQuickError(res.error)
+      }
+    })
+  }
 
   const monthRemaining = monthBilled - monthCollected
 
   return (
     <>
+      {/* Hızlı Kayıt butonu */}
+      <div className="flex justify-end mb-3">
+        <button
+          type="button"
+          onClick={() => { setShowQuick(s => !s); setQuickError(null); setQuickSuccess(false) }}
+          className={`inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all ${
+            showQuick
+              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              : 'bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white'
+          }`}
+        >
+          {showQuick ? (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Kapat
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Hızlı Kayıt
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Hızlı Kayıt formu */}
+      {showQuick && (
+        <form onSubmit={handleQuickSubmit} className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-800/60 border border-violet-500/30 space-y-4">
+          <p className="text-xs uppercase tracking-widest text-violet-300/80 font-bold">Hızlı Kayıt — Hasta + İşlem + Tahsilat</p>
+
+          {/* ── Hasta Seçimi ── */}
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <button type="button" onClick={() => { setPatientMode('new'); setSelectedPatientId('') }}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${patientMode === 'new' ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}>
+                Yeni Hasta
+              </button>
+              <button type="button" onClick={() => setPatientMode('existing')}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${patientMode === 'existing' ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}>
+                Mevcut Hasta ({rows.length})
+              </button>
+            </div>
+
+            {patientMode === 'new' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ad Soyad *</label>
+                  <input name="new_patient_name" autoFocus minLength={2} maxLength={120}
+                    placeholder="Örn. Ayşe Y."
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Telefon</label>
+                  <input name="new_patient_phone" type="tel" maxLength={32}
+                    placeholder="0555…"
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Hasta Seç *</label>
+                <input
+                  type="text"
+                  value={patientSearch}
+                  onChange={e => { setPatientSearch(e.target.value); setSelectedPatientId('') }}
+                  placeholder="Hasta adı yazarak ara…"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500 mb-1"
+                />
+                <input type="hidden" name="existing_patient_id" value={selectedPatientId} />
+                {selectedPatientId ? (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+                    <span className="text-violet-300 text-sm font-medium">
+                      {rows.find(r => r.id === selectedPatientId)?.name}
+                    </span>
+                    <button type="button" onClick={() => { setSelectedPatientId(''); setPatientSearch('') }}
+                      className="ml-auto text-slate-500 hover:text-white text-xs">Değiştir</button>
+                  </div>
+                ) : (
+                  <div className="max-h-32 overflow-y-auto space-y-0.5">
+                    {filteredPatients.length === 0 ? (
+                      <p className="text-slate-600 text-xs px-2 py-1">Hasta bulunamadı — &quot;Yeni Hasta&quot; seçin.</p>
+                    ) : (
+                      filteredPatients.map(r => (
+                        <button key={r.id} type="button"
+                          onClick={() => { setSelectedPatientId(r.id); setPatientSearch(r.name) }}
+                          className="w-full text-left px-2 py-1.5 rounded hover:bg-slate-800/60 text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-[10px] shrink-0">
+                            {r.name.charAt(0).toLocaleUpperCase('tr-TR')}
+                          </span>
+                          <span className="truncate">{r.name}</span>
+                          {r.remaining > 0 && <span className="ml-auto text-amber-400 text-[10px] shrink-0">{formatTRY(r.remaining)}</span>}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-slate-700/50" />
+
+          {/* ── İşlem ── */}
+          <div className="space-y-2">
+            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">İşlem Bilgisi</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="sm:col-span-2">
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Adı *</label>
+                <input name="treatment_name" required minLength={2} maxLength={120}
+                  placeholder="Örn. Botoks 30 ünite"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ücret (₺)</label>
+                <input name="treatment_amount" type="number" step="0.01" min="0" defaultValue="0"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Tarihi</label>
+                <input name="treatment_date" type="date" defaultValue={new Date().toISOString().slice(0,10)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Not</label>
+                <input name="treatment_notes" maxLength={300} placeholder="Opsiyonel…"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-700/50" />
+
+          {/* ── Tahsilat (opsiyonel) ── */}
+          <div className="space-y-2">
+            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Tahsilat <span className="text-slate-600">(opsiyonel — boş bırakırsan sadece işlem eklenir)</span></p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Tahsilat (₺)</label>
+                <input name="payment_amount" type="number" step="0.01" min="0" defaultValue="0"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500" />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ödeme Tarihi</label>
+                <input name="payment_date" type="date" defaultValue={new Date().toISOString().slice(0,10)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500" />
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Yöntem</label>
+                <select name="payment_method"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500">
+                  <option value="">—</option>
+                  <option value="Nakit">Nakit</option>
+                  <option value="Kredi Kartı">Kredi Kartı</option>
+                  <option value="Havale/EFT">Havale/EFT</option>
+                  <option value="IBAN">IBAN</option>
+                  <option value="Diğer">Diğer</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {quickError && (
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+              {quickError}
+            </div>
+          )}
+          {quickSuccess && (
+            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+              ✓ Kayıt başarıyla eklendi!
+            </div>
+          )}
+
+          <div className="flex items-center justify-end gap-2 pt-1">
+            <button type="button" onClick={() => { setShowQuick(false); setQuickError(null) }}
+              className="px-4 py-2 text-slate-400 hover:text-white text-sm transition-colors">
+              Vazgeç
+            </button>
+            <button type="submit" disabled={pending}
+              className="px-5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-all">
+              {pending ? 'Kaydediliyor…' : '⚡ Kaydet'}
+            </button>
+          </div>
+        </form>
+      )}
+
       {/* Aylık yekün banner — her zaman görünür */}
       <div className="mb-5 rounded-2xl bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 border border-violet-500/30 p-4 sm:p-5">
         <div className="flex items-center justify-between mb-3">
