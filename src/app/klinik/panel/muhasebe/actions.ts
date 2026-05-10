@@ -251,6 +251,25 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
     if (payErr) return { ok: false, error: payErr.message }
   }
 
+  // Ürünler (opsiyonel)
+  const productCount = Number((formData.get('product_count') as string | null) ?? '0')
+  if (Number.isFinite(productCount) && productCount > 0 && treatmentData) {
+    for (let i = 0; i < productCount; i++) {
+      const pName = (formData.get(`product_name_${i}`) as string | null)?.trim() ?? ''
+      const pQtyStr = (formData.get(`product_qty_${i}`) as string | null)?.trim() ?? '1'
+      const pUnit = (formData.get(`product_unit_${i}`) as string | null)?.trim() || null
+      if (pName.length < 2) continue
+      const pQty = Number(pQtyStr.replace(',', '.'))
+      await ctx.supabase.from('internal_product').insert({
+        owner_id: ctx.user.id,
+        treatment_id: treatmentData.id,
+        name: pName,
+        quantity: Number.isFinite(pQty) && pQty > 0 ? pQty : 1,
+        unit: pUnit,
+      })
+    }
+  }
+
   revalidatePath('/klinik/panel/muhasebe')
   revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
   return { ok: true, patientId }

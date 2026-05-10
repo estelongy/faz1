@@ -80,6 +80,14 @@ export default function MuhasebeShellClient({
   const [selectedPatientId, setSelectedPatientId] = useState('')
   const [patientSearch, setPatientSearch] = useState('')
 
+  // Hızlı kayıt — ürün satırları
+  const [productRows, setProductRows] = useState<{ name: string; qty: string; unit: string }[]>([])
+  function addProductRow() { setProductRows(r => [...r, { name: '', qty: '1', unit: '' }]) }
+  function removeProductRow(i: number) { setProductRows(r => r.filter((_, j) => j !== i)) }
+  function updateProductRow(i: number, field: 'name' | 'qty' | 'unit', val: string) {
+    setProductRows(r => r.map((row, j) => j === i ? { ...row, [field]: val } : row))
+  }
+
   const filteredPatients = useMemo(() => {
     if (!patientSearch.trim()) return rows.slice(0, 10)
     const q = patientSearch.toLowerCase()
@@ -100,6 +108,7 @@ export default function MuhasebeShellClient({
         setSelectedPatientId('')
         setPatientSearch('')
         setPatientMode('new')
+        setProductRows([])
         router.refresh()
         setTimeout(() => setQuickSuccess(false), 3000)
       } else {
@@ -154,7 +163,7 @@ export default function MuhasebeShellClient({
       {/* Hızlı Kayıt formu */}
       {showQuick && (
         <form onSubmit={handleQuickSubmit} className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-800/60 border border-violet-500/30 space-y-4">
-          <p className="text-xs uppercase tracking-widest text-violet-300/80 font-bold">Hızlı Kayıt — Hasta + İşlem + Tahsilat</p>
+          <p className="text-xs uppercase tracking-widest text-violet-300/80 font-bold">Hızlı Kayıt — Hasta + İşlem + Ürün + Tahsilat</p>
 
           {/* ── Hasta Seçimi ── */}
           <div className="space-y-2">
@@ -254,6 +263,66 @@ export default function MuhasebeShellClient({
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
               </div>
             </div>
+          </div>
+
+          <div className="border-t border-slate-700/50" />
+
+          {/* ── Kullanılan Ürünler (opsiyonel) ── */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+                Kullanılan Ürünler <span className="text-slate-600">(opsiyonel)</span>
+              </p>
+              <button type="button" onClick={addProductRow}
+                className="text-xs text-violet-400 hover:text-violet-300 font-medium transition-colors">
+                + Ürün Ekle
+              </button>
+            </div>
+            <input type="hidden" name="product_count" value={productRows.length} />
+            {productRows.length === 0 ? (
+              <p className="text-xs text-slate-600 italic">Ürün eklenmedi — işlem için gerekli değil.</p>
+            ) : (
+              <div className="space-y-1.5">
+                {productRows.map((row, i) => (
+                  <div key={i} className="grid grid-cols-12 gap-1.5 items-center">
+                    <input
+                      name={`product_name_${i}`}
+                      value={row.name}
+                      onChange={e => updateProductRow(i, 'name', e.target.value)}
+                      placeholder="Ürün adı *"
+                      required
+                      minLength={2}
+                      maxLength={120}
+                      className="col-span-5 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500"
+                    />
+                    <input
+                      name={`product_qty_${i}`}
+                      value={row.qty}
+                      onChange={e => updateProductRow(i, 'qty', e.target.value)}
+                      type="number"
+                      step="0.001"
+                      min="0"
+                      placeholder="Miktar"
+                      className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500"
+                    />
+                    <input
+                      name={`product_unit_${i}`}
+                      value={row.unit}
+                      onChange={e => updateProductRow(i, 'unit', e.target.value)}
+                      placeholder="Birim (ml…)"
+                      maxLength={20}
+                      className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500"
+                    />
+                    <button type="button" onClick={() => removeProductRow(i)}
+                      className="col-span-1 flex items-center justify-center text-slate-600 hover:text-red-400 transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="border-t border-slate-700/50" />
