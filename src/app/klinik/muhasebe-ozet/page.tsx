@@ -73,6 +73,7 @@ export default async function OzetPage() {
       products:     tProducts.map(p => `${p.name}${p.quantity ? ` × ${p.quantity}${p.unit ?? ''}` : ''}`),
       billed:       fmt(billed),
       collected:    collected > 0 ? fmt(collected) : '—',
+      methods:      tPayments.map(p => p.method).filter(Boolean) as string[],
       remaining:    fmt(Math.max(0, billed - collected)),
       hasDebt:      billed > collected,
       billedRaw:    billed,

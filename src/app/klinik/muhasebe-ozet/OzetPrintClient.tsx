@@ -10,6 +10,7 @@ interface TreatmentRow {
   products: string[]
   billed: string
   collected: string
+  methods: string[]
   remaining: string
   hasDebt: boolean
 }
@@ -135,7 +136,14 @@ export default function OzetPrintClient({
                       }
                     </td>
                     <td style={{ textAlign: 'right', fontWeight: 700 }}>{r.billed}</td>
-                    <td style={{ textAlign: 'right', color: '#059669', fontWeight: 700 }}>{r.collected}</td>
+                    <td style={{ textAlign: 'right' }}>
+                      <span style={{ color: '#059669', fontWeight: 700 }}>{r.collected}</span>
+                      {r.methods.length > 0 && (
+                        <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+                          {r.methods.filter((m, i, a) => a.indexOf(m) === i).join(', ')}
+                        </div>
+                      )}
+                    </td>
                     <td style={{ textAlign: 'right', fontWeight: 700, color: r.hasDebt ? '#d97706' : '#059669' }}>
                       {r.hasDebt ? r.remaining : '✓ Tam'}
                     </td>
