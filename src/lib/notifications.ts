@@ -1,15 +1,22 @@
 /**
  * Bildirim altyapısı — tek kaynak
- * notification_queue tablosuna yazma + Resend ile e-posta gönderme
+ * notification_queue tablosuna yazma + e-posta gönderme
+ *
+ * Sağlayıcı önceliği:
+ *   1) RESEND_API_KEY varsa → Resend (primary)
+ *   2) Başarısızsa veya yoksa → POSTMARK_API_TOKEN (fallback)
+ *   3) İkisi de yoksa → sessiz atla
  */
 
 import { createServiceClient } from '@/lib/supabase/service'
 
-// ── E-posta gönderici (Postmark) ──────────────────────────────────────
+// ── E-posta gönderici ─────────────────────────────────────────────────
 export interface SendEmailResult {
   ok: boolean
-  /** Postmark MessageID — Activity'de aramak için */
+  /** Sağlayıcı message ID — Activity/Logs'ta aramak için */
   messageId?: string
+  /** Hangi sağlayıcı başardı: 'resend' | 'postmark' */
+  provider?: 'resend' | 'postmark'
   error?: string
 }
 
@@ -23,27 +30,84 @@ export async function sendEmailDetailed(
   subject: string,
   html: string
 ): Promise<SendEmailResult> {
-  const token = process.env.POSTMARK_API_TOKEN
-  if (!token) {
-    console.warn('[notifications] POSTMARK_API_TOKEN eksik, e-posta atlandı')
-    return { ok: false, error: 'POSTMARK_API_TOKEN eksik' }
-  }
+  const resendKey = process.env.RESEND_API_KEY
+  const postmarkToken = process.env.POSTMARK_API_TOKEN
   const from = process.env.FROM_EMAIL ?? 'noreply@estelongy.com'
 
+  // 1) Resend (primary)
+  if (resendKey) {
+    const r = await sendViaResend({ apiKey: resendKey, from, to, subject, html })
+    if (r.ok) return r
+    console.warn('[notifications] Resend başarısız, Postmark fallback denenecek:', r.error)
+  }
+
+  // 2) Postmark (fallback — veya Resend yoksa primary)
+  if (postmarkToken) {
+    return sendViaPostmark({ token: postmarkToken, from, to, subject, html })
+  }
+
+  // 3) İkisi de yok
+  console.warn('[notifications] RESEND_API_KEY ve POSTMARK_API_TOKEN eksik, e-posta atlandı')
+  return { ok: false, error: 'E-posta sağlayıcı yapılandırılmamış' }
+}
+
+// ── Resend ────────────────────────────────────────────────────────────
+async function sendViaResend(args: {
+  apiKey: string; from: string; to: string; subject: string; html: string
+}): Promise<SendEmailResult> {
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${args.apiKey}`,
+      },
+      body: JSON.stringify({
+        from: args.from,
+        to: [args.to],
+        subject: args.subject,
+        html: args.html,
+      }),
+    })
+
+    const data = (await res.json().catch(() => ({}))) as {
+      id?: string
+      statusCode?: number
+      name?: string
+      message?: string
+    }
+
+    if (!res.ok) {
+      const errMsg = `Resend ${res.status}: ${data.message ?? data.name ?? 'Bilinmeyen hata'}`
+      return { ok: false, provider: 'resend', error: errMsg }
+    }
+
+    return { ok: true, provider: 'resend', messageId: data.id }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    return { ok: false, provider: 'resend', error: `Resend exception: ${msg}` }
+  }
+}
+
+// ── Postmark (fallback — orijinal davranış, hiç değişmedi) ────────────
+async function sendViaPostmark(args: {
+  token: string; from: string; to: string; subject: string; html: string
+}): Promise<SendEmailResult> {
   try {
     const res = await fetch('https://api.postmarkapp.com/email', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'X-Postmark-Server-Token': token,
+        'X-Postmark-Server-Token': args.token,
       },
       body: JSON.stringify({
-        From: from,
-        To: to,
-        Subject: subject,
-        HtmlBody: html,
-        MessageStream: 'outbound', // Default Transactional Stream
+        From: args.from,
+        To: args.to,
+        Subject: args.subject,
+        HtmlBody: args.html,
+        MessageStream: 'outbound',
       }),
     })
 
@@ -56,14 +120,14 @@ export async function sendEmailDetailed(
     if (!res.ok) {
       const errMsg = `Postmark ${res.status}${data.ErrorCode ? ` [${data.ErrorCode}]` : ''}: ${data.Message ?? 'Bilinmeyen hata'}`
       console.error('[notifications] Postmark hatası:', errMsg)
-      return { ok: false, error: errMsg }
+      return { ok: false, provider: 'postmark', error: errMsg }
     }
 
-    return { ok: true, messageId: data.MessageID }
+    return { ok: true, provider: 'postmark', messageId: data.MessageID }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
-    console.error('[notifications] sendEmail exception:', msg)
-    return { ok: false, error: msg }
+    console.error('[notifications] Postmark exception:', msg)
+    return { ok: false, provider: 'postmark', error: msg }
   }
 }
 
