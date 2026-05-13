@@ -14,20 +14,46 @@ export default function UpdatePasswordPage() {
   const [success, setSuccess]         = useState(false)
   const [sessionReady, setSessionReady] = useState(false)
 
-  // Supabase şifre sıfırlama e-postası #access_token fragment içerir.
-  // onAuthStateChange ile PASSWORD_RECOVERY event'i yakalanır.
+  // Supabase şifre sıfırlama akışı 3 farklı yoldan gelebilir:
+  //  1) PKCE: ?code=... query param → exchangeCodeForSession ile session'a çevir
+  //  2) Hash (legacy): #access_token=... → SDK otomatik handle eder, PASSWORD_RECOVERY event'i tetiklenir
+  //  3) Callback'ten redirect: zaten session açık → getSession() yakalar
   useEffect(() => {
     const supabase = createClient()
+    let cancelled = false
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setSessionReady(true)
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
+        if (!cancelled) setSessionReady(true)
       }
     })
-    // Sayfa zaten oturumlu ise (callback'ten yönlendirildiyse) direkt aç
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setSessionReady(true)
-    })
-    return () => subscription.unsubscribe()
+
+    ;(async () => {
+      // 1) ?code= var mı? PKCE flow için manuel exchange gerek.
+      const url = new URL(window.location.href)
+      const code = url.searchParams.get('code')
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        if (!error && !cancelled) {
+          setSessionReady(true)
+          // URL'i temizle (code'u adres çubuğundan sil — paylaşım/back button güvenliği)
+          window.history.replaceState({}, '', '/auth/update-password')
+          return
+        }
+        if (error && !cancelled) {
+          setError('Bağlantı geçersiz veya süresi dolmuş. Lütfen yeniden şifre sıfırlama talebi gönderin.')
+          return
+        }
+      }
+      // 2/3) Hash flow veya mevcut session
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session && !cancelled) setSessionReady(true)
+    })()
+
+    return () => {
+      cancelled = true
+      subscription.unsubscribe()
+    }
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -56,9 +82,26 @@ export default function UpdatePasswordPage() {
   if (!sessionReady) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
-        <div className="text-center space-y-4">
-          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-slate-400 text-sm">Bağlantı doğrulanıyor…</p>
+        <div className="text-center space-y-4 max-w-md">
+          {error ? (
+            <>
+              <div className="w-16 h-16 mx-auto rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+                <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <p className="text-white font-semibold">Bağlantı geçersiz</p>
+              <p className="text-slate-400 text-sm">{error}</p>
+              <Link href="/giris" className="inline-block mt-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl transition-all">
+                Giriş sayfasına dön
+              </Link>
+            </>
+          ) : (
+            <>
+              <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className="text-slate-400 text-sm">Bağlantı doğrulanıyor…</p>
+            </>
+          )}
         </div>
       </main>
     )
