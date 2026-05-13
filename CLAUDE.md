@@ -1209,6 +1209,21 @@ vercel logs <deployment-url>
 
 ### 🔵 LANSMAN SONRASI
 
+- [ ] **REBRAND — Mor sevdasını gömme (Faz 2 öncesi)**
+  - Sorun: Mevcut palet `violet-*` + neon gradient → beauty/cosmetic startup havası. Estelongy longevity pozisyonlamasıyla çelişiyor (sağlık değil makyaj sinyali).
+  - Hedef palet:
+    - Ana marka / logo / CTA: **Koyu yeşil** `#059669` veya `#10b981` (sağlık, vitality)
+    - Premium aksent: **Gold/Hardal** `#d97706` veya `#ca8a04` (değer, longevity premium)
+    - Klinik otorite: **Navy** `#1e3a8a` (tıbbi güvenilirlik, klinik panelinde)
+    - Skor renkleri: mevcut conditional kalır (≥90 yeşil, ≥75 sarı, ≥50 turuncu, <50 kırmızı)
+    - Arkaplan: slate-950 (mevcut) — değişmiyor
+  - Referans markalar: Whoop (siyah+gold), Levels (krem+koyu yeşil), Apple Health (white+çoklu sistem), Eight Sleep (lacivert+beyaz). Hiçbiri mor değil — bu palette çelişiyor.
+  - İş: Tailwind `theme.extend.colors` → semantic naming (`brand`, `premium`, `clinical`) + tüm `violet-*` global find/replace. 1-2 gün. Aşamalar:
+    1. Tailwind config + design tokens
+    2. Site UI (klinik panel + hasta paneli + public)
+    3. E-posta şablonları (`notifications.ts` + `welcome-email.ts` + `email-templates.ts` + Supabase Auth template'leri)
+    4. PDF özet (`OzetPrintClient.tsx`)
+    5. Logo/SVG gradient güncelle
 - [ ] TOTP (Google Authenticator) — SMS bağımlılığını kaldır
 - [ ] RLS otomatik pen test (CI suite)
 - [ ] Bug bounty programı (security.txt yayında, formal program yok)
