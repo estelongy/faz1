@@ -40,7 +40,7 @@ export function tmplFailedLoginAlert(p: FailedLoginPayload) {
           <p style="color:#cbd5e1;font-size:14px;line-height:1.6;margin:0 0 24px;">
             <strong style="color:#fff">Siz değilseniz:</strong> Şifrenizi hemen değiştirin ve hesabınıza tekrar girip telefon doğrulamanızı kontrol edin. 10 başarısız deneme olursa IP'miz 15 dakikalığına otomatik bloklanır.
           </p>
-          <a href="https://estelongy-clean.vercel.app/giris" style="display:inline-block;padding:12px 28px;background:#dc2626;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">
+          <a href="https://estelongy.com/giris" style="display:inline-block;padding:12px 28px;background:#dc2626;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;">
             Şifremi Değiştir
           </a>
           <p style="color:#64748b;font-size:12px;margin:32px 0 0;line-height:1.5;">

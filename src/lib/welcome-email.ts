@@ -12,7 +12,7 @@ interface Opts {
   role: WelcomeRole
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://estelongy-clean.vercel.app'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://estelongy.com'
 
 const ROLE_META: Record<WelcomeRole, { subject: string; heading: string; body: string; ctaLabel: string; ctaPath: string }> = {
   user: {

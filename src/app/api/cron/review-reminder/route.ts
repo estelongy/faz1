@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
 
       const clinic = a.clinics as unknown as { id: string; name: string } | null
       const clinicName = clinic?.name ?? 'klinik'
-      const reviewLink = `https://estelongy-clean.vercel.app/panel/degerlendir/${a.id}`
+      const reviewLink = `https://estelongy.com/panel/degerlendir/${a.id}`
 
       // E-posta
       if (email) {

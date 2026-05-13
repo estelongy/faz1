@@ -17,7 +17,7 @@ interface Props {
   transactions: Transaction[]
 }
 
-const BASE_URL = 'https://estelongy-clean.vercel.app'
+const BASE_URL = 'https://estelongy.com'
 
 const TYPE_LABEL: Record<string, string> = {
   signup_bonus:         '🎁 Hoşgeldin bonusu',

@@ -172,7 +172,7 @@ export function tmplAppointmentConfirmed(payload: {
           <p style="margin:0"><strong style="color:#7c3aed">Tarih:</strong> <span style="color:#fff">${payload.date}</span></p>
         </div>
         <p style="color:#64748b;font-size:14px">Randevunuzu iptal etmek veya yönetmek için panele giriş yapın.</p>
-        <a href="https://estelongy-clean.vercel.app/panel" style="display:inline-block;margin-top:16px;padding:12px 28px;background:linear-gradient(90deg,#7c3aed,#9333ea);color:#fff;border-radius:10px;text-decoration:none;font-weight:700">Panele Git →</a>
+        <a href="https://estelongy.com/panel" style="display:inline-block;margin-top:16px;padding:12px 28px;background:linear-gradient(90deg,#7c3aed,#9333ea);color:#fff;border-radius:10px;text-decoration:none;font-weight:700">Panele Git →</a>
       </div>
     `,
   }
@@ -198,7 +198,7 @@ export function tmplAppointmentReminder(payload: {
           <p style="margin:0 0 8px"><strong style="color:#f59e0b">Klinik:</strong> <span style="color:#fff">${payload.clinicName}</span></p>
           <p style="margin:0"><strong style="color:#f59e0b">Tarih:</strong> <span style="color:#fff">${payload.date}</span></p>
         </div>
-        <a href="https://estelongy-clean.vercel.app/panel" style="display:inline-block;margin-top:16px;padding:12px 28px;background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff;border-radius:10px;text-decoration:none;font-weight:700">Panele Git →</a>
+        <a href="https://estelongy.com/panel" style="display:inline-block;margin-top:16px;padding:12px 28px;background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff;border-radius:10px;text-decoration:none;font-weight:700">Panele Git →</a>
       </div>
     `,
   }
@@ -226,7 +226,7 @@ export function tmplScoreUpdate(payload: {
           <div style="font-size:72px;font-weight:900;color:${colorMap(payload.score)}">${payload.score}</div>
           <div style="color:#64748b;font-size:14px;margin-top:4px">${isKlinik ? 'Klinik Onaylı Gençlik Skoru' : 'Ön Analiz Gençlik Skoru'}</div>
         </div>
-        <a href="https://estelongy-clean.vercel.app/panel" style="display:inline-block;padding:12px 28px;background:linear-gradient(90deg,#7c3aed,#9333ea);color:#fff;border-radius:10px;text-decoration:none;font-weight:700">Detayları Gör →</a>
+        <a href="https://estelongy.com/panel" style="display:inline-block;padding:12px 28px;background:linear-gradient(90deg,#7c3aed,#9333ea);color:#fff;border-radius:10px;text-decoration:none;font-weight:700">Detayları Gör →</a>
       </div>
     `,
   }

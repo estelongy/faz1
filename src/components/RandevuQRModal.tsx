@@ -17,7 +17,7 @@ export default function RandevuQRModal({ appointmentId, clinicName, appointmentD
   const [open, setOpen] = useState(false)
 
   // QR içeriği: klinik paneli randevu URL'i → okutunca detaya gider
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://estelongy-clean.vercel.app'
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://estelongy.com'
   const qrData = `${origin}/klinik/panel/randevu/${appointmentId}`
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=${encodeURIComponent(qrData)}`
 

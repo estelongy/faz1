@@ -98,7 +98,7 @@ async function sendOrderConfirmationEmail(
         ` : ''}
 
         <div style="margin-top:24px;text-align:center">
-          <a href="https://estelongy-clean.vercel.app/siparis/${order.order_number}"
+          <a href="https://estelongy.com/siparis/${order.order_number}"
              style="display:inline-block;padding:12px 32px;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">
             Siparişi Görüntüle
           </a>
@@ -152,7 +152,7 @@ async function checkLowStock(admin: ReturnType<typeof createServiceClient>, prod
       ${stock === 0
         ? '<p>Ürün artık satışta görünmüyor. Lütfen stoku güncelleyin.</p>'
         : '<p>Müşteri kaybı yaşamamak için stoku güncellemenizi öneririz.</p>'}
-      <a href="https://estelongy-clean.vercel.app/satici/panel"
+      <a href="https://estelongy.com/satici/panel"
          style="display:inline-block;margin-top:16px;padding:12px 24px;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none">
         Satıcı Paneline Git
       </a>
