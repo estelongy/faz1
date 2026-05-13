@@ -40,9 +40,20 @@ export interface DayGroup {
   collected: number
 }
 
+export interface CatalogItem {
+  id: string
+  name: string
+  category: string | null
+  default_unit: string | null
+  default_price: number | null
+  egp_linked: boolean
+  sort_order: number
+}
+
 interface Props {
   rows: PatientRow[]
   days: DayGroup[]
+  catalog: CatalogItem[]
   monthLabel: string
   monthBilled: number
   monthCollected: number
@@ -66,7 +77,7 @@ function formatDayLabel(dateStr: string): string {
 }
 
 export default function MuhasebeShellClient({
-  rows, days, monthLabel, monthBilled, monthCollected, totalRemaining, debtorCount, patientCount,
+  rows, days, catalog, monthLabel, monthBilled, monthCollected, totalRemaining, debtorCount, patientCount,
 }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<'gunluk' | 'hastalar'>('gunluk')
@@ -79,6 +90,13 @@ export default function MuhasebeShellClient({
   const [patientMode, setPatientMode] = useState<'existing' | 'new'>('new')
   const [selectedPatientId, setSelectedPatientId] = useState('')
   const [patientSearch, setPatientSearch] = useState('')
+
+  // Hızlı kayıt — işlem arama (katalog)
+  const [treatmentMode, setTreatmentMode] = useState<'catalog' | 'custom'>('catalog')
+  const [selectedCatalogId, setSelectedCatalogId] = useState('')
+  const [treatmentName, setTreatmentName] = useState('')          // gerçek input — katalogdan seçilince doldurulur, custom modda serbest yazım
+  const [treatmentSearch, setTreatmentSearch] = useState('')      // arama kutusu metni
+  const [treatmentFocused, setTreatmentFocused] = useState(false)
 
   // Hızlı kayıt — ürün satırları
   const [productRows, setProductRows] = useState<{ name: string; qty: string; unit: string }[]>([])
@@ -93,6 +111,29 @@ export default function MuhasebeShellClient({
     const q = patientSearch.toLowerCase()
     return rows.filter(r => r.name.toLowerCase().includes(q)).slice(0, 10)
   }, [rows, patientSearch])
+
+  const filteredCatalog = useMemo(() => {
+    if (!treatmentSearch.trim()) return catalog.slice(0, 12)
+    const q = treatmentSearch.toLocaleLowerCase('tr-TR')
+    return catalog.filter(c =>
+      c.name.toLocaleLowerCase('tr-TR').includes(q) ||
+      (c.category ?? '').toLocaleLowerCase('tr-TR').includes(q)
+    ).slice(0, 12)
+  }, [catalog, treatmentSearch])
+
+  function pickCatalogItem(item: CatalogItem) {
+    setSelectedCatalogId(item.id)
+    setTreatmentName(item.name)
+    setTreatmentSearch(item.name)
+    setTreatmentFocused(false)
+    // İlk ürün satırı yoksa ve default_unit varsa, sezgisel bir ürün satırı önerme yapmıyoruz — hekim manuel ekler.
+  }
+
+  function clearCatalogPick() {
+    setSelectedCatalogId('')
+    setTreatmentName('')
+    setTreatmentSearch('')
+  }
 
   function handleQuickSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -109,6 +150,11 @@ export default function MuhasebeShellClient({
         setPatientSearch('')
         setPatientMode('new')
         setProductRows([])
+        setSelectedCatalogId('')
+        setTreatmentName('')
+        setTreatmentSearch('')
+        setTreatmentMode('catalog')
+        setTreatmentFocused(false)
         router.refresh()
         setTimeout(() => setQuickSuccess(false), 3000)
       } else {
@@ -239,14 +285,100 @@ export default function MuhasebeShellClient({
 
           {/* ── İşlem ── */}
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">İşlem Bilgisi</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <div className="sm:col-span-2">
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Adı *</label>
-                <input name="treatment_name" required minLength={2} maxLength={120}
-                  placeholder="Örn. Botoks 30 ünite"
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">İşlem Bilgisi</p>
+              <div className="flex gap-1.5">
+                <button type="button" onClick={() => { setTreatmentMode('catalog') }}
+                  className={`px-2.5 py-1 text-[10px] font-semibold rounded transition-colors ${treatmentMode === 'catalog' ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-400 hover:text-white'}`}>
+                  Katalogtan Seç
+                </button>
+                <button type="button" onClick={() => { setTreatmentMode('custom'); clearCatalogPick() }}
+                  className={`px-2.5 py-1 text-[10px] font-semibold rounded transition-colors ${treatmentMode === 'custom' ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-400 hover:text-white'}`}>
+                  Özel Ad Gir
+                </button>
               </div>
+            </div>
+
+            {/* Gerçek değerler — form submit'inde gider */}
+            <input type="hidden" name="treatment_name" value={treatmentName} />
+            <input type="hidden" name="treatment_catalog_id" value={selectedCatalogId} />
+
+            {treatmentMode === 'catalog' ? (
+              <div className="relative">
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Ara *</label>
+                {selectedCatalogId ? (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+                    <span className="text-violet-300 text-sm font-semibold">{treatmentName}</span>
+                    {(() => {
+                      const item = catalog.find(c => c.id === selectedCatalogId)
+                      if (!item) return null
+                      return (
+                        <>
+                          {item.category && <span className="text-[10px] text-slate-500">· {item.category}</span>}
+                          {item.default_unit && <span className="text-[10px] text-slate-500">· {item.default_unit}</span>}
+                          {item.egp_linked && <span className="text-[10px] text-amber-300 font-semibold">EGP</span>}
+                        </>
+                      )
+                    })()}
+                    <button type="button" onClick={clearCatalogPick}
+                      className="ml-auto text-slate-500 hover:text-white text-xs">Değiştir</button>
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={treatmentSearch}
+                      onChange={e => setTreatmentSearch(e.target.value)}
+                      onFocus={() => setTreatmentFocused(true)}
+                      onBlur={() => setTimeout(() => setTreatmentFocused(false), 150)}
+                      placeholder="Botoks, dolgu, lazer… (katalogtan ara)"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500"
+                    />
+                    {treatmentFocused && (
+                      <div className="absolute z-20 left-0 right-0 mt-1 max-h-64 overflow-y-auto bg-slate-900 border border-slate-700 rounded-lg shadow-xl">
+                        {filteredCatalog.length === 0 ? (
+                          <div className="px-3 py-3 text-xs text-slate-500">
+                            Eşleşme yok.
+                            <button type="button"
+                              onMouseDown={(e) => { e.preventDefault(); setTreatmentMode('custom'); setTreatmentName(treatmentSearch); setSelectedCatalogId('') }}
+                              className="ml-2 text-violet-400 hover:text-violet-300 font-medium">
+                              &quot;{treatmentSearch}&quot; özel ad olarak kullan →
+                            </button>
+                          </div>
+                        ) : (
+                          filteredCatalog.map(c => (
+                            <button key={c.id} type="button"
+                              onMouseDown={(e) => { e.preventDefault(); pickCatalogItem(c) }}
+                              className="w-full text-left px-3 py-2 hover:bg-slate-800 transition-colors flex items-center gap-2 border-b border-slate-800 last:border-b-0">
+                              <span className="text-sm text-white font-semibold flex-1 truncate">{c.name}</span>
+                              {c.category && <span className="text-[10px] text-slate-500">{c.category}</span>}
+                              {c.default_unit && <span className="text-[10px] text-slate-600">{c.default_unit}</span>}
+                              {c.egp_linked && <span className="text-[10px] text-amber-300 font-semibold">EGP</span>}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            ) : (
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Adı * <span className="text-slate-600 normal-case">(özel)</span></label>
+                <input
+                  type="text"
+                  value={treatmentName}
+                  onChange={e => setTreatmentName(e.target.value)}
+                  required
+                  minLength={2}
+                  maxLength={120}
+                  placeholder="Örn. Botoks 30 ünite — özel açıklama"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500"
+                />
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
               <div>
                 <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ücret (₺)</label>
                 <input name="treatment_amount" type="number" step="0.01" min="0" defaultValue="0"
@@ -257,7 +389,7 @@ export default function MuhasebeShellClient({
                 <input name="treatment_date" type="date" defaultValue={new Date().toISOString().slice(0,10)}
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
               </div>
-              <div className="sm:col-span-2">
+              <div>
                 <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Not</label>
                 <input name="treatment_notes" maxLength={300} placeholder="Opsiyonel…"
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />

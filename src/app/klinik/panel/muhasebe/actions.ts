@@ -214,6 +214,7 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
 
   // İşlem
   const treatmentName = (formData.get('treatment_name') as string | null)?.trim() ?? ''
+  const treatmentCatalogId = (formData.get('treatment_catalog_id') as string | null)?.trim() || null
   const treatmentDateStr = (formData.get('treatment_date') as string | null)?.trim() ?? ''
   const treatmentAmountStr = (formData.get('treatment_amount') as string | null)?.trim() ?? '0'
   const treatmentNotes = (formData.get('treatment_notes') as string | null)?.trim() || null
@@ -222,10 +223,23 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
   const treatmentAmount = Number(treatmentAmountStr.replace(',', '.'))
   if (!Number.isFinite(treatmentAmount) || treatmentAmount < 0) return { ok: false, error: 'Geçersiz işlem ücreti.' }
 
+  // Güvenlik: catalog_id verilmişse, kayıt sahibinin owner_id'sine ait olduğunu doğrula (FK + RLS yeterli ama yine de açık kontrol).
+  let safeCatalogId: string | null = null
+  if (treatmentCatalogId) {
+    const { data: cat } = await ctx.supabase
+      .from('internal_treatment_catalog')
+      .select('id')
+      .eq('id', treatmentCatalogId)
+      .eq('owner_id', ctx.user.id)
+      .maybeSingle()
+    if (cat) safeCatalogId = cat.id
+  }
+
   const { data: treatmentData, error: treatmentErr } = await ctx.supabase.from('internal_treatment').insert({
     owner_id: ctx.user.id,
     patient_id: patientId,
     name: treatmentName,
+    catalog_id: safeCatalogId,
     treatment_date: treatmentDateStr || new Date().toISOString().slice(0, 10),
     amount: treatmentAmount,
     notes: treatmentNotes,

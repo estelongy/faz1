@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
-import MuhasebeShellClient, { type DayGroup, type PatientRow } from './MuhasebeShellClient'
+import MuhasebeShellClient, { type DayGroup, type PatientRow, type CatalogItem } from './MuhasebeShellClient'
 
 export const metadata: Metadata = {
   title: 'Muhasebe | Klinik Paneli',
@@ -18,15 +18,22 @@ export default async function MuhasebePage() {
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
 
-  const [patientsRes, treatmentsRes, paymentsRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
+    supabase
+      .from('internal_treatment_catalog')
+      .select('id, name, category, default_unit, default_price, egp_linked, sort_order')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true }),
   ])
 
   const patients = patientsRes.data ?? []
   const treatments = treatmentsRes.data ?? []
   const payments = paymentsRes.data ?? []
+  const catalog = catalogRes.data ?? []
   const patientName = (id: string) => patients.find(p => p.id === id)?.name ?? '—'
 
   // ─── Hasta satırları ────────────────────────────────────────
@@ -118,6 +125,7 @@ export default async function MuhasebePage() {
       <MuhasebeShellClient
         rows={rows}
         days={days}
+        catalog={catalog as CatalogItem[]}
         monthLabel={monthLabel}
         monthBilled={monthBilled}
         monthCollected={monthCollected}
