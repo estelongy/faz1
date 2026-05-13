@@ -196,7 +196,7 @@ estelongy-faz1/
 │   │   ├── netgsm.ts               ← SMS gönderme
 │   │   ├── estestore.ts            ← 3-tier pricing + RBAC matris
 │   │   ├── journeys.ts             ← Ziyaret yolculuk yönetimi
-│   │   ├── jeton.ts                ← Klinik kredi sistemi
+│   │   ├── credit.ts                ← Klinik kredi sistemi
 │   │   ├── egs.ts                  ← Skor formülü (clamp, colorZone)
 │   │   ├── anket-sorular.ts        ← Longevity anketi soruları
 │   │   ├── tetkik-params.ts        ← Tetkik parametre listesi (algoritma yarım)
@@ -398,9 +398,9 @@ clinics (
   educator_bio                  text  -- public eğitmen bio
   educator_marked_at, educator_decided_at, educator_decision_note
 
-  -- Klinik kredi sistemi (jeton)
-  jeton_balance                 integer
-  jeton_settings                jsonb
+  -- Klinik kredi sistemi (kredi)
+  credit_balance                 integer
+  credit_settings                jsonb
   free_appointments_remaining   integer DEFAULT 20  -- yeni kliniğe hediye
   appointment_credit_price      numeric              -- ücretli mod fiyatı
   paid_appointments_this_month  integer
@@ -508,16 +508,16 @@ audit_logs (
 set_user_role(target_user_id uuid, new_role user_role)
   -- app_metadata.role + profiles.role senkron günceller
 
-consume_jeton(p_clinic_id uuid)
+consume_credit(p_clinic_id uuid)
   -- Önce free_appointments_remaining'den düşer
-  -- Sonra jeton_balance'tan düşer
+  -- Sonra credit_balance'tan düşer
   -- Hiçbiri yoksa exception fırlatır
-  -- jeton_transactions kaydı oluşturur
+  -- credit_transactions kaydı oluşturur
 
 generate_referral_code(p_user_id uuid)
 decrement_product_stock(p_product_id uuid, p_quantity integer)
 adjust_points(p_user_id uuid, p_delta integer, p_reason text)
-add_jeton(p_clinic_id uuid, p_amount integer, p_description text)
+add_credit(p_clinic_id uuid, p_amount integer, p_description text)
 
 app_delete_account_cascade(p_user_id uuid) RETURNS jsonb
   -- KVKK/GDPR cascade silme — Bölüm 11 detayında
@@ -598,7 +598,7 @@ POST /api/auth/login { email, password }
 Kapsadığı aksiyonlar:
 - `set_user_role`, `toggleActive` (kullanıcılar)
 - `updateVendor`, `decideKyc` (satıcılar)
-- `updateClinic`, `toggleEducator`, `decideEducatorApplication`, `addJeton` (klinikler)
+- `updateClinic`, `toggleEducator`, `decideEducatorApplication`, `addCredit` (klinikler)
 - `urunOnayAction` (ürünler)
 
 ---
@@ -630,7 +630,7 @@ Kapsadığı aksiyonlar:
 8 kritik admin aksiyonu wired:
 - `role_change`, `user_active_toggle`
 - `vendor_approval` (KYC + final approval)
-- `clinic_approval`, `clinic_educator_toggle`, `clinic_educator_decision`, `clinic_jeton_grant`
+- `clinic_approval`, `clinic_educator_toggle`, `clinic_educator_decision`, `clinic_credit_grant`
 - `product_approval`
 - `gdpr_kvkk_delete` (DB cascade içinden)
 
@@ -772,7 +772,7 @@ Final = ara_toplam × 0.85 + hekim_skoru × 0.15
 - `free_appointments_remaining` (default 20 hediye)
 - `appointment_credit_price` (ücretli mod)
 - `paid_appointments_this_month`, `paid_mode_accepted_at`
-- `consume_jeton` RPC önce ücretsiz haktan, sonra `jeton_balance`'tan düşer
+- `consume_credit` RPC önce ücretsiz haktan, sonra `credit_balance`'tan düşer
 - View: `clinics_with_credit_status`
 - `/randevu` listesi `total_credit_balance > 0` filtreli — tükenenler gizli
 
@@ -867,7 +867,7 @@ quality = avg_rating × 12
 |---|---|
 | `/admin` | Dashboard — son aktivite, pending sayaç |
 | `/admin/kullanicilar` | 100 kullanıcı listele, rol değiştir, aktif/pasif (step-up auth) |
-| `/admin/klinikler` | Onay + eğitmen başvuru + jeton yükleme (step-up auth) |
+| `/admin/klinikler` | Onay + eğitmen başvuru + kredi yükleme (step-up auth) |
 | `/admin/saticilar` | Onay + KYC kararı + Stripe Connect durum + şüphe bayrakları (step-up auth) |
 | `/admin/urunler` | Onay/red (step-up auth) |
 | `/admin/kuponlar` | Kupon CRUD |
@@ -906,11 +906,11 @@ POST /api/admin/test-email               ← admin e-posta test (Resend → fall
 POST /api/analiz                         ← gpt-4o-mini Vision (rate limit 5/h/IP)
 
 POST /api/akademi/checkout               ← Stripe Checkout Session
-POST /api/stripe/webhook                 ← Stripe events (jeton + marketplace + akademi)
+POST /api/stripe/webhook                 ← Stripe events (kredi + marketplace + akademi)
 GET  /api/stripe/connect/account-link    ← Vendor onboarding link
 GET  /api/stripe/connect/account-status  ← Vendor Connect durumu
 
-POST /api/randevu                        ← Randevu oluştur (jeton tüket)
+POST /api/randevu                        ← Randevu oluştur (kredi tüket)
 POST /api/iade                           ← İade talebi
 
 GET  /api/cron/notifications             ← 09:00 UTC günlük (Hobby plan)
@@ -927,7 +927,7 @@ GET  /robots.txt                         ← static
 |---|---|---|
 | `src/app/admin/kullanicilar/page.tsx` | `changeRole`, `toggleActive` | ✓ |
 | `src/app/admin/saticilar/page.tsx` | `updateVendor`, `decideKyc` | ✓ |
-| `src/app/admin/klinikler/page.tsx` | `updateClinic`, `toggleEducator`, `decideEducatorApplication`, `addJeton` | ✓ |
+| `src/app/admin/klinikler/page.tsx` | `updateClinic`, `toggleEducator`, `decideEducatorApplication`, `addCredit` | ✓ |
 | `src/app/admin/urunler/page.tsx` | `urunOnayAction` | ✓ |
 | `src/app/satici/panel/kyc/actions.ts` | `submitKycAction` | — |
 | `src/app/panel/hesabim/actions.ts` | `updateProfileAction`, `deleteAccountAction` | — |
@@ -987,7 +987,7 @@ final      = ara_toplam × 0.85 + hekim_skoru × 0.15
 
 | Akış | Endpoint | Mod |
 |---|---|---|
-| Klinik jeton satın alma | `/api/stripe/jeton-checkout` | EUR (~€5/jeton) |
+| Klinik kredi satın alma | `/api/stripe/kredi-checkout` | EUR (~€5/kredi) |
 | Akademi paket satın alma | `/api/akademi/checkout` | TRY |
 | Mağaza ürün satın alma | `/api/checkout` | TRY |
 | Vendor Connect onboarding | `/api/stripe/connect/account-link` | — |
@@ -996,7 +996,7 @@ final      = ara_toplam × 0.85 + hekim_skoru × 0.15
 
 İdempotent olay işleme:
 - `checkout.session.completed` (kind=akademi_purchase) → `course_purchases.status='paid'`
-- `checkout.session.completed` (kind=jeton_purchase) → `add_jeton` RPC
+- `checkout.session.completed` (kind=credit_purchase) → `add_credit` RPC
 - `checkout.session.completed` (kind=order) → orders + order_items
 - `account.updated` → vendor Stripe Connect durumu güncelle
 
@@ -1322,7 +1322,7 @@ vercel logs <deployment-url>
 | **Estelog** | Skor bazlı, protokol odaklı estetik hekim (yeni meslek tanımı) | — |
 | **C250** | gpt-4o-mini Vision'dan türetilen ham EGS (ağırlıklı 5 bileşen) | 0-100 |
 | **EGS** | Estelongy Gençlik Skoru — eski isim, yer yer kodda kalmış (`src/lib/egs.ts`) | — |
-| **Jeton** | Klinik kredi birimi (1 jeton = 1 randevu hakkı) | — |
+| **Kredi** | Klinik kredi birimi (1 kredi = 1 randevu hakkı). Eskiden "jeton" → naming rebrand sonrası tutarlı `credit` adı kullanılıyor (DB sütun/tablo/fonksiyon/route hepsi credit/kredi). | — |
 | **EGP formülü** | `doctor×0.4 + user×0.35 + manufacturer×0.15 + scientific×0.10` | — |
 | **ELS** | Estelongy Longevity Standartları (akreditasyon kuruluşu, faz 3) | — |
 | **KOL** | Key Opinion Leader (eğitmen klinik / hekim) | — |
