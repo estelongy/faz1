@@ -22,7 +22,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, approval_status, jeton_balance, free_appointments_remaining, is_educator')
+    .select('id, name, approval_status, credit_balance, free_appointments_remaining, is_educator')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -58,7 +58,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
     )
   }
 
-  const totalCredit = (clinic.jeton_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
+  const totalCredit = (clinic.credit_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
   const freeCredit = clinic.free_appointments_remaining ?? 0
 
   return (

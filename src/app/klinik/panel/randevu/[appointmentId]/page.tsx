@@ -26,8 +26,8 @@ async function kabulEt(apptId: string): Promise<{ ok: boolean; error?: string }>
   if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
 
   // Atomik kredi düşme + transaction log (SECURITY DEFINER RPC)
-  // RPC adı 'consume_jeton' geriye uyumluluk için; davranış: önce ücretsiz hak, sonra ücretli bakiye
-  const { data: result, error: creditErr } = await supabase.rpc('consume_jeton', {
+  // RPC adı 'consume_credit' geriye uyumluluk için; davranış: önce ücretsiz hak, sonra ücretli bakiye
+  const { data: result, error: creditErr } = await supabase.rpc('consume_credit', {
     p_clinic_id: clinic.id,
     p_appointment_id: apptId,
     p_description: 'Hasta kabulü',
@@ -340,7 +340,7 @@ export default async function RandevuAkisPage({
   if (!user) redirect('/giris')
 
   const { data: clinic } = await supabase
-    .from('clinics').select('id, name, jeton_balance, free_appointments_remaining').eq('user_id', user.id).single()
+    .from('clinics').select('id, name, credit_balance, free_appointments_remaining').eq('user_id', user.id).single()
   if (!clinic) redirect('/klinik/panel')
 
   // Randevu — ownership kontrolü ile
@@ -418,7 +418,7 @@ export default async function RandevuAkisPage({
         <KlinikAkisWizard
           appointment={appointment as Parameters<typeof KlinikAkisWizard>[0]['appointment']}
           analysis={analysis as Parameters<typeof KlinikAkisWizard>[0]['analysis']}
-          jetonBalance={(clinic as { jeton_balance?: number }).jeton_balance ?? 0}
+          creditBalance={(clinic as { credit_balance?: number }).credit_balance ?? 0}
           freeBalance={(clinic as { free_appointments_remaining?: number }).free_appointments_remaining ?? 0}
           hastaAnketCevaplari={hastaAnketCevaplari}
           onKabul={kabulEt}

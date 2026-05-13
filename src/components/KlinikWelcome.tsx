@@ -6,12 +6,12 @@ import Link from 'next/link'
 interface Props {
   clinicName: string
   clinicId: string
-  jetonBalance: number
+  creditBalance: number
   freeBalance?: number
 }
 
-export default function KlinikWelcome({ clinicName, clinicId, jetonBalance, freeBalance = 0 }: Props) {
-  const totalCredit = jetonBalance + freeBalance
+export default function KlinikWelcome({ clinicName, clinicId, creditBalance, freeBalance = 0 }: Props) {
+  const totalCredit = creditBalance + freeBalance
   const [copied, setCopied] = useState(false)
 
   const baseUrl = typeof window !== 'undefined'
@@ -113,7 +113,7 @@ export default function KlinikWelcome({ clinicName, clinicId, jetonBalance, free
 
       {/* Hızlı Aksiyonlar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Link href="/klinik/panel/jeton"
+        <Link href="/klinik/panel/kredi"
           className="flex items-center gap-3 p-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700 transition-colors group">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white shrink-0">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

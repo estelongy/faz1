@@ -248,19 +248,19 @@ export async function POST(req: NextRequest) {
 
     // Klinik kredi yüklemesi (legacy)
     const clinicId  = session.metadata?.clinic_id
-    const credits   = parseInt(session.metadata?.jetons ?? '0', 10)
+    const credits   = parseInt(session.metadata?.credits ?? '0', 10)
     const packageId = session.metadata?.package_id
 
     if (clinicId && credits) {
       const supabase = createServiceClient()
-      const { error } = await supabase.rpc('add_jeton', {
+      const { error } = await supabase.rpc('add_credit', {
         p_clinic_id:      clinicId,
         p_amount:         credits,
         p_description:    `Stripe ödeme: ${packageId} (${session.id})`,
         p_stripe_session: session.id,
       })
       if (error) {
-        console.error('add_jeton RPC error:', error)
+        console.error('add_credit RPC error:', error)
         return NextResponse.json({ error: 'Kredi güncellenemedi' }, { status: 500 })
       }
     }

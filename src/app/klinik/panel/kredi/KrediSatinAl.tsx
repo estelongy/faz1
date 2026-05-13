@@ -3,13 +3,13 @@
 import { useState } from 'react'
 
 const PACKAGES = [
-  { id: 'jeton_10',  label: '10 Kredi',  credits: 10,  priceEur: 49,  pricePerCredit: '€4.90', popular: false },
-  { id: 'jeton_25',  label: '25 Kredi',  credits: 25,  priceEur: 99,  pricePerCredit: '€3.96', popular: true  },
-  { id: 'jeton_50',  label: '50 Kredi',  credits: 50,  priceEur: 179, pricePerCredit: '€3.58', popular: false },
-  { id: 'jeton_100', label: '100 Kredi', credits: 100, priceEur: 299, pricePerCredit: '€2.99', popular: false },
+  { id: 'credit_10',  label: '10 Kredi',  credits: 10,  priceEur: 49,  pricePerCredit: '€4.90', popular: false },
+  { id: 'credit_25',  label: '25 Kredi',  credits: 25,  priceEur: 99,  pricePerCredit: '€3.96', popular: true  },
+  { id: 'credit_50',  label: '50 Kredi',  credits: 50,  priceEur: 179, pricePerCredit: '€3.58', popular: false },
+  { id: 'credit_100', label: '100 Kredi', credits: 100, priceEur: 299, pricePerCredit: '€2.99', popular: false },
 ]
 
-export default function JetonSatinAl() {
+export default function KrediSatinAl() {
   const [loading, setLoading] = useState<string | null>(null)
 
   async function handleBuy(packageId: string) {

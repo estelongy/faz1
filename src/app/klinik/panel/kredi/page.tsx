@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import JetonSatinAl from './JetonSatinAl'
+import KrediSatinAl from './KrediSatinAl'
 
 export const metadata: Metadata = {
   title: 'Kredi Yönetimi',
@@ -23,7 +23,7 @@ const TYPE_COLOR: Record<string, string> = {
   manual:   'text-violet-400',
 }
 
-export default async function JetonPage({
+export default async function KrediPage({
   searchParams,
 }: {
   searchParams: Promise<{ success?: string; cancelled?: string }>
@@ -35,15 +35,15 @@ export default async function JetonPage({
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, jeton_balance, free_appointments_remaining, paid_appointments_this_month, appointment_credit_price')
+    .select('id, name, credit_balance, free_appointments_remaining, paid_appointments_this_month, appointment_credit_price')
     .eq('user_id', user.id)
     .single()
   if (!clinic) redirect('/klinik/panel')
 
-  const totalCredits = (clinic.jeton_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
+  const totalCredits = (clinic.credit_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
 
   const { data: transactions } = await supabase
-    .from('jeton_transactions')
+    .from('credit_transactions')
     .select('id, amount, type, description, created_at, appointment_id')
     .eq('clinic_id', clinic.id)
     .order('created_at', { ascending: false })
@@ -84,9 +84,9 @@ export default async function JetonPage({
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700 text-center">
             <p className="text-slate-400 text-xs mb-1">💳 Ücretli Bakiye</p>
             <p className={`text-4xl font-black ${
-              clinic.jeton_balance === 0 ? 'text-red-400' :
-              clinic.jeton_balance <= 10 ? 'text-amber-400' : 'text-violet-400'
-            }`}>{clinic.jeton_balance}</p>
+              clinic.credit_balance === 0 ? 'text-red-400' :
+              clinic.credit_balance <= 10 ? 'text-amber-400' : 'text-violet-400'
+            }`}>{clinic.credit_balance}</p>
             <p className="text-slate-500 text-[10px] mt-1">Satın alınmış</p>
           </div>
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700 text-center">
@@ -113,7 +113,7 @@ export default async function JetonPage({
         {/* Kredi Satın Al */}
         <div className="mb-8">
           <h2 className="text-white font-bold text-lg mb-4">Kredi Satın Al</h2>
-          <JetonSatinAl />
+          <KrediSatinAl />
         </div>
 
         {/* İşlem geçmişi */}

@@ -18,7 +18,7 @@ export type AuditAction =
   | 'vendor_update'
   | 'clinic_approval'
   | 'clinic_update'
-  | 'clinic_jeton_grant'
+  | 'clinic_credit_grant'
   | 'clinic_educator_toggle'
   | 'clinic_educator_decision'
   | 'product_approval'

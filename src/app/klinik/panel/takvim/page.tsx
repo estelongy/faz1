@@ -62,7 +62,7 @@ export default async function KlinikTakvimPage() {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, jeton_balance')
+    .select('id, name, credit_balance')
     .eq('user_id', user.id)
     .single()
   if (!clinic) redirect('/klinik/panel')

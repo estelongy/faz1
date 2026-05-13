@@ -27,7 +27,7 @@ const ACTION_LABEL: Record<string, string> = {
   vendor_update: 'Satıcı güncelleme',
   clinic_approval: 'Klinik onay',
   clinic_update: 'Klinik güncelleme',
-  clinic_jeton_grant: 'Jeton yükleme',
+  clinic_credit_grant: 'Kredi yükleme',
   clinic_educator_toggle: 'Eğitmen toggle',
   clinic_educator_decision: 'Eğitmen başvuru kararı',
   product_approval: 'Ürün onay',
@@ -45,7 +45,7 @@ const ACTION_COLOR: Record<string, string> = {
   clinic_approval:     'bg-emerald-500/20 text-emerald-300',
   product_approval:    'bg-emerald-500/20 text-emerald-300',
   user_active_toggle:  'bg-amber-500/20 text-amber-300',
-  clinic_jeton_grant:  'bg-blue-500/20 text-blue-300',
+  clinic_credit_grant:  'bg-blue-500/20 text-blue-300',
 }
 
 function formatDate(iso: string): string {

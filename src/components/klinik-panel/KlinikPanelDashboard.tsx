@@ -62,7 +62,7 @@ export default function KlinikPanelDashboard({
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2l2.5 5.5L18 8l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L10 2z"/></svg>
             {accreditation.phase === 0 ? 'Yeni Klinik' : `Faz ${accreditation.phase} — ${accreditation.phaseLabel}`}
           </div>
-          <Link href="/klinik/panel/jeton"
+          <Link href="/klinik/panel/kredi"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold hover:opacity-80 transition-opacity">
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />

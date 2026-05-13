@@ -24,7 +24,7 @@ function buildNavGroups(isEducator: boolean, showMuhasebe: boolean): NavGroup[] 
     { href: '/klinik/panel/hastalarim', icon: '👥', label: 'Hastalarım' },
     { href: '/klinik/panel/yorumlar',   icon: '💬', label: 'Yorumlar', badge: 'new' },
     { href: '/klinik/panel/mesajlar',   icon: '✉️', label: 'Mesajlar', badge: 'new' },
-    { href: '/klinik/panel/jeton',      icon: '💳', label: 'Krediler' },
+    { href: '/klinik/panel/kredi',      icon: '💳', label: 'Krediler' },
     { href: '/klinik/panel/rapor',      icon: '📊', label: 'Raporlar' },
   ]
   if (showMuhasebe) {
@@ -149,7 +149,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
           {/* Kredi rozeti — collapsed modda kompakt ikon, expanded modda tam */}
           <div className="px-4 pb-4">
             <Link
-              href="/klinik/panel/jeton"
+              href="/klinik/panel/kredi"
               onClick={() => setMobileOpen(false)}
               className={`flex items-center ${expanded ? 'justify-between px-3 py-2' : 'justify-center w-9 h-9'} rounded-lg border text-xs transition-all hover:opacity-80 ${creditColor}`}
               title={!expanded ? `${totalCredit} kredi` : undefined}

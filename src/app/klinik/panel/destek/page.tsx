@@ -62,8 +62,8 @@ export default function DestekPage() {
         <h2 className="text-white font-bold text-sm mb-3 uppercase tracking-wide">Sık Sorulan Sorular</h2>
         <div className="space-y-2">
           {[
-            { q: 'Krediler nasıl çalışır?', href: '/klinik/panel/jeton' },
-            { q: 'Kredi paketi satın alma',  href: '/klinik/panel/jeton' },
+            { q: 'Krediler nasıl çalışır?', href: '/klinik/panel/kredi' },
+            { q: 'Kredi paketi satın alma',  href: '/klinik/panel/kredi' },
             { q: 'Müsaitlik takvimini nasıl ayarlarım?', href: '/klinik/panel/musaitlik' },
             { q: 'Klinik genel SSS', href: '/hakkinda/sss' },
           ].map(item => (

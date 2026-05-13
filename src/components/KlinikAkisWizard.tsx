@@ -55,7 +55,7 @@ interface AnalysisData {
 interface Props {
   appointment: AppointmentData
   analysis: AnalysisData | null
-  jetonBalance: number
+  creditBalance: number
   /** Estelongy hediyesi olarak verilen ücretsiz hasta hakkı */
   freeBalance?: number
   /** Hasta anketi cevapları (varsa klinik anketinde önceden doldurulur) */
@@ -70,11 +70,11 @@ interface Props {
 
 // ── Bileşen ───────────────────────────────────────────────────────
 export default function KlinikAkisWizard({
-  appointment, analysis, jetonBalance, freeBalance = 0, hastaAnketCevaplari,
+  appointment, analysis, creditBalance, freeBalance = 0, hastaAnketCevaplari,
   onKabul, onSaveAnket, onSaveTetkik, onSaveIleriAnaliz, onSaveHekim, onFinalOnay,
 }: Props) {
-  const totalCredit = jetonBalance + freeBalance
-  const willUsePaid = freeBalance === 0 && jetonBalance > 0
+  const totalCredit = creditBalance + freeBalance
+  const willUsePaid = freeBalance === 0 && creditBalance > 0
   const [isPending, startTransition] = useTransition()
   const [kabulError, setKabulError]   = useState<string | null>(null)
 
@@ -232,7 +232,7 @@ export default function KlinikAkisWizard({
             </div>
             <div className="flex gap-4 text-xs text-slate-500">
               <span>🎁 Ücretsiz: <strong className="text-emerald-400">{freeBalance}</strong></span>
-              <span>💳 Ücretli: <strong className="text-violet-400">{jetonBalance}</strong></span>
+              <span>💳 Ücretli: <strong className="text-violet-400">{creditBalance}</strong></span>
             </div>
             {totalCredit === 0 && (
               <p className="text-red-400 text-xs mt-2">Krediniz tükendi. Hasta kabulü için kredi yükleyin.</p>

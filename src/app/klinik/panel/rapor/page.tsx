@@ -17,14 +17,14 @@ type MonthStats = {
   pending: number
   avgFinalScore: number | null
   avgScoreGain: number | null // ön analiz → final delta ortalaması
-  jetonUsed: number
+  creditUsed: number
 }
 
 // Ay bazlı aggregate
 function aggregate(
   appts: Array<{ status: string; appointment_date: string | null }>,
   scoreRows: Array<{ appointment_id: string | null; total_score: number | null; c250_base: number | null }>,
-  jetonRows: Array<{ amount: number; created_at: string }>,
+  creditRows: Array<{ amount: number; created_at: string }>,
   year: number,
   month: number,
 ): MonthStats {
@@ -58,7 +58,7 @@ function aggregate(
   }
 
   // Kredi kullanımı (usage tipi, bu aya ait)
-  const jetonUsed = jetonRows
+  const creditUsed = creditRows
     .filter(j => {
       const t = new Date(j.created_at).getTime()
       return t >= monthStart && t < monthEnd
@@ -75,7 +75,7 @@ function aggregate(
     pending,
     avgFinalScore: avgFinal,
     avgScoreGain: avgGain,
-    jetonUsed,
+    creditUsed,
   }
 }
 
@@ -86,7 +86,7 @@ export default async function KlinikRaporPage() {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, jeton_balance, free_appointments_remaining')
+    .select('id, name, credit_balance, free_appointments_remaining')
     .eq('user_id', user.id)
     .single()
   if (!clinic) redirect('/klinik/panel')
@@ -110,8 +110,8 @@ export default async function KlinikRaporPage() {
         .in('appointment_id', apptIds)
     : { data: [] as Array<{ appointment_id: string | null; total_score: number | null; c250_base: number | null }> }
 
-  const { data: jetonRows } = await supabase
-    .from('jeton_transactions')
+  const { data: creditRows } = await supabase
+    .from('credit_transactions')
     .select('amount, created_at, type')
     .eq('clinic_id', clinic.id)
     .eq('type', 'usage')
@@ -125,7 +125,7 @@ export default async function KlinikRaporPage() {
     months.push(aggregate(
       (appts ?? []) as Array<{ id: string; status: string; appointment_date: string | null }>,
       (scoreRows ?? []) as Array<{ appointment_id: string | null; total_score: number | null; c250_base: number | null }>,
-      (jetonRows ?? []) as Array<{ amount: number; created_at: string }>,
+      (creditRows ?? []) as Array<{ amount: number; created_at: string }>,
       d.getFullYear(),
       d.getMonth(),
     ))
@@ -189,9 +189,9 @@ export default async function KlinikRaporPage() {
           {/* Kredi Kullanımı */}
           <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20">
             <p className="text-amber-400/70 text-xs mb-1">Kredi Kullanımı</p>
-            <p className="text-3xl font-black text-amber-400">{current.jetonUsed}</p>
+            <p className="text-3xl font-black text-amber-400">{current.creditUsed}</p>
             <p className="text-xs text-slate-500 mt-2">
-              Bakiye: {((clinic as { jeton_balance?: number }).jeton_balance ?? 0) + ((clinic as { free_appointments_remaining?: number }).free_appointments_remaining ?? 0)}
+              Bakiye: {((clinic as { credit_balance?: number }).credit_balance ?? 0) + ((clinic as { free_appointments_remaining?: number }).free_appointments_remaining ?? 0)}
             </p>
           </div>
         </div>
@@ -249,7 +249,7 @@ export default async function KlinikRaporPage() {
                     <td className="px-4 py-3 text-right text-white font-bold">
                       {m.avgFinalScore != null ? m.avgFinalScore.toFixed(1) : '—'}
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-400">{m.jetonUsed}</td>
+                    <td className="px-4 py-3 text-right text-slate-400">{m.creditUsed}</td>
                   </tr>
                 ))}
               </tbody>

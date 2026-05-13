@@ -21,7 +21,7 @@ interface Clinic {
   approval_status: ApprovalStatus
   is_active: boolean
   is_educator: boolean | null
-  jeton_balance: number
+  credit_balance: number
   created_at: string
   profiles: { full_name: string | null } | null
 }
@@ -50,7 +50,7 @@ async function updateClinic(formData: FormData) {
   // Kliniğin user_id'sini al (rol güncellemesi için)
   const { data: current } = await supabase
     .from('clinics')
-    .select('user_id, approval_status, jeton_balance, name')
+    .select('user_id, approval_status, credit_balance, name')
     .eq('id', clinicId)
     .single()
 
@@ -77,7 +77,7 @@ async function updateClinic(formData: FormData) {
 
   // Onay/red güncelle. Yeni kliniğe ücretsiz hak DEFAULT 20 olarak otomatik
   // veriliyor (free_appointments_remaining migration default'u). Ek 'starter
-  // jeton' artık gerekmiyor — eskiden 10 jeton verilirdi, şimdi 20 ücretsiz hak.
+  // kredi' artık gerekmiyor — eskiden 10 kredi verilirdi, şimdi 20 ücretsiz hak.
   await supabase.from('clinics').update({ approval_status: status, is_active: isActive }).eq('id', clinicId)
 
   // app_metadata.role güncelle: onaylandıysa 'clinic', reddedildiyse 'user'
@@ -179,7 +179,7 @@ async function decideEducatorApplication(formData: FormData) {
   redirect('/admin/klinikler')
 }
 
-async function addJeton(formData: FormData) {
+async function addCredit(formData: FormData) {
   'use server'
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -190,11 +190,11 @@ async function addJeton(formData: FormData) {
   const amount   = parseInt(formData.get('amount') as string, 10)
   if (!clinicId || isNaN(amount) || amount < 1) redirect('/admin/klinikler')
 
-  const { data: clinic } = await supabase.from('clinics').select('jeton_balance').eq('id', clinicId).single()
-  const newBalance = (clinic?.jeton_balance ?? 0) + amount
+  const { data: clinic } = await supabase.from('clinics').select('credit_balance').eq('id', clinicId).single()
+  const newBalance = (clinic?.credit_balance ?? 0) + amount
 
-  await supabase.from('clinics').update({ jeton_balance: newBalance }).eq('id', clinicId)
-  await supabase.from('jeton_transactions').insert({
+  await supabase.from('clinics').update({ credit_balance: newBalance }).eq('id', clinicId)
+  await supabase.from('credit_transactions').insert({
     clinic_id: clinicId,
     amount,
     type: 'manual',
@@ -203,11 +203,11 @@ async function addJeton(formData: FormData) {
 
   await writeAuditLog({
     actorId: user.id,
-    action: 'clinic_jeton_grant',
+    action: 'clinic_credit_grant',
     tableName: 'clinics',
     recordId: clinicId,
-    oldData: { jeton_balance: clinic?.jeton_balance ?? 0 },
-    newData: { jeton_balance: newBalance, amount },
+    oldData: { credit_balance: clinic?.credit_balance ?? 0 },
+    newData: { credit_balance: newBalance, amount },
   })
 
   redirect('/admin/klinikler')
@@ -221,7 +221,7 @@ export default async function KliniklerPage() {
 
   const { data: clinics } = await supabase
     .from('clinics')
-    .select('id, name, location, bio, specialties, approval_status, is_active, is_educator, jeton_balance, created_at, profiles(full_name)')
+    .select('id, name, location, bio, specialties, approval_status, is_active, is_educator, credit_balance, created_at, profiles(full_name)')
     .order('created_at', { ascending: false })
 
   const all = (clinics ?? []) as unknown as Clinic[]
@@ -374,10 +374,10 @@ export default async function KliniklerPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className={`text-sm font-bold ${
-                        (c.jeton_balance ?? 0) === 0 ? 'text-red-400' :
-                        (c.jeton_balance ?? 0) <= 10 ? 'text-amber-400' : 'text-emerald-400'
-                      }`}>{c.jeton_balance ?? 0}</span>
-                      <form action={addJeton} className="flex gap-1 items-center">
+                        (c.credit_balance ?? 0) === 0 ? 'text-red-400' :
+                        (c.credit_balance ?? 0) <= 10 ? 'text-amber-400' : 'text-emerald-400'
+                      }`}>{c.credit_balance ?? 0}</span>
+                      <form action={addCredit} className="flex gap-1 items-center">
                         <input type="hidden" name="clinicId" value={c.id} />
                         <input type="number" name="amount" defaultValue={10} min={1} max={1000}
                           className="w-14 bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded px-1.5 py-0.5 focus:outline-none focus:border-violet-500"

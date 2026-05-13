@@ -10,6 +10,14 @@ const nextConfig = {
     ],
   },
 
+  // Legacy URL redirects — eski "jeton" yolundan yeni "kredi" yoluna
+  async redirects() {
+    return [
+      { source: '/klinik/panel/jeton',          destination: '/klinik/panel/kredi', permanent: true },
+      { source: '/klinik/panel/jeton/:path*',   destination: '/klinik/panel/kredi/:path*', permanent: true },
+    ]
+  },
+
   // Güvenlik başlıkları
   async headers() {
     // Content-Security-Policy — XSS / data exfiltration savunması.
