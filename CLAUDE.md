@@ -58,13 +58,20 @@
 - **Webhook URL (live):** `https://estelongy-clean.vercel.app/api/stripe/webhook`
 - **Connect:** Vendor satışları için Connect Express hesapları
 
-### 1.4 Postmark (transactional email)
-- **Hesap:** estelongy@gmail.com
-- **Server ID:** 19148696 ("My First Server")
-- **Sender domain:** estelongy.com (DKIM + SPF + Return-Path doğrulandı)
-- **From adres:** `noreply@estelongy.com` (mailbox değil, sender signature)
-- **Stream:** `outbound` (Default Transactional)
-- **Durum:** `pending approval` — Postmark hesap onayı bekleniyor (1 iş günü). Onay gelene kadar sadece `@estelongy.com` adresine mail uçar.
+### 1.4 E-posta — Resend (primary) + Postmark (fallback)
+- **Hesap:** estelongy@gmail.com (her ikisinde)
+- **Sender domain:** estelongy.com
+- **From adres:** `noreply@estelongy.com`
+- **Provider önceliği:** `RESEND_API_KEY` varsa Resend; başarısız olur veya yoksa `POSTMARK_API_TOKEN` ile Postmark; ikisi de yoksa sessiz atla
+- **Resend (primary, canlıda):**
+  - Region: Ireland (eu-west-1)
+  - DNS: `resend._domainkey` (DKIM), `send` MX→`feedback-smtp.eu-west-1.amazonses.com`, `send` SPF (`v=spf1 include:amazonses.com ~all`), opsiyonel `_dmarc` — hepsi Verified
+  - REST: `POST https://api.resend.com/emails`, `Authorization: Bearer ${RESEND_API_KEY}`
+  - MessageID: UUID formatı (Postmark'tan ayırt edici işaret)
+- **Postmark (fallback, hazır):**
+  - Server ID: 19148696 ("My First Server"), Stream: `outbound`
+  - DKIM/SPF/Return-Path doğrulandı, sender signature `noreply@estelongy.com`
+  - **Durum:** `pending approval` — onay gelmemiş olsa bile Resend primary çalıştığı için kritik değil. Approval gelmediği sürece yabancı domain'e fallback olarak da uçmaz; Resend down olursa ancak @estelongy.com'a fallback eder.
 
 ### 1.5 Netgsm (SMS sağlayıcı)
 - **Hesap:** İzzet Gök
@@ -115,7 +122,7 @@ Auth:             Supabase Auth (@supabase/ssr cookie tabanlı)
 Storage:          Supabase Storage (S3 uyumlu, RLS'li)
 AI:               OpenAI gpt-4o-mini (Vision)
 Ödeme:            Stripe (Checkout + Connect Express + Webhook)
-E-posta:          Postmark API (X-Postmark-Server-Token, MessageStream='outbound')
+E-posta:          Resend REST (primary) → Postmark API (fallback)
 SMS:              Netgsm REST API
 Cache/RL:         Upstash Redis REST + @upstash/ratelimit
 Video:            Cloudflare Stream (iframe player)
@@ -168,7 +175,7 @@ estelongy-faz1/
 │   │   │   ├── kullanicilar, klinikler, saticilar, urunler
 │   │   │   ├── kuponlar, iadeler, icerik
 │   │   │   ├── audit               ← YENİ: audit log viewer
-│   │   │   └── hesap               ← Admin şifre + Postmark test
+│   │   │   └── hesap               ← Admin şifre + e-posta test (Resend/Postmark)
 │   │   └── api/                    ← Tüm endpoint'ler (bkz. Bölüm 13)
 │   ├── components/                 ← Reusable UI
 │   ├── lib/
@@ -182,7 +189,7 @@ estelongy-faz1/
 │   │   ├── login-ratelimit.ts      ← Brute-force lockout + failed login email helper
 │   │   ├── ratelimit.ts            ← Eski memory rate limit (analiz, auth)
 │   │   ├── redis.ts                ← Upstash Redis singleton + Ratelimit factory
-│   │   ├── notifications.ts        ← sendEmail (Postmark) + tmpl* fonksiyonları
+│   │   ├── notifications.ts        ← sendEmail (Resend primary + Postmark fallback) + tmpl* fonksiyonları
 │   │   ├── email-templates.ts      ← tmplFailedLoginAlert
 │   │   ├── welcome-email.ts        ← 4 rol için hoş geldin maili
 │   │   ├── signup-policy.ts        ← Kayıt validasyonu (e-posta, şifre, IP RL)
@@ -221,12 +228,14 @@ STRIPE_SECRET_KEY=sk_test_...                       # GİZLİ
 STRIPE_WEBHOOK_SECRET=whsec_...                     # webhook signature
 ```
 
-### 4.3 E-posta (Postmark)
+### 4.3 E-posta (Resend primary + Postmark fallback)
 ```bash
-POSTMARK_API_TOKEN=<server token>                   # GİZLİ — Postmark My First Server
-FROM_EMAIL=noreply@estelongy.com                    # sender signature (mailbox değil)
+RESEND_API_KEY=re_...                               # GİZLİ — Resend primary (canlıda)
+POSTMARK_API_TOKEN=<server token>                   # GİZLİ — Postmark fallback
+FROM_EMAIL=noreply@estelongy.com                    # her ikisi için aynı sender
 ```
-Eksikse: Mail sessiz fail (`console.warn` + return false). Welcome/OTP/randevu mailleri uçmaz.
+- `RESEND_API_KEY` varsa Resend dener; başarısızsa Postmark'a düşer.
+- İkisi de yoksa: mail sessiz fail (`console.warn` + return false), welcome/OTP/randevu mailleri uçmaz.
 
 ### 4.4 SMS (Netgsm)
 ```bash
@@ -865,7 +874,7 @@ quality = avg_rating × 12
 | `/admin/iadeler` | İade onay/red |
 | `/admin/icerik` | Editöryel CMS (kategori bazlı post) |
 | `/admin/audit` | Audit log viewer (filtreli) |
-| `/admin/hesap` | Şifre değiştir + telefon (maskeli) + Postmark test butonu |
+| `/admin/hesap` | Şifre değiştir + telefon (maskeli) + e-posta test butonu (Resend primary) |
 
 **Vendor onay kartı (`/admin/saticilar` pending tab):**
 - E-posta, telefon, vergi no, Stripe Connect durumu, hesap kayıt zamanı, son giriş
@@ -892,7 +901,7 @@ POST /api/otp/verify                     ← OTP doğrula
 POST /api/admin-otp/send                 ← admin SMS OTP gönder (telefon DB'den)
 POST /api/admin-otp/verify               ← admin OTP doğrula → 30dk session
 
-POST /api/admin/test-email               ← admin Postmark test (kendine mail)
+POST /api/admin/test-email               ← admin e-posta test (Resend → fallback Postmark, kendine mail)
 
 POST /api/analiz                         ← gpt-4o-mini Vision (rate limit 5/h/IP)
 
@@ -1010,13 +1019,14 @@ final      = ara_toplam × 0.85 + hekim_skoru × 0.15
 
 ## 14. Bildirim Sistemi
 
-### 14.1 E-posta (Postmark)
+### 14.1 E-posta (Resend primary + Postmark fallback)
 
 **Helper:** `src/lib/notifications.ts`
 - `sendEmail(to, subject, html)` → boolean
-- `sendEmailDetailed(to, subject, html)` → `{ok, messageId, error}`
-- Header: `X-Postmark-Server-Token`
-- Body: `{From, To, Subject, HtmlBody, MessageStream: 'outbound'}`
+- `sendEmailDetailed(to, subject, html)` → `{ok, messageId, provider, error}` — `provider: 'resend' | 'postmark'`
+- Resend: `POST https://api.resend.com/emails`, `Authorization: Bearer ${RESEND_API_KEY}`, body `{from, to:[to], subject, html}`
+- Postmark (fallback): `X-Postmark-Server-Token` header, body `{From, To, Subject, HtmlBody, MessageStream: 'outbound'}`
+- Sıra: Resend dener → başarısızsa Postmark → ikisi de yoksa `console.warn` + return false
 
 **Şablonlar (`tmpl*` fonksiyonları):**
 - `tmplAppointmentConfirmed` — randevu onaylandı
@@ -1043,7 +1053,7 @@ final      = ara_toplam × 0.85 + hekim_skoru × 0.15
 **Tetik:** Vercel Hobby plan günlük 09:00 UTC (saatlik için Pro gerekli).
 
 **İş:** `notification_queue` tablosundan `scheduled_at <= now()` olan pending kayıtları işler:
-- email → Postmark
+- email → Resend (primary) → Postmark (fallback)
 - sms → Netgsm
 - başarılı → status='sent', başarısız → status='failed' + error_message
 
@@ -1097,9 +1107,11 @@ final      = ara_toplam × 0.85 + hekim_skoru × 0.15
 ### 16.6 AI fallback
 - gpt-4o-mini down → `generateFallback()` rastgele skor üretir, sessiz başarısızlık YOK (kullanıcıya gösterilir)
 
-### 16.7 Resend → Postmark migration
-- `RESEND_API_KEY` artık kullanılmıyor (eski kod referans olabilir, hep `sendEmail()` çağrı kullan)
-- Postmark "pending approval" döneminde sadece `@estelongy.com` adresine mail uçar — yabancı domain'e 422 [412] hata alır
+### 16.7 E-posta sağlayıcı stratejisi
+- **Resend primary, Postmark fallback** — `src/lib/notifications.ts` env-var'a göre sağlayıcı seçer.
+- `RESEND_API_KEY` varsa Resend; başarısız (network/429/5xx) veya yoksa Postmark; ikisi de yoksa sessiz atla.
+- Postmark "pending approval" sürdüğü için fallback şu an sadece `@estelongy.com`'a uçar. Resend primary olduğu için bu kısıt pratikte hissedilmez.
+- Hangi sağlayıcının kullanıldığını anlamak: `messageId` formatı — Resend UUID (`56a0fe89-75d0-...`), Postmark farklı.
 
 ---
 
@@ -1165,7 +1177,7 @@ vercel logs <deployment-url>
 
 ### 🔴 BLOKER (lansman yapılamaz)
 
-- [ ] **Postmark account approval** — form gönderildi, hesap inceleniyor (1 iş günü)
+- [x] **E-posta sağlayıcı canlıda** — Resend primary (DKIM+SPF Verified, inbox'a düşüyor), Postmark fallback olarak hazır (approval beklemese de kritik değil)
 - [ ] **Stripe Live mode** — Vestoriq Estonya KYC tamamlanması gerek
 - [ ] **Tetkik puanı algoritması** — bilimsel araştırma sürüyor (kullanıcı tarafı)
 - [ ] **estelongy.com domain → Vercel projesine bağla** (Settings → Domains → Add, 5 dk)
@@ -1193,7 +1205,7 @@ vercel logs <deployment-url>
 - [x] Storage bucket validasyonu
 - [x] Vendor KYC (sprint B tam)
 - [x] security.txt + /guvenlik
-- [x] Postmark entegrasyon (approval bekliyor)
+- [x] Resend primary (canlıda) + Postmark fallback entegrasyon
 
 ### 🔵 LANSMAN SONRASI
 
@@ -1215,7 +1227,7 @@ vercel logs <deployment-url>
 ### Faz 1 — Soft Launch (Q2 2026)
 - 5-10 KOL hekime özel davet (anchor strategy)
 - Tetkik puanı algoritması bilimsel finalizasyon
-- Postmark + Stripe Live aktivasyon
+- Stripe Live aktivasyon (e-posta sağlayıcı Resend ile zaten canlıda)
 - Domain kurulumu
 - İlk gerçek vendor KYC onayı
 
@@ -1238,10 +1250,11 @@ vercel logs <deployment-url>
 ## 20. Sorun Giderme — Sık Görülen
 
 ### "Mail gitmedi"
-1. `POSTMARK_API_TOKEN` Vercel env'de var mı? `vercel env ls production`
-2. Postmark Activity → Delivered/Bounced göster
-3. Pending approval ise sadece `@estelongy.com`'a uçar
-4. DKIM/SPF/Return-Path Postmark Dashboard → Sender Signatures'da yeşil mi?
+1. `RESEND_API_KEY` Vercel env'de var mı? `vercel env ls production` — primary sağlayıcı bu
+2. Resend Dashboard → **Logs** → Delivered/Bounced (UUID formatlı messageId ise Resend'den gitti)
+3. Resend'de yoksa: Postmark Activity'ye bak (fallback'a düşmüş olabilir) — Postmark pending approval ise sadece `@estelongy.com`'a uçar
+4. DKIM/SPF: Resend Dashboard → Domains → estelongy.com → 3 kayıt da Verified mi? (`resend._domainkey`, `send` MX, `send` SPF)
+5. İkisi de fail ise: `console.warn` log'una bak (Vercel Functions logs)
 
 ### "SMS gitmedi"
 1. `NETGSM_*` env tam mı?
@@ -1305,8 +1318,12 @@ vercel logs <deployment-url>
 
 ## 23. Mimari Kararlar (Neden Böyle?)
 
-### 23.1 Neden Postmark?
-Resend → Postmark geçişi: deliverability test sonuçları. Postmark transactional için endüstri standardı, daha sıkı abuse policy → daha temiz IP reputation.
+### 23.1 Neden Resend primary + Postmark fallback?
+İlk başta Resend → Postmark'a geçilmişti (deliverability + sıkı abuse policy nedeniyle). Ama Postmark approval süreci uzayınca lansmanı kilitlememek için Resend primary, Postmark fallback olarak yeniden devreye alındı. Avantajlar:
+- **Zero downtime sağlayıcı geçişi:** ENV var değiştirerek primary'i değiştirebiliyoruz, kod değişmiyor.
+- **Resilience:** Bir sağlayıcı down olursa diğeri otomatik devreye girer.
+- **Ayrı DNS namespace:** Resend `resend._domainkey` + `send` subdomain, Postmark `pm._domainkey` + root sender signature → kayıt çakışması yok.
+- **MessageID ile gözlemlenebilirlik:** UUID Resend, diğer format Postmark — hangi sağlayıcının çalıştığı log'dan anlaşılır.
 
 ### 23.2 Neden Vercel + Supabase?
 - Next.js 14 server actions için en iyi platform Vercel
