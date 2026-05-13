@@ -31,7 +31,7 @@ export async function POST(): Promise<Response> {
     return NextResponse.json({ error: 'Hesabınızda kayıtlı e-posta yok' }, { status: 400 })
   }
 
-  const subject = 'Estelongy Postmark Entegrasyon Testi'
+  const subject = 'Estelongy E-posta Entegrasyon Testi'
   const html = `
 <!DOCTYPE html>
 <html lang="tr">
@@ -44,9 +44,9 @@ export async function POST(): Promise<Response> {
           <div style="display:inline-block;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border-radius:12px;margin-bottom:20px;">
             <span style="color:#fff;font-size:28px;font-weight:800;letter-spacing:-0.5px;">✓ Test Başarılı</span>
           </div>
-          <h1 style="color:#fff;font-size:22px;font-weight:700;margin:0 0 16px;">Postmark entegrasyonu çalışıyor</h1>
+          <h1 style="color:#fff;font-size:22px;font-weight:700;margin:0 0 16px;">E-posta altyapısı çalışıyor</h1>
           <p style="color:#cbd5e1;font-size:15px;line-height:1.6;margin:0 0 16px;">
-            Bu mail estelongy.com altyapısı üzerinden Postmark API'si ile gönderildi.
+            Bu mail estelongy.com altyapısı üzerinden gönderildi (Resend primary, Postmark fallback).
           </p>
           <div style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;margin:20px 0;text-align:left;font-family:monospace;font-size:12px;color:#94a3b8;">
             <div><strong style="color:#10b981">From:</strong> ${process.env.FROM_EMAIL ?? 'noreply@estelongy.com'}</div>
@@ -78,6 +78,7 @@ export async function POST(): Promise<Response> {
     ok: true,
     sentTo: email,
     messageId: result.messageId,
+    provider: result.provider,
     from: process.env.FROM_EMAIL ?? 'noreply@estelongy.com',
   })
 }
