@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import Footer from '@/components/Footer'
 import ScoreBar from '@/components/ScoreBar'
 import HeroSkorReveal from '@/components/HeroSkorReveal'
@@ -89,7 +90,21 @@ const CLINIC_FEATURES = [
   },
 ]
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>
+}) {
+  // Supabase Auth recovery/confirm linkleri yanlış template yüzünden root'a
+  // ?code=... ile düşerse, doğru handler'a yönlendir.
+  const sp = await searchParams
+  if (sp?.code) {
+    redirect(`/auth/update-password?code=${encodeURIComponent(sp.code)}`)
+  }
+  if (sp?.token_hash && sp?.type) {
+    redirect(`/auth/confirm?token_hash=${encodeURIComponent(sp.token_hash)}&type=${encodeURIComponent(sp.type)}`)
+  }
+
   // Login durumu — server-side
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
