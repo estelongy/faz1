@@ -6,20 +6,17 @@ import { ArrowRight } from 'lucide-react'
 
 /* ============================================================
    Marka palet — 3 sub-brand + master
-   3 nokta sırası: BiyoAGE (lavanta) · EsteStore (gold) · EsteKlinik (green)
-   Master state'te 3'ü birlikte parlar = Estelongy
    ============================================================ */
 const SUB_BRANDS = [
-  { name: 'BiyoAGE', href: '/', color: '#9F8CE0' },
-  { name: 'EsteStore', href: '/estestore', color: '#C9A961' },
-  { name: 'EsteKlinik', href: '/klinikler', color: '#10876B' },
+  { name: 'BiyoAGE', href: '/', color: '#9F8CE0', desc: 'Gençlik Skoru — AI cilt analizi' },
+  { name: 'EsteStore', href: '/estestore', color: '#C9A961', desc: 'Hekim onaylı ürünler' },
+  { name: 'EsteKlinik', href: '/klinikler', color: '#10876B', desc: 'Klinik bul, randevu al' },
 ] as const
 
 const MASTER_COLOR = '#F8F7F4'
 
 /* ============================================================
    Sekans — Estelongy anchor olarak her sub-brand'den sonra dönüyor
-   "Eve dönüş" → puzzle parçaları birleşir → Estelongy = bütün
    ============================================================ */
 type Step =
   | { kind: 'master'; dur: number }
@@ -27,38 +24,21 @@ type Step =
 
 const SEQUENCE: Step[] = [
   { kind: 'master', dur: 2800 },
-  { kind: 'sub', idx: 0, dur: 2200 }, // BiyoAGE
-  { kind: 'master', dur: 1600 }, // eve dönüş
-  { kind: 'sub', idx: 1, dur: 2200 }, // EsteStore
+  { kind: 'sub', idx: 0, dur: 2200 },
   { kind: 'master', dur: 1600 },
-  { kind: 'sub', idx: 2, dur: 2200 }, // EsteKlinik
+  { kind: 'sub', idx: 1, dur: 2200 },
+  { kind: 'master', dur: 1600 },
+  { kind: 'sub', idx: 2, dur: 2200 },
   { kind: 'master', dur: 1600 },
 ]
 
 /* ============================================================
-   Dropdown — mouse hover'da yayılır
-   EsteStore yok (buradayız), 3 marka clickable
+   Boyutlar — pill (kapalı) ve panel (açık) için ortak genişlik
+   Sadece yükseklik değişir → buton kendisi aşağı doğru "açılır"
    ============================================================ */
-const DROPDOWN_ITEMS = [
-  {
-    name: 'Estelongy',
-    href: '/',
-    color: MASTER_COLOR,
-    desc: 'Zamansız Güzellik Dünyası — ana sayfa',
-  },
-  {
-    name: 'BiyoAGE',
-    href: '/',
-    color: '#9F8CE0',
-    desc: 'Gençlik Skoru — AI cilt analizi',
-  },
-  {
-    name: 'EsteKlinik',
-    href: '/klinikler',
-    color: '#10876B',
-    desc: 'Klinik bul, randevu al',
-  },
-]
+const BOX_WIDTH = 200
+const BOX_HEIGHT_CLOSED = 40
+const BOX_HEIGHT_OPEN = 312
 
 export default function BrandMorphButton() {
   const [stepIdx, setStepIdx] = useState(0)
@@ -69,7 +49,6 @@ export default function BrandMorphButton() {
 
   const step = SEQUENCE[stepIdx]
 
-  // Auto-cycle
   useEffect(() => {
     if (paused) return
     const id = setTimeout(() => {
@@ -78,15 +57,12 @@ export default function BrandMorphButton() {
     return () => clearTimeout(id)
   }, [stepIdx, paused, step.dur])
 
-  // Master state'e geçişin cascade efekti için "az önce sub mıydık?"
-  // Bu render'dan sonra prevWasSub güncellenir.
   const isMaster = step.kind === 'master'
   const cascadeOnMasterEntry = isMaster && prevWasSub.current
   useEffect(() => {
     prevWasSub.current = step.kind === 'sub'
   }, [stepIdx, step.kind])
 
-  // O anki aktif marka (etiket + href + renk)
   const current = isMaster
     ? { name: 'Estelongy', href: '/', color: MASTER_COLOR }
     : { ...SUB_BRANDS[step.idx] }
@@ -103,7 +79,7 @@ export default function BrandMorphButton() {
     closeTimer.current = setTimeout(() => {
       setPaused(false)
       setOpen(false)
-    }, 200)
+    }, 180)
   }
 
   return (
@@ -111,175 +87,150 @@ export default function BrandMorphButton() {
       className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      style={{ width: BOX_WIDTH, height: BOX_HEIGHT_CLOSED }}
     >
-      {/* ANA BUTON — morph eden tek pill */}
-      <Link
-        href={current.href}
-        aria-label={`${current.name} sayfasına git`}
-        className="relative inline-flex items-center gap-3 min-w-[180px] h-10 px-4 rounded-full bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/50 hover:border-slate-600 transition-colors"
-      >
-        {/* 3 puzzle noktası — master state'te birleşik, sub state'te biri öne çıkar */}
-        <span className="flex items-center gap-1 shrink-0">
-          {SUB_BRANDS.map((b, i) => {
-            const isThisActiveSub = !isMaster && step.idx === i
-            const dimmedInSub = !isMaster && !isThisActiveSub
-
-            // Cascade gecikmesi: sub → master geçişinde noktalar sıra sıra ışıklanır
-            const cascadeDelay = cascadeOnMasterEntry ? i * 130 : 0
-
-            return (
-              <span
-                key={i}
-                aria-hidden
-                className="w-1.5 h-1.5 rounded-full"
-                style={{
-                  backgroundColor: b.color,
-                  opacity: dimmedInSub ? 0.22 : 1,
-                  transform: isThisActiveSub ? 'scale(1.7)' : 'scale(1)',
-                  boxShadow: isThisActiveSub
-                    ? `0 0 12px ${b.color}, 0 0 4px ${b.color}`
-                    : isMaster
-                      ? `0 0 5px ${b.color}90`
-                      : 'none',
-                  transition: `opacity 500ms ease-out ${cascadeDelay}ms, transform 500ms ease-out ${cascadeDelay}ms, box-shadow 500ms ease-out ${cascadeDelay}ms`,
-                }}
-              />
-            )
-          })}
-        </span>
-
-        {/* Etiket — key değişince fade-up animasyon */}
-        <span
-          key={`${current.name}-${stepIdx}`}
-          className="text-sm font-medium whitespace-nowrap brand-morph-text"
-          style={{
-            color: isMaster ? '#F8F7F4' : current.color,
-          }}
-        >
-          {current.name}
-        </span>
-
-        {/* Alt progress bar — her step'in süresi kadar grow */}
-        <span
-          aria-hidden
-          className="absolute bottom-0 left-2 right-2 h-px bg-slate-700/30 overflow-hidden rounded-full"
-        >
-          <span
-            key={`p-${stepIdx}-${paused ? 'p' : 'r'}`}
-            className="block h-full origin-left"
-            style={{
-              backgroundColor: current.color,
-              animation: paused
-                ? 'none'
-                : `brand-progress ${step.dur}ms linear forwards`,
-            }}
-          />
-        </span>
-      </Link>
-
-      {/* ESTELONGY DÜNYASI panel — hover'da "aşağı 90° açılır" (3D flap-down) */}
+      {/* ANIMATED BOX — kapalıyken yatay pill, açıkken dikey panel
+          Width sabit (200px), height 40 → 312, border-radius 9999 → 20.
+          Sol-üst köşeye anchor → buton sol noktadan aşağı "iniyor" hissi. */}
       <div
-        role="menu"
-        aria-hidden={!open}
-        style={{ perspective: '800px' }}
-        className="absolute left-0 top-full pt-2 z-50"
+        className={`absolute top-0 left-0 overflow-hidden border bg-slate-800/40 backdrop-blur-md z-50 ${
+          open ? 'border-slate-600/80 shadow-[0_25px_60px_rgba(0,0,0,0.5)]' : 'border-slate-700/50'
+        }`}
+        style={{
+          width: BOX_WIDTH,
+          height: open ? BOX_HEIGHT_OPEN : BOX_HEIGHT_CLOSED,
+          borderRadius: open ? 20 : 9999,
+          transition: 'height 420ms cubic-bezier(0.4, 0, 0.2, 1), border-radius 420ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms ease-out, box-shadow 250ms ease-out',
+          transformOrigin: 'top left',
+        }}
       >
+        {/* ========== KAPALI: pill içeriği ========== */}
         <div
-          className={`w-[420px] rounded-2xl bg-[#0F172A]/95 backdrop-blur-md border border-slate-700/60 shadow-[0_25px_70px_rgba(0,0,0,0.55)] overflow-hidden origin-top transition-[opacity,transform] duration-300 ease-out ${
-            open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          className={`absolute inset-0 flex items-center px-4 transition-opacity duration-150 ${
+            open ? 'opacity-0 pointer-events-none' : 'opacity-100'
           }`}
-          style={{
-            transform: open
-              ? 'translateY(0) rotateX(0deg)'
-              : 'translateY(-8px) rotateX(-22deg)',
-            transformOrigin: 'top center',
-          }}
         >
-          {/* Header: 3 puzzle noktası + "Estelongy Dünyası" başlık */}
-          <div className="px-5 pt-5 pb-4 border-b border-slate-800/60 relative overflow-hidden">
-            <div
-              aria-hidden
-              className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[radial-gradient(circle,_rgba(201,169,97,0.15),_transparent_70%)] blur-xl"
-            />
-            <div className="relative flex items-center gap-2.5 mb-1.5">
-              <span className="flex items-center gap-0.5">
-                {SUB_BRANDS.map((b, i) => (
+          <Link
+            href={current.href}
+            aria-label={`${current.name} sayfasına git`}
+            className="flex items-center gap-3 w-full"
+          >
+            {/* 3 puzzle noktası */}
+            <span className="flex items-center gap-1 shrink-0">
+              {SUB_BRANDS.map((b, i) => {
+                const isThisActiveSub = !isMaster && step.kind === 'sub' && step.idx === i
+                const dimmedInSub = !isMaster && !isThisActiveSub
+                const cascadeDelay = cascadeOnMasterEntry ? i * 130 : 0
+
+                return (
                   <span
                     key={i}
                     aria-hidden
                     className="w-1.5 h-1.5 rounded-full"
                     style={{
                       backgroundColor: b.color,
-                      boxShadow: `0 0 6px ${b.color}90`,
+                      opacity: dimmedInSub ? 0.22 : 1,
+                      transform: isThisActiveSub ? 'scale(1.7)' : 'scale(1)',
+                      boxShadow: isThisActiveSub
+                        ? `0 0 12px ${b.color}, 0 0 4px ${b.color}`
+                        : isMaster
+                          ? `0 0 5px ${b.color}90`
+                          : 'none',
+                      transition: `opacity 500ms ease-out ${cascadeDelay}ms, transform 500ms ease-out ${cascadeDelay}ms, box-shadow 500ms ease-out ${cascadeDelay}ms`,
                     }}
                   />
-                ))}
-              </span>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#C9A961]">
-                Estelongy Dünyası
-              </p>
-            </div>
-            <p className="text-[13px] text-slate-400 leading-snug">
-              Üç marka, tek çatı — yolculuğunu seç.
+                )
+              })}
+            </span>
+
+            <span
+              key={`${current.name}-${stepIdx}`}
+              className="text-sm font-medium whitespace-nowrap brand-morph-text"
+              style={{ color: isMaster ? '#F8F7F4' : current.color }}
+            >
+              {current.name}
+            </span>
+          </Link>
+
+          {/* Progress bar */}
+          <span
+            aria-hidden
+            className="absolute bottom-0 left-2 right-2 h-px bg-slate-700/30 overflow-hidden rounded-full"
+          >
+            <span
+              key={`p-${stepIdx}-${paused ? 'p' : 'r'}`}
+              className="block h-full origin-left"
+              style={{
+                backgroundColor: current.color,
+                animation: paused
+                  ? 'none'
+                  : `brand-progress ${step.dur}ms linear forwards`,
+              }}
+            />
+          </span>
+        </div>
+
+        {/* ========== AÇIK: dikey panel içeriği ========== */}
+        <div
+          className={`absolute inset-0 p-4 flex flex-col gap-3 transition-opacity duration-200 ${
+            open ? 'opacity-100 delay-150' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          {/* Header: 3 dot + başlık */}
+          <div className="flex items-center gap-2 px-1">
+            <span className="flex items-center gap-0.5 shrink-0">
+              {SUB_BRANDS.map((b, i) => (
+                <span
+                  key={i}
+                  aria-hidden
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{
+                    backgroundColor: b.color,
+                    boxShadow: `0 0 6px ${b.color}90`,
+                  }}
+                />
+              ))}
+            </span>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] whitespace-nowrap">
+              Estelongy Dünyası
             </p>
           </div>
 
-          {/* 3 tile — her marka kendi rengiyle */}
-          <ul className="p-2">
-            {DROPDOWN_ITEMS.map((item) => (
-              <li key={item.name}>
+          {/* Divider */}
+          <div className="h-px bg-slate-700/50 -mx-2" />
+
+          {/* 3 marka listesi — BiyoAGE / EsteStore / EsteKlinik */}
+          <ul className="flex flex-col gap-1 flex-1">
+            {SUB_BRANDS.map((brand) => (
+              <li key={brand.name}>
                 <Link
-                  href={item.href}
-                  className="group/item flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-800/70 transition-colors"
+                  href={brand.href}
+                  className="group/item flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-slate-800/70 transition-colors"
                 >
-                  {/* Renkli avatar — marka rengi glow + nokta */}
                   <span
                     aria-hidden
-                    className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all group-hover/item:scale-105"
+                    className="w-2 h-2 rounded-full shrink-0 transition-transform group-hover/item:scale-125"
                     style={{
-                      backgroundColor: `${item.color}1A`,
-                      border: `1px solid ${item.color}40`,
+                      backgroundColor: brand.color,
+                      boxShadow: `0 0 8px ${brand.color}`,
                     }}
-                  >
-                    <span
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{
-                        backgroundColor: item.color,
-                        boxShadow: `0 0 10px ${item.color}, 0 0 4px ${item.color}`,
-                      }}
-                    />
+                  />
+                  <span className="flex-1 text-[13px] font-medium text-slate-100 leading-tight">
+                    {brand.name}
                   </span>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[14px] font-semibold text-slate-50 leading-tight">
-                      {item.name}
-                    </div>
-                    <div className="text-[11.5px] text-slate-400 leading-snug mt-0.5">
-                      {item.desc}
-                    </div>
-                  </div>
-
-                  <span
-                    className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full transition-all group-hover/item:translate-x-0.5"
-                    style={{
-                      color: item.color,
-                      backgroundColor: `${item.color}14`,
-                    }}
-                  >
-                    Aç
-                    <ArrowRight size={11} />
-                  </span>
+                  <ArrowRight
+                    size={12}
+                    className="text-slate-500 group-hover/item:text-slate-200 group-hover/item:translate-x-0.5 transition-all shrink-0"
+                  />
                 </Link>
               </li>
             ))}
           </ul>
 
-          {/* Footer note */}
-          <div className="px-5 py-2.5 border-t border-slate-800/60 bg-slate-900/40">
-            <p className="text-[10.5px] text-slate-500 leading-snug">
-              Tek hesap, üç dünya — verilerin senin yolculuğunla büyür.
-            </p>
-          </div>
+          {/* Footer microcopy */}
+          <p className="text-[10px] text-slate-500 leading-snug px-1 -mb-1">
+            Tek hesap, üç dünya.
+          </p>
         </div>
       </div>
     </div>
