@@ -15,7 +15,6 @@ const SUB_BRANDS = [
 
 const MASTER_COLOR = '#F8F7F4'
 
-/* Sekans — Estelongy her sub'dan sonra döner */
 type Step =
   | { kind: 'master'; dur: number }
   | { kind: 'sub'; idx: 0 | 1 | 2; dur: number }
@@ -29,6 +28,14 @@ const SEQUENCE: Step[] = [
   { kind: 'sub', idx: 2, dur: 2200 },
   { kind: 'master', dur: 1600 },
 ]
+
+/* Boyutlar — width sabit, sadece height değişir.
+   Pivot: pill'in sol noktası (~18px sol, ~20px üst). */
+const BOX_WIDTH = 200
+const BOX_HEIGHT_CLOSED = 40
+const BOX_HEIGHT_OPEN = 312
+const HINGE_X = 18 // sol noktanın x koordinatı (menteşe)
+const HINGE_Y = 20 // dikey ortası
 
 export default function BrandMorphButton() {
   const [stepIdx, setStepIdx] = useState(0)
@@ -69,7 +76,7 @@ export default function BrandMorphButton() {
     closeTimer.current = setTimeout(() => {
       setPaused(false)
       setOpen(false)
-    }, 220)
+    }, 200)
   }
 
   return (
@@ -77,161 +84,151 @@ export default function BrandMorphButton() {
       className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      style={{ width: BOX_WIDTH, height: BOX_HEIGHT_CLOSED }}
     >
       {/* ============================================================
-          PILL — yatay nav butonu, ●●● + cycling text + progress
-          Daima görünür, yerinde sabit
+          ANIMATED BOX — pill kendisi aşağı açılır panel olur
+          - Width sabit 200px (yatay konum korunur)
+          - Height 40 → 312 (sadece aşağı genişler)
+          - Menteşe: pill'in sol noktası (~18px, 20px) — sol nokta SABİT
+          - Border-radius 9999 (pill) → 20 (panel)
+          - cubic-bezier overshoot ile "snap" hissi
+          - Kart deck ghost shadows: arkasında 4 ghost kart görünür
           ============================================================ */}
-      <Link
-        href={current.href}
-        aria-label={`${current.name} sayfasına git`}
-        className="relative inline-flex items-center gap-3 min-w-[180px] h-10 px-4 rounded-full bg-slate-800/40 hover:bg-slate-800/70 border border-slate-700/50 hover:border-slate-600 transition-colors overflow-hidden"
+      <div
+        className={`absolute top-0 left-0 overflow-hidden border bg-slate-800/40 backdrop-blur-md z-50 ${
+          open ? 'border-slate-600/80' : 'border-slate-700/50'
+        }`}
+        style={{
+          width: BOX_WIDTH,
+          height: open ? BOX_HEIGHT_OPEN : BOX_HEIGHT_CLOSED,
+          borderRadius: open ? 20 : 9999,
+          transformOrigin: `${HINGE_X}px ${HINGE_Y}px`, // sol nokta menteşe
+          transition:
+            'height 480ms cubic-bezier(0.34, 1.5, 0.6, 1), border-radius 480ms cubic-bezier(0.34, 1.5, 0.6, 1), border-color 250ms ease-out, box-shadow 400ms ease-out',
+          boxShadow: open
+            ? [
+                '0 25px 60px rgba(0,0,0,0.55)',
+                '-3px 6px 0 rgba(15, 23, 42, 0.7)',
+                '-7px 12px 0 rgba(15, 23, 42, 0.5)',
+                '-12px 20px 0 rgba(15, 23, 42, 0.28)',
+                '-18px 28px 0 rgba(15, 23, 42, 0.12)',
+              ].join(', ')
+            : '0 0 0 rgba(0,0,0,0)',
+        }}
       >
-        {/* 3 puzzle noktası */}
-        <span className="flex items-center gap-1 shrink-0">
-          {SUB_BRANDS.map((b, i) => {
-            const isThisActiveSub = !isMaster && step.kind === 'sub' && step.idx === i
-            const dimmedInSub = !isMaster && !isThisActiveSub
-            const cascadeDelay = cascadeOnMasterEntry ? i * 130 : 0
-
-            return (
-              <span
-                key={i}
-                aria-hidden
-                className="w-1.5 h-1.5 rounded-full"
-                style={{
-                  backgroundColor: b.color,
-                  opacity: dimmedInSub ? 0.22 : 1,
-                  transform: isThisActiveSub ? 'scale(1.7)' : 'scale(1)',
-                  boxShadow: isThisActiveSub
-                    ? `0 0 12px ${b.color}, 0 0 4px ${b.color}`
-                    : isMaster
-                      ? `0 0 5px ${b.color}90`
-                      : 'none',
-                  transition: `opacity 500ms ease-out ${cascadeDelay}ms, transform 500ms ease-out ${cascadeDelay}ms, box-shadow 500ms ease-out ${cascadeDelay}ms`,
-                }}
-              />
-            )
-          })}
-        </span>
-
-        <span
-          key={`${current.name}-${stepIdx}`}
-          className="text-sm font-medium whitespace-nowrap brand-morph-text"
-          style={{ color: isMaster ? '#F8F7F4' : current.color }}
-        >
-          {current.name}
-        </span>
-
-        {/* Alt progress bar */}
-        <span
-          aria-hidden
-          className="absolute bottom-0 left-2 right-2 h-px bg-slate-700/30 overflow-hidden rounded-full"
-        >
-          <span
-            key={`p-${stepIdx}-${paused ? 'p' : 'r'}`}
-            className="block h-full origin-left"
-            style={{
-              backgroundColor: current.color,
-              animation: paused
-                ? 'none'
-                : `brand-progress ${step.dur}ms linear forwards`,
-            }}
-          />
-        </span>
-      </Link>
-
-      {/* ============================================================
-          PANEL — kart deck açılır gibi rotate-in animasyonu
-          - Pivot: sol-alt köşe (transform-origin: bottom left)
-          - Kapalı: rotate(-42deg) translateY(20px) scale(0.85) opacity 0
-          - Açık: rotate(0) translateY(0) scale(1) opacity 1
-          - Çoklu box-shadow → ghost kartlar (kart deck derinliği)
-          - 540ms cubic-bezier(0.34, 1.56, 0.64, 1) — hafif overshoot
-          ============================================================ */}
-      <div className="absolute left-0 top-full pt-3 z-50" aria-hidden={!open}>
+        {/* ========== KAPALI: pill içeriği ========== */}
         <div
-          role="menu"
-          className={`w-[300px] rounded-2xl overflow-hidden ${
-            open ? 'pointer-events-auto' : 'pointer-events-none'
+          className={`absolute inset-0 flex items-center px-4 transition-opacity duration-150 ${
+            open ? 'opacity-0 pointer-events-none' : 'opacity-100'
           }`}
-          style={{
-            backgroundColor: '#0F172A',
-            border: '1px solid rgba(100, 116, 139, 0.4)',
-            transformOrigin: '0% 100%', // sol-alt pivot
-            transform: open
-              ? 'rotate(0deg) translateY(0) scale(1)'
-              : 'rotate(-42deg) translateY(20px) scale(0.85)',
-            opacity: open ? 1 : 0,
-            transition: open
-              ? 'transform 540ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 280ms ease-out'
-              : 'transform 320ms cubic-bezier(0.4, 0, 0.6, 1), opacity 220ms ease-out',
-            boxShadow: open
-              ? [
-                  '0 25px 60px rgba(0,0,0,0.55)',
-                  '-3px 3px 0 rgba(15, 23, 42, 0.75)',
-                  '-7px 7px 0 rgba(15, 23, 42, 0.55)',
-                  '-12px 12px 0 rgba(15, 23, 42, 0.32)',
-                  '-18px 18px 0 rgba(15, 23, 42, 0.15)',
-                ].join(', ')
-              : '0 0 0 rgba(0,0,0,0)',
-          }}
         >
-          {/* Header */}
-          <div className="px-5 pt-5 pb-3 border-b border-slate-800/60 relative overflow-hidden">
-            <div
-              aria-hidden
-              className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[radial-gradient(circle,_rgba(201,169,97,0.15),_transparent_70%)] blur-xl"
-            />
-            <div className="relative flex items-center gap-2.5">
-              <span className="flex items-center gap-0.5">
-                {SUB_BRANDS.map((b, i) => (
+          <Link
+            href={current.href}
+            aria-label={`${current.name} sayfasına git`}
+            className="flex items-center gap-3 w-full"
+          >
+            <span className="flex items-center gap-1 shrink-0">
+              {SUB_BRANDS.map((b, i) => {
+                const isThisActiveSub = !isMaster && step.kind === 'sub' && step.idx === i
+                const dimmedInSub = !isMaster && !isThisActiveSub
+                const cascadeDelay = cascadeOnMasterEntry ? i * 130 : 0
+
+                return (
                   <span
                     key={i}
                     aria-hidden
                     className="w-1.5 h-1.5 rounded-full"
                     style={{
                       backgroundColor: b.color,
-                      boxShadow: `0 0 6px ${b.color}90`,
+                      opacity: dimmedInSub ? 0.22 : 1,
+                      transform: isThisActiveSub ? 'scale(1.7)' : 'scale(1)',
+                      boxShadow: isThisActiveSub
+                        ? `0 0 12px ${b.color}, 0 0 4px ${b.color}`
+                        : isMaster
+                          ? `0 0 5px ${b.color}90`
+                          : 'none',
+                      transition: `opacity 500ms ease-out ${cascadeDelay}ms, transform 500ms ease-out ${cascadeDelay}ms, box-shadow 500ms ease-out ${cascadeDelay}ms`,
                     }}
                   />
-                ))}
-              </span>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#C9A961] whitespace-nowrap">
-                Estelongy Dünyası
-              </p>
-            </div>
+                )
+              })}
+            </span>
+
+            <span
+              key={`${current.name}-${stepIdx}`}
+              className="text-sm font-medium whitespace-nowrap brand-morph-text"
+              style={{ color: isMaster ? '#F8F7F4' : current.color }}
+            >
+              {current.name}
+            </span>
+          </Link>
+
+          <span
+            aria-hidden
+            className="absolute bottom-0 left-2 right-2 h-px bg-slate-700/30 overflow-hidden rounded-full"
+          >
+            <span
+              key={`p-${stepIdx}-${paused ? 'p' : 'r'}`}
+              className="block h-full origin-left"
+              style={{
+                backgroundColor: current.color,
+                animation: paused
+                  ? 'none'
+                  : `brand-progress ${step.dur}ms linear forwards`,
+              }}
+            />
+          </span>
+        </div>
+
+        {/* ========== AÇIK: panel içeriği ========== */}
+        <div
+          className={`absolute inset-0 p-4 flex flex-col gap-3 transition-opacity duration-200 ${
+            open ? 'opacity-100 delay-200' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          {/* Header: 3 dot (menteşe noktası ilk dot) + başlık */}
+          <div className="flex items-center gap-2 px-1">
+            <span className="flex items-center gap-0.5 shrink-0">
+              {SUB_BRANDS.map((b, i) => (
+                <span
+                  key={i}
+                  aria-hidden
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{
+                    backgroundColor: b.color,
+                    boxShadow: `0 0 6px ${b.color}90`,
+                  }}
+                />
+              ))}
+            </span>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] whitespace-nowrap">
+              Estelongy Dünyası
+            </p>
           </div>
 
-          {/* 3 marka listesi */}
-          <ul className="p-2">
+          <div className="h-px bg-slate-700/50 -mx-2" />
+
+          <ul className="flex flex-col gap-1 flex-1">
             {SUB_BRANDS.map((brand) => (
               <li key={brand.name}>
                 <Link
                   href={brand.href}
-                  className="group/item flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-800/70 transition-colors"
+                  className="group/item flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-slate-800/70 transition-colors"
                 >
                   <span
                     aria-hidden
-                    className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all group-hover/item:scale-105"
+                    className="w-2 h-2 rounded-full shrink-0 transition-transform group-hover/item:scale-125"
                     style={{
-                      backgroundColor: `${brand.color}1A`,
-                      border: `1px solid ${brand.color}40`,
+                      backgroundColor: brand.color,
+                      boxShadow: `0 0 8px ${brand.color}`,
                     }}
-                  >
-                    <span
-                      className="w-2 h-2 rounded-full"
-                      style={{
-                        backgroundColor: brand.color,
-                        boxShadow: `0 0 8px ${brand.color}`,
-                      }}
-                    />
-                  </span>
-                  <span className="flex-1 text-[14px] font-semibold text-slate-50 leading-tight">
+                  />
+                  <span className="flex-1 text-[13px] font-medium text-slate-100 leading-tight">
                     {brand.name}
                   </span>
                   <ArrowRight
-                    size={13}
+                    size={12}
                     className="text-slate-500 group-hover/item:text-slate-200 group-hover/item:translate-x-0.5 transition-all shrink-0"
                   />
                 </Link>
@@ -239,12 +236,9 @@ export default function BrandMorphButton() {
             ))}
           </ul>
 
-          {/* Footer */}
-          <div className="px-5 py-2.5 border-t border-slate-800/60 bg-slate-900/40">
-            <p className="text-[10.5px] text-slate-500 leading-snug italic">
-              Zamansız Güzellik Mimarlığı
-            </p>
-          </div>
+          <p className="text-[10px] text-slate-500 leading-snug px-1 -mb-1 italic">
+            Zamansız Güzellik Mimarlığı
+          </p>
         </div>
       </div>
     </div>
