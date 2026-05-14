@@ -77,11 +77,16 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
   }, [slides.length])
 
   return (
-    <section className="relative overflow-hidden h-[33vh] min-h-[360px]">
+    <section className="relative overflow-hidden h-[33vh] min-h-[360px] bg-[#13192C] border-b border-slate-800/60">
+      {/* Subtle elevated surface — sayfa zemininden ayrı */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1A2238] via-[#13192C] to-[#0F172A]/40"
+      />
       {/* Gold glow background */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(201,169,97,0.12),_transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(201,169,97,0.14),_transparent_60%)]"
       />
 
       {/* Slides */}
