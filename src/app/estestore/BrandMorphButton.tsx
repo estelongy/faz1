@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
 /* ============================================================
-   3 sub-brand
+   3 sub-brand — her biri kendi kartı, mor noktadan açılır
    ============================================================ */
 const SUB_BRANDS = [
-  { name: 'BiyoAGE', href: '/', color: '#9F8CE0' },
-  { name: 'EsteStore', href: '/estestore', color: '#C9A961' },
-  { name: 'EsteKlinik', href: '/klinikler', color: '#10876B' },
+  { name: 'BiyoAGE',    href: '/',          color: '#9F8CE0', tag: 'Analiz' },
+  { name: 'EsteStore',  href: '/estestore', color: '#C9A961', tag: 'Mağaza'  },
+  { name: 'EsteKlinik', href: '/klinikler', color: '#10876B', tag: 'Klinik' },
 ] as const
 
 const MASTER_COLOR = '#F8F7F4'
@@ -29,13 +29,18 @@ const SEQUENCE: Step[] = [
   { kind: 'master', dur: 1600 },
 ]
 
-/* Boyutlar — width sabit, sadece height değişir.
-   Pivot: pill'in sol noktası (~18px sol, ~20px üst). */
-const BOX_WIDTH = 200
-const BOX_HEIGHT_CLOSED = 40
-const BOX_HEIGHT_OPEN = 312
-const HINGE_X = 18 // sol noktanın x koordinatı (menteşe)
-const HINGE_Y = 20 // dikey ortası
+/* Pill boyutu — kartlar da aynı boy */
+const PILL_W = 200
+const PILL_H = 44
+const HINGE_X = 18 // mor noktanın merkezi (menteşe)
+const HINGE_Y = 22 // pill dikey ortası
+
+/* Her kart için fan açısı + dikey ofset (mor noktadan rotate olur) */
+const FAN: Array<{ angle: number; dy: number; delay: number }> = [
+  { angle: -4,  dy: 56,  delay: 0   },  // BiyoAGE
+  { angle: -8,  dy: 112, delay: 60  },  // EsteStore
+  { angle: -12, dy: 168, delay: 120 },  // EsteKlinik
+]
 
 export default function BrandMorphButton() {
   const [stepIdx, setStepIdx] = useState(0)
@@ -76,7 +81,7 @@ export default function BrandMorphButton() {
     closeTimer.current = setTimeout(() => {
       setPaused(false)
       setOpen(false)
-    }, 200)
+    }, 180)
   }
 
   return (
@@ -84,45 +89,86 @@ export default function BrandMorphButton() {
       className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{ width: BOX_WIDTH, height: BOX_HEIGHT_CLOSED }}
+      style={{ width: PILL_W, height: PILL_H, perspective: 1000 }}
     >
       {/* ============================================================
-          ANIMATED BOX — pill kendisi aşağı açılır panel olur
-          - Width sabit 200px (yatay konum korunur)
-          - Height 40 → 312 (sadece aşağı genişler)
-          - Menteşe: pill'in sol noktası (~18px, 20px) — sol nokta SABİT
-          - Border-radius 9999 (pill) → 20 (panel)
-          - cubic-bezier overshoot ile "snap" hissi
-          - Kart deck ghost shadows: arkasında 4 ghost kart görünür
+          FAN KARTLARI — 3 marka kartı, mor noktadan rotate açılır
+          Kapalı: hepsi pill'in altında (translateY 0, rotate 0, opacity 0)
+          Açık:   yelpaze gibi diagonalde yayılırlar
+          ============================================================ */}
+      {SUB_BRANDS.map((brand, i) => {
+        const fan = FAN[i]
+        return (
+          <Link
+            key={brand.name}
+            href={brand.href}
+            aria-label={`${brand.name} dünyasına git`}
+            className="absolute top-0 left-0 flex items-center gap-2.5 px-4 border bg-slate-900/95 backdrop-blur-md group/card"
+            style={{
+              width: PILL_W,
+              height: PILL_H,
+              borderRadius: 9999,
+              borderColor: open ? `${brand.color}55` : 'transparent',
+              transformOrigin: `${HINGE_X}px ${HINGE_Y}px`,
+              transform: open
+                ? `translateY(${fan.dy}px) rotate(${fan.angle}deg)`
+                : `translateY(0px) rotate(0deg)`,
+              opacity: open ? 1 : 0,
+              pointerEvents: open ? 'auto' : 'none',
+              zIndex: 10 + i,
+              transition: `transform 520ms cubic-bezier(0.34, 1.4, 0.5, 1) ${fan.delay}ms, opacity 320ms ease-out ${fan.delay}ms, border-color 260ms ease-out`,
+              boxShadow: open
+                ? `0 ${8 + i * 4}px ${24 + i * 6}px rgba(0,0,0,0.45), 0 0 0 1px ${brand.color}22 inset`
+                : 'none',
+            }}
+          >
+            {/* sol nokta — kartın menteşe noktası, kendi renginde */}
+            <span
+              aria-hidden
+              className="w-1.5 h-1.5 rounded-full shrink-0"
+              style={{
+                backgroundColor: brand.color,
+                boxShadow: `0 0 10px ${brand.color}, 0 0 3px ${brand.color}`,
+              }}
+            />
+            <span
+              className="text-[13px] font-medium tracking-tight flex-1"
+              style={{ color: brand.color }}
+            >
+              {brand.name}
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.14em] text-slate-500 group-hover/card:text-slate-300 transition-colors">
+              {brand.tag}
+            </span>
+            <ArrowRight
+              size={12}
+              className="text-slate-600 group-hover/card:text-slate-200 group-hover/card:translate-x-0.5 transition-all shrink-0"
+            />
+          </Link>
+        )
+      })}
+
+      {/* ============================================================
+          ANA PILL — üstte sabit kalır, mor nokta tam burada
+          Açıldığında pill içeriği fade'lenir, kartlar fan açar
           ============================================================ */}
       <div
-        className={`absolute top-0 left-0 overflow-hidden border bg-slate-800/40 backdrop-blur-md z-50 ${
+        className={`absolute top-0 left-0 overflow-hidden border bg-slate-800/60 backdrop-blur-md ${
           open ? 'border-slate-600/80' : 'border-slate-700/50'
         }`}
         style={{
-          width: BOX_WIDTH,
-          height: open ? BOX_HEIGHT_OPEN : BOX_HEIGHT_CLOSED,
-          borderRadius: open ? 20 : 9999,
-          transformOrigin: `${HINGE_X}px ${HINGE_Y}px`, // sol nokta menteşe
-          transition:
-            'height 480ms cubic-bezier(0.34, 1.5, 0.6, 1), border-radius 480ms cubic-bezier(0.34, 1.5, 0.6, 1), border-color 250ms ease-out, box-shadow 400ms ease-out',
+          width: PILL_W,
+          height: PILL_H,
+          borderRadius: 9999,
+          zIndex: 20,
+          transition: 'border-color 250ms ease-out, box-shadow 400ms ease-out, transform 400ms cubic-bezier(0.34, 1.4, 0.5, 1)',
+          transform: open ? 'translateY(-2px)' : 'translateY(0)',
           boxShadow: open
-            ? [
-                '0 25px 60px rgba(0,0,0,0.55)',
-                '-3px 6px 0 rgba(15, 23, 42, 0.7)',
-                '-7px 12px 0 rgba(15, 23, 42, 0.5)',
-                '-12px 20px 0 rgba(15, 23, 42, 0.28)',
-                '-18px 28px 0 rgba(15, 23, 42, 0.12)',
-              ].join(', ')
-            : '0 0 0 rgba(0,0,0,0)',
+            ? '0 8px 24px rgba(0,0,0,0.55), 0 0 0 1px rgba(201,169,97,0.18) inset'
+            : '0 2px 8px rgba(0,0,0,0.25)',
         }}
       >
-        {/* ========== KAPALI: pill içeriği ========== */}
-        <div
-          className={`absolute inset-0 flex items-center px-4 transition-opacity duration-150 ${
-            open ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
-        >
+        <div className="absolute inset-0 flex items-center px-4">
           <Link
             href={current.href}
             aria-label={`${current.name} sayfasına git`}
@@ -133,7 +179,6 @@ export default function BrandMorphButton() {
                 const isThisActiveSub = !isMaster && step.kind === 'sub' && step.idx === i
                 const dimmedInSub = !isMaster && !isThisActiveSub
                 const cascadeDelay = cascadeOnMasterEntry ? i * 130 : 0
-
                 return (
                   <span
                     key={i}
@@ -179,66 +224,6 @@ export default function BrandMorphButton() {
               }}
             />
           </span>
-        </div>
-
-        {/* ========== AÇIK: panel içeriği ========== */}
-        <div
-          className={`absolute inset-0 p-4 flex flex-col gap-3 transition-opacity duration-200 ${
-            open ? 'opacity-100 delay-200' : 'opacity-0 pointer-events-none'
-          }`}
-        >
-          {/* Header: 3 dot (menteşe noktası ilk dot) + başlık */}
-          <div className="flex items-center gap-2 px-1">
-            <span className="flex items-center gap-0.5 shrink-0">
-              {SUB_BRANDS.map((b, i) => (
-                <span
-                  key={i}
-                  aria-hidden
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{
-                    backgroundColor: b.color,
-                    boxShadow: `0 0 6px ${b.color}90`,
-                  }}
-                />
-              ))}
-            </span>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] whitespace-nowrap">
-              Estelongy Dünyası
-            </p>
-          </div>
-
-          <div className="h-px bg-slate-700/50 -mx-2" />
-
-          <ul className="flex flex-col gap-1 flex-1">
-            {SUB_BRANDS.map((brand) => (
-              <li key={brand.name}>
-                <Link
-                  href={brand.href}
-                  className="group/item flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-slate-800/70 transition-colors"
-                >
-                  <span
-                    aria-hidden
-                    className="w-2 h-2 rounded-full shrink-0 transition-transform group-hover/item:scale-125"
-                    style={{
-                      backgroundColor: brand.color,
-                      boxShadow: `0 0 8px ${brand.color}`,
-                    }}
-                  />
-                  <span className="flex-1 text-[13px] font-medium text-slate-100 leading-tight">
-                    {brand.name}
-                  </span>
-                  <ArrowRight
-                    size={12}
-                    className="text-slate-500 group-hover/item:text-slate-200 group-hover/item:translate-x-0.5 transition-all shrink-0"
-                  />
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <p className="text-[10px] text-slate-500 leading-snug px-1 -mb-1 italic">
-            Zamansız Güzellik Mimarlığı
-          </p>
         </div>
       </div>
     </div>
