@@ -5,6 +5,7 @@ import ProductCard, { type ProductCardData } from './ProductCard'
 import ProfessionalToggle from './ProfessionalToggle'
 import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
+import BrandMorphButton from './BrandMorphButton'
 import {
   ArrowRight,
   Search,
@@ -284,11 +285,9 @@ function TopNav({ user }: { user: boolean }) {
             <span className="text-[15px] tracking-tight">EsteStore</span>
           </Link>
 
-          {/* Sub-brand'ler — altı çizili text format, butonsuz */}
-          <div className="hidden md:flex items-center gap-1 text-sm">
-            <UnderlineNavLink href="/">Estelongy</UnderlineNavLink>
-            <UnderlineNavLink href="/">BiyoAGE</UnderlineNavLink>
-            <UnderlineNavLink href="/klinikler">EsteKlinik</UnderlineNavLink>
+          {/* Tek pill — sırayla Estelongy / BiyoAGE / EsteStore / EsteKlinik morph eder */}
+          <div className="hidden md:block">
+            <BrandMorphButton />
           </div>
         </div>
 
@@ -340,27 +339,6 @@ function TopNav({ user }: { user: boolean }) {
         </div>
       </div>
     </nav>
-  )
-}
-
-/**
- * Altı çizili nav link — butonsuz, sade text, hover/active'de underline belirir
- */
-function UnderlineNavLink({
-  href,
-  children,
-}: {
-  href: string
-  children: React.ReactNode
-}) {
-  return (
-    <Link
-      href={href}
-      className="group relative px-3 py-2 text-slate-300 hover:text-slate-50 transition-colors font-medium"
-    >
-      {children}
-      <span className="absolute left-3 right-3 bottom-1 h-px bg-slate-400 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
-    </Link>
   )
 }
 
