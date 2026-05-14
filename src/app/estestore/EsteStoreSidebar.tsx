@@ -42,7 +42,7 @@ export default function EsteStoreSidebar() {
             return (
               <Link
                 key={cat.slug}
-                href={`/estestore/${cat.slug}`}
+                href={`/estestore/kategori/${cat.slug}`}
                 title={!open ? cat.name : undefined}
                 className={`group flex items-center gap-3 px-3 py-2.5 mx-2 my-0.5 rounded-lg text-slate-300 hover:bg-slate-800/70 hover:text-white transition-all ${
                   cat.egpFocus ? 'border-l-2 border-[#C9A961]' : ''
@@ -87,7 +87,7 @@ export default function EsteStoreSidebar() {
               Diğer
             </p>
             <Link
-              href="/estestore/tum-kategoriler"
+              href="/estestore/kategori/tum-kategoriler"
               className="block text-[13px] text-slate-300 hover:text-white transition-colors py-1.5 font-medium"
             >
               Tüm Kategoriler →

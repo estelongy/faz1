@@ -7,12 +7,12 @@ import {
   type EsteStoreCategory,
   type UserRole,
 } from '@/lib/estestore'
-import ProductCard, { type ProductCardData } from '../ProductCard'
+import ProductCard, { type ProductCardData } from '../../ProductCard'
 
 export const dynamic = 'force-dynamic'
 
 interface Props {
-  params: Promise<{ category: string }>
+  params: Promise<{ slug: string }>
 }
 
 function urlToCategory(slug: string): EsteStoreCategory | 'akademi' | null {
@@ -23,16 +23,16 @@ function urlToCategory(slug: string): EsteStoreCategory | 'akademi' | null {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { category } = await params
-  const cat = urlToCategory(category)
+  const { slug } = await params
+  const cat = urlToCategory(slug)
   if (cat === 'kozmetik') return { title: 'Kozmetik | EsteStore' }
   if (cat === 'sarf_medikal') return { title: 'Sarf & Medikal | EsteStore' }
   return { title: 'EsteStore' }
 }
 
 export default async function EsteStoreCategoryPage({ params }: Props) {
-  const { category: urlCategory } = await params
-  const cat = urlToCategory(urlCategory)
+  const { slug: urlSlug } = await params
+  const cat = urlToCategory(urlSlug)
 
   if (cat === 'akademi') redirect('/akademi')
   if (!cat) notFound()
@@ -69,30 +69,30 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
   const sellerLabel = cat === 'kozmetik' ? 'Markalar' : 'Tedarikçiler'
 
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6 bg-white min-h-screen">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-slate-500">
-        <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
+        <Link href="/" className="hover:text-slate-900 transition-colors">Anasayfa</Link>
         <span>›</span>
-        <Link href="/estestore" className="hover:text-white transition-colors">EsteStore</Link>
+        <Link href="/estestore" className="hover:text-slate-900 transition-colors">EsteStore</Link>
         <span>›</span>
-        <span className="text-slate-300">{categoryLabel}</span>
+        <span className="text-slate-900 font-medium">{categoryLabel}</span>
       </nav>
 
       {/* Header */}
       <header className="space-y-2">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8B7339]">
           {sellerLabel}
         </p>
-        <h1 className="text-3xl sm:text-4xl font-black text-white flex items-center gap-3">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 flex items-center gap-3">
           <span>{icon}</span> {categoryLabel}
         </h1>
         {access.mode === 'preview' && (
-          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
+          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#C9A961]/10 border border-[#C9A961]/40 text-[#8B7339] text-xs">
             <span>🔒</span>
             <span>
               Bu kategori klinik ve sağlık profesyonelleri içindir. Fiyat görmek ve satın almak için{' '}
-              <Link href={`/giris?next=/estestore/${urlCategory}`} className="underline font-semibold">giriş yapın</Link>.
+              <Link href={`/giris?next=/estestore/kategori/${urlSlug}`} className="underline font-semibold">giriş yapın</Link>.
             </span>
           </div>
         )}
@@ -100,7 +100,7 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
 
       {/* Liste */}
       {items.length === 0 ? (
-        <p className="text-slate-500 text-sm text-center py-16">Bu kategoride henüz ürün yok.</p>
+        <p className="text-slate-400 text-sm text-center py-16">Bu kategoride henüz ürün yok.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {items.map(p => (

@@ -111,7 +111,7 @@ export default async function EsteStorePage() {
           eyebrow="Klinik İçin"
           title="Sarf & Medikal"
           subtitle="Hekim kullanımına özel sarf, enjektabl ve medikal ürünler"
-          href="/estestore/sarf-medikal"
+          href="/estestore/kategori/sarf-medikal"
         />
         {sarf.length === 0 ? (
           <EmptyState message="Henüz ürün yok." />
@@ -159,7 +159,7 @@ export default async function EsteStorePage() {
                 eyebrow="Marka Kimliği"
                 title="Longevity — İçten Zamansızlık"
                 subtitle="NAD+, NMN, resveratrol — bilim destekli yaşlanma karşıtı"
-                href="/estestore/longevity"
+                href="/estestore/kategori/longevity"
                 accent="#C9A961"
               />
               {longevityFeatured.length === 0 ? (
@@ -174,7 +174,7 @@ export default async function EsteStorePage() {
                 eyebrow="Klinik Köprüsü"
                 title="Kliniğinizden sonraki adım"
                 subtitle="Dolgu, botoks, lazer sonrası iyileşmenizi hızlandıran küratörlü bakım kitleri"
-                href="/estestore/islem-sonrasi"
+                href="/estestore/kategori/islem-sonrasi"
                 accent="#10876B"
               />
               {islemSonrasiFeatured.length === 0 ? (
@@ -189,7 +189,7 @@ export default async function EsteStorePage() {
                 eyebrow="Diferansiyasyon"
                 title="Biyohacking & Ölçüm"
                 subtitle="Vücudunu ölç, kendini tanı — DNA, mikrobiyom, CGM ve wearable"
-                href="/estestore/biyohacking-olcum"
+                href="/estestore/kategori/biyohacking-olcum"
                 accent="#C9A961"
               />
               {biyohackingFeatured.length === 0 ? (
