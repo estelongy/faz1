@@ -88,9 +88,7 @@ export default async function PublicClinicPage({ params }: Props) {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs text-slate-500 mb-4">
-          <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
-          <span>›</span>
-          <Link href="/klinikler" className="hover:text-white transition-colors">Klinikler</Link>
+          <Link href="/klinikler" className="hover:text-white transition-colors font-semibold text-emerald-300">EsteKlinik</Link>
           <span>›</span>
           <span className="text-slate-300 truncate">{clinic.name}</span>
         </nav>

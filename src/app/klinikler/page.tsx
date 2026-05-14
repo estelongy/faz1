@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import Footer from '@/components/Footer'
 import EsteKlinikNav from './EsteKlinikNav'
@@ -60,9 +59,9 @@ export default async function KliniklerPage() {
 
             <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-10 sm:pt-12 sm:pb-12">
               <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-5">
-                <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
-                <span>›</span>
-                <span className="text-white">EsteKlinik</span>
+                <span className="text-white font-semibold">EsteKlinik</span>
+                <span>·</span>
+                <span className="text-emerald-200/70">Klinik Ekosistemi</span>
               </nav>
 
               <div className="mb-6">

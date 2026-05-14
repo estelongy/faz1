@@ -222,9 +222,7 @@ export default async function UrunDetayPage({
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-16">
         <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6 flex-wrap">
-          <Link href="/" className="hover:text-slate-900">Anasayfa</Link>
-          <span>›</span>
-          <Link href="/estestore" className="hover:text-slate-900">EsteStore</Link>
+          <Link href="/estestore" className="hover:text-slate-900 font-semibold text-[#8B7339]">EsteStore</Link>
           {product.category && (
             <>
               <span>›</span>

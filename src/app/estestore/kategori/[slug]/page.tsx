@@ -72,9 +72,7 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6 bg-white min-h-screen">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-slate-500">
-        <Link href="/" className="hover:text-slate-900 transition-colors">Anasayfa</Link>
-        <span>›</span>
-        <Link href="/estestore" className="hover:text-slate-900 transition-colors">EsteStore</Link>
+        <Link href="/estestore" className="hover:text-slate-900 transition-colors font-semibold text-[#8B7339]">EsteStore</Link>
         <span>›</span>
         <span className="text-slate-900 font-medium">{categoryLabel}</span>
       </nav>
