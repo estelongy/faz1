@@ -201,11 +201,16 @@ export default function BrandMorphButton() {
             </span>
 
             <span
-              key={`${current.name}-${stepIdx}`}
+              key={open ? 'hover-label' : `${current.name}-${stepIdx}`}
               className="text-sm font-medium whitespace-nowrap brand-morph-text"
-              style={{ color: isMaster ? '#F8F7F4' : current.color }}
+              style={{
+                color: open ? '#C9A961' : isMaster ? '#F8F7F4' : current.color,
+                letterSpacing: open ? '0.08em' : 'normal',
+                textTransform: open ? 'uppercase' : 'none',
+                fontSize: open ? '11px' : '14px',
+              }}
             >
-              {current.name}
+              {open ? 'Estelongy Dünyası' : current.name}
             </span>
           </Link>
 

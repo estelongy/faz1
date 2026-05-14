@@ -7,11 +7,8 @@ import { HASTA_CATEGORIES } from '@/lib/estestore-categories'
 
 /**
  * Hover-tabanlı açılır-gizlenir kategori sidebar.
- * Default kapalı (72px ikon-only).
- * Mouse üstüne gelince açılır (280px), çıkınca kapanır.
- * Custom thin scrollbar — varsayılan çubuk gizli.
- *
- * Ürünler grid'i sağında oturur — overlap olmaz (push layout).
+ * Default kapalı (72px ikon-only). Mouse üstüne gelince açılır (280px).
+ * Lacivert zemin — ürün grid'i (beyaz) ile keskin kontrast.
  */
 export default function EsteStoreSidebar() {
   const [open, setOpen] = useState(false)
@@ -20,19 +17,19 @@ export default function EsteStoreSidebar() {
     <aside
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
-      className={`shrink-0 sticky top-16 self-start h-[calc(100vh-64px)] bg-[#FAFAF7] border-r border-slate-200 transition-[width] duration-300 ease-out overflow-hidden ${
+      className={`shrink-0 sticky top-16 self-start h-[calc(100vh-64px)] bg-[#0F172A] border-r border-slate-800 transition-[width] duration-300 ease-out overflow-hidden ${
         open ? 'w-[280px]' : 'w-[72px]'
       }`}
     >
       <div className="h-full overflow-y-auto estestore-sidebar-scroll">
         {/* Sticky header */}
-        <div className="sticky top-0 z-10 bg-[#FAFAF7] border-b border-slate-200 h-12 flex items-center px-4">
+        <div className="sticky top-0 z-10 bg-[#0F172A] border-b border-slate-800 h-12 flex items-center px-4">
           {open ? (
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 whitespace-nowrap">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] whitespace-nowrap">
               Kategoriler
             </p>
           ) : (
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
               ☰
             </p>
           )}
@@ -47,18 +44,18 @@ export default function EsteStoreSidebar() {
                 key={cat.slug}
                 href={`/estestore/${cat.slug}`}
                 title={!open ? cat.name : undefined}
-                className={`group flex items-center gap-3 px-3 py-2.5 mx-2 my-0.5 rounded-lg text-slate-700 hover:bg-white hover:text-slate-900 hover:shadow-sm transition-all ${
+                className={`group flex items-center gap-3 px-3 py-2.5 mx-2 my-0.5 rounded-lg text-slate-300 hover:bg-slate-800/70 hover:text-white transition-all ${
                   cat.egpFocus ? 'border-l-2 border-[#C9A961]' : ''
                 }`}
               >
                 <span
                   className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                    cat.egpFocus ? 'bg-[#C9A961]/15' : 'bg-white border border-slate-200'
+                    cat.egpFocus ? 'bg-[#C9A961]/15' : 'bg-slate-800/60 border border-slate-700/60'
                   }`}
                 >
                   <Icon
                     size={16}
-                    className={cat.egpFocus ? 'text-[#8B7339]' : 'text-slate-500'}
+                    className={cat.egpFocus ? 'text-[#C9A961]' : 'text-slate-400'}
                   />
                 </span>
                 <span
@@ -69,14 +66,14 @@ export default function EsteStoreSidebar() {
                   {cat.shortName ?? cat.name}
                 </span>
                 {open && cat.bridgeToKlinik && (
-                  <span className="text-[9px] font-semibold uppercase tracking-wider text-[#10876B] bg-[#10876B]/12 px-1.5 py-0.5 rounded">
+                  <span className="text-[9px] font-semibold uppercase tracking-wider text-[#10876B] bg-[#10876B]/20 px-1.5 py-0.5 rounded">
                     Klinik
                   </span>
                 )}
                 {open && !cat.bridgeToKlinik && (
                   <ChevronRight
                     size={14}
-                    className="text-slate-300 group-hover:text-slate-500 transition-colors shrink-0"
+                    className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0"
                   />
                 )}
               </Link>
@@ -85,13 +82,13 @@ export default function EsteStoreSidebar() {
         </nav>
 
         {open && (
-          <div className="px-4 py-4 mt-2 border-t border-slate-200">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500 mb-2">
+          <div className="px-4 py-4 mt-2 border-t border-slate-800">
+            <p className="text-[10px] uppercase tracking-[0.18em] text-[#C9A961] mb-2">
               Diğer
             </p>
             <Link
               href="/estestore/tum-kategoriler"
-              className="block text-[13px] text-slate-700 hover:text-slate-900 transition-colors py-1.5 font-medium"
+              className="block text-[13px] text-slate-300 hover:text-white transition-colors py-1.5 font-medium"
             >
               Tüm Kategoriler →
             </Link>
