@@ -46,7 +46,7 @@ export default async function SiteHeader() {
                   Randevu Al
                 </Link>
                 <Link
-                  href="/magaza"
+                  href="/estestore"
                   className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all"
                 >
                   EsteStore
@@ -70,7 +70,7 @@ export default async function SiteHeader() {
                   Randevu Al
                 </Link>
                 <Link
-                  href="/magaza"
+                  href="/estestore"
                   className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all"
                 >
                   EsteStore

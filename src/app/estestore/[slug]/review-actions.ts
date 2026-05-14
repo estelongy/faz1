@@ -20,7 +20,6 @@ export async function submitReviewAction(
   const rating = Number(input.rating)
   if (!rating || rating < 1 || rating > 10) return { ok: false, error: 'Geçersiz puan (1-10)' }
 
-  // Daha önce yorum yaptı mı?
   const { data: existing } = await supabase
     .from('reviews')
     .select('id')
@@ -30,7 +29,6 @@ export async function submitReviewAction(
   if (existing) return { ok: false, error: 'Bu ürün için zaten yorum yaptınız' }
 
   // ── Satın alma doğrulama ─────────────────────────────────────
-  // Kullanıcının bu ürünü teslim almış (paid + delivered/returned) bir siparişi var mı?
   const { data: purchaseRow } = await supabase
     .from('order_items')
     .select('id, orders!inner(user_id, payment_status)')
@@ -54,7 +52,6 @@ export async function submitReviewAction(
   if (insertErr) return { ok: false, error: insertErr.message }
 
   // ── user_score güncellemesi ──────────────────────────────────
-  // Tüm yorumların ortalamasını products.user_score'a yaz
   const { data: allReviews } = await supabase
     .from('reviews')
     .select('rating')
@@ -68,7 +65,7 @@ export async function submitReviewAction(
       .eq('id', input.productId)
   }
 
-  revalidatePath('/magaza')
-  revalidatePath(`/magaza/${input.productId}`)
+  revalidatePath('/estestore')
+  revalidatePath(`/estestore/${input.productId}`)
   return { ok: true, isVerified }
 }

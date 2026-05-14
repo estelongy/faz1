@@ -29,8 +29,7 @@ interface Props {
 }
 
 export default function ProductCard({ product, isPro, showPrice, hrefOverride }: Props) {
-  const categorySlug = product.category === 'sarf_medikal' ? 'sarf-medikal' : product.category
-  const href = hrefOverride ?? `/estestore/${categorySlug}/${product.slug ?? product.id}`
+  const href = hrefOverride ?? `/estestore/${product.slug ?? product.id}`
 
   const tiers = product.pricing_tiers ?? []
   const summary = buildTierSummary(product.price, tiers)

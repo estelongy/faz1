@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Platform
     { url: `${BASE_URL}/randevu`,                          lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
-    { url: `${BASE_URL}/magaza`,                           lastModified: now, changeFrequency: 'daily',   priority: 0.8 },
+    { url: `${BASE_URL}/estestore`,                           lastModified: now, changeFrequency: 'daily',   priority: 0.8 },
 
     // İş ortakları
     { url: `${BASE_URL}/klinik/basvur`,                    lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
@@ -50,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     if (products) {
       productUrls = products.map(p => ({
-        url: `${BASE_URL}/magaza/${p.slug ?? p.id}`,
+        url: `${BASE_URL}/estestore/${p.slug ?? p.id}`,
         lastModified: p.updated_at ? new Date(p.updated_at) : now,
         changeFrequency: 'weekly' as const,
         priority: 0.7,

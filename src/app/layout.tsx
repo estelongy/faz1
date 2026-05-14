@@ -112,7 +112,7 @@ const websiteJsonLd = {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: `${SITE_URL}/magaza?q={search_term_string}`,
+      urlTemplate: `${SITE_URL}/estestore?q={search_term_string}`,
     },
     'query-input': 'required name=search_term_string',
   },

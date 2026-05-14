@@ -267,7 +267,7 @@ export default async function SiparisPage({
         </div>
 
         <div className="mt-6 text-center">
-          <Link href="/magaza" className="text-violet-400 hover:text-violet-300 text-sm transition-colors">
+          <Link href="/estestore" className="text-violet-400 hover:text-violet-300 text-sm transition-colors">
             Alışverişe Devam Et →
           </Link>
         </div>

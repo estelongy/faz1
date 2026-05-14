@@ -125,7 +125,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
       <div className="py-24 text-center">
         <div className="text-slate-700 text-5xl mb-4">🛒</div>
         <p className="text-slate-400 mb-4">Sepetin boş, önce ürün eklemelisin</p>
-        <Link href="/magaza" className="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold rounded-xl">
+        <Link href="/estestore" className="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold rounded-xl">
           EsteStore’a Git →
         </Link>
       </div>

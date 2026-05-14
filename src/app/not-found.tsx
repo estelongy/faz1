@@ -53,7 +53,7 @@ export default function NotFound() {
           <span className="text-slate-800">·</span>
           <Link href="/randevu" className="hover:text-slate-400 transition-colors">Klinik Randevu</Link>
           <span className="text-slate-800">·</span>
-          <Link href="/magaza" className="hover:text-slate-400 transition-colors">EsteStore</Link>
+          <Link href="/estestore" className="hover:text-slate-400 transition-colors">EsteStore</Link>
           <span className="text-slate-800">·</span>
           <Link href="/hakkinda/iletisim" className="hover:text-slate-400 transition-colors">İletişim</Link>
         </div>

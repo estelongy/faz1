@@ -508,7 +508,7 @@ function SkorMerkeziInner() {
                 {products.slice(0, 8).map(p => (
                   <Link
                     key={p.id}
-                    href={`/magaza/${p.slug ?? p.id}`}
+                    href={`/estestore/${p.slug ?? p.id}`}
                     className="group rounded-xl bg-slate-900/50 border border-slate-700 hover:border-violet-500/50 hover:scale-[1.02] transition-all overflow-hidden"
                   >
                     <div className="aspect-square bg-slate-800 overflow-hidden">
@@ -534,7 +534,7 @@ function SkorMerkeziInner() {
                 ))}
               </div>
               <Link
-                href="/magaza"
+                href="/estestore"
                 className="group flex items-center gap-4 w-full mt-6 p-4 rounded-2xl bg-slate-900/50 border border-slate-700 hover:border-violet-500/50 hover:bg-slate-900 transition-all"
               >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">

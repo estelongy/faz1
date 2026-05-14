@@ -53,7 +53,7 @@ const HEALTH_PRO_NAV: NavGroup[] = [
     items: [
       { href: '/panel',                icon: '🏠', label: 'Panel', exact: true },
       { href: '/panel/kurslarim',      icon: '🎓', label: 'Kurslarım', badge: 'new' },
-      { href: '/magaza',               icon: '🧴', label: 'EsteStore' },
+      { href: '/estestore',               icon: '🧴', label: 'EsteStore' },
     ],
   },
   {

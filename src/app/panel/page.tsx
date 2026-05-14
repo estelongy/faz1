@@ -254,7 +254,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
             </Link>
 
             {/* Kapı 3 — EsteStore */}
-            <Link href="/magaza"
+            <Link href="/estestore"
               className="group relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-600/15 via-orange-600/8 to-rose-500/5 p-5 transition-all hover:border-amber-400 hover:scale-[1.02]">
               <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-amber-500/10 blur-3xl group-hover:bg-amber-500/20 transition-all" />
               <div className="relative">

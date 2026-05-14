@@ -112,7 +112,7 @@ export default async function Home({
   // 3 kapı linkleri — login varsa direkt, yoksa /giris?next=
   const dest1 = isLoggedIn ? '/analiz' : '/giris?next=/analiz'
   const dest2 = '/randevu'
-  // (kapı 3 zaten /magaza, login gerektirmez)
+  // (kapı 3 zaten /estestore, login gerektirmez)
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 overflow-x-hidden">
@@ -149,7 +149,7 @@ export default async function Home({
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
                   </Link>
-                  <Link href="/magaza"
+                  <Link href="/estestore"
                     className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
                     EsteStore
                   </Link>
@@ -167,7 +167,7 @@ export default async function Home({
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
                   </Link>
-                  <Link href="/magaza"
+                  <Link href="/estestore"
                     className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
                     EsteStore
                   </Link>
@@ -295,7 +295,7 @@ export default async function Home({
             </Link>
 
             {/* Kapı 3 — Ürün Al */}
-            <Link href="/magaza" className="group relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-600/20 via-orange-600/10 to-rose-500/5 p-8 text-left transition-all hover:border-amber-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-amber-500/20 md:col-span-1 col-span-1">
+            <Link href="/estestore" className="group relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-600/20 via-orange-600/10 to-rose-500/5 p-8 text-left transition-all hover:border-amber-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-amber-500/20 md:col-span-1 col-span-1">
               <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-amber-500/10 blur-3xl group-hover:bg-amber-500/20 transition-all" />
               <div className="relative">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white mb-5 shadow-lg shadow-amber-500/30">

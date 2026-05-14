@@ -17,7 +17,7 @@ export default function SepetPage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/magaza" className="text-slate-400 hover:text-white transition-colors text-sm">
+            <Link href="/estestore" className="text-slate-400 hover:text-white transition-colors text-sm">
               ← EsteStore
             </Link>
             <span className="text-slate-700">|</span>
@@ -49,7 +49,7 @@ export default function SepetPage() {
             <div className="text-slate-700 text-6xl mb-4">🛒</div>
             <p className="text-slate-400 text-lg font-medium mb-2">Sepetin boş</p>
             <p className="text-slate-600 text-sm mb-6">EsteStore’dan ürün seçerek başla</p>
-            <Link href="/magaza"
+            <Link href="/estestore"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl transition-all">
               EsteStore’a Git →
             </Link>
@@ -77,7 +77,7 @@ export default function SepetPage() {
                     <div className="divide-y divide-slate-700">
                       {vendorItems.map(item => (
                         <div key={item.productId} className="flex gap-4 p-4">
-                          <Link href={item.slug ? `/magaza/${item.slug}` : '/magaza'}
+                          <Link href={item.slug ? `/estestore/${item.slug}` : '/estestore'}
                             className="shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-slate-900 border border-slate-700 flex items-center justify-center">
                             {item.image ? (
                               // eslint-disable-next-line @next/next/no-img-element
@@ -90,7 +90,7 @@ export default function SepetPage() {
                           </Link>
 
                           <div className="flex-1 min-w-0">
-                            <Link href={item.slug ? `/magaza/${item.slug}` : '/magaza'}
+                            <Link href={item.slug ? `/estestore/${item.slug}` : '/estestore'}
                               className="text-white font-medium text-sm hover:text-violet-300 transition-colors line-clamp-2">
                               {item.name}
                             </Link>
