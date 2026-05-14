@@ -2,26 +2,53 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Sparkles, Star } from 'lucide-react'
+import { ArrowRight, Sparkles, Star, User, Stethoscope, Store } from 'lucide-react'
 import type { ProductCardData } from './ProductCard'
 
-interface HeroSlide {
+type SlideKind = 'role-picker' | 'product-showcase'
+
+interface BaseSlide {
+  kind: SlideKind
   eyebrow: string
   title: React.ReactNode
   subtitle: string
+}
+
+interface ProductSlide extends BaseSlide {
+  kind: 'product-showcase'
   ctaText: string
   ctaHref: string
   secondaryText?: string
   secondaryHref?: string
 }
 
+interface RolePickerSlide extends BaseSlide {
+  kind: 'role-picker'
+}
+
+type Slide = ProductSlide | RolePickerSlide
+
 interface Props {
   showcaseProducts: ProductCardData[]
 }
 
 export default function EsteStoreHero({ showcaseProducts }: Props) {
-  const slides: HeroSlide[] = [
+  const slides: Slide[] = [
     {
+      kind: 'role-picker',
+      eyebrow: 'Estelongy Marketplace',
+      title: (
+        <>
+          Rolünü belirle,
+          <br />
+          <span className="text-[#C9A961]">Zamansız Güzellik Dünyası</span>na katıl.
+        </>
+      ),
+      subtitle:
+        'Hasta, hekim ya da satıcı — yolculuğun seninle başlasın. Tek hesap, üç dünya.',
+    },
+    {
+      kind: 'product-showcase',
       eyebrow: 'EsteStore',
       title: (
         <>
@@ -38,6 +65,7 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
       secondaryHref: '/rehber/longevity-nedir',
     },
     {
+      kind: 'product-showcase',
       eyebrow: 'Klinik Köprüsü',
       title: (
         <>
@@ -52,6 +80,7 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
       ctaHref: '#islem-sonrasi',
     },
     {
+      kind: 'product-showcase',
       eyebrow: 'Longevity',
       title: (
         <>
@@ -77,19 +106,16 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
   }, [slides.length])
 
   return (
-    <section className="relative overflow-hidden h-[33vh] min-h-[360px] bg-[#13192C] border-b border-slate-800/60">
-      {/* Subtle elevated surface — sayfa zemininden ayrı */}
+    <section className="relative overflow-hidden h-[33vh] min-h-[420px] bg-[#13192C] border-b border-slate-800/60">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1A2238] via-[#13192C] to-[#0F172A]/40"
       />
-      {/* Gold glow background */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(201,169,97,0.14),_transparent_60%)]"
       />
 
-      {/* Slides */}
       {slides.map((slide, i) => (
         <div
           key={i}
@@ -98,44 +124,52 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
           }`}
         >
           <div className="relative max-w-[1280px] mx-auto h-full px-6 lg:px-10">
-            <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-12 items-center h-full">
+            <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center h-full">
               {/* Sol: metin */}
               <div className="space-y-4 lg:space-y-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C9A961]">
                   {slide.eyebrow}
                 </p>
-                <h1 className="text-[28px] sm:text-[36px] lg:text-[44px] leading-[1.08] font-medium text-slate-50 tracking-[-0.02em]">
+                <h1 className="text-[26px] sm:text-[34px] lg:text-[40px] leading-[1.08] font-medium text-slate-50 tracking-[-0.02em]">
                   {slide.title}
                 </h1>
                 <p className="text-base lg:text-lg text-slate-300 leading-relaxed max-w-lg">
                   {slide.subtitle}
                 </p>
-                <div className="flex flex-wrap items-center gap-3 pt-1">
-                  <Link
-                    href={slide.ctaHref}
-                    className="inline-flex items-center gap-2 bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] font-semibold px-6 py-3 rounded-full transition-all hover:shadow-[0_8px_30px_rgba(201,169,97,0.35)]"
-                  >
-                    {slide.ctaText}
-                    <ArrowRight size={16} />
-                  </Link>
-                  {slide.secondaryText && (
+
+                {slide.kind === 'product-showcase' && (
+                  <div className="flex flex-wrap items-center gap-3 pt-1">
                     <Link
-                      href={slide.secondaryHref ?? '#'}
-                      className="inline-flex items-center gap-2 text-slate-300 hover:text-slate-50 px-2 py-3 transition-colors group text-sm"
+                      href={slide.ctaHref}
+                      className="inline-flex items-center gap-2 bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] font-semibold px-6 py-3 rounded-full transition-all hover:shadow-[0_8px_30px_rgba(201,169,97,0.35)]"
                     >
-                      {slide.secondaryText}
-                      <ArrowRight
-                        size={14}
-                        className="opacity-60 group-hover:translate-x-1 transition-transform"
-                      />
+                      {slide.ctaText}
+                      <ArrowRight size={16} />
                     </Link>
-                  )}
-                </div>
+                    {slide.secondaryText && (
+                      <Link
+                        href={slide.secondaryHref ?? '#'}
+                        className="inline-flex items-center gap-2 text-slate-300 hover:text-slate-50 px-2 py-3 transition-colors group text-sm"
+                      >
+                        {slide.secondaryText}
+                        <ArrowRight
+                          size={14}
+                          className="opacity-60 group-hover:translate-x-1 transition-transform"
+                        />
+                      </Link>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {/* Sağ: ürün showcase (sadece ilk slide'da) */}
+              {/* Sağ: variant'a göre */}
               <div className="hidden lg:block relative h-full">
-                {i === 0 && <HeroShowcase products={showcaseProducts} />}
+                {i === activeIndex && slide.kind === 'product-showcase' && (
+                  <HeroShowcase products={showcaseProducts} />
+                )}
+                {i === activeIndex && slide.kind === 'role-picker' && (
+                  <RolePickerComposition />
+                )}
               </div>
             </div>
           </div>
@@ -143,7 +177,7 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
       ))}
 
       {/* Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-30">
         {slides.map((_, i) => (
           <button
             key={i}
@@ -162,6 +196,102 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
   )
 }
 
+/* ============================================================
+   RolePickerComposition
+   3 rol kartı + arka plan illüstrasyonu (3 figür "Zamansız Güzellik
+   Dünyası"nı izliyor). Gerçek görsel /public/hero-3-roles.png olarak
+   eklendiğinde otomatik kullanılacak.
+   ============================================================ */
+function RolePickerComposition() {
+  const roles = [
+    {
+      label: 'Kullanıcı',
+      sub: 'Gençlik skorunu öğren, ürün al',
+      icon: User,
+      href: '/kayit?role=user',
+      color: '#C9A961',
+    },
+    {
+      label: 'Hekim',
+      sub: 'Kliniğini büyüt, EGP işletmesi kur',
+      icon: Stethoscope,
+      href: '/kurumsal/saglik-profesyoneli/kayit',
+      color: '#10876B',
+    },
+    {
+      label: 'Satıcı',
+      sub: 'Hekim onaylı ürünlerini sat',
+      icon: Store,
+      href: '/satici/basvur',
+      color: '#8B7CC8',
+    },
+  ]
+
+  return (
+    <div className="relative h-full w-full flex items-center justify-center">
+      {/* Soft "dünya" glow arka plan — figürlerin baktığı ufuk */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-1/4 mx-auto w-[80%] h-[55%] rounded-full bg-[radial-gradient(circle_at_center,_rgba(201,169,97,0.18),_rgba(16,135,107,0.06)_45%,_transparent_70%)] blur-2xl"
+      />
+
+      {/* 3 rol kartı */}
+      <div className="relative grid grid-cols-3 gap-3 w-full max-w-md">
+        {roles.map((role) => {
+          const Icon = role.icon
+          return (
+            <Link
+              key={role.label}
+              href={role.href}
+              className="group flex flex-col items-center gap-2 bg-[#1E293B]/70 backdrop-blur-sm border border-slate-700/60 hover:border-[color:var(--accent)] rounded-2xl p-4 transition-all hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.4)]"
+              style={{ ['--accent' as never]: role.color }}
+            >
+              <span
+                className="inline-flex w-11 h-11 items-center justify-center rounded-full transition-all group-hover:scale-110"
+                style={{
+                  backgroundColor: `${role.color}1F`,
+                  color: role.color,
+                }}
+              >
+                <Icon size={20} />
+              </span>
+              <span className="text-[13px] font-semibold text-slate-50">
+                {role.label}
+              </span>
+              <span className="text-[10px] text-slate-400 text-center leading-tight line-clamp-2">
+                {role.sub}
+              </span>
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* "Koltuk" soft accent — figürlerin altı (subtle SVG line art) */}
+      <svg
+        aria-hidden
+        viewBox="0 0 400 60"
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[80%] opacity-30 pointer-events-none"
+      >
+        <path
+          d="M 20 30 Q 200 50 380 30"
+          stroke="#C9A961"
+          strokeWidth="1.5"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <path
+          d="M 40 35 Q 200 55 360 35"
+          stroke="#C9A961"
+          strokeWidth="0.8"
+          fill="none"
+          strokeLinecap="round"
+          opacity="0.5"
+        />
+      </svg>
+    </div>
+  )
+}
+
 function HeroShowcase({ products }: { products: ProductCardData[] }) {
   const fallback: ProductCardData[] = [
     { id: '1', name: 'NAD+ Premium', slug: null, cover_image_url: null, price: 2450, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
@@ -172,7 +302,6 @@ function HeroShowcase({ products }: { products: ProductCardData[] }) {
   ]
   const showItems = products.length >= 5 ? products.slice(0, 5) : fallback
 
-  // 5 küçük kart, dinamik fan yerleşim, hafif rotasyon — premium "küratörlü koleksiyon" hissi
   const positions = [
     { left: '0%', top: '14%', rotate: -10, w: '34%', egp: 9.2, z: 10 },
     { left: '20%', top: '0%', rotate: -4, w: '34%', egp: 8.7, z: 20 },
