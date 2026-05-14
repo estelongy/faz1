@@ -10,11 +10,15 @@ const nextConfig = {
     ],
   },
 
-  // Legacy URL redirects — eski "jeton" yolundan yeni "kredi" yoluna
+  // Legacy URL redirects
   async redirects() {
     return [
+      // jeton → kredi
       { source: '/klinik/panel/jeton',          destination: '/klinik/panel/kredi', permanent: true },
       { source: '/klinik/panel/jeton/:path*',   destination: '/klinik/panel/kredi/:path*', permanent: true },
+      // /magaza → /estestore (rebrand)
+      { source: '/magaza',                      destination: '/estestore', permanent: true },
+      { source: '/magaza/:path*',               destination: '/estestore/:path*', permanent: true },
     ]
   },
 
