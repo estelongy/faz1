@@ -16,7 +16,6 @@ import {
   Eye,
   Brush,
   Heart,
-  Stethoscope,
   Cpu,
   Palette,
   Layers,
