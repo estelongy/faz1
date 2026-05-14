@@ -45,7 +45,7 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
         </>
       ),
       subtitle:
-        'Hasta, hekim ya da satıcı — yolculuğun seninle başlasın. Tek hesap, üç dünya.',
+        'Hasta, hekim ya da satıcı — yolculuğun seninle başlasın. Zamansız Güzellik Mimarlığı.',
     },
     {
       kind: 'product-showcase',
@@ -75,7 +75,7 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
         </>
       ),
       subtitle:
-        'Dolgu, botoks, lazer sonrası küratörlü bakım kitleri. EsteKlinik ↔ EsteStore tek hesap.',
+        'Dolgu, botoks, lazer sonrası küratörlü bakım kitleri — klinik tedavinin doğal devamı.',
       ctaText: 'İşlem Sonrası Bakım',
       ctaHref: '#islem-sonrasi',
     },

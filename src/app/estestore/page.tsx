@@ -231,7 +231,7 @@ export default async function EsteStorePage() {
                 <ValueProp
                   icon={Activity}
                   title="Klinik ↔ Ev Sürekliliği"
-                  body="Estelongy kliniğinden gelen hastalar için doğal devam. Tek hesap, tüm yolculuk."
+                  body="Estelongy kliniğinden gelen hastalar için doğal devam. Mimari boyunca kesintisiz yolculuk."
                 />
               </div>
             </section>
