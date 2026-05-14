@@ -228,8 +228,8 @@ export default function BrandMorphButton() {
           </ul>
 
           {/* Footer microcopy */}
-          <p className="text-[10px] text-slate-500 leading-snug px-1 -mb-1">
-            Tek hesap, üç dünya.
+          <p className="text-[10px] text-slate-500 leading-snug px-1 -mb-1 italic">
+            Zamansız Güzellik Mimarlığı
           </p>
         </div>
       </div>
