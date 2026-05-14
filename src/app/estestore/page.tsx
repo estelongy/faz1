@@ -14,6 +14,7 @@ import {
   Star,
   Hourglass,
   Activity,
+  Plus,
 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -97,7 +98,7 @@ export default async function EsteStorePage() {
   const allKozmetik = (kozmetikProducts ?? []).map(normalizeProduct)
   const sarf = (sarfProducts ?? []).map(normalizeProduct)
 
-  const heroShowcase = allKozmetik.slice(0, 3)
+  const heroShowcase = allKozmetik.slice(0, 5)
   const longevityFeatured = allKozmetik.slice(0, 6)
   const islemSonrasiFeatured = allKozmetik.slice(6, 12)
   const biyohackingFeatured = allKozmetik.slice(12, 18)
@@ -142,14 +143,16 @@ export default async function EsteStorePage() {
     <main className="bg-[#0F172A] min-h-screen text-slate-100">
       <TopNav user={!!user} />
 
-      <EsteStoreHero showcaseProducts={heroShowcase} />
-
       <div className="flex">
+        {/* Sidebar — üstten itibaren hero'nun yanında, sol üst boşluk yok */}
         <EsteStoreSidebar />
 
+        {/* Ana içerik */}
         <div id="urunler" className="flex-1 min-w-0">
+          {/* Hero (33vh) — sidebar yanında, full width değil */}
+          <EsteStoreHero showcaseProducts={heroShowcase} />
+
           <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-12 lg:py-16 space-y-20">
-            {/* Longevity */}
             <section id="longevity" className="space-y-6">
               <SectionHeader
                 eyebrow="Marka Kimliği"
@@ -165,7 +168,6 @@ export default async function EsteStorePage() {
               )}
             </section>
 
-            {/* İşlem Sonrası — Klinik Köprü */}
             <section id="islem-sonrasi" className="space-y-6">
               <SectionHeader
                 eyebrow="Klinik Köprüsü"
@@ -181,7 +183,6 @@ export default async function EsteStorePage() {
               )}
             </section>
 
-            {/* Biyohacking & Ölçüm */}
             <section id="biyohacking" className="space-y-6">
               <SectionHeader
                 eyebrow="Diferansiyasyon"
@@ -197,7 +198,6 @@ export default async function EsteStorePage() {
               )}
             </section>
 
-            {/* Profesyonel bölümler */}
             <div className="pt-4">
               {isPro ? (
                 <div className="space-y-20">{ProSections}</div>
@@ -206,7 +206,6 @@ export default async function EsteStorePage() {
               )}
             </div>
 
-            {/* Değer önerisi */}
             <section className="py-8 lg:py-12">
               <div className="text-center mb-12 max-w-2xl mx-auto">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] mb-3">
@@ -237,7 +236,6 @@ export default async function EsteStorePage() {
             </section>
           </div>
 
-          {/* Footer */}
           <footer className="border-t border-slate-800/60">
             <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-10">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -263,59 +261,34 @@ export default async function EsteStorePage() {
 }
 
 /* ============================================================
-   TopNav — TEK nav, üst banner yok
-   Sol: Estelongy logosu + 3 dünya (BiyoAGE şeffaf, EsteKlinik yeşil, EsteStore sarı)
-   Sağ: Arama, Rehber, Giriş, Kayıt Ol, Sepet
+   TopNav — EsteStore başrol (Estelongy yerine)
+   Sol: [+ EsteStore] sarı buton (logo + ana sayfa link)
+        Estelongy · BiyoAGE · EsteKlinik (altı çizili text, butonsuz)
+   Sağ: Arama · Rehber · Giriş · Kayıt Ol · Sepet
    ============================================================ */
 function TopNav({ user }: { user: boolean }) {
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-md bg-[#0F172A]/90 border-b border-slate-800/60">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
-        {/* Sol: Estelongy logosu + 3 dünya */}
+        {/* Sol: EsteStore lead + sub-brand'ler */}
         <div className="flex items-center gap-6">
+          {/* EsteStore lead — logo görevi + ana sayfa link */}
           <Link
-            href="/"
-            className="flex items-center gap-2 shrink-0"
-            aria-label="Estelongy"
+            href="/estestore"
+            className="group inline-flex items-center gap-2 bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] font-semibold pl-3 pr-4 py-2 rounded-full transition-all shadow-[0_4px_14px_rgba(201,169,97,0.25)] hover:shadow-[0_4px_20px_rgba(201,169,97,0.4)]"
+            aria-label="EsteStore — anasayfaya dön"
           >
-            <span
-              aria-hidden
-              className="inline-flex w-8 h-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#7C3AED] to-[#9333EA] shadow-[0_4px_14px_rgba(124,58,237,0.35)]"
-            >
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white">
-                <path
-                  d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z"
-                  fill="currentColor"
-                />
-              </svg>
+            <span className="inline-flex w-6 h-6 items-center justify-center rounded-full bg-[#0F172A]/15">
+              <Plus size={14} strokeWidth={2.5} />
             </span>
-            <span className="text-slate-50 font-medium text-lg tracking-tight">
-              Estelongy
-            </span>
+            <span className="text-[15px] tracking-tight">EsteStore</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-2 text-sm">
-            {/* BiyoAGE — şeffaf */}
-            <Link
-              href="/"
-              className="px-4 py-2 rounded-full text-slate-200 hover:bg-slate-800/60 transition-colors font-medium"
-            >
-              BiyoAGE
-            </Link>
-            {/* EsteKlinik — yeşil */}
-            <Link
-              href="/klinikler"
-              className="px-4 py-2 rounded-full bg-[#10876B] hover:bg-[#0F9B7A] text-white transition-colors font-medium"
-            >
-              EsteKlinik
-            </Link>
-            {/* EsteStore — sarı (aktif) */}
-            <Link
-              href="/estestore"
-              className="px-4 py-2 rounded-full bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] transition-colors font-semibold"
-            >
-              EsteStore
-            </Link>
+          {/* Sub-brand'ler — altı çizili text format, butonsuz */}
+          <div className="hidden md:flex items-center gap-1 text-sm">
+            <UnderlineNavLink href="/">Estelongy</UnderlineNavLink>
+            <UnderlineNavLink href="/">BiyoAGE</UnderlineNavLink>
+            <UnderlineNavLink href="/klinikler">EsteKlinik</UnderlineNavLink>
           </div>
         </div>
 
@@ -370,6 +343,27 @@ function TopNav({ user }: { user: boolean }) {
   )
 }
 
+/**
+ * Altı çizili nav link — butonsuz, sade text, hover/active'de underline belirir
+ */
+function UnderlineNavLink({
+  href,
+  children,
+}: {
+  href: string
+  children: React.ReactNode
+}) {
+  return (
+    <Link
+      href={href}
+      className="group relative px-3 py-2 text-slate-300 hover:text-slate-50 transition-colors font-medium"
+    >
+      {children}
+      <span className="absolute left-3 right-3 bottom-1 h-px bg-slate-400 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
+    </Link>
+  )
+}
+
 /* ============================================================
    SectionHeader
    ============================================================ */
@@ -412,7 +406,7 @@ function SectionHeader({
 }
 
 /* ============================================================
-   ProductGrid — 3 sütun (sidebar açıkken sıkışmasın)
+   ProductGrid — 3 sütun
    ============================================================ */
 function ProductGrid({
   products,
@@ -430,9 +424,6 @@ function ProductGrid({
   )
 }
 
-/* ============================================================
-   ValueProp
-   ============================================================ */
 function ValueProp({
   icon: Icon,
   title,
@@ -453,9 +444,6 @@ function ValueProp({
   )
 }
 
-/* ============================================================
-   EmptyState
-   ============================================================ */
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="text-center py-14 px-6 rounded-2xl border border-dashed border-slate-800 bg-[#1E293B]/30">
@@ -465,9 +453,6 @@ function EmptyState({ message }: { message: string }) {
   )
 }
 
-/* ============================================================
-   AkademiCard
-   ============================================================ */
 function AkademiCard({
   pkg,
   isPro,

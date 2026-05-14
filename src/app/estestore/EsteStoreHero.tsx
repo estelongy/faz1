@@ -158,26 +158,41 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
 }
 
 function HeroShowcase({ products }: { products: ProductCardData[] }) {
-  const showItems =
-    products.length >= 3
-      ? products.slice(0, 3)
-      : [
-          { id: '1', name: 'NAD+ Premium', slug: null, cover_image_url: null, price: 2450, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
-          { id: '2', name: 'Anti-Aging Serum', slug: null, cover_image_url: null, price: 3890, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
-          { id: '3', name: 'Skin Booster', slug: null, cover_image_url: null, price: 1290, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
-        ]
+  const fallback: ProductCardData[] = [
+    { id: '1', name: 'NAD+ Premium', slug: null, cover_image_url: null, price: 2450, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
+    { id: '2', name: 'Anti-Aging Serum', slug: null, cover_image_url: null, price: 3890, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
+    { id: '3', name: 'Skin Booster', slug: null, cover_image_url: null, price: 1290, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
+    { id: '4', name: 'Retinol Renewal', slug: null, cover_image_url: null, price: 1890, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
+    { id: '5', name: 'NMN Longevity', slug: null, cover_image_url: null, price: 4250, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
+  ]
+  const showItems = products.length >= 5 ? products.slice(0, 5) : fallback
+
+  // 5 küçük kart, dinamik fan yerleşim, hafif rotasyon — premium "küratörlü koleksiyon" hissi
+  const positions = [
+    { left: '0%', top: '14%', rotate: -10, w: '34%', egp: 9.2, z: 10 },
+    { left: '20%', top: '0%', rotate: -4, w: '34%', egp: 8.7, z: 20 },
+    { left: '40%', top: '8%', rotate: 2, w: '34%', egp: 8.5, z: 30 },
+    { left: '58%', top: '22%', rotate: 6, w: '34%', egp: 8.0, z: 20 },
+    { left: '36%', top: '42%', rotate: -2, w: '34%', egp: 9.5, z: 40 },
+  ]
 
   return (
-    <div className="relative h-full">
-      <div className="absolute left-0 top-[20%] w-[50%] aspect-[3/4] rotate-[-6deg] z-10">
-        <PremiumProductCard product={showItems[0]} egp={9.2} />
-      </div>
-      <div className="absolute right-0 top-[8%] w-[50%] aspect-[3/4] rotate-[5deg] z-20">
-        <PremiumProductCard product={showItems[1]} egp={8.7} />
-      </div>
-      <div className="absolute left-[25%] bottom-0 w-[50%] aspect-[3/4] rotate-[-2deg] z-30">
-        <PremiumProductCard product={showItems[2]} egp={8.5} />
-      </div>
+    <div className="relative h-full w-full">
+      {positions.map((pos, i) => (
+        <div
+          key={i}
+          className="absolute aspect-[3/4]"
+          style={{
+            left: pos.left,
+            top: pos.top,
+            width: pos.w,
+            transform: `rotate(${pos.rotate}deg)`,
+            zIndex: pos.z,
+          }}
+        >
+          <PremiumProductCard product={showItems[i]} egp={pos.egp} />
+        </div>
+      ))}
     </div>
   )
 }
