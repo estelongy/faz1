@@ -1,19 +1,19 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isProfessional, type UserRole } from '@/lib/estestore'
-import { FEATURED_HOMEPAGE_CATEGORIES, HASTA_CATEGORIES } from '@/lib/estestore-categories'
 import ProductCard, { type ProductCardData } from './ProductCard'
 import ProfessionalToggle from './ProfessionalToggle'
+import EsteStoreHero from './EsteStoreHero'
+import EsteStoreSidebar from './EsteStoreSidebar'
 import {
   ArrowRight,
   Search,
   ShoppingBag,
-  Sparkles,
-  Hourglass,
-  Activity,
   ShieldCheck,
   Bandage,
   Star,
+  Hourglass,
+  Activity,
 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -42,7 +42,6 @@ export default async function EsteStorePage() {
   const role = (user?.app_metadata as Record<string, string> | undefined)?.role as UserRole ?? null
   const isPro = isProfessional(role)
 
-  // Kozmetik — featured rows için (Longevity ve İşlem Sonrası satırlarını dolduruyoruz)
   const { data: kozmetikProducts } = await supabase
     .from('products')
     .select(
@@ -52,7 +51,7 @@ export default async function EsteStorePage() {
     .eq('is_active', true)
     .eq('approval_status', 'approved')
     .order('created_at', { ascending: false })
-    .limit(12)
+    .limit(18)
 
   const { data: sarfProducts } = await supabase
     .from('products')
@@ -63,14 +62,14 @@ export default async function EsteStorePage() {
     .eq('is_active', true)
     .eq('approval_status', 'approved')
     .order('created_at', { ascending: false })
-    .limit(12)
+    .limit(9)
 
   const { data: akademiPackages } = await supabase
     .from('course_packages')
     .select('id, slug, title, cover_image_url, price, currency')
     .eq('is_published', true)
     .order('total_purchases', { ascending: false })
-    .limit(8)
+    .limit(6)
 
   const normalizeProduct = (p: {
     id: string
@@ -98,15 +97,14 @@ export default async function EsteStorePage() {
   const allKozmetik = (kozmetikProducts ?? []).map(normalizeProduct)
   const sarf = (sarfProducts ?? []).map(normalizeProduct)
 
-  // Featured row sliceları — gerçek catalog mapping'i gelene kadar mevcut kozmetik query'sinden besliyoruz
+  const heroShowcase = allKozmetik.slice(0, 3)
   const longevityFeatured = allKozmetik.slice(0, 6)
   const islemSonrasiFeatured = allKozmetik.slice(6, 12)
-  const heroShowcase = allKozmetik.slice(0, 3)
+  const biyohackingFeatured = allKozmetik.slice(12, 18)
 
   const ProSections = (
     <>
-      {/* Sarf & Medikal */}
-      <section className="space-y-6">
+      <section id="sarf-medikal" className="space-y-6">
         <SectionHeader
           eyebrow="Klinik İçin"
           title="Sarf & Medikal"
@@ -116,16 +114,11 @@ export default async function EsteStorePage() {
         {sarf.length === 0 ? (
           <EmptyState message="Henüz ürün yok." />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-            {sarf.map((p) => (
-              <ProductCard key={p.id} product={p} isPro={isPro} showPrice={isPro} />
-            ))}
-          </div>
+          <ProductGrid products={sarf} isPro={isPro} />
         )}
       </section>
 
-      {/* Akademi */}
-      <section className="space-y-6">
+      <section id="akademi" className="space-y-6">
         <SectionHeader
           eyebrow="Estelongy Akademi"
           title="Eğitim & Sertifika"
@@ -135,7 +128,7 @@ export default async function EsteStorePage() {
         {!akademiPackages || akademiPackages.length === 0 ? (
           <EmptyState message="Henüz paket yayınlanmadı." />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
             {akademiPackages.map((pkg: AkademiPackageMini) => (
               <AkademiCard key={pkg.id} pkg={pkg} isPro={isPro} />
             ))}
@@ -147,231 +140,187 @@ export default async function EsteStorePage() {
 
   return (
     <main className="bg-[#0F172A] min-h-screen text-slate-100">
-      {/* TOP NAV (master) */}
       <TopNav user={!!user} />
 
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        {/* Subtle gold glow background */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(201,169,97,0.12),_transparent_60%)]"
-        />
-        <div className="relative max-w-[1280px] mx-auto px-6 lg:px-10 py-20 lg:py-28">
-          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
-            {/* Sol: başlık + CTA */}
-            <div className="space-y-8">
-              <p className="inline-block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C9A961]">
-                EsteStore
-              </p>
-              <h1 className="text-[40px] sm:text-[52px] lg:text-[64px] leading-[1.05] font-medium text-slate-50 tracking-[-0.02em]">
-                Estelongy Gençlik Puanlı
-                <br />
-                <span className="text-[#C9A961]">zamansız güzellik</span> ürünleri.
-              </h1>
-              <p className="text-lg lg:text-xl text-slate-300 leading-relaxed max-w-xl">
-                Küratörlü ürün koleksiyonu — her biri Estelongy Gençlik Puanı eşiğinden geçti.
-                Longevity, anti-aging, klinik ürünleri tek çatı altında.
-              </p>
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link
-                  href="#kategoriler"
-                  className="inline-flex items-center gap-2 bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] font-semibold px-7 py-4 rounded-full transition-all hover:shadow-[0_8px_30px_rgba(201,169,97,0.35)]"
-                >
-                  Keşfet
-                  <ArrowRight size={18} />
-                </Link>
-                <Link
-                  href="/rehber/longevity-nedir"
-                  className="inline-flex items-center gap-2 text-slate-300 hover:text-slate-50 px-2 py-4 transition-colors group"
-                >
-                  Estelongy Gençlik Puanı nedir?
-                  <ArrowRight
-                    size={16}
-                    className="opacity-60 group-hover:translate-x-1 transition-transform"
-                  />
-                </Link>
+      <EsteStoreHero showcaseProducts={heroShowcase} />
+
+      <div className="flex">
+        <EsteStoreSidebar />
+
+        <div id="urunler" className="flex-1 min-w-0">
+          <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-12 lg:py-16 space-y-20">
+            {/* Longevity */}
+            <section id="longevity" className="space-y-6">
+              <SectionHeader
+                eyebrow="Marka Kimliği"
+                title="Longevity — İçten Zamansızlık"
+                subtitle="NAD+, NMN, resveratrol — bilim destekli yaşlanma karşıtı"
+                href="/estestore/longevity"
+                accent="#C9A961"
+              />
+              {longevityFeatured.length === 0 ? (
+                <EmptyState message="Bu kategoride yakında ürünler yer alacak." />
+              ) : (
+                <ProductGrid products={longevityFeatured} isPro={isPro} />
+              )}
+            </section>
+
+            {/* İşlem Sonrası — Klinik Köprü */}
+            <section id="islem-sonrasi" className="space-y-6">
+              <SectionHeader
+                eyebrow="Klinik Köprüsü"
+                title="Kliniğinizden sonraki adım"
+                subtitle="Dolgu, botoks, lazer sonrası iyileşmenizi hızlandıran küratörlü bakım kitleri"
+                href="/estestore/islem-sonrasi"
+                accent="#10876B"
+              />
+              {islemSonrasiFeatured.length === 0 ? (
+                <EmptyState message="Bu kategoride yakında ürünler yer alacak." />
+              ) : (
+                <ProductGrid products={islemSonrasiFeatured} isPro={isPro} />
+              )}
+            </section>
+
+            {/* Biyohacking & Ölçüm */}
+            <section id="biyohacking" className="space-y-6">
+              <SectionHeader
+                eyebrow="Diferansiyasyon"
+                title="Biyohacking & Ölçüm"
+                subtitle="Vücudunu ölç, kendini tanı — DNA, mikrobiyom, CGM ve wearable"
+                href="/estestore/biyohacking-olcum"
+                accent="#C9A961"
+              />
+              {biyohackingFeatured.length === 0 ? (
+                <EmptyState message="Bu kategoride yakında ürünler yer alacak." />
+              ) : (
+                <ProductGrid products={biyohackingFeatured} isPro={isPro} />
+              )}
+            </section>
+
+            {/* Profesyonel bölümler */}
+            <div className="pt-4">
+              {isPro ? (
+                <div className="space-y-20">{ProSections}</div>
+              ) : (
+                <ProfessionalToggle>{ProSections}</ProfessionalToggle>
+              )}
+            </div>
+
+            {/* Değer önerisi */}
+            <section className="py-8 lg:py-12">
+              <div className="text-center mb-12 max-w-2xl mx-auto">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] mb-3">
+                  Neden EsteStore?
+                </p>
+                <h2 className="text-[28px] lg:text-[36px] font-medium text-slate-50 tracking-[-0.02em]">
+                  Diğer mağazalardan farkımız
+                </h2>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
+                <ValueProp
+                  icon={Star}
+                  title="Estelongy Gençlik Puanlı"
+                  body="Her ürün 10 üzerinden değerlendirildi. Etki, güvenlik, kanıt ve longevity katkısı."
+                />
+                <ValueProp
+                  icon={Hourglass}
+                  title="Longevity Odaklı"
+                  body="Sadece güzelleştiren değil, sağlığa hizmet eden ürünler. Bilim destekli."
+                />
+                <ValueProp
+                  icon={Activity}
+                  title="Klinik ↔ Ev Sürekliliği"
+                  body="Estelongy kliniğinden gelen hastalar için doğal devam. Tek hesap, tüm yolculuk."
+                />
+              </div>
+            </section>
+          </div>
+
+          {/* Footer */}
+          <footer className="border-t border-slate-800/60">
+            <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-10">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                  <div className="text-slate-50 font-medium text-lg mb-1">Estelongy</div>
+                  <p className="text-sm text-slate-500">
+                    Zamansız Güzellik Dünyası — BiyoAGE · EsteKlinik · EsteStore
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-6 text-sm text-slate-400">
+                  <Link href="/hakkinda/sss" className="hover:text-slate-100 transition-colors">SSS</Link>
+                  <Link href="/hakkinda/iletisim" className="hover:text-slate-100 transition-colors">İletişim</Link>
+                  <Link href="/hakkinda/sozlesme" className="hover:text-slate-100 transition-colors">Sözleşme</Link>
+                  <Link href="/hakkinda/cerez" className="hover:text-slate-100 transition-colors">Çerez</Link>
+                </div>
               </div>
             </div>
-
-            {/* Sağ: premium ürün showcase */}
-            <div className="relative">
-              <HeroShowcase products={heroShowcase} />
-            </div>
-          </div>
+          </footer>
         </div>
-      </section>
-
-      {/* KATEGORİLER */}
-      <section id="kategoriler" className="py-24 lg:py-32">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
-          <div className="mb-12">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] mb-3">
-              Kategoriler
-            </p>
-            <h2 className="text-[36px] lg:text-[44px] font-medium text-slate-50 tracking-[-0.02em] mb-3">
-              Senin için kategoriler
-            </h2>
-            <p className="text-lg text-slate-400 max-w-2xl">
-              Estelongy Gençlik Skorundan gelen önerilerle başla, veya küratörlü
-              kategorilerden keşfet.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {FEATURED_HOMEPAGE_CATEGORIES.map((cat) => (
-              <CategoryCard key={cat.slug} category={cat} />
-            ))}
-            {/* Tümünü gör kartı */}
-            <Link
-              href="#tum-kategoriler"
-              className="group flex flex-col items-center justify-center gap-3 aspect-square rounded-2xl bg-gradient-to-br from-[#C9A961]/15 to-[#10876B]/10 border border-[#C9A961]/30 hover:border-[#C9A961]/60 transition-all hover:shadow-[0_8px_30px_rgba(201,169,97,0.15)]"
-            >
-              <div className="w-12 h-12 rounded-full bg-[#C9A961]/20 flex items-center justify-center group-hover:bg-[#C9A961]/30 transition-colors">
-                <ArrowRight size={22} className="text-[#C9A961]" />
-              </div>
-              <span className="text-[15px] font-medium text-slate-50">Tüm Kategoriler</span>
-              <span className="text-xs text-slate-400">{HASTA_CATEGORIES.length} kategori</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURED: Longevity */}
-      <FeaturedRow
-        eyebrow="Marka Kimliği"
-        title="Longevity — İçten Zamansızlık"
-        subtitle="Estelongy DNA'sının ürün karşılığı. NAD+, NMN, resveratrol — bilim destekli yaşlanma karşıtı."
-        products={longevityFeatured}
-        isPro={isPro}
-        href="/estestore/longevity"
-        accentColor="#C9A961"
-      />
-
-      {/* FEATURED: İşlem Sonrası */}
-      <FeaturedRow
-        eyebrow="Klinik Köprüsü"
-        title="Kliniğinizden sonraki adım"
-        subtitle="Dolgu, botoks, lazer sonrası iyileşmenizi hızlandıran küratörlü bakım kitleri."
-        products={islemSonrasiFeatured}
-        isPro={isPro}
-        href="/estestore/islem-sonrasi"
-        accentColor="#10876B"
-      />
-
-      {/* DEĞER ÖNERİSİ */}
-      <section className="py-24 lg:py-32 bg-gradient-to-b from-transparent via-[#1E293B]/40 to-transparent">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] mb-3">
-              Neden EsteStore?
-            </p>
-            <h2 className="text-[36px] lg:text-[44px] font-medium text-slate-50 tracking-[-0.02em]">
-              Diğer mağazalardan farkımız
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-            <ValueProp
-              icon={Star}
-              title="Estelongy Gençlik Puanlı"
-              body="Her ürün 10 üzerinden değerlendirildi. Etki, güvenlik, kanıt ve longevity katkısı."
-            />
-            <ValueProp
-              icon={Hourglass}
-              title="Longevity Odaklı"
-              body="Sadece güzelleştiren değil, sağlığa hizmet eden ürünler. Bilim destekli."
-            />
-            <ValueProp
-              icon={Activity}
-              title="Klinik ↔ Ev Sürekliliği"
-              body="Estelongy kliniğinden gelen hastalar için doğal devam. Tek hesap, tüm yolculuk."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* PROFESYONEL BÖLÜMLER */}
-      <section className="py-16 lg:py-24">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10 space-y-16">
-          {isPro ? (
-            ProSections
-          ) : (
-            <ProfessionalToggle>{ProSections}</ProfessionalToggle>
-          )}
-        </div>
-      </section>
-
-      {/* FOOTER (sade, sonra zenginleşir) */}
-      <footer className="border-t border-slate-800/60 mt-16">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-12">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div>
-              <div className="text-slate-50 font-medium text-lg mb-1">Estelongy</div>
-              <p className="text-sm text-slate-500">
-                Zamansız Güzellik Dünyası — BiyoAGE · EsteKlinik · EsteStore
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-6 text-sm text-slate-400">
-              <Link href="/hakkinda/sss" className="hover:text-slate-100 transition-colors">
-                SSS
-              </Link>
-              <Link href="/hakkinda/iletisim" className="hover:text-slate-100 transition-colors">
-                İletişim
-              </Link>
-              <Link href="/hakkinda/sozlesme" className="hover:text-slate-100 transition-colors">
-                Sözleşme
-              </Link>
-              <Link href="/hakkinda/cerez" className="hover:text-slate-100 transition-colors">
-                Çerez
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      </div>
     </main>
   )
 }
 
 /* ============================================================
-   COMPONENT: TopNav (3-dünya nav)
+   TopNav — TEK nav, üst banner yok
+   Sol: Estelongy logosu + 3 dünya (BiyoAGE şeffaf, EsteKlinik yeşil, EsteStore sarı)
+   Sağ: Arama, Rehber, Giriş, Kayıt Ol, Sepet
    ============================================================ */
 function TopNav({ user }: { user: boolean }) {
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-[#0F172A]/85 border-b border-slate-800/60">
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-        {/* Sol: logo + 3 dünya */}
-        <div className="flex items-center gap-8">
-          <Link href="/" className="text-slate-50 font-medium text-lg tracking-tight">
-            Estelongy
+    <nav className="sticky top-0 z-50 backdrop-blur-md bg-[#0F172A]/90 border-b border-slate-800/60">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
+        {/* Sol: Estelongy logosu + 3 dünya */}
+        <div className="flex items-center gap-6">
+          <Link
+            href="/"
+            className="flex items-center gap-2 shrink-0"
+            aria-label="Estelongy"
+          >
+            <span
+              aria-hidden
+              className="inline-flex w-8 h-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#7C3AED] to-[#9333EA] shadow-[0_4px_14px_rgba(124,58,237,0.35)]"
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white">
+                <path
+                  d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span className="text-slate-50 font-medium text-lg tracking-tight">
+              Estelongy
+            </span>
           </Link>
-          <div className="hidden md:flex items-center text-sm">
+
+          <div className="hidden md:flex items-center gap-2 text-sm">
+            {/* BiyoAGE — şeffaf */}
             <Link
               href="/"
-              className="px-3 py-2 text-slate-400 hover:text-slate-100 transition-colors"
+              className="px-4 py-2 rounded-full text-slate-200 hover:bg-slate-800/60 transition-colors font-medium"
             >
               BiyoAGE
             </Link>
-            <span className="text-slate-700">·</span>
+            {/* EsteKlinik — yeşil */}
             <Link
               href="/klinikler"
-              className="px-3 py-2 text-slate-400 hover:text-slate-100 transition-colors"
+              className="px-4 py-2 rounded-full bg-[#10876B] hover:bg-[#0F9B7A] text-white transition-colors font-medium"
             >
               EsteKlinik
             </Link>
-            <span className="text-slate-700">·</span>
+            {/* EsteStore — sarı (aktif) */}
             <Link
               href="/estestore"
-              className="px-3 py-2 text-[#C9A961] font-medium relative"
+              className="px-4 py-2 rounded-full bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] transition-colors font-semibold"
             >
               EsteStore
-              <span className="absolute bottom-0 left-3 right-3 h-px bg-[#C9A961]" />
             </Link>
           </div>
         </div>
 
-        {/* Sağ: arama, hesap, sepet */}
-        <div className="flex items-center gap-2">
+        {/* Sağ: Arama + Rehber + Giriş + Kayıt Ol + Sepet */}
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             type="button"
             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-800/60 text-slate-400 hover:text-slate-100 transition-colors"
@@ -379,20 +328,34 @@ function TopNav({ user }: { user: boolean }) {
           >
             <Search size={18} />
           </button>
+          <Link
+            href="/rehber"
+            className="hidden sm:inline-flex px-3 h-10 items-center text-sm text-slate-300 hover:text-slate-100 transition-colors rounded-full hover:bg-slate-800/40"
+          >
+            Rehber
+          </Link>
           {user ? (
             <Link
               href="/panel"
-              className="px-4 h-10 inline-flex items-center text-sm text-slate-300 hover:text-slate-100 transition-colors"
+              className="px-4 h-10 inline-flex items-center text-sm text-slate-300 hover:text-slate-100 transition-colors rounded-full hover:bg-slate-800/40"
             >
               Hesabım
             </Link>
           ) : (
-            <Link
-              href="/giris"
-              className="px-4 h-10 inline-flex items-center text-sm text-slate-300 hover:text-slate-100 transition-colors"
-            >
-              Giriş
-            </Link>
+            <>
+              <Link
+                href="/giris"
+                className="px-3 h-10 inline-flex items-center text-sm text-slate-300 hover:text-slate-100 transition-colors rounded-full hover:bg-slate-800/40"
+              >
+                Giriş
+              </Link>
+              <Link
+                href="/kayit"
+                className="hidden sm:inline-flex px-4 h-10 items-center text-sm font-medium text-[#0F172A] bg-slate-100 hover:bg-white transition-colors rounded-full"
+              >
+                Kayıt Ol
+              </Link>
+            </>
           )}
           <Link
             href="/sepet"
@@ -408,239 +371,40 @@ function TopNav({ user }: { user: boolean }) {
 }
 
 /* ============================================================
-   COMPONENT: HeroShowcase
-   Premium ürün collage hero'nun sağında
-   ============================================================ */
-function HeroShowcase({ products }: { products: ProductCardData[] }) {
-  // Demo placeholder (DB'de ürün yoksa)
-  const showItems =
-    products.length > 0
-      ? products
-      : [
-          { id: '1', name: 'Estelongy Gençlik Puanı 9.2', slug: null, cover_image_url: null, price: 2450, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
-          { id: '2', name: 'NAD+ Premium', slug: null, cover_image_url: null, price: 3890, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
-          { id: '3', name: 'Anti-Aging Serum', slug: null, cover_image_url: null, price: 1290, category: 'kozmetik' as const, subcategory: null, pricing_tiers: [] },
-        ]
-
-  return (
-    <div className="relative h-[460px] lg:h-[520px]">
-      {/* Background gold ring */}
-      <div
-        aria-hidden
-        className="absolute inset-8 rounded-full border border-[#C9A961]/15 blur-[1px]"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-16 rounded-full border border-[#C9A961]/10"
-      />
-
-      {/* 3 ürün kartı, hafif rotasyon ve overlap */}
-      <div className="absolute left-0 top-12 w-[55%] aspect-[3/4] rotate-[-6deg] z-10">
-        <PremiumProductCard product={showItems[0]} egp={9.2} />
-      </div>
-      <div className="absolute right-0 top-0 w-[55%] aspect-[3/4] rotate-[5deg] z-20">
-        <PremiumProductCard product={showItems[1]} egp={8.7} />
-      </div>
-      <div className="absolute left-[22%] bottom-0 w-[55%] aspect-[3/4] rotate-[-2deg] z-30">
-        <PremiumProductCard product={showItems[2]} egp={8.5} />
-      </div>
-    </div>
-  )
-}
-
-function PremiumProductCard({ product, egp }: { product: ProductCardData; egp: number }) {
-  return (
-    <div className="relative w-full h-full bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-slate-700/60 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.4)] overflow-hidden">
-      {/* Gold halo */}
-      <div
-        aria-hidden
-        className="absolute -inset-px rounded-2xl bg-gradient-to-br from-[#C9A961]/20 via-transparent to-transparent pointer-events-none"
-      />
-      <div className="absolute top-3 left-3 z-10 inline-flex items-center gap-1 bg-[#C9A961] text-[#0F172A] text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full">
-        <Star size={10} fill="currentColor" />
-        EGP {egp}
-      </div>
-      <div className="absolute inset-0 flex items-center justify-center p-8">
-        {product.cover_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={product.cover_image_url}
-            alt={product.name}
-            className="max-w-full max-h-full object-contain"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Sparkles size={48} className="text-[#C9A961]/40" />
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-/* ============================================================
-   COMPONENT: CategoryCard
-   ============================================================ */
-function CategoryCard({ category }: { category: { slug: string; name: string; shortName?: string; description: string; icon: typeof Sparkles; egpFocus?: boolean; bridgeToKlinik?: boolean } }) {
-  const Icon = category.icon
-  const isHighlight = category.egpFocus
-
-  return (
-    <Link
-      href={`/estestore/${category.slug}`}
-      className={`group relative flex flex-col aspect-square rounded-2xl p-5 border transition-all overflow-hidden ${
-        isHighlight
-          ? 'bg-gradient-to-br from-[#1E293B] to-[#0F172A] border-[#C9A961]/30 hover:border-[#C9A961]/60'
-          : 'bg-[#1E293B]/60 border-slate-800/80 hover:border-slate-700'
-      } hover:shadow-[0_8px_30px_rgba(201,169,97,0.12)] hover:-translate-y-0.5`}
-    >
-      {/* EGP focus için subtle background sparkle */}
-      {isHighlight && (
-        <div
-          aria-hidden
-          className="absolute -top-6 -right-6 w-24 h-24 bg-[#C9A961]/10 rounded-full blur-2xl group-hover:bg-[#C9A961]/15 transition-colors"
-        />
-      )}
-
-      {category.bridgeToKlinik && (
-        <span className="absolute top-3 right-3 text-[9px] font-semibold uppercase tracking-wider text-[#10876B] bg-[#10876B]/15 px-2 py-0.5 rounded-full">
-          Klinik
-        </span>
-      )}
-
-      <div
-        className={`w-11 h-11 rounded-xl flex items-center justify-center mb-auto ${
-          isHighlight ? 'bg-[#C9A961]/15' : 'bg-slate-800/80'
-        }`}
-      >
-        <Icon size={20} className={isHighlight ? 'text-[#C9A961]' : 'text-slate-300'} />
-      </div>
-
-      <div className="mt-4">
-        <h3 className="text-[15px] font-medium text-slate-50 leading-tight">
-          {category.shortName ?? category.name}
-        </h3>
-        <p className="text-[12px] text-slate-500 mt-1.5 leading-snug line-clamp-2 group-hover:text-slate-400 transition-colors">
-          {category.description}
-        </p>
-      </div>
-    </Link>
-  )
-}
-
-/* ============================================================
-   COMPONENT: FeaturedRow
-   Horizontal scroll carousel for product showcase
-   ============================================================ */
-function FeaturedRow({
-  eyebrow,
-  title,
-  subtitle,
-  products,
-  isPro,
-  href,
-  accentColor = '#C9A961',
-}: {
-  eyebrow: string
-  title: string
-  subtitle: string
-  products: ProductCardData[]
-  isPro: boolean
-  href: string
-  accentColor?: string
-}) {
-  return (
-    <section className="py-20 lg:py-24">
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
-        <div className="flex items-end justify-between gap-6 mb-10">
-          <div>
-            <p
-              className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-3"
-              style={{ color: accentColor }}
-            >
-              {eyebrow}
-            </p>
-            <h2 className="text-[32px] lg:text-[40px] font-medium text-slate-50 tracking-[-0.02em] mb-3">
-              {title}
-            </h2>
-            <p className="text-base lg:text-lg text-slate-400 max-w-2xl">{subtitle}</p>
-          </div>
-          <Link
-            href={href}
-            className="hidden sm:inline-flex items-center gap-2 text-sm text-slate-300 hover:text-slate-50 transition-colors whitespace-nowrap"
-          >
-            Tümünü gör
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-
-        {products.length === 0 ? (
-          <EmptyState message="Bu kategoride yakında ürünler yer alacak." />
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-            {products.slice(0, 5).map((p) => (
-              <ProductCard key={p.id} product={p} isPro={isPro} showPrice={true} />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  )
-}
-
-/* ============================================================
-   COMPONENT: ValueProp
-   ============================================================ */
-function ValueProp({
-  icon: Icon,
-  title,
-  body,
-}: {
-  icon: typeof Sparkles
-  title: string
-  body: string
-}) {
-  return (
-    <div className="text-center md:text-left">
-      <div className="inline-flex w-14 h-14 items-center justify-center rounded-2xl bg-[#C9A961]/15 mb-5">
-        <Icon size={26} className="text-[#C9A961]" />
-      </div>
-      <h3 className="text-xl font-medium text-slate-50 mb-3">{title}</h3>
-      <p className="text-base text-slate-400 leading-relaxed">{body}</p>
-    </div>
-  )
-}
-
-/* ============================================================
-   COMPONENT: SectionHeader (Professional sections için)
+   SectionHeader
    ============================================================ */
 function SectionHeader({
   eyebrow,
   title,
   subtitle,
   href,
+  accent = '#C9A961',
 }: {
   eyebrow: string
   title: string
   subtitle: string
   href: string
+  accent?: string
 }) {
   return (
-    <div className="flex items-end justify-between gap-6">
-      <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] mb-2">
+    <div className="flex items-end justify-between gap-6 flex-wrap">
+      <div className="space-y-2 min-w-0">
+        <p
+          className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+          style={{ color: accent }}
+        >
           {eyebrow}
         </p>
-        <h2 className="text-2xl lg:text-3xl font-medium text-slate-50 tracking-[-0.02em] mb-2">
+        <h2 className="text-[26px] lg:text-[32px] font-medium text-slate-50 tracking-[-0.02em]">
           {title}
         </h2>
-        <p className="text-sm lg:text-base text-slate-400">{subtitle}</p>
+        <p className="text-base text-slate-400 max-w-2xl">{subtitle}</p>
       </div>
       <Link
         href={href}
         className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-slate-50 transition-colors whitespace-nowrap"
       >
-        Tümü
+        Tümünü gör
         <ArrowRight size={14} />
       </Link>
     </div>
@@ -648,21 +412,69 @@ function SectionHeader({
 }
 
 /* ============================================================
-   COMPONENT: EmptyState
+   ProductGrid — 3 sütun (sidebar açıkken sıkışmasın)
+   ============================================================ */
+function ProductGrid({
+  products,
+  isPro,
+}: {
+  products: ProductCardData[]
+  isPro: boolean
+}) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {products.slice(0, 6).map((p) => (
+        <ProductCard key={p.id} product={p} isPro={isPro} showPrice={true} />
+      ))}
+    </div>
+  )
+}
+
+/* ============================================================
+   ValueProp
+   ============================================================ */
+function ValueProp({
+  icon: Icon,
+  title,
+  body,
+}: {
+  icon: typeof Star
+  title: string
+  body: string
+}) {
+  return (
+    <div className="text-center md:text-left">
+      <div className="inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-[#C9A961]/15 mb-4">
+        <Icon size={22} className="text-[#C9A961]" />
+      </div>
+      <h3 className="text-lg font-medium text-slate-50 mb-2">{title}</h3>
+      <p className="text-base text-slate-400 leading-relaxed">{body}</p>
+    </div>
+  )
+}
+
+/* ============================================================
+   EmptyState
    ============================================================ */
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="text-center py-16 px-6 rounded-2xl border border-dashed border-slate-800 bg-[#1E293B]/30">
-      <ShieldCheck size={32} className="text-slate-600 mx-auto mb-3" />
+    <div className="text-center py-14 px-6 rounded-2xl border border-dashed border-slate-800 bg-[#1E293B]/30">
+      <ShieldCheck size={28} className="text-slate-600 mx-auto mb-3" />
       <p className="text-sm text-slate-500">{message}</p>
     </div>
   )
 }
 
 /* ============================================================
-   COMPONENT: AkademiCard
+   AkademiCard
    ============================================================ */
-function AkademiCard({ pkg, isPro }: { pkg: AkademiPackageMini; isPro: boolean }) {
+function AkademiCard({
+  pkg,
+  isPro,
+}: {
+  pkg: AkademiPackageMini
+  isPro: boolean
+}) {
   return (
     <Link
       href={isPro ? `/akademi/${pkg.slug}` : '/giris?next=/akademi'}
