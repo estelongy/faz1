@@ -34,6 +34,8 @@ const CLINIC_TYPE_LABEL: Record<string, string> = {
 export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
   const [previewOpen, setPreviewOpen] = useState(false)
   const [slotOpen, setSlotOpen] = useState(false)
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null)
+  const anchorRef = useRef<HTMLDivElement | null>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const egp = clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null
@@ -63,6 +65,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
       clearTimeout(closeTimer.current)
       closeTimer.current = null
     }
+    if (anchorRef.current) setAnchorRect(anchorRef.current.getBoundingClientRect())
     setSlotOpen(true)
   }
   function handleRandevuLeave() {
@@ -160,6 +163,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
             </p>
 
             <div
+              ref={anchorRef}
               className="relative"
               onMouseEnter={handleRandevuEnter}
               onMouseLeave={handleRandevuLeave}
@@ -178,6 +182,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
                 <KlinikSlotPopover
                   clinicId={clinic.id}
                   onClose={() => setSlotOpen(false)}
+                  anchorRect={anchorRect}
                 />
               )}
             </div>
