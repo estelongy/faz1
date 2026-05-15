@@ -1,18 +1,33 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import BrandMorphButton from '@/app/estestore/BrandMorphButton'
-import { User, ShieldCheck } from 'lucide-react'
+import { User, ShieldCheck, LayoutDashboard } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 /**
  * BiyoAGE top nav — EsteKlinik/EsteStore aynası, mor (analiz/ölçüm) galaksi.
  * Niyet: kullanıcı buranın ayrı bir dünya olduğunu hissetsin.
  */
 export default function BiyoAGENav() {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!cancelled) setIsLoggedIn(!!user)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!cancelled) setIsLoggedIn(!!session?.user)
+    })
+    return () => { cancelled = true; subscription.unsubscribe() }
+  }, [])
   return (
     <header className="sticky top-0 z-50 bg-[#1B1330] border-b border-[#3D2C66]/60 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-        {/* SOL: Aksiyon */}
+        {/* SOL: Aksiyon — login'e göre Panel ya da Giriş/Kayıt */}
         <nav className="flex items-center gap-1 sm:gap-2 order-1">
           <Link
             href="/rehber"
@@ -21,19 +36,31 @@ export default function BiyoAGENav() {
             <ShieldCheck size={13} />
             Rehber
           </Link>
-          <Link
-            href="/giris?g=biyoage"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium text-violet-100 hover:bg-white/10 transition-colors"
-          >
-            <User size={13} />
-            Giriş
-          </Link>
-          <Link
-            href="/kayit?g=biyoage"
-            className="inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white text-[#1B1330] hover:bg-violet-50 transition-colors"
-          >
-            Kayıt Ol
-          </Link>
+          {isLoggedIn ? (
+            <Link
+              href="/panel"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white text-[#1B1330] hover:bg-violet-50 transition-colors"
+            >
+              <LayoutDashboard size={13} />
+              Panel
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/giris?g=biyoage"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium text-violet-100 hover:bg-white/10 transition-colors"
+              >
+                <User size={13} />
+                Giriş
+              </Link>
+              <Link
+                href="/kayit?g=biyoage"
+                className="inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white text-[#1B1330] hover:bg-violet-50 transition-colors"
+              >
+                Kayıt Ol
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* MERKEZ: BrandMorphButton */}
