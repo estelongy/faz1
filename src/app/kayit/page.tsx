@@ -208,6 +208,7 @@ function KayitInner() {
         birth_year: birthYearNum,
         phone_verified: true,
         referral_code: refCode.trim() || undefined,
+        signup_source: galaxy,
       }),
     })
     const result = await res.json()
@@ -346,7 +347,7 @@ function KayitInner() {
                 value={birthYear}
                 onChange={e => setBirthYear(e.target.value)}
                 placeholder={String(new Date().getFullYear() - 30)}
-                className="w-full px-4 py-3 ${t.inputBg} border ${t.inputBorder} rounded-xl text-white placeholder-slate-500 focus:outline-none ${t.inputFocus} transition-colors"
+                className={inputCls}
               />
             </div>
 

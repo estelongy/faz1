@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     const {
       email, password, phone, first_name, last_name, birth_year, phone_verified,
       referral_code, // opsiyonel — davet eden kullanıcının kodu
+      signup_source, // opsiyonel — kullanıcı hangi galaksiden kayıt oldu (biyoage|esteklinik|estestore|default)
     } = body
 
     if (!email || !password || !phone || !first_name) {
@@ -51,6 +52,12 @@ export async function POST(req: NextRequest) {
     const profileUpdate: Record<string, unknown> = { phone }
     if (birth_year) profileUpdate.birth_year = birth_year
     if (phone_verified === true) profileUpdate.phone_verified = true
+
+    // Galaksi atıfı — hangi dünyadan kayıt oldu
+    const VALID_SOURCES = ['biyoage', 'esteklinik', 'estestore', 'default']
+    if (typeof signup_source === 'string' && VALID_SOURCES.includes(signup_source)) {
+      profileUpdate.signup_source = signup_source
+    }
 
     // Referral attribution (kod geçerliyse referrer'ı bul)
     let referrerUserId: string | null = null
