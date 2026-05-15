@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import HastaSidebar from '@/components/HastaSidebar'
+import { GALAXY_THEMES, resolveGalaxy } from '@/lib/galaxy-themes'
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -14,12 +15,16 @@ export default async function PanelLayout({ children }: { children: React.ReactN
 
   const sidebarRole: 'user' | 'health_professional' = role === 'health_professional' ? 'health_professional' : 'user'
 
-  // Profil — isim ve puan için
+  // Profil — isim, puan, ev galaksisi (signup_source)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, points_balance')
+    .select('full_name, points_balance, signup_source')
     .eq('id', user.id)
     .maybeSingle()
+
+  // Kullanıcının ev galaksisi: signup_source > default (Estelongy çatı)
+  const galaxy = resolveGalaxy(profile?.signup_source ?? null)
+  const t = GALAXY_THEMES[galaxy]
 
   // Klinik erişimi var mı? (sidebar alt linki için)
   const { data: userClinic } = await supabase
@@ -31,7 +36,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const hasClinicAccess = !!(userClinic && userClinic.approval_status === 'approved')
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
+    <div className={`min-h-screen bg-gradient-to-b ${t.bgFrom} ${t.bgVia} ${t.bgTo} text-white`}>
       <HastaSidebar
         userName={profile?.full_name ?? user.email ?? null}
         pointsBalance={profile?.points_balance ?? 0}
