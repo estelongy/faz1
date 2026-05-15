@@ -76,19 +76,27 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
         className="group relative rounded-2xl bg-white border border-slate-200 hover:border-[#10876B]/60 hover:shadow-2xl hover:shadow-[#064E3B]/15 hover:-translate-y-0.5 transition-all overflow-hidden flex flex-col shadow-sm cursor-pointer"
       >
         {/* Kapak banner — yeşil/teal kalır */}
-        <div className="relative aspect-[3/1] overflow-hidden bg-gradient-to-br from-[#10876B] via-[#0A6347] to-[#064E3B]">
+        <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-[#10876B] via-[#0A6347] to-[#064E3B]">
           {clinic.cover_image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={clinic.cover_image_url}
-              alt={clinic.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={clinic.cover_image_url}
+                alt={clinic.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#064E3B]/70 via-[#064E3B]/10 to-transparent" />
+            </>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-white/40 text-6xl font-black">
+            <div className="absolute inset-0 flex items-center justify-center text-white/40 text-7xl font-black">
               {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
             </div>
           )}
+          {/* Sol-üst marka bandı */}
+          <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#064E3B]/80 backdrop-blur-sm border border-emerald-300/30">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+            <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-50">EsteKlinik</span>
+          </div>
         </div>
 
         {/* Detay — BEYAZ zemin, koyu metinler */}
