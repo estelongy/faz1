@@ -1,16 +1,16 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { useGalaxyTransition, type Galaxy } from '@/components/GalaxyTransition'
 
 /* ============================================================
    3 sub-brand — her biri kendi kartı, mor noktadan açılır
    ============================================================ */
 const SUB_BRANDS = [
-  { name: 'BiyoAGE',    href: '/',          color: '#9F8CE0', tag: 'Analiz' },
-  { name: 'EsteStore',  href: '/estestore', color: '#C9A961', tag: 'Mağaza'  },
-  { name: 'EsteKlinik', href: '/klinikler', color: '#10876B', tag: 'Klinik' },
+  { name: 'BiyoAGE',    href: '/',          color: '#9F8CE0', tag: 'Analiz', galaxy: 'biyoage' as Galaxy },
+  { name: 'EsteStore',  href: '/estestore', color: '#C9A961', tag: 'Mağaza', galaxy: 'estestore' as Galaxy },
+  { name: 'EsteKlinik', href: '/klinikler', color: '#10876B', tag: 'Klinik', galaxy: 'esteklinik' as Galaxy },
 ] as const
 
 const MASTER_COLOR = '#F8F7F4'
@@ -43,6 +43,7 @@ const FAN: Array<{ angle: number; dy: number; delay: number }> = [
 ]
 
 export default function BrandMorphButton() {
+  const { transitionTo } = useGalaxyTransition()
   const [stepIdx, setStepIdx] = useState(0)
   const [paused, setPaused] = useState(false)
   const [open, setOpen] = useState(false)
@@ -99,11 +100,12 @@ export default function BrandMorphButton() {
       {SUB_BRANDS.map((brand, i) => {
         const fan = FAN[i]
         return (
-          <Link
+          <a
             key={brand.name}
             href={brand.href}
+            onClick={(e) => { e.preventDefault(); transitionTo(brand.galaxy, brand.href) }}
             aria-label={`${brand.name} dünyasına git`}
-            className="absolute top-0 left-0 flex items-center gap-2.5 px-4 border bg-slate-900/95 backdrop-blur-md group/card"
+            className="absolute top-0 left-0 flex items-center gap-2.5 px-4 border bg-slate-900/95 backdrop-blur-md group/card cursor-pointer"
             style={{
               width: PILL_W,
               height: PILL_H,
@@ -144,7 +146,7 @@ export default function BrandMorphButton() {
               size={12}
               className="text-slate-600 group-hover/card:text-slate-200 group-hover/card:translate-x-0.5 transition-all shrink-0"
             />
-          </Link>
+          </a>
         )
       })}
 
@@ -169,10 +171,16 @@ export default function BrandMorphButton() {
         }}
       >
         <div className="absolute inset-0 flex items-center px-4">
-          <Link
+          <a
             href={current.href}
+            onClick={(e) => {
+              if (!isMaster && step.kind === 'sub') {
+                e.preventDefault()
+                transitionTo(SUB_BRANDS[step.idx].galaxy, current.href)
+              }
+            }}
             aria-label={`${current.name} sayfasına git`}
-            className="flex items-center gap-3 w-full"
+            className="flex items-center gap-3 w-full cursor-pointer"
           >
             <span className="flex items-center gap-1 shrink-0">
               {SUB_BRANDS.map((b, i) => {
@@ -212,7 +220,7 @@ export default function BrandMorphButton() {
             >
               {open ? 'Estelongy Dünyası' : current.name}
             </span>
-          </Link>
+          </a>
 
           <span
             aria-hidden
