@@ -6,7 +6,7 @@ import { BRANCHES, ALL_TREATMENTS, LOCATIONS, branchMatches, locationMatches } f
 import ClinicCard, { type ClinicRow } from './ClinicCard'
 
 /**
- * /klinikler arama motoru — RandevuFlow'daki "Klinik Seçin" UX'inin aynısı.
+ * /esteklinik arama motoru — RandevuFlow'daki "Klinik Seçin" UX'inin aynısı.
  * Compound: Provider ile sarmalanır, Inputs + Results ayrı yerlerde render olur.
  *
  *   <SearchProvider clinics={...}>
@@ -152,37 +152,6 @@ export function KlinikSearchInputs() {
         </div>
       )}
     </>
-  )
-}
-
-/** Branş sidebar — sol kolonda render edilir */
-export function KlinikBranchSidebar() {
-  const s = useSearch()
-  const items: Array<{ label: string; key: string }> = [
-    { label: 'Tüm Branşlar', key: '' },
-    ...BRANCHES.map(b => ({ label: b, key: b })),
-  ]
-  return (
-    <nav className="space-y-1">
-      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#10876B] mb-2 px-2">Branşlar</p>
-      {items.map(it => {
-        const active = s.branch === it.key
-        return (
-          <button
-            key={it.key || 'all'}
-            type="button"
-            onClick={() => s.setBranch(it.key)}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-              active
-                ? 'bg-[#10876B]/10 text-[#0E7559] border border-[#10876B]/30 font-semibold'
-                : 'text-slate-700 hover:bg-slate-100 border border-transparent'
-            }`}
-          >
-            {it.label}
-          </button>
-        )
-      })}
-    </nav>
   )
 }
 

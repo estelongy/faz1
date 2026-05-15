@@ -2,6 +2,7 @@
 export const CLINIC_TYPES = [
   'Plastik ve Estetik Cerrahi',
   'Dermatoloji / Cildiye',
+  'Saç Ekimi',
   'Kulak Burun Boğaz (KBB)',
   'Göz Hastalıkları',
   'Medikal Estetik',
@@ -16,6 +17,7 @@ export const CLINIC_TYPES = [
 export const BRANCHES = [
   'Plastik, Rekonstrüktif ve Estetik Cerrahi',
   'Dermatoloji / Cildiye',
+  'Saç Ekimi',
   'Kulak Burun Boğaz (KBB)',
   'Göz Hastalıkları',
   'Medikal Estetik',

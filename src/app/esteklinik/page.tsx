@@ -58,19 +58,13 @@ export default async function KliniklerPage() {
             />
 
             <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-10 sm:pt-12 sm:pb-12">
-              <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-5">
-                <span className="text-white font-semibold">EsteKlinik</span>
-                <span>·</span>
-                <span className="text-emerald-200/70">Klinik Ekosistemi</span>
-              </nav>
-
-              <div className="mb-6">
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-2">
-                  Estelongy Klinik Ekosistemi
-                </p>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white">Klinik Seçin</h1>
-                <p className="text-emerald-100/80 text-sm mt-1">Onaylı kliniklerimizden birini seçin</p>
-              </div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-2">
+                EsteKlinik
+              </p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Klinik Seçin</h1>
+              <p className="text-emerald-100/80 text-sm mt-1 mb-6">
+                Bilimi güzelliğe çeviren onaylı klinikleri keşfet
+              </p>
 
               <KlinikSearchInputs />
             </div>

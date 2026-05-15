@@ -181,21 +181,14 @@ export default async function PublicClinicPage({ params }: Props) {
                 <Calendar size={14} />
                 Randevu Al
               </Link>
-              <Link
-                href="/analiz"
-                className="hidden lg:flex items-center justify-center w-full px-4 py-2.5 border border-slate-300 hover:border-[#10876B] text-slate-700 hover:text-[#0E7559] text-sm font-medium rounded-xl transition-colors"
-              >
-                Ön Analiz
-              </Link>
             </aside>
           </div>
 
-          {/* Felsefe notu */}
+          {/* Felsefe notu — sade dil */}
           <div className="p-4 rounded-xl bg-[#FAFAF7] border border-slate-200 text-xs text-slate-600 leading-relaxed mb-6">
-            <strong className="text-slate-900">Estelongy Güven Puanı (EGP)</strong>, son 12 ayda
-            tavsiye veren hastaların oranı (NHS FFT yöntemi) + Bayesian shrinkage (m=10, C=7) ile hesaplanır.
-            {' '}<strong className="text-slate-900">{MIN_REVIEWS_THRESHOLD}</strong> yorum altındaki klinikler &ldquo;Ölçülüyor&rdquo; rozeti taşır.
-            Puanı 7&apos;nin altında kalan klinikler hasta tarafında <strong className="text-slate-900">&lt;7</strong> olarak gösterilir.
+            <strong className="text-slate-900">Estelongy Güven Puanı (EGP)</strong>, hastaların son 12 ayda
+            klinik için verdiği tavsiye eğilimine göre hesaplanır. Reklam etkilemez, hasta deneyimi konuşur.
+            {' '}<strong className="text-slate-900">{MIN_REVIEWS_THRESHOLD}</strong> deneyim altındaki klinikler &ldquo;Ölçülüyor&rdquo; rozeti taşır.
           </div>
 
           {/* Yorumlar */}
@@ -231,31 +224,19 @@ export default async function PublicClinicPage({ params }: Props) {
             )}
           </section>
 
-          {/* CTA */}
-          <div className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-[#064E3B] via-[#0A6347] to-[#053527] border border-[#10876B]/40 shadow-xl shadow-[#064E3B]/20">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <p className="text-white font-bold text-base mb-1">Randevu almak ister misin?</p>
-                <p className="text-emerald-100/85 text-sm leading-relaxed">
-                  Klinik müsaitliğini gör, doğrudan saat seç. Önceden ön analiz yapmadıysan randevu sonrası yapabilirsin.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 shrink-0">
-                <Link
-                  href={`/esteklinik/randevu?k=${clinic.id}`}
-                  className="inline-flex items-center gap-1.5 px-5 py-3 bg-white hover:bg-emerald-50 text-[#064E3B] text-sm font-bold rounded-xl transition-colors shadow-lg"
-                >
-                  <Calendar size={14} />
-                  Randevu Al
-                </Link>
-                <Link
-                  href="/analiz"
-                  className="inline-block px-4 py-3 border border-emerald-300/40 hover:border-emerald-200/80 text-emerald-100 hover:text-white text-sm font-medium rounded-xl transition-colors"
-                >
-                  Ön Analiz
-                </Link>
-              </div>
-            </div>
+          {/* CTA — sadece mobilde (desktop'ta sticky rail var) */}
+          <div className="lg:hidden mt-8 p-6 rounded-2xl bg-gradient-to-br from-[#064E3B] via-[#0A6347] to-[#053527] border border-[#10876B]/40 shadow-xl shadow-[#064E3B]/20">
+            <p className="text-white font-bold text-base mb-1">Randevu almak ister misin?</p>
+            <p className="text-emerald-100/85 text-sm leading-relaxed mb-4">
+              Klinik müsaitliğini gör, doğrudan saat seç.
+            </p>
+            <Link
+              href={`/esteklinik/randevu?k=${clinic.id}`}
+              className="inline-flex items-center gap-1.5 px-5 py-3 bg-white hover:bg-emerald-50 text-[#064E3B] text-sm font-bold rounded-xl transition-colors shadow-lg"
+            >
+              <Calendar size={14} />
+              Randevu Al
+            </Link>
           </div>
         </div>
       </main>
