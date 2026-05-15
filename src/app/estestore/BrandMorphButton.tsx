@@ -8,7 +8,7 @@ import { useGalaxyTransition, type Galaxy } from '@/components/GalaxyTransition'
    3 sub-brand — her biri kendi kartı, mor noktadan açılır
    ============================================================ */
 const SUB_BRANDS = [
-  { name: 'BiyoAGE',    href: '/',          color: '#9F8CE0', tag: 'Analiz', galaxy: 'biyoage' as Galaxy },
+  { name: 'BiyoAGE',    href: '/biyoage',   color: '#9F8CE0', tag: 'Analiz', galaxy: 'biyoage' as Galaxy },
   { name: 'EsteStore',  href: '/estestore', color: '#C9A961', tag: 'Mağaza', galaxy: 'estestore' as Galaxy },
   { name: 'EsteKlinik', href: '/esteklinik', color: '#10876B', tag: 'Klinik', galaxy: 'esteklinik' as Galaxy },
 ] as const
