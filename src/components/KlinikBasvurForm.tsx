@@ -181,7 +181,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
       {otpStep && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-sm bg-slate-100 rounded-2xl border border-slate-300 p-6">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-[#10876B]/15 flex items-center justify-center mb-4">
               <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
@@ -198,7 +198,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
               value={otpCode}
               onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
               placeholder="_ _ _ _ _ _"
-              className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-center text-2xl tracking-widest placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors mb-3"
+              className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-center text-2xl tracking-widest placeholder-slate-600 focus:outline-none focus:border-[#10876B] transition-colors mb-3"
               autoFocus
             />
 
@@ -213,7 +213,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
               type="button"
               onClick={handleVerify}
               disabled={otpCode.length !== 6 || otpLoading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 text-slate-900 font-semibold rounded-xl transition-all mb-3"
+              className="w-full py-3 bg-[#10876B] hover:bg-[#0E7559] disabled:opacity-50 text-white font-semibold rounded-xl transition-all mb-3"
             >
               {otpLoading ? 'Doğrulanıyor...' : 'Doğrula'}
             </button>
@@ -241,28 +241,28 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
               <div>
                 <label className="block text-sm text-slate-500 mb-2">Ad <span className="text-red-400">*</span></label>
                 <input type="text" name="first_name" required placeholder="Ahmet"
-                  className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                  className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors" />
               </div>
               <div>
                 <label className="block text-sm text-slate-500 mb-2">Soyad</label>
                 <input type="text" name="last_name" placeholder="Yılmaz"
-                  className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                  className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors" />
               </div>
             </div>
             <div>
               <label className="block text-sm text-slate-500 mb-2">E-posta <span className="text-red-400">*</span></label>
               <input type="email" name="email" required placeholder="ornek@email.com"
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors" />
             </div>
             <div>
               <label className="block text-sm text-slate-500 mb-2">Şifre <span className="text-red-400">*</span></label>
               <input type="password" name="password" required placeholder="En az 8 karakter" minLength={8}
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors" />
             </div>
             <div>
               <label className="block text-sm text-slate-500 mb-2">Doğum Yılı</label>
               <input type="number" name="birth_year" placeholder="1985" min={1920} max={new Date().getFullYear() - 18}
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors" />
             </div>
           </div>
         )}
@@ -271,7 +271,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
         <div>
           <label className="block text-sm text-slate-500 mb-2">Klinik Adı <span className="text-red-400">*</span></label>
           <input type="text" name="name" required placeholder="Dr. Ahmet Yılmaz Dermatoloji Kliniği"
-            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors" />
         </div>
 
         {/* Telefon */}
@@ -284,7 +284,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
           </label>
           <input type="tel" name="phone" required placeholder="05XX XXX XX XX"
             disabled={otpVerified}
-            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors disabled:opacity-60" />
+            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors disabled:opacity-60" />
         </div>
 
         {/* Konum */}
@@ -293,8 +293,8 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
           <input type="hidden" name="location" value={locValue} />
           <div ref={locRef} className="relative">
             {locValue ? (
-              <div className="flex items-center gap-2 px-4 py-3 bg-white border border-violet-500/40 rounded-xl">
-                <svg className="w-4 h-4 text-violet-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 px-4 py-3 bg-white border border-[#10876B]/40 rounded-xl">
+                <svg className="w-4 h-4 text-[#10876B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -307,7 +307,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-300 rounded-xl focus-within:border-violet-500/60 transition-colors">
+              <div className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-300 rounded-xl focus-within:border-[#10876B] transition-colors">
                 <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -354,7 +354,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
             required
             value={clinicType}
             onChange={e => setClinicType(e.target.value)}
-            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer"
+            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-[#10876B] transition-colors appearance-none cursor-pointer"
           >
             <option value="" disabled>Branşınızı seçin...</option>
             {CLINIC_TYPES.map(t => (
@@ -367,7 +367,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
         <div>
           <label className="block text-sm text-slate-500 mb-2">Klinik Hakkında</label>
           <textarea name="bio" rows={4} placeholder="Kliniğiniz hakkında kısa bir tanıtım yazısı..."
-            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors resize-none" />
+            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors resize-none" />
         </div>
 
         {/* Tedavi / Hizmetler — branş checkbox grid + Tümünü Seç + Ayrıca Ekle */}
@@ -376,13 +376,13 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
             <label className="block text-sm text-slate-500">
               Hizmetleriniz
               {clinicType && <span className="ml-2 text-xs text-slate-500">— {treatments.length} seçenek</span>}
-              {selectedSpecialties.length > 0 && <span className="ml-2 text-xs text-violet-400">· {selectedSpecialties.length} seçili</span>}
+              {selectedSpecialties.length > 0 && <span className="ml-2 text-xs text-[#10876B]">· {selectedSpecialties.length} seçili</span>}
             </label>
             {clinicType && treatments.length > 0 && (
               <button
                 type="button"
                 onClick={selectAllBranch}
-                className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                className="text-xs text-[#10876B] hover:text-[#10876B] transition-colors font-medium"
               >
                 {allBranchSelected ? 'Tümünü Kaldır' : 'Tümünü Seç'}
               </button>
@@ -406,14 +406,14 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                   <label
                     key={t}
                     className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors group ${
-                      checked ? 'border-violet-500/50 bg-violet-500/10' : 'border-slate-300 hover:border-[#10876B]'
+                      checked ? 'border-[#10876B]/50 bg-[#10876B]/10' : 'border-slate-300 hover:border-[#10876B]'
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={() => toggleSpecialty(t)}
-                      className="accent-violet-500 w-4 h-4 shrink-0"
+                      className="accent-[#10876B] w-4 h-4 shrink-0"
                     />
                     <span className={`text-sm leading-snug transition-colors ${checked ? 'text-slate-900' : 'text-slate-500 group-hover:text-slate-900'}`}>
                       {t}
@@ -431,7 +431,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                 <button
                   type="button"
                   onClick={() => setExtraOpen(true)}
-                  className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                  className="inline-flex items-center gap-1.5 text-xs text-[#10876B] hover:text-[#10876B] transition-colors font-medium"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -440,7 +440,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                 </button>
               ) : (
                 <div ref={extraRef} className="relative">
-                  <div className="flex items-center gap-2 px-3 py-2.5 bg-white border border-slate-300 rounded-xl focus-within:border-violet-500 transition-colors">
+                  <div className="flex items-center gap-2 px-3 py-2.5 bg-white border border-slate-300 rounded-xl focus-within:border-[#10876B] transition-colors">
                     <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                     </svg>
@@ -502,13 +502,13 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                 {extraSpecialties.map(s => (
                   <span
                     key={s}
-                    className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md bg-violet-500/10 text-violet-300 border border-violet-500/30"
+                    className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md bg-[#10876B]/10 text-[#10876B] border border-[#10876B]/30"
                   >
                     {s}
                     <button
                       type="button"
                       onClick={() => toggleSpecialty(s)}
-                      className="text-violet-400 hover:text-slate-900 transition-colors"
+                      className="text-[#10876B] hover:text-slate-900 transition-colors"
                       aria-label={`${s} kaldır`}
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -535,7 +535,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
         )}
 
         <button type="submit" disabled={otpLoading}
-          className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 text-slate-900 font-semibold rounded-xl transition-all text-lg">
+          className="w-full py-4 bg-[#10876B] hover:bg-[#0E7559] disabled:opacity-50 text-white font-semibold rounded-xl transition-all text-lg">
           {otpLoading ? 'SMS Gönderiliyor...' : 'Başvuruyu Gönder'}
         </button>
 
