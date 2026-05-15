@@ -75,11 +75,11 @@ export default async function BiyoAGEPage() {
     <>
       <BiyoAGENav />
 
-      <main className="min-h-screen bg-gradient-to-b from-[#1B1330] via-[#241942] to-[#120B22]">
+      <main className="min-h-screen bg-white">
         {/* ============================================================
-            HERO — mor galaksi sahne girişi, DNA helix arka plan
+            HERO — mor sahne girişi, sayfanın aşağısı beyaz
             ============================================================ */}
-        <section className="relative overflow-hidden">
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#1B1330] via-[#241942] to-[#1B1330]">
           {/* DNA helix dokusu — radial blur */}
           <div
             aria-hidden
@@ -139,10 +139,10 @@ export default async function BiyoAGEPage() {
         </section>
 
         {/* ============================================================
-            4 KAPI — ölç / yorumla / anla / sürdür
+            4 KAPI — ölç / yorumla / anla / sürdür  (beyaz zemin, mor aksent)
             ============================================================ */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#C9BBF5] mb-5">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#7C3AED] mb-5">
             BiyoAGE 4 perde
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -153,27 +153,27 @@ export default async function BiyoAGEPage() {
                 <Link
                   key={d.href}
                   href={href}
-                  className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${d.accent} border ${d.border} hover:border-[#9F8CE0]/80 hover:bg-white/5 transition-all p-6 sm:p-7`}
+                  className="group relative overflow-hidden rounded-2xl bg-white border border-slate-200 hover:border-[#7C3AED]/60 hover:shadow-lg hover:shadow-[#7C3AED]/10 transition-all p-6 sm:p-7"
                 >
                   <div
-                    className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity"
+                    className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl opacity-10 group-hover:opacity-25 transition-opacity"
                     style={{ background: d.glow }}
                   />
                   <div className="relative">
                     <div className="flex items-center gap-3 mb-4">
                       <div
-                        className="w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-lg"
-                        style={{ background: d.glow, boxShadow: `0 6px 18px ${d.glow}40` }}
+                        className="w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-md"
+                        style={{ background: d.glow, boxShadow: `0 4px 14px ${d.glow}50` }}
                       >
                         <Icon size={20} />
                       </div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#C9BBF5]">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">
                         {d.eyebrow}
                       </p>
                     </div>
-                    <h3 className="text-white font-bold text-xl mb-1.5">{d.title}</h3>
-                    <p className="text-violet-100/65 text-sm leading-relaxed">{d.desc}</p>
-                    <div className="flex items-center gap-1.5 text-[#C9BBF5] text-sm font-semibold mt-4 group-hover:gap-2.5 transition-all">
+                    <h3 className="text-slate-900 font-bold text-xl mb-1.5">{d.title}</h3>
+                    <p className="text-slate-600 text-sm leading-relaxed">{d.desc}</p>
+                    <div className="flex items-center gap-1.5 text-[#7C3AED] text-sm font-semibold mt-4 group-hover:gap-2.5 transition-all">
                       <span>Gir</span>
                       <ArrowRight size={14} />
                     </div>
@@ -185,19 +185,21 @@ export default async function BiyoAGEPage() {
         </section>
 
         {/* ============================================================
-            Felsefe — kısa, BiyoAGE-native
+            Felsefe — krem-yeşil tint, galaksi bağlantıları renkli
             ============================================================ */}
-        <section className="border-t border-[#3D2C66]/40">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-[#C9BBF5] mb-3">
+        <section className="border-t border-slate-200 bg-gradient-to-b from-[#F0FDF4] via-white to-[#FAFAF7]">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-16 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-[#7C3AED] mb-3">
               Estelongy ölçüm felsefesi
             </p>
-            <h2 className="text-white font-bold text-2xl sm:text-3xl mb-3">
+            <h2 className="text-slate-900 font-bold text-2xl sm:text-3xl mb-4">
               Ölçemediğini iyileştiremezsin.
             </h2>
-            <p className="text-violet-100/70 text-sm sm:text-base leading-relaxed">
+            <p className="text-slate-600 text-base leading-relaxed">
               BiyoAGE, biyolojik yaşlanmanı ölçülebilir kılar. Skor bir hedef değil, bir başlangıç çizgisi.
-              Aksiyon EsteKlinik&apos;te, süreklilik EsteStore&apos;da — ama hepsi bu rakamla başlar.
+              Aksiyon <span className="text-[#10876B] font-semibold">EsteKlinik</span>&apos;te,
+              süreklilik <span className="text-[#8B7339] font-semibold">EsteStore</span>&apos;da —
+              ama hepsi bu rakamla başlar.
             </p>
           </div>
         </section>
