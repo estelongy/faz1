@@ -99,42 +99,41 @@ export const GALAXY_THEMES: Record<Galaxy, GalaxyTheme> = {
     subline: 'Üç dünyaya tek anahtar.',
   },
 
-  // ─── BiyoAGE — neo-lab DARK + neon mor glow (ölçüm/analiz) ──────────
-  // Hücresel zoom estetiği: derin lacivert-mor zemin, parlak mor aksent.
-  // Çatı (default slate-violet) ile karıştırılmasın diye lacivert tinted.
+  // ─── BiyoAGE — beyaz LIGHT + derin mor aksent (ölçüm/analiz) ────────
+  // Diğer iki galaksiyle (EsteKlinik/EsteStore) tutarlı: light bg + tema aksenti.
   biyoage: {
     name: 'BiyoAGE',
-    mode: 'dark',
-    bgFrom: 'from-[#0A0518]',        // derin gece-mor
-    bgVia: 'via-[#1A0F3D]',          // lab lacivert-mor
-    bgTo: 'to-[#0F0A1F]',            // koyu navy-mor
-    cardBg: 'bg-[#1A0F3D]/70',       // glass card
-    cardBorder: 'border-[#7C3AED]/30',
-    inputBg: 'bg-[#0A0518]',         // koyu lab inputu
-    inputBorder: 'border-[#7C3AED]/25',
-    inputFocus: 'focus:border-[#A78BFA]',
-    inputText: 'text-white',
-    inputPlaceholder: 'placeholder-[#7C6DA8]',
-    buttonGradient: 'from-[#A78BFA] to-[#7C3AED]',    // neon mor → koyu mor
-    buttonHover: 'hover:from-[#C4B5FD] hover:to-[#A78BFA]',
-    buttonText: 'text-[#0A0518]',                      // koyu mor üstüne koyu text — kontrast
-    iconGradient: 'from-[#A78BFA] to-[#6D28D9]',       // neon glow icon kutusu
+    mode: 'light',
+    bgFrom: 'from-white',
+    bgVia: 'via-[#F5F3FF]',          // çok hafif lavanta tint
+    bgTo: 'to-white',
+    cardBg: 'bg-white',
+    cardBorder: 'border-[#E9E5FF]',
+    inputBg: 'bg-[#FAF9FF]',         // off-white lavanta
+    inputBorder: 'border-[#E9E5FF]',
+    inputFocus: 'focus:border-[#7C3AED]',
+    inputText: 'text-slate-900',
+    inputPlaceholder: 'placeholder-slate-400',
+    buttonGradient: 'from-[#6D28D9] to-[#7C3AED]',   // derin mor solid
+    buttonHover: 'hover:from-[#5B21B6] hover:to-[#6D28D9]',
+    buttonText: 'text-white',
+    iconGradient: 'from-[#6D28D9] to-[#7C3AED]',
     iconColor: 'text-white',
-    headingText: 'text-white',
-    labelText: 'text-[#C4B5FD]/90',
-    mutedText: 'text-[#C4B5FD]/70',
-    accent: 'text-[#C4B5FD]',                          // neon lavanta link
-    accentHover: 'hover:text-[#DDD6FE]',
-    checkboxBg: 'bg-[#A78BFA] border-[#A78BFA]',
-    checkboxIdleBorder: 'border-[#7C3AED]/40 group-hover:border-[#A78BFA]',
-    ringPulse: 'bg-[#A78BFA]',
-    dividerBorder: 'border-[#7C3AED]/20',
-    errorBg: 'bg-red-500/10',
-    errorBorder: 'border-red-500/30',
-    errorText: 'text-red-300',
-    backLinkText: 'text-[#C4B5FD]/80 hover:text-white',
-    backLinkHover: 'hover:bg-[#7C3AED]/10',
-    strengthText: 'text-[#C4B5FD]/60',
+    headingText: 'text-slate-900',
+    labelText: 'text-slate-600',
+    mutedText: 'text-slate-500',
+    accent: 'text-[#6D28D9]',
+    accentHover: 'hover:text-[#5B21B6]',
+    checkboxBg: 'bg-[#7C3AED] border-[#7C3AED]',
+    checkboxIdleBorder: 'border-slate-300 group-hover:border-[#7C3AED]',
+    ringPulse: 'bg-[#7C3AED]',
+    dividerBorder: 'border-slate-200',
+    errorBg: 'bg-red-50',
+    errorBorder: 'border-red-200',
+    errorText: 'text-red-700',
+    backLinkText: 'text-slate-600 hover:text-slate-900',
+    backLinkHover: 'hover:bg-[#F5F3FF]',
+    strengthText: 'text-slate-500',
     subline: 'Biyolojik yaşını ölç, yavaşlat.',
   },
 
