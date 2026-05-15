@@ -29,7 +29,7 @@ export default function BiyoAGENav() {
             Giriş
           </Link>
           <Link
-            href="/kayit"
+            href="/kayit?g=biyoage"
             className="inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white text-[#1B1330] hover:bg-violet-50 transition-colors"
           >
             Kayıt Ol

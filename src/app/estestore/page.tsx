@@ -322,7 +322,7 @@ function TopNav({ user }: { user: boolean }) {
                 Giriş
               </Link>
               <Link
-                href="/kayit"
+                href="/kayit?g=estestore"
                 className="hidden sm:inline-flex px-4 h-10 items-center text-sm font-medium text-[#0F172A] bg-slate-100 hover:bg-white transition-colors rounded-full"
               >
                 Kayıt Ol

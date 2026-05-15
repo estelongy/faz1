@@ -33,7 +33,7 @@ export default function EsteKlinikNav() {
             Giriş
           </Link>
           <Link
-            href="/kayit"
+            href="/kayit?g=esteklinik"
             className="inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white text-[#064E3B] hover:bg-emerald-50 transition-colors"
           >
             Kayıt Ol
