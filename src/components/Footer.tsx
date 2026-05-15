@@ -30,7 +30,7 @@ export default function Footer() {
 // ────────────────────────────────────────────────────────────────────
 function RootFooter() {
   return (
-    <footer className="border-t border-slate-800 bg-slate-950/50 backdrop-blur-sm">
+    <footer className="border-t border-slate-700 bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-2 md:col-span-1">
@@ -40,9 +40,9 @@ function RootFooter() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
               </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">Estelongy</span>
+              <span className="text-lg font-bold bg-gradient-to-r from-violet-300 to-purple-300 bg-clip-text text-transparent">Estelongy</span>
             </Link>
-            <p className="text-slate-500 text-xs leading-relaxed">
+            <p className="text-slate-300 text-xs leading-relaxed">
               Estelongy Gençlik Skoru platformu. Ön analiz, longevity anketi ve klinik onayıyla biyolojik gençliğinizi öğrenin.
             </p>
           </div>
@@ -50,32 +50,32 @@ function RootFooter() {
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Platform</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/analiz" className="text-slate-400 hover:text-white transition-colors">Ön Analiz</Link></li>
-              <li><Link href="/esteklinik" className="text-slate-400 hover:text-white transition-colors">Klinikler</Link></li>
-              <li><Link href="/esteklinik" className="text-slate-400 hover:text-white transition-colors">Klinik Randevu</Link></li>
-              <li><Link href="/estestore" className="text-slate-400 hover:text-white transition-colors">EsteStore</Link></li>
-              <li><Link href="/panel" className="text-slate-400 hover:text-white transition-colors">Panelim</Link></li>
-              <li><Link href="/rehber" className="text-slate-400 hover:text-white transition-colors">Estelongy Rehberi</Link></li>
+              <li><Link href="/analiz" className="text-slate-200 hover:text-white transition-colors">Ön Analiz</Link></li>
+              <li><Link href="/esteklinik" className="text-slate-200 hover:text-white transition-colors">Klinikler</Link></li>
+              <li><Link href="/esteklinik" className="text-slate-200 hover:text-white transition-colors">Klinik Randevu</Link></li>
+              <li><Link href="/estestore" className="text-slate-200 hover:text-white transition-colors">EsteStore</Link></li>
+              <li><Link href="/panel" className="text-slate-200 hover:text-white transition-colors">Panelim</Link></li>
+              <li><Link href="/rehber" className="text-slate-200 hover:text-white transition-colors">Estelongy Rehberi</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">İş Ortakları</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/esteklinik/basvur" className="text-slate-400 hover:text-white transition-colors">Klinik Başvuru</Link></li>
-              <li><Link href="/satici/basvur" className="text-slate-400 hover:text-white transition-colors">İş Ortağı Başvuru</Link></li>
-              <li><Link href="/kurumsal/giris" className="text-slate-400 hover:text-white transition-colors">Kurumsal Giriş</Link></li>
+              <li><Link href="/esteklinik/basvur" className="text-slate-200 hover:text-white transition-colors">Klinik Başvuru</Link></li>
+              <li><Link href="/satici/basvur" className="text-slate-200 hover:text-white transition-colors">İş Ortağı Başvuru</Link></li>
+              <li><Link href="/kurumsal/giris" className="text-slate-200 hover:text-white transition-colors">Kurumsal Giriş</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Hakkında</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/hakkinda/sss" className="text-slate-400 hover:text-white transition-colors">SSS</Link></li>
-              <li><Link href="/hakkinda/iletisim" className="text-slate-400 hover:text-white transition-colors">İletişim</Link></li>
-              <li><Link href="/hakkinda/sozlesme" className="text-slate-400 hover:text-white transition-colors">Sözleşme</Link></li>
-              <li><Link href="/hakkinda/aydinlatma" className="text-slate-400 hover:text-white transition-colors">Aydınlatma</Link></li>
-              <li><Link href="/hakkinda/cerez" className="text-slate-400 hover:text-white transition-colors">Çerez Politikası</Link></li>
+              <li><Link href="/hakkinda/sss" className="text-slate-200 hover:text-white transition-colors">SSS</Link></li>
+              <li><Link href="/hakkinda/iletisim" className="text-slate-200 hover:text-white transition-colors">İletişim</Link></li>
+              <li><Link href="/hakkinda/sozlesme" className="text-slate-200 hover:text-white transition-colors">Sözleşme</Link></li>
+              <li><Link href="/hakkinda/aydinlatma" className="text-slate-200 hover:text-white transition-colors">Aydınlatma</Link></li>
+              <li><Link href="/hakkinda/cerez" className="text-slate-200 hover:text-white transition-colors">Çerez Politikası</Link></li>
             </ul>
           </div>
         </div>
@@ -157,7 +157,7 @@ function EsteKlinikFooter() {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,0.8)]" />
               <span className="text-lg font-bold text-white tracking-tight">EsteKlinik</span>
             </Link>
-            <p className="text-emerald-200/70 text-xs leading-relaxed">
+            <p className="text-emerald-100/90 text-xs leading-relaxed">
               KYC onaylı estetik klinikleri ekosistemi. EGP puanı, hasta deneyimi ve direkt randevu.
             </p>
           </div>
@@ -165,30 +165,30 @@ function EsteKlinikFooter() {
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Klinik</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/esteklinik" className="text-emerald-200/80 hover:text-white transition-colors">Tüm Klinikler</Link></li>
-              <li><Link href="/esteklinik" className="text-emerald-200/80 hover:text-white transition-colors">Randevu Al</Link></li>
-              <li><Link href="/rehber" className="text-emerald-200/80 hover:text-white transition-colors">Rehber</Link></li>
+              <li><Link href="/esteklinik" className="text-emerald-100 hover:text-white transition-colors">Tüm Klinikler</Link></li>
+              <li><Link href="/esteklinik" className="text-emerald-100 hover:text-white transition-colors">Randevu Al</Link></li>
+              <li><Link href="/rehber" className="text-emerald-100 hover:text-white transition-colors">Rehber</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Hesabım</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/giris" className="text-emerald-200/80 hover:text-white transition-colors">Giriş</Link></li>
-              <li><Link href="/kayit" className="text-emerald-200/80 hover:text-white transition-colors">Kayıt Ol</Link></li>
-              <li><Link href="/panel" className="text-emerald-200/80 hover:text-white transition-colors">Panelim</Link></li>
-              <li><Link href="/esteklinik/basvur" className="text-emerald-200/80 hover:text-white transition-colors">Klinik Başvuru</Link></li>
+              <li><Link href="/giris" className="text-emerald-100 hover:text-white transition-colors">Giriş</Link></li>
+              <li><Link href="/kayit" className="text-emerald-100 hover:text-white transition-colors">Kayıt Ol</Link></li>
+              <li><Link href="/panel" className="text-emerald-100 hover:text-white transition-colors">Panelim</Link></li>
+              <li><Link href="/esteklinik/basvur" className="text-emerald-100 hover:text-white transition-colors">Klinik Başvuru</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Hakkında</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/hakkinda/sss" className="text-emerald-200/80 hover:text-white transition-colors">SSS</Link></li>
-              <li><Link href="/hakkinda/iletisim" className="text-emerald-200/80 hover:text-white transition-colors">İletişim</Link></li>
-              <li><Link href="/hakkinda/sozlesme" className="text-emerald-200/80 hover:text-white transition-colors">Sözleşme</Link></li>
-              <li><Link href="/hakkinda/aydinlatma" className="text-emerald-200/80 hover:text-white transition-colors">Aydınlatma</Link></li>
-              <li><Link href="/hakkinda/cerez" className="text-emerald-200/80 hover:text-white transition-colors">Çerez Politikası</Link></li>
+              <li><Link href="/hakkinda/sss" className="text-emerald-100 hover:text-white transition-colors">SSS</Link></li>
+              <li><Link href="/hakkinda/iletisim" className="text-emerald-100 hover:text-white transition-colors">İletişim</Link></li>
+              <li><Link href="/hakkinda/sozlesme" className="text-emerald-100 hover:text-white transition-colors">Sözleşme</Link></li>
+              <li><Link href="/hakkinda/aydinlatma" className="text-emerald-100 hover:text-white transition-colors">Aydınlatma</Link></li>
+              <li><Link href="/hakkinda/cerez" className="text-emerald-100 hover:text-white transition-colors">Çerez Politikası</Link></li>
             </ul>
           </div>
         </div>
@@ -201,15 +201,15 @@ function EsteKlinikFooter() {
 
 function FooterBottom({ light, dark }: { light?: boolean; dark?: boolean }) {
   const textClass = light
-    ? 'text-slate-500'
+    ? 'text-slate-600'                  // light footer üstü: 600 (vs 500 zayıftı)
     : dark
-      ? 'text-emerald-200/60'
-      : 'text-slate-600'
+      ? 'text-emerald-100/80'           // teal footer üstü: emerald-100/80 (vs 200/60)
+      : 'text-slate-300'                // dark slate footer: 300 (vs 600 çok zayıftı)
   const borderClass = light
     ? 'border-slate-200'
     : dark
       ? 'border-[#0A6347]/40'
-      : 'border-slate-800'
+      : 'border-slate-700'
 
   return (
     <div className={`pt-6 border-t ${borderClass} flex flex-col sm:flex-row items-center justify-between gap-3`}>
