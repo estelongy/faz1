@@ -317,7 +317,7 @@ export default function KurumsalGirisPage() {
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors text-sm" />
                   {error && <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{error}</div>}
                   {mode === 'kayit' && (
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-sm text-slate-500 leading-relaxed">
                       Devam ederek{' '}
                       <Link href="/hakkinda/sozlesme" target="_blank" className="text-violet-400 hover:text-violet-300 underline">Üyelik Sözleşmesi</Link>
                       &apos;ni ve{' '}

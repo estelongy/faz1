@@ -97,7 +97,7 @@ export default function MuhasebeListClient({ initialRows }: { initialRows: Row[]
         <form onSubmit={onAdd} className="mb-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700 space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ad Soyad *</label>
+              <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Ad Soyad *</label>
               <input
                 name="name" required minLength={2} maxLength={120} autoFocus
                 placeholder="Örn. Ayşe Y."
@@ -105,7 +105,7 @@ export default function MuhasebeListClient({ initialRows }: { initialRows: Row[]
               />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Telefon</label>
+              <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Telefon</label>
               <input
                 name="phone" maxLength={32} type="tel"
                 placeholder="0555…"
@@ -114,7 +114,7 @@ export default function MuhasebeListClient({ initialRows }: { initialRows: Row[]
             </div>
           </div>
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Not</label>
+            <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Not</label>
             <textarea
               name="notes" rows={2} maxLength={500}
               placeholder="Opsiyonel — alerjiler, özel durumlar…"
@@ -122,7 +122,7 @@ export default function MuhasebeListClient({ initialRows }: { initialRows: Row[]
             />
           </div>
           {error && (
-            <p className="text-red-400 text-xs">{error}</p>
+            <p className="text-red-400 text-sm">{error}</p>
           )}
           <div className="flex items-center justify-end gap-2">
             <button type="button" onClick={() => { setShowAdd(false); setError(null) }} className="px-4 py-2 text-slate-400 hover:text-white text-sm transition-colors">
@@ -150,7 +150,7 @@ export default function MuhasebeListClient({ initialRows }: { initialRows: Row[]
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-bold text-sm truncate group-hover:text-violet-300 transition-colors">{r.name}</p>
-                  <p className="text-slate-500 text-xs truncate">
+                  <p className="text-slate-500 text-sm truncate">
                     {r.treatment_count > 0 ? `${r.treatment_count} işlem` : 'Henüz işlem yok'}
                     {r.phone && <span className="ml-2">· {r.phone}</span>}
                     {r.last_activity && <span className="ml-2">· {new Date(r.last_activity).toLocaleDateString('tr-TR')}</span>}
@@ -162,9 +162,9 @@ export default function MuhasebeListClient({ initialRows }: { initialRows: Row[]
                   ) : r.total_amount > 0 ? (
                     <p className="text-emerald-400 font-black text-sm">✓ Tahsil edildi</p>
                   ) : (
-                    <p className="text-slate-600 text-xs">—</p>
+                    <p className="text-slate-600 text-sm">—</p>
                   )}
-                  <p className="text-slate-500 text-[10px]">
+                  <p className="text-slate-500 text-sm">
                     {formatTRY(r.paid_amount)} / {formatTRY(r.total_amount)}
                   </p>
                 </div>

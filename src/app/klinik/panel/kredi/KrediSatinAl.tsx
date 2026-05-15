@@ -45,16 +45,16 @@ export default function KrediSatinAl() {
           }`}
         >
           {pkg.popular && (
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-sm font-bold px-3 py-1 rounded-full whitespace-nowrap">
               En Popüler
             </span>
           )}
 
           <p className="text-white font-black text-2xl mb-1">{pkg.credits}</p>
-          <p className="text-slate-400 text-xs mb-3">Kredi</p>
+          <p className="text-slate-400 text-sm mb-3">Kredi</p>
 
           <p className="text-white font-bold text-xl mb-1">€{pkg.priceEur}</p>
-          <p className="text-slate-500 text-xs mb-4">({pkg.pricePerCredit} / kredi)</p>
+          <p className="text-slate-500 text-sm mb-4">({pkg.pricePerCredit} / kredi)</p>
 
           <button
             onClick={() => handleBuy(pkg.id)}

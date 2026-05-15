@@ -77,7 +77,7 @@ function PuanBar({ label, value }: { label: string; value: number | null }) {
   const color = value >= 9 ? 'bg-[#10876B]' : value >= 7 ? 'bg-[#C9A961]' : 'bg-red-500'
   return (
     <div className="flex items-center gap-3">
-      <span className="text-slate-500 text-xs w-32 shrink-0">{label}</span>
+      <span className="text-slate-500 text-sm w-32 shrink-0">{label}</span>
       <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
         <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
       </div>
@@ -221,7 +221,7 @@ export default async function UrunDetayPage({
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-16">
-        <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6 flex-wrap">
+        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6 flex-wrap">
           <Link href="/estestore" className="hover:text-slate-900 font-semibold text-[#8B7339]">EsteStore</Link>
           {product.category && (
             <>
@@ -250,7 +250,7 @@ export default async function UrunDetayPage({
             <div className="bg-[#FAFAF7] border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-slate-500 text-[10px] uppercase tracking-[0.18em] font-semibold mb-1">
+                  <p className="text-slate-500 text-sm uppercase tracking-[0.18em] font-semibold mb-1">
                     Estelongy Gençlik Puanı
                   </p>
                   <div className="flex items-end gap-1">
@@ -265,7 +265,7 @@ export default async function UrunDetayPage({
                 </div>
                 {product.preference_count > 0 && (
                   <div className="text-right">
-                    <p className="text-slate-500 text-xs">Tercih</p>
+                    <p className="text-slate-500 text-sm">Tercih</p>
                     <p className="text-slate-900 font-bold text-2xl">{product.preference_count}</p>
                   </div>
                 )}
@@ -283,7 +283,7 @@ export default async function UrunDetayPage({
           {/* Sağ: Detaylar */}
           <div>
             {product.category && (
-              <span className="text-[10px] text-[#8B7339] font-semibold uppercase tracking-[0.18em]">
+              <span className="text-sm text-[#8B7339] font-semibold uppercase tracking-[0.18em]">
                 {CATEGORY_LABELS[product.category] ?? product.category}
               </span>
             )}
@@ -305,10 +305,10 @@ export default async function UrunDetayPage({
 
             {product.ingredients?.length > 0 && (
               <div className="mb-6">
-                <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">İçerikler / Bileşenler</p>
+                <p className="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-2">İçerikler / Bileşenler</p>
                 <div className="flex flex-wrap gap-2">
                   {product.ingredients.map((ing: string) => (
-                    <span key={ing} className="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full border border-slate-200">
+                    <span key={ing} className="text-sm bg-slate-100 text-slate-700 px-3 py-1 rounded-full border border-slate-200">
                       {ing}
                     </span>
                   ))}
@@ -344,10 +344,10 @@ export default async function UrunDetayPage({
                   disabled={!product.price || (product.stock != null && product.stock < 1)}
                 />
                 {product.stock != null && product.stock < 1 && (
-                  <p className="text-red-500 text-xs text-center mt-3">Stokta yok</p>
+                  <p className="text-red-500 text-sm text-center mt-3">Stokta yok</p>
                 )}
                 {product.stock != null && product.stock > 0 && product.stock < 10 && (
-                  <p className="text-[#8B7339] text-xs text-center mt-3">Son {product.stock} adet</p>
+                  <p className="text-[#8B7339] text-sm text-center mt-3">Son {product.stock} adet</p>
                 )}
               </>
             )}
@@ -390,7 +390,7 @@ export default async function UrunDetayPage({
                         {(review.profiles as { full_name?: string } | null)?.full_name ?? 'Kullanıcı'}
                       </span>
                       {review.is_verified && (
-                        <span className="text-xs bg-[#10876B]/15 text-[#10876B] px-2 py-0.5 rounded-full font-semibold">Doğrulanmış</span>
+                        <span className="text-sm bg-[#10876B]/15 text-[#10876B] px-2 py-0.5 rounded-full font-semibold">Doğrulanmış</span>
                       )}
                     </div>
                     {review.title && <p className="text-slate-700 text-sm font-medium mt-1">{review.title}</p>}
@@ -400,11 +400,11 @@ export default async function UrunDetayPage({
                       Number(review.rating) >= 9 ? 'text-[#10876B]' :
                       Number(review.rating) >= 7 ? 'text-[#8B7339]' : 'text-red-500'
                     }`}>{Number(review.rating).toFixed(1)}</span>
-                    <span className="text-slate-400 text-xs">/10</span>
+                    <span className="text-slate-400 text-sm">/10</span>
                   </div>
                 </div>
                 {review.body && <p className="text-slate-600 text-sm leading-relaxed">{review.body}</p>}
-                <p className="text-slate-400 text-xs mt-3">
+                <p className="text-slate-400 text-sm mt-3">
                   {new Date(review.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>

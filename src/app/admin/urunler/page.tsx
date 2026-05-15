@@ -100,28 +100,28 @@ export default async function AdminUrunlerPage() {
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-white font-bold">{p.name}</span>
                         {p.treatment_type === 'treatment' && (
-                          <span className="text-xs bg-violet-600/20 text-violet-400 px-2 py-0.5 rounded-full">Klinik İşlem</span>
+                          <span className="text-sm bg-violet-600/20 text-violet-400 px-2 py-0.5 rounded-full">Klinik İşlem</span>
                         )}
                         {p.category && (
-                          <span className="text-xs bg-slate-700 text-slate-400 px-2 py-0.5 rounded-full">
+                          <span className="text-sm bg-slate-700 text-slate-400 px-2 py-0.5 rounded-full">
                             {CATEGORY_LABELS[p.category] ?? p.category}
                           </span>
                         )}
                         {imgs.length === 0 && (
-                          <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">
+                          <span className="text-sm bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">
                             ⚠ Görsel yok
                           </span>
                         )}
                       </div>
                       {(p.vendors as VendorInfo)?.[0]?.company_name && (
-                        <p className="text-slate-500 text-xs mb-1">İş Ortağı: {(p.vendors as VendorInfo)?.[0]?.company_name}</p>
+                        <p className="text-slate-500 text-sm mb-1">İş Ortağı: {(p.vendors as VendorInfo)?.[0]?.company_name}</p>
                       )}
                       {p.description && <p className="text-slate-400 text-sm mb-2">{p.description}</p>}
                       {p.price && <p className="text-slate-300 text-sm">₺{Number(p.price).toLocaleString('tr-TR')}</p>}
                       {Array.isArray(p.ingredients) && p.ingredients.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
                           {p.ingredients.map((ing: string) => (
-                            <span key={ing} className="text-xs bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">{ing}</span>
+                            <span key={ing} className="text-sm bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">{ing}</span>
                           ))}
                         </div>
                       )}
@@ -147,7 +147,7 @@ export default async function AdminUrunlerPage() {
                 <div>
                   <span className="text-white text-sm font-medium">{p.name}</span>
                   {(p.vendors as VendorInfo)?.[0]?.company_name && (
-                    <span className="text-slate-500 text-xs ml-2">— {(p.vendors as VendorInfo)?.[0]?.company_name}</span>
+                    <span className="text-slate-500 text-sm ml-2">— {(p.vendors as VendorInfo)?.[0]?.company_name}</span>
                   )}
                 </div>
                 <UrunOnayActions productId={p.id} currentStatus="approved" action={urunOnayAction} />

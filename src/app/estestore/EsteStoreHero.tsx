@@ -350,7 +350,7 @@ function PremiumProductCard({
         aria-hidden
         className="absolute -inset-px rounded-2xl bg-gradient-to-br from-[#C9A961]/20 via-transparent to-transparent pointer-events-none"
       />
-      <div className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 bg-[#C9A961] text-[#0F172A] text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full">
+      <div className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 bg-[#C9A961] text-[#0F172A] text-sm font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full">
         <Star size={9} fill="currentColor" />
         EGP {egp}
       </div>

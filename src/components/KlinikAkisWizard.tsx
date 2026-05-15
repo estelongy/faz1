@@ -201,7 +201,7 @@ export default function KlinikAkisWizard({
               <p className={hastaAnketCevaplari ? 'text-emerald-400 font-medium' : 'text-slate-400'}>
                 {hastaAnketCevaplari ? '✓ Hasta anketi doldurdu' : '○ Hasta anketi doldurmadı'}
               </p>
-              <p className="text-slate-500 text-xs mt-0.5">
+              <p className="text-slate-500 text-sm mt-0.5">
                 {hastaAnketCevaplari
                   ? `Cevaplar klinik anketinde otomatik gelecek (+${hastaMevcutPuan.toFixed(1)} puan)`
                   : 'Klinik anketi direkt eklenecek'}
@@ -230,18 +230,18 @@ export default function KlinikAkisWizard({
                 totalCredit <= 10 ? 'text-amber-400' : 'text-white'
               }`}>{totalCredit}</span>
             </div>
-            <div className="flex gap-4 text-xs text-slate-500">
+            <div className="flex gap-4 text-sm text-slate-500">
               <span>🎁 Ücretsiz: <strong className="text-emerald-400">{freeBalance}</strong></span>
               <span>💳 Ücretli: <strong className="text-violet-400">{creditBalance}</strong></span>
             </div>
             {totalCredit === 0 && (
-              <p className="text-red-400 text-xs mt-2">Krediniz tükendi. Hasta kabulü için kredi yükleyin.</p>
+              <p className="text-red-400 text-sm mt-2">Krediniz tükendi. Hasta kabulü için kredi yükleyin.</p>
             )}
             {totalCredit > 0 && totalCredit <= 10 && (
-              <p className="text-amber-300 text-xs mt-2">⚠ Son {totalCredit} kredi. Bittiğinde randevu kabulü kapanır.</p>
+              <p className="text-amber-300 text-sm mt-2">⚠ Son {totalCredit} kredi. Bittiğinde randevu kabulü kapanır.</p>
             )}
             {willUsePaid && totalCredit > 10 && (
-              <p className="text-violet-300 text-xs mt-2">ℹ Ücretsiz haklarınız bitti. Bu kabul ücretli bakiyenizden düşecek.</p>
+              <p className="text-violet-300 text-sm mt-2">ℹ Ücretsiz haklarınız bitti. Bu kabul ücretli bakiyenizden düşecek.</p>
             )}
           </div>
         )}
@@ -287,7 +287,7 @@ export default function KlinikAkisWizard({
       <div>
         <div className="mb-3">
           <h3 className="text-white font-bold">{baslik}</h3>
-          <p className="text-slate-500 text-xs mt-0.5">{desc}</p>
+          <p className="text-slate-500 text-sm mt-0.5">{desc}</p>
         </div>
         <div className="space-y-3">
           {sorular.map(q => {
@@ -304,7 +304,7 @@ export default function KlinikAkisWizard({
                   </span>
                 </div>
                 {hastaCevap != null && (
-                  <p className="text-amber-400 text-xs mb-2">
+                  <p className="text-amber-400 text-sm mb-2">
                     ℹ Hasta şöyle cevapladı: <strong>{hastaCevap}</strong>
                   </p>
                 )}
@@ -312,7 +312,7 @@ export default function KlinikAkisWizard({
                   type="range" min={q.min ?? 0} max={q.max ?? 100} value={anket[q.key]}
                   onChange={e => setAnket(prev => ({ ...prev, [q.key]: Number(e.target.value) }))}
                   className="w-full accent-violet-500 cursor-pointer" />
-                <div className="flex justify-between text-xs text-slate-600 mt-1">
+                <div className="flex justify-between text-sm text-slate-600 mt-1">
                   <span>{q.low}</span>
                   <span>{q.high}</span>
                 </div>
@@ -325,7 +325,7 @@ export default function KlinikAkisWizard({
 
     return (
       <div className="space-y-6">
-        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-300">
+        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm text-blue-300">
           ℹ <strong>10 soru</strong> — ilk 5 soru hasta anketiyle aynı (çift sayım önleme için replace), son 5 soru kliniğe özel.
         </div>
 
@@ -355,7 +355,7 @@ export default function KlinikAkisWizard({
           </div>
           {hastaAnketCevaplari && (
             <>
-              <div className="flex items-center justify-between text-xs border-t border-slate-800 pt-2">
+              <div className="flex items-center justify-between text-sm border-t border-slate-800 pt-2">
                 <span className="text-slate-500">Hasta Anketi (replace edilecek)</span>
                 <span className="text-red-400">−{hastaMevcutPuan.toFixed(1)}</span>
               </div>
@@ -392,7 +392,7 @@ export default function KlinikAkisWizard({
   function renderTetkik() {
     return (
       <div className="space-y-5">
-        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-300">
+        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm text-blue-300">
           ℹ Opsiyonel — tetkik sonuçlarını girin. Normal aralıktaki her değer puan kazandırır. Boş alanlar hesaba katılmaz.
         </div>
 
@@ -412,16 +412,16 @@ export default function KlinikAkisWizard({
               }`}>
                 <label className="text-white font-medium text-sm block mb-1">
                   {p.label}
-                  <span className="ml-2 text-slate-500 font-normal text-xs">{p.unit}</span>
+                  <span className="ml-2 text-slate-500 font-normal text-sm">{p.unit}</span>
                 </label>
                 <input
                   type="number" step="any" placeholder="—" value={raw ?? ''}
                   onChange={e => setTetkik(prev => ({ ...prev, [p.key]: e.target.value }))}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500" />
                 <div className="flex items-center justify-between mt-1">
-                  <p className="text-slate-500 text-[10px]">Normal: {p.min}–{p.max}</p>
+                  <p className="text-slate-500 text-sm">Normal: {p.min}–{p.max}</p>
                   {filled && (
-                    <span className={`text-[10px] font-bold ${inRange ? 'text-emerald-400' : 'text-red-400'}`}>
+                    <span className={`text-sm font-bold ${inRange ? 'text-emerald-400' : 'text-red-400'}`}>
                       {inRange ? `+${p.puan}` : '0'}
                     </span>
                   )}
@@ -469,7 +469,7 @@ export default function KlinikAkisWizard({
             Daha yüksek hassasiyetli fotoğraf analizi veya cihaz entegrasyonu ile Skor yeniden hesaplanır.
             Ön analizdeki skoru <strong>replace eder</strong>.
           </p>
-          <p className="text-slate-500 text-xs mt-2">
+          <p className="text-slate-500 text-sm mt-2">
             <strong>Not:</strong> Fotoğraf/cihaz entegrasyonu sonraki sprintte. Şimdilik manuel skor girişi.
           </p>
         </div>
@@ -484,7 +484,7 @@ export default function KlinikAkisWizard({
             value={ileriSkor}
             onChange={e => setIleriSkor(e.target.value)}
             className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white text-lg font-bold focus:outline-none focus:border-violet-500" />
-          <p className="text-slate-500 text-xs mt-2">
+          <p className="text-slate-500 text-sm mt-2">
             Girilmezse ön analiz ({mevcutC250}) kullanılır.
           </p>
 
@@ -567,16 +567,16 @@ export default function KlinikAkisWizard({
             type="range" min={0} max={100} value={hekimScore}
             onChange={e => setHekimScore(Number(e.target.value))}
             className="w-full accent-violet-500 cursor-pointer mb-2" />
-          <div className="flex justify-between text-xs text-slate-500">
+          <div className="flex justify-between text-sm text-slate-500">
             <span>0</span><span>Yaşından yaşlı</span><span>Yaşında</span><span>Genç</span><span>100</span>
           </div>
         </div>
 
         <div className="p-4 rounded-xl border text-center"
           style={{ borderColor: `${scoreColor(finalSkor)}30`, background: `${scoreColor(finalSkor)}0d` }}>
-          <p className="text-slate-400 text-xs mb-1">Tahmini Final Gençlik Skoru</p>
+          <p className="text-slate-400 text-sm mb-1">Tahmini Final Gençlik Skoru</p>
           <p className="text-4xl font-black" style={{ color: scoreColor(finalSkor) }}>{finalSkor}</p>
-          <p className="text-slate-500 text-xs mt-1">({araToplam.toFixed(1)} × 0.85) + ({hekimScore} × 0.15)</p>
+          <p className="text-slate-500 text-sm mt-1">({araToplam.toFixed(1)} × 0.85) + ({hekimScore} × 0.15)</p>
         </div>
 
         <div>
@@ -622,7 +622,7 @@ export default function KlinikAkisWizard({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-1">Vaka Tamamlandı</p>
+              <p className="text-emerald-400 text-sm font-bold uppercase tracking-widest mb-1">Vaka Tamamlandı</p>
               <p className="text-7xl font-black text-emerald-400 leading-none mb-2">{publishedScore}</p>
               <p className="text-slate-300 text-sm">
                 <span className="font-semibold">{patientFirstName}</span>&apos;nın klinik onaylı skoru yayınlandı
@@ -631,7 +631,7 @@ export default function KlinikAkisWizard({
 
             {/* Otomatik yapılanlar — bilgilendirme */}
             <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700 space-y-2 text-sm">
-              <p className="text-slate-300 font-bold text-xs uppercase tracking-wider mb-1">Senin için otomatik yapıldı</p>
+              <p className="text-slate-300 font-bold text-sm uppercase tracking-wider mb-1">Senin için otomatik yapıldı</p>
               <div className="flex items-center gap-2 text-slate-400">
                 <span className="text-emerald-400 shrink-0">✓</span>
                 <span>Skor hasta paneline işlendi</span>
@@ -646,7 +646,7 @@ export default function KlinikAkisWizard({
               </div>
             </div>
 
-            <p className="text-slate-500 text-xs text-center italic">
+            <p className="text-slate-500 text-sm text-center italic">
               Sosyal paylaşım hastanın kendi tercihi — kendi panelinden yapacak.
             </p>
           </>
@@ -655,7 +655,7 @@ export default function KlinikAkisWizard({
             <div className="text-center py-6 bg-slate-800/60 border border-slate-700 rounded-2xl">
               <p className="text-slate-400 text-sm mb-2">Yayınlanacak Gençlik Skoru</p>
               <p className="text-7xl font-black" style={{ color: scoreColor(finalSkor) }}>{finalSkor}</p>
-              <p className="text-slate-500 text-xs mt-2">
+              <p className="text-slate-500 text-sm mt-2">
                 Alg: {aktifC250} · Anket: {(hastaMevcutPuan + klinikNetKatki).toFixed(1)} · Tetkik: +{tetkikPuan.toFixed(1)} · Hekim: {hekimScore}
               </p>
             </div>
@@ -731,7 +731,7 @@ export default function KlinikAkisWizard({
           return (
             <div key={s.n} className="flex items-center flex-1">
               <div className="flex flex-col items-center gap-1 shrink-0">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all
                   ${done ? 'bg-emerald-500 text-white' : curr ? 'bg-violet-600 text-white ring-2 ring-violet-400/50' : 'bg-slate-800 text-slate-500 border border-slate-700'}`}>
                   {done ? '✓' : s.n}
                 </div>

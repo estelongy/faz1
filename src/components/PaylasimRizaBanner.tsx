@@ -25,7 +25,7 @@ export default function PaylasimRizaBanner({ pendingRequests }: Props) {
               ? 'Klinik vitrini paylaşım izni isteniyor'
               : `${pendingRequests.length} paylaşım izni isteği var`}
           </h3>
-          <p className="text-slate-400 text-xs mt-1 leading-relaxed">
+          <p className="text-slate-400 text-sm mt-1 leading-relaxed">
             Bir klinik, vakanın sonucunu Estelongy topluluk vitrininde anonim biçimde sergilemek istiyor.
             Onaylarsan ad baş harfleri + yaş + skor görünür, kimliğin korunur. KVKK kapsamında açık rıza alınır.
           </p>
@@ -69,9 +69,9 @@ function RequestRow({ request }: { request: SharedCaseWithProfile }) {
       <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
         <div>
           <p className="text-white text-sm font-bold">{request.clinic_name ?? 'Klinik'}</p>
-          <p className="text-slate-500 text-xs mt-0.5">{reqDate} tarihli istek</p>
+          <p className="text-slate-500 text-sm mt-0.5">{reqDate} tarihli istek</p>
         </div>
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-2 text-sm">
           <span className="text-slate-500">Skor:</span>
           <span className="text-slate-300 font-bold">{request.initial_score ?? '—'}</span>
           <span className="text-slate-700">→</span>
@@ -84,7 +84,7 @@ function RequestRow({ request }: { request: SharedCaseWithProfile }) {
 
       {/* Anonimlik seçimi */}
       <div className="mb-3">
-        <p className="text-slate-400 text-xs mb-2">Vitrinde nasıl görüneyim?</p>
+        <p className="text-slate-400 text-sm mb-2">Vitrinde nasıl görüneyim?</p>
         <div className="grid grid-cols-3 gap-2">
           {([
             { id: 'initials',  label: 'Baş harfler', hint: 'Örn. A. K.' },
@@ -101,8 +101,8 @@ function RequestRow({ request }: { request: SharedCaseWithProfile }) {
                   : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
               }`}
             >
-              <p className="text-xs font-bold">{opt.label}</p>
-              <p className="text-[10px] mt-0.5 opacity-70">{opt.hint}</p>
+              <p className="text-sm font-bold">{opt.label}</p>
+              <p className="text-sm mt-0.5 opacity-70">{opt.hint}</p>
             </button>
           ))}
         </div>

@@ -118,7 +118,7 @@ export default async function HastalarimPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider">
+                <tr className="border-b border-slate-800 text-slate-400 text-sm uppercase tracking-wider">
                   <th className="text-left px-4 py-3 font-medium">Hasta</th>
                   <th className="text-left px-4 py-3 font-medium">Yaş</th>
                   <th className="text-left px-4 py-3 font-medium">Skor</th>
@@ -152,7 +152,7 @@ export default async function HastalarimPage() {
                             </span>
                           : <span className="text-slate-600">—</span>}
                       </td>
-                      <td className="px-4 py-3 text-slate-400 text-xs">
+                      <td className="px-4 py-3 text-slate-400 text-sm">
                         {h.last_visit
                           ? new Date(h.last_visit).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
                           : '—'}
@@ -161,7 +161,7 @@ export default async function HastalarimPage() {
                       <td className="px-4 py-3 text-center text-emerald-400 font-semibold">{h.completed}</td>
                       <td className="px-4 py-3 text-right">
                         <Link href={`/klinik/panel/hasta/${h.user_id}`}
-                          className="inline-flex items-center gap-1 text-violet-400 hover:text-violet-300 text-xs font-semibold opacity-60 group-hover:opacity-100 transition-opacity">
+                          className="inline-flex items-center gap-1 text-violet-400 hover:text-violet-300 text-sm font-semibold opacity-60 group-hover:opacity-100 transition-opacity">
                           Aç
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

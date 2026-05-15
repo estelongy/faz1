@@ -71,7 +71,7 @@ export default async function EgitmenPaketlerPage() {
           <div className="flex items-center gap-2 mb-1">
             <span className="text-2xl">🎓</span>
             <h1 className="text-2xl font-bold text-white">Eğitmen Paneli</h1>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">Eğitmen</span>
+            <span className="text-sm px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">Eğitmen</span>
           </div>
           <p className="text-slate-400 text-sm">Video paketlerinizi yönetin · %70 gelir payı sizin</p>
         </div>
@@ -86,19 +86,19 @@ export default async function EgitmenPaketlerPage() {
       {/* Özet kartları */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div className="text-slate-400 text-xs mb-1">Yayında</div>
+          <div className="text-slate-400 text-sm mb-1">Yayında</div>
           <div className="text-2xl font-bold text-emerald-400">{published.length}</div>
-          <div className="text-slate-500 text-xs mt-1">paket aktif</div>
+          <div className="text-slate-500 text-sm mt-1">paket aktif</div>
         </div>
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div className="text-slate-400 text-xs mb-1">Toplam Satış</div>
+          <div className="text-slate-400 text-sm mb-1">Toplam Satış</div>
           <div className="text-2xl font-bold text-white">{totalSales}</div>
-          <div className="text-slate-500 text-xs mt-1">bilet</div>
+          <div className="text-slate-500 text-sm mt-1">bilet</div>
         </div>
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div className="text-slate-400 text-xs mb-1">Toplam Kazanç</div>
+          <div className="text-slate-400 text-sm mb-1">Toplam Kazanç</div>
           <div className="text-2xl font-bold text-emerald-400">{formatPrice(totalEarnings)}</div>
-          <div className="text-slate-500 text-xs mt-1">net (%70 pay)</div>
+          <div className="text-slate-500 text-sm mt-1">net (%70 pay)</div>
         </div>
       </div>
 
@@ -159,7 +159,7 @@ function PackageCard({ pkg }: { pkg: CoursePackage }) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-white font-semibold truncate group-hover:text-emerald-400 transition-colors">{pkg.title}</h3>
-          <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
+          <div className="flex items-center gap-2 mt-1 text-sm text-slate-500">
             {categoryLabel && <span>{categoryLabel}</span>}
             {categoryLabel && <span>·</span>}
             <span>{LEVEL_LABELS[pkg.level]}</span>
@@ -174,7 +174,7 @@ function PackageCard({ pkg }: { pkg: CoursePackage }) {
         <p className="text-slate-400 text-sm line-clamp-2 mb-3">{pkg.description}</p>
       )}
 
-      <div className="flex items-center justify-between text-xs text-slate-500">
+      <div className="flex items-center justify-between text-sm text-slate-500">
         <div className="flex gap-3">
           <span>📹 {pkg.total_videos} video</span>
           {pkg.total_duration_seconds > 0 && <span>⏱️ {formatDuration(pkg.total_duration_seconds)}</span>}

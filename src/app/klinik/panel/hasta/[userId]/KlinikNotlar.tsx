@@ -75,7 +75,7 @@ export default function KlinikNotlar({ userId, notes }: Props) {
           <span className="text-2xl">📝</span>
           <div className="text-left">
             <h2 className="text-white font-bold">Klinik Notları</h2>
-            <p className="text-slate-500 text-xs">
+            <p className="text-slate-500 text-sm">
               Hastaya özel kalıcı notlar · {notes.length} not
               {notes.some(n => n.pinned) && ` · ${notes.filter(n => n.pinned).length} sabit`}
             </p>
@@ -120,7 +120,7 @@ export default function KlinikNotlar({ userId, notes }: Props) {
               </button>
             </div>
             {error && (
-              <p className="text-red-400 text-xs">{error}</p>
+              <p className="text-red-400 text-sm">{error}</p>
             )}
           </div>
 
@@ -139,10 +139,10 @@ export default function KlinikNotlar({ userId, notes }: Props) {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       {n.pinned && (
-                        <span className="inline-block text-[10px] font-bold text-amber-400 mb-1">📌 SABİT</span>
+                        <span className="inline-block text-sm font-bold text-amber-400 mb-1">📌 SABİT</span>
                       )}
                       <p className="text-slate-200 text-sm whitespace-pre-wrap break-words">{n.note}</p>
-                      <p className="text-slate-600 text-[11px] mt-2">
+                      <p className="text-slate-600 text-sm mt-2">
                         {formatDate(n.created_at)}
                         {n.author_name && ` · ${n.author_name}`}
                       </p>

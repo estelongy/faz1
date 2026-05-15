@@ -50,7 +50,7 @@ export default function VitrinePaylasimSection({ userId, analyses }: Props) {
             </svg>
             Sonuç Vitrini Paylaşımı
           </h2>
-          <p className="text-slate-500 text-xs mt-1 leading-relaxed">
+          <p className="text-slate-500 text-sm mt-1 leading-relaxed">
             Hastadan açık rıza alarak bu vakayı topluluk vitrininde anonim biçimde sergileyebilirsin.
             Hasta kabul ederse vitrinde ad baş harfleri + yaş + skor görünür. KVKK uyumlu.
           </p>
@@ -104,19 +104,19 @@ function AnalysisShareRow({ userId, analysis }: { userId: string; analysis: Anal
     <div className="p-3 rounded-xl bg-slate-900/40 border border-slate-700/60">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="text-slate-500 text-xs shrink-0">{dateStr}</div>
+          <div className="text-slate-500 text-sm shrink-0">{dateStr}</div>
           <div className="flex items-center gap-1.5 shrink-0">
             {initial != null && <span className="text-slate-600 text-sm font-bold">{initial}</span>}
             <span className="text-slate-700">→</span>
             <span className="text-emerald-400 font-black text-base">{analysis.final_overall}</span>
             {delta != null && delta !== 0 && (
-              <span className={`text-xs font-bold ${delta > 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+              <span className={`text-sm font-bold ${delta > 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
                 ({delta > 0 ? '+' : ''}{delta})
               </span>
             )}
           </div>
           {statusMeta && (
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${statusMeta.color} truncate`}>
+            <span className={`text-sm font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${statusMeta.color} truncate`}>
               {statusMeta.label}
             </span>
           )}
@@ -128,7 +128,7 @@ function AnalysisShareRow({ userId, analysis }: { userId: string; analysis: Anal
               type="button"
               onClick={handleRequest}
               disabled={isPending}
-              className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 disabled:opacity-50 text-amber-300 text-xs font-bold transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 disabled:opacity-50 text-amber-300 text-sm font-bold transition-colors"
             >
               {isPending ? 'Gönderiliyor…' : 'Paylaşım izni iste'}
             </button>
@@ -138,17 +138,17 @@ function AnalysisShareRow({ userId, analysis }: { userId: string; analysis: Anal
               type="button"
               onClick={handleRevoke}
               disabled={isPending}
-              className="px-3 py-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors"
             >
               Vitrinden kaldır
             </button>
           )}
           {sc && sc.status === 'pending' && (
-            <span className="text-slate-500 text-xs italic px-2">Hasta cevabı bekleniyor</span>
+            <span className="text-slate-500 text-sm italic px-2">Hasta cevabı bekleniyor</span>
           )}
         </div>
       </div>
-      {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
+      {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
     </div>
   )
 }

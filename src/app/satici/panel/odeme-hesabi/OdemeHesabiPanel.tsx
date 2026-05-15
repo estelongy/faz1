@@ -113,7 +113,7 @@ export default function OdemeHesabiPanel({ initial }: { initial: Initial }) {
 
         {/* Durum göstergeleri */}
         {status.hasAccount && (
-          <div className="mt-5 pt-5 border-t border-white/10 grid grid-cols-3 gap-3 text-xs">
+          <div className="mt-5 pt-5 border-t border-white/10 grid grid-cols-3 gap-3 text-sm">
             <StatusDot active={status.detailsSubmitted} label="Bilgiler" />
             <StatusDot active={status.chargesEnabled}   label="Kart Ödemesi" />
             <StatusDot active={status.payoutsEnabled}   label="Banka Çekimi" />
@@ -123,10 +123,10 @@ export default function OdemeHesabiPanel({ initial }: { initial: Initial }) {
         {/* Gereksinimler */}
         {status.hasAccount && !fullyActive && status.requirements?.currentlyDue && status.requirements.currentlyDue.length > 0 && (
           <div className="mt-5 pt-5 border-t border-white/10">
-            <p className="text-amber-400 font-bold text-xs uppercase tracking-widest mb-2">Eksik Bilgiler</p>
-            <ul className="text-slate-400 text-xs space-y-0.5 list-disc list-inside">
+            <p className="text-amber-400 font-bold text-sm uppercase tracking-widest mb-2">Eksik Bilgiler</p>
+            <ul className="text-slate-400 text-sm space-y-0.5 list-disc list-inside">
               {status.requirements.currentlyDue.map(r => (
-                <li key={r} className="font-mono text-[11px]">{r}</li>
+                <li key={r} className="font-mono text-sm">{r}</li>
               ))}
             </ul>
           </div>
@@ -199,7 +199,7 @@ function InfoCard({ icon, title, desc }: { icon: string; title: string; desc: st
     <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
       <div className="text-2xl mb-2">{icon}</div>
       <p className="text-white font-bold text-sm mb-1">{title}</p>
-      <p className="text-slate-500 text-xs leading-relaxed">{desc}</p>
+      <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
     </div>
   )
 }

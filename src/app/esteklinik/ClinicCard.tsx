@@ -99,7 +99,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
                   {clinic.name}
                 </h3>
                 {clinic.location && (
-                  <p className="text-slate-500 text-xs mt-0.5 line-clamp-1">📍 {clinic.location}</p>
+                  <p className="text-slate-500 text-sm mt-0.5 line-clamp-1">📍 {clinic.location}</p>
                 )}
               </div>
             </div>
@@ -116,20 +116,20 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
           {/* Etiketler — slot her zaman var (yer rezerve), boş kalabilir */}
           <div className="flex flex-wrap gap-1.5 min-h-[24px]">
             {clinic.clinic_type && (
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#10876B]/12 text-[#0E7559] border border-[#10876B]/30">
+              <span className="text-sm font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#10876B]/12 text-[#0E7559] border border-[#10876B]/30">
                 {CLINIC_TYPE_LABEL[clinic.clinic_type] ?? clinic.clinic_type}
               </span>
             )}
             {(clinic.specialties ?? []).slice(0, 3).map((s, i) => (
               <span
                 key={i}
-                className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200"
+                className="text-sm uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200"
               >
                 {s}
               </span>
             ))}
             {(clinic.specialties ?? []).length > 3 && (
-              <span className="text-[10px] text-slate-400 self-center">+{(clinic.specialties ?? []).length - 3}</span>
+              <span className="text-sm text-slate-400 self-center">+{(clinic.specialties ?? []).length - 3}</span>
             )}
           </div>
 
@@ -140,7 +140,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
 
           {/* Footer: deneyim sayısı + Randevu Al */}
           <footer className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto gap-3">
-            <p className="text-[11px] text-slate-500">
+            <p className="text-sm text-slate-500">
               💬 <strong className="text-slate-700">{reviewCount}</strong> deneyim · son 12 ay
             </p>
 

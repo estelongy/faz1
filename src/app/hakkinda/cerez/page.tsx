@@ -58,7 +58,7 @@ export default function CerezPage() {
             <section>
               <h2 className="text-white font-semibold text-base mb-2">2. Hangi Çerezleri Kullanıyoruz?</h2>
               <div className="mt-3 overflow-x-auto">
-                <table className="w-full text-xs border border-slate-700 rounded-lg overflow-hidden">
+                <table className="w-full text-sm border border-slate-700 rounded-lg overflow-hidden">
                   <thead className="bg-slate-900">
                     <tr>
                       <th className="text-left px-3 py-2 text-slate-400 font-semibold">Çerez</th>
@@ -76,7 +76,7 @@ export default function CerezPage() {
                         <td className="px-3 py-2 text-slate-400">{c.purpose}</td>
                         <td className="px-3 py-2 text-slate-400">{c.duration}</td>
                         <td className="px-3 py-2">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          <span className={`px-2 py-0.5 rounded-full text-sm font-bold ${
                             c.type === 'Zorunlu' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'
                           }`}>{c.type}</span>
                         </td>
@@ -108,7 +108,7 @@ export default function CerezPage() {
                 <li><strong className="text-white">Safari:</strong> Tercihler → Gizlilik → Çerezler</li>
                 <li><strong className="text-white">Firefox:</strong> Seçenekler → Gizlilik ve Güvenlik</li>
               </ul>
-              <p className="mt-2 text-slate-400 text-xs">Not: Zorunlu çerezleri devre dışı bırakırsanız platform düzgün çalışmaz.</p>
+              <p className="mt-2 text-slate-400 text-sm">Not: Zorunlu çerezleri devre dışı bırakırsanız platform düzgün çalışmaz.</p>
             </section>
 
             <section>
@@ -122,7 +122,7 @@ export default function CerezPage() {
                 <a href="mailto:kvkk@estelongy.com" className="text-violet-400 hover:text-violet-300">kvkk@estelongy.com</a>{' '}
                 adresine yazabilirsiniz.
               </p>
-              <p className="mt-2 text-xs text-slate-500">Platform işleticisi: Vestoriq OÜ — Tallinn, Estonya</p>
+              <p className="mt-2 text-sm text-slate-500">Platform işleticisi: Vestoriq OÜ — Tallinn, Estonya</p>
             </section>
           </div>
         </div>

@@ -55,7 +55,7 @@ export default async function SaticiIadelerPage({
           <span className="text-slate-700">|</span>
           <span className="text-white text-sm font-bold">İade Talepleri</span>
           {pendingCount > 0 && (
-            <span className="bg-amber-500 text-black text-xs font-black px-2 py-0.5 rounded-full">{pendingCount}</span>
+            <span className="bg-amber-500 text-black text-sm font-black px-2 py-0.5 rounded-full">{pendingCount}</span>
           )}
         </div>
       </header>
@@ -100,21 +100,21 @@ export default async function SaticiIadelerPage({
                     <div>
                       <p className="text-white font-bold">{item?.product_snapshot?.name ?? 'Ürün'}</p>
                       {item?.orders?.order_number && (
-                        <p className="text-slate-500 text-xs mt-0.5">Sipariş #{item.orders.order_number}</p>
+                        <p className="text-slate-500 text-sm mt-0.5">Sipariş #{item.orders.order_number}</p>
                       )}
-                      <p className="text-slate-500 text-xs mt-0.5">
+                      <p className="text-slate-500 text-sm mt-0.5">
                         {new Date(ret.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${badge.color}`}>{badge.label}</span>
+                      <span className={`text-sm font-bold px-2.5 py-1 rounded-full ${badge.color}`}>{badge.label}</span>
                       {item?.line_total && (
                         <p className="text-white font-bold mt-1">₺{Number(item.line_total).toLocaleString('tr-TR')}</p>
                       )}
                     </div>
                   </div>
 
-                  <div className="space-y-1 text-xs text-slate-400 mb-4">
+                  <div className="space-y-1 text-sm text-slate-400 mb-4">
                     <p><span className="text-slate-500">Sebep:</span> {ret.reason}</p>
                     {ret.description && <p><span className="text-slate-500">Açıklama:</span> {ret.description}</p>}
                     {ret.resolver_note && (

@@ -64,7 +64,7 @@ export default function BugununAkisiCard({
           </div>
           <div className="min-w-0">
             <h2 className="text-white font-bold text-lg leading-tight">Aksiyon Planın</h2>
-            <p className="text-slate-500 text-xs mt-0.5">
+            <p className="text-slate-500 text-sm mt-0.5">
               {totalAcil > 0
                 ? `${totalAcil} acil · ${todayAppts.length} bugün`
                 : `Bugün ${todayAppts.length} randevu${todayCompleted > 0 ? ` · ${todayCompleted} tamam` : ''}`}
@@ -73,7 +73,7 @@ export default function BugununAkisiCard({
         </div>
         <Link
           href="/klinik/panel/takvim"
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-600 hover:border-violet-500/50 hover:bg-violet-500/10 text-slate-300 hover:text-violet-300 transition-colors"
+          className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-600 hover:border-violet-500/50 hover:bg-violet-500/10 text-slate-300 hover:text-violet-300 transition-colors"
         >
           Takvim →
         </Link>
@@ -119,7 +119,7 @@ export default function BugununAkisiCard({
                 {pendingAppts.length > 5 && (
                   <Link
                     href="/klinik/panel/randevular?status=pending"
-                    className="block text-center text-xs text-slate-500 hover:text-amber-300 py-1.5 transition-colors"
+                    className="block text-center text-sm text-slate-500 hover:text-amber-300 py-1.5 transition-colors"
                   >
                     +{pendingAppts.length - 5} bekleyen daha →
                   </Link>
@@ -144,14 +144,14 @@ export default function BugununAkisiCard({
             {/* BUGÜN TAMAMLANAN — özet */}
             {todayCompleted > 0 && (
               <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-                <div className="flex items-center gap-2 text-xs">
+                <div className="flex items-center gap-2 text-sm">
                   <span>✓</span>
                   <span className="text-emerald-300 font-semibold">
                     Bugün {todayCompleted} hasta tamamlandı
                   </span>
                 </div>
                 {todayCancelled > 0 && (
-                  <span className="text-xs text-slate-500">{todayCancelled} iptal/gelmedi</span>
+                  <span className="text-sm text-slate-500">{todayCancelled} iptal/gelmedi</span>
                 )}
               </div>
             )}
@@ -160,7 +160,7 @@ export default function BugununAkisiCard({
 
         {/* Yarın özeti */}
         {tomorrowApptsCount > 0 && (
-          <div className="pt-2 mt-2 border-t border-slate-700/40 flex items-center justify-between text-xs">
+          <div className="pt-2 mt-2 border-t border-slate-700/40 flex items-center justify-between text-sm">
             <span className="text-slate-500">🌅 Yarın {tomorrowApptsCount} randevu</span>
             <Link
               href="/klinik/panel/takvim"
@@ -193,7 +193,7 @@ function Bolme({
   }
   return (
     <div>
-      <div className={`flex items-center gap-1.5 mb-2 ${accentMap[accent]} text-xs font-bold uppercase tracking-wider`}>
+      <div className={`flex items-center gap-1.5 mb-2 ${accentMap[accent]} text-sm font-bold uppercase tracking-wider`}>
         <span>{icon}</span>
         <span>{title}</span>
         <span className="text-slate-600 font-normal normal-case tracking-normal">· {count}</span>
@@ -220,10 +220,10 @@ function RandevuSatir({ apt, variant }: { apt: ApptView; variant: 'in_progress' 
       <div className="flex-1 min-w-0">
         <p className="text-white text-sm font-semibold truncate">{apt.patientName}</p>
         {variant === 'in_progress' && (
-          <p className="text-violet-400/70 text-[10px] uppercase tracking-wide mt-0.5">Görüşmede</p>
+          <p className="text-violet-400/70 text-sm uppercase tracking-wide mt-0.5">Görüşmede</p>
         )}
       </div>
-      <span className={`text-xs font-bold px-3 py-1.5 rounded-lg shrink-0 transition-all ${ctaColor}`}>
+      <span className={`text-sm font-bold px-3 py-1.5 rounded-lg shrink-0 transition-all ${ctaColor}`}>
         {cta} →
       </span>
     </Link>
@@ -261,7 +261,7 @@ function PendingSatir({
   return (
     <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="text-amber-300 font-mono text-xs font-bold w-20 shrink-0 truncate">
+        <div className="text-amber-300 font-mono text-sm font-bold w-20 shrink-0 truncate">
           {formatRelativeDate(apt.time)}
         </div>
         <div className="flex-1 min-w-0">
@@ -272,7 +272,7 @@ function PendingSatir({
             type="button"
             onClick={() => doAction('confirm')}
             disabled={isPending}
-            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-sm font-bold transition-colors"
           >
             {isPending ? '…' : '✓ Onayla'}
           </button>
@@ -280,21 +280,21 @@ function PendingSatir({
             type="button"
             onClick={() => doAction('reject')}
             disabled={isPending}
-            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 disabled:opacity-40 text-slate-400 hover:text-red-400 text-xs font-bold transition-colors border border-slate-700"
+            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 disabled:opacity-40 text-slate-400 hover:text-red-400 text-sm font-bold transition-colors border border-slate-700"
             title="Reddet"
           >
             ✕
           </button>
           <Link
             href={`/klinik/panel/randevu/${apt.id}`}
-            className="px-2 py-1.5 rounded-lg text-slate-500 hover:text-slate-300 text-xs transition-colors"
+            className="px-2 py-1.5 rounded-lg text-slate-500 hover:text-slate-300 text-sm transition-colors"
             title="Detay"
           >
             ⋯
           </Link>
         </div>
       </div>
-      {err && <p className="text-red-400 text-xs mt-1.5">{err}</p>}
+      {err && <p className="text-red-400 text-sm mt-1.5">{err}</p>}
     </div>
   )
 }
@@ -304,7 +304,7 @@ function EmptyState() {
     <div className="py-8 text-center">
       <div className="text-3xl opacity-50 mb-2">☕</div>
       <p className="text-slate-300 font-medium text-sm mb-1">Aksiyon yok — kahve molası</p>
-      <p className="text-slate-500 text-xs">Bugün için onay bekleyen ya da akışta randevu yok.</p>
+      <p className="text-slate-500 text-sm">Bugün için onay bekleyen ya da akışta randevu yok.</p>
     </div>
   )
 }

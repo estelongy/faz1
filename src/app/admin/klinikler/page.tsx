@@ -281,20 +281,20 @@ export default async function KliniklerPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="text-white font-bold">{app.name}</div>
-                    <div className="text-slate-400 text-xs mt-0.5">
+                    <div className="text-slate-400 text-sm mt-0.5">
                       {app.profiles?.full_name ?? '—'} · {app.location ?? 'Konum yok'}
                       {app.educator_applied_at && (
                         <> · Başvuru: {new Date(app.educator_applied_at).toLocaleDateString('tr-TR')}</>
                       )}
                     </div>
                   </div>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">
+                  <span className="text-sm px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">
                     Eğitmen Başvurusu
                   </span>
                 </div>
                 {app.educator_application_message && (
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 mb-4">
-                    <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Başvuru Mesajı</div>
+                    <div className="text-sm text-slate-500 uppercase tracking-wider mb-2">Başvuru Mesajı</div>
                     <p className="text-slate-300 text-sm whitespace-pre-wrap">{app.educator_application_message}</p>
                   </div>
                 )}
@@ -367,10 +367,10 @@ export default async function KliniklerPage() {
                 <tr key={c.id} className="hover:bg-slate-800/40 transition-colors">
                   <td className="px-4 py-3">
                     <div className="text-white font-medium">{c.name}</div>
-                    <div className="text-slate-500 text-xs">{c.profiles?.full_name ?? '—'}</div>
+                    <div className="text-slate-500 text-sm">{c.profiles?.full_name ?? '—'}</div>
                   </td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">{c.location ?? '—'}</td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">{new Date(c.created_at).toLocaleDateString('tr-TR')}</td>
+                  <td className="px-4 py-3 text-slate-400 text-sm">{c.location ?? '—'}</td>
+                  <td className="px-4 py-3 text-slate-400 text-sm">{new Date(c.created_at).toLocaleDateString('tr-TR')}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className={`text-sm font-bold ${
@@ -380,14 +380,14 @@ export default async function KliniklerPage() {
                       <form action={addCredit} className="flex gap-1 items-center">
                         <input type="hidden" name="clinicId" value={c.id} />
                         <input type="number" name="amount" defaultValue={10} min={1} max={1000}
-                          className="w-14 bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded px-1.5 py-0.5 focus:outline-none focus:border-violet-500"
+                          className="w-14 bg-slate-800 border border-slate-700 text-slate-300 text-sm rounded px-1.5 py-0.5 focus:outline-none focus:border-violet-500"
                           aria-label="Eklenecek kredi miktarı" />
-                        <button type="submit" className="px-1.5 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white text-xs rounded transition-colors" title="Klinike kredi ekle">+</button>
+                        <button type="submit" className="px-1.5 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white text-sm rounded transition-colors" title="Klinike kredi ekle">+</button>
                       </form>
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLOR[c.approval_status]}`}>
+                    <span className={`text-sm px-2 py-0.5 rounded-full ${STATUS_COLOR[c.approval_status]}`}>
                       {STATUS_LABEL[c.approval_status]}
                     </span>
                   </td>
@@ -398,7 +398,7 @@ export default async function KliniklerPage() {
                         <input type="hidden" name="makeEducator" value={c.is_educator ? 'false' : 'true'} />
                         <button
                           type="submit"
-                          className={`text-xs px-2 py-1 rounded-lg font-medium transition-colors ${
+                          className={`text-sm px-2 py-1 rounded-lg font-medium transition-colors ${
                             c.is_educator
                               ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
                               : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
@@ -409,19 +409,19 @@ export default async function KliniklerPage() {
                         </button>
                       </form>
                     ) : (
-                      <span className="text-xs text-slate-600">—</span>
+                      <span className="text-sm text-slate-600">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
                     <form action={updateClinic} className="flex gap-1">
                       <input type="hidden" name="clinicId" value={c.id} />
                       <select name="status" defaultValue={c.approval_status}
-                        className="bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-violet-500">
+                        className="bg-slate-800 border border-slate-700 text-slate-300 text-sm rounded-lg px-2 py-1 focus:outline-none focus:border-violet-500">
                         <option value="pending">Beklemede</option>
                         <option value="approved">Onayla</option>
                         <option value="rejected">Reddet</option>
                       </select>
-                      <button type="submit" className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-xs rounded-lg transition-colors">
+                      <button type="submit" className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-sm rounded-lg transition-colors">
                         Kaydet
                       </button>
                     </form>
@@ -447,17 +447,17 @@ function ClinicCard({ clinic, action, showActions }: {
       <div className="flex items-start justify-between mb-3">
         <div>
           <div className="text-white font-bold">{clinic.name}</div>
-          <div className="text-slate-400 text-xs mt-0.5">{clinic.profiles?.full_name ?? 'Bilinmiyor'} · {clinic.location ?? 'Konum yok'}</div>
+          <div className="text-slate-400 text-sm mt-0.5">{clinic.profiles?.full_name ?? 'Bilinmiyor'} · {clinic.location ?? 'Konum yok'}</div>
         </div>
-        <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLOR[clinic.approval_status]}`}>
+        <span className={`text-sm px-2 py-0.5 rounded-full ${STATUS_COLOR[clinic.approval_status]}`}>
           {STATUS_LABEL[clinic.approval_status]}
         </span>
       </div>
-      {clinic.bio && <p className="text-slate-400 text-xs mb-3 line-clamp-2">{clinic.bio}</p>}
+      {clinic.bio && <p className="text-slate-400 text-sm mb-3 line-clamp-2">{clinic.bio}</p>}
       {clinic.specialties && clinic.specialties.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-4">
           {clinic.specialties.slice(0, 4).map(s => (
-            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">{s}</span>
+            <span key={s} className="text-sm px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">{s}</span>
           ))}
         </div>
       )}

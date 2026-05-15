@@ -47,10 +47,10 @@ export default function LongevityNedirPage() {
 
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="text-sm font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 Longevity
               </span>
-              <span className="text-slate-500 text-xs">10 dk okuma</span>
+              <span className="text-slate-500 text-sm">10 dk okuma</span>
             </div>
             <h1 className="text-4xl font-black text-white leading-tight mb-4">
               Longevity Nedir?<br />
@@ -67,12 +67,12 @@ export default function LongevityNedirPage() {
             <h2 className="text-white font-black text-2xl mb-4">Biyolojik Yaş vs. Takvim Yaşı</h2>
             <div className="grid grid-cols-2 gap-4 mb-5">
               <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Takvim Yaşı</p>
+                <p className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-2">Takvim Yaşı</p>
                 <p className="text-white text-2xl font-black mb-1">Pasaportunuzdaki yaş</p>
                 <p className="text-slate-500 text-sm">Değiştirilemez. Sadece zamanı sayar.</p>
               </div>
               <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
-                <p className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">Biyolojik Yaş</p>
+                <p className="text-emerald-400 text-sm font-bold uppercase tracking-wider mb-2">Biyolojik Yaş</p>
                 <p className="text-white text-2xl font-black mb-1">Hücrelerinizin gerçek yaşı</p>
                 <p className="text-slate-400 text-sm">Ölçülebilir. Ve değiştirilebilir.</p>
               </div>
@@ -127,11 +127,11 @@ export default function LongevityNedirPage() {
                     <span className="text-2xl shrink-0">{m.icon}</span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-slate-600 text-xs font-mono">{m.no}</span>
+                        <span className="text-slate-600 text-sm font-mono">{m.no}</span>
                         <h3 className="text-white font-black text-lg">{m.title}</h3>
                       </div>
                       <p className="text-slate-400 text-sm leading-relaxed mb-3">{m.desc}</p>
-                      <div className="flex gap-2 text-xs bg-slate-900/50 rounded-lg p-3">
+                      <div className="flex gap-2 text-sm bg-slate-900/50 rounded-lg p-3">
                         <span className="font-bold" style={{ color: m.color }}>→ Müdahale:</span>
                         <span className="text-slate-400">{m.intervention}</span>
                       </div>
@@ -222,7 +222,7 @@ export default function LongevityNedirPage() {
                   </div>
                   <ul className="space-y-2">
                     {p.points.map((pt, i) => (
-                      <li key={i} className="flex gap-2 text-xs text-slate-400 leading-relaxed">
+                      <li key={i} className="flex gap-2 text-sm text-slate-400 leading-relaxed">
                         <span className="shrink-0 mt-0.5 w-1.5 h-1.5 rounded-full" style={{ background: p.color }} />
                         <span>{pt}</span>
                       </li>
@@ -274,7 +274,7 @@ export default function LongevityNedirPage() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-slate-800">
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-4">Diğer Rehberler</p>
+            <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-4">Diğer Rehberler</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
                 { href: '/rehber/estetik-uygulamalar', label: 'Estetik Uygulamalar', icon: '💉' },

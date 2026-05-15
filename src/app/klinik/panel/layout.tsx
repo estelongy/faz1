@@ -76,7 +76,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
         {/* Üst bar (mobil için boşluk + çıkış) */}
         <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur border-b border-slate-800 h-14 flex items-center justify-between px-4 lg:px-8">
           <div className="lg:hidden w-10" /> {/* mobile hamburger placeholder */}
-          <div className="hidden lg:flex items-center gap-2 text-xs">
+          <div className="hidden lg:flex items-center gap-2 text-sm">
             <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-medium">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5" />
               Estelongy Klinik Topluluğu

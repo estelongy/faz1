@@ -78,10 +78,10 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
 
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              <span className="text-sm font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 Gençlik Skoru
               </span>
-              <span className="text-slate-500 text-xs">6 dk okuma</span>
+              <span className="text-slate-500 text-sm">6 dk okuma</span>
             </div>
             <h1 className="text-4xl font-black text-white leading-tight mb-4">
               Estelongy Gençlik Skoru<br />
@@ -106,7 +106,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
                 { step: '06', label: 'Klinik Onaylı Final Skor', color: '#00d4ff', desc: 'Final = (Ara toplam × 0.85) + (Hekim değerlendirmesi × 0.15). Sertifika yayınlanır.' },
               ].map(s => (
                 <div key={s.step} className="flex gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black shrink-0" style={{ background: `${s.color}20`, color: s.color }}>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0" style={{ background: `${s.color}20`, color: s.color }}>
                     {s.step}
                   </div>
                   <div>
@@ -135,7 +135,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-base">{c.icon}</span>
                         <span className="text-white text-sm font-semibold">{c.name}</span>
-                        <span className="text-slate-500 text-xs">{c.direction}</span>
+                        <span className="text-slate-500 text-sm">{c.direction}</span>
                       </div>
                       <span className="text-sm font-black" style={{ color: c.color }}>%{c.weight}</span>
                     </div>
@@ -155,9 +155,9 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-white font-bold text-sm">{c.name}</p>
-                      <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: `${c.color}20`, color: c.color }}>%{c.weight}</span>
+                      <span className="text-sm font-bold px-1.5 py-0.5 rounded" style={{ background: `${c.color}20`, color: c.color }}>%{c.weight}</span>
                     </div>
-                    <p className="text-slate-400 text-xs leading-relaxed">{c.desc}</p>
+                    <p className="text-slate-400 text-sm leading-relaxed">{c.desc}</p>
                   </div>
                 </div>
               ))}
@@ -165,7 +165,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
 
             {/* Formül kutusu */}
             <div className="mt-6 p-5 rounded-2xl bg-slate-900 border border-slate-700 font-mono text-sm">
-              <p className="text-slate-500 text-xs mb-3">Algoritma Ham Skor Formülü</p>
+              <p className="text-slate-500 text-sm mb-3">Algoritma Ham Skor Formülü</p>
               <p className="text-white leading-relaxed">
                 Skor = (hydration × <span className="text-blue-400">0.25</span>)<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (tone_uniformity × <span className="text-violet-400">0.25</span>)<br />
@@ -183,7 +183,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
               Aynı skoru 25 yaşındaki ve 55 yaşındaki biri aldığında gerçek anlamları farklıdır.
               Yaş faktörü bu beklenti farkını normalize eder:
             </p>
-            <div className="grid grid-cols-5 gap-2 text-center text-xs">
+            <div className="grid grid-cols-5 gap-2 text-center text-sm">
               {[
                 { age: '≤25', factor: '1.02', color: '#00d4ff', note: 'Hafif bonus' },
                 { age: '≤35', factor: '1.00', color: '#22c55e', note: 'Referans' },
@@ -194,7 +194,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
                 <div key={y.age} className="p-3 rounded-xl bg-slate-800/50 border border-slate-700">
                   <p className="text-slate-400 mb-1">{y.age} yaş</p>
                   <p className="text-xl font-black" style={{ color: y.color }}>×{y.factor}</p>
-                  <p className="text-slate-600 text-[10px] mt-1">{y.note}</p>
+                  <p className="text-slate-600 text-sm mt-1">{y.note}</p>
                 </div>
               ))}
             </div>
@@ -208,7 +208,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
               Atlanan her basamak skor hesabını etkilemez — akış yine de devam eder.
             </p>
 
-            <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 font-mono text-xs space-y-2">
+            <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 font-mono text-sm space-y-2">
               <p className="text-slate-500">{'// Örnek hesaplama'}</p>
               <p><span className="text-blue-400">ea_on</span>       = <span className="text-white">75</span>  <span className="text-slate-600">{'// Görsel AI sonucu'}</span></p>
               <p><span className="text-violet-400">ea_ileri</span>   = <span className="text-white">82</span>  <span className="text-slate-600">{'// Klinikteki yeniden analiz (75\'in yerini alır)'}</span></p>
@@ -220,7 +220,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
               <p><span className="text-cyan-400">hekim_puani</span>  = <span className="text-white">78 × 0.15 = 11.7</span></p>
               <p className="border-t border-slate-700 pt-2 text-base">
                 <span className="text-[#00d4ff] font-black">FINAL = 85.65</span>
-                <span className="text-slate-500 text-xs ml-2">← Klinik Onaylı Gençlik Skoru</span>
+                <span className="text-slate-500 text-sm ml-2">← Klinik Onaylı Gençlik Skoru</span>
               </p>
             </div>
           </section>
@@ -232,7 +232,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
               {SCORE_ZONES.map(z => (
                 <div key={z.label} className={`flex items-center gap-4 p-4 rounded-xl border ${z.border} ${z.bg}`}>
                   <div className="w-24 text-center">
-                    <p className="text-xs text-slate-500 mb-0.5">{z.range}</p>
+                    <p className="text-sm text-slate-500 mb-0.5">{z.range}</p>
                     <p className={`font-black text-lg ${z.text}`}>{z.label}</p>
                   </div>
                   <div className="w-px h-8 bg-slate-700" />
@@ -259,7 +259,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
                 <div key={c.title} className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
                   <span className="text-2xl">{c.icon}</span>
                   <p className="text-white font-bold mt-2 mb-1">{c.title}</p>
-                  <p className="text-slate-400 text-xs">{c.desc}</p>
+                  <p className="text-slate-400 text-sm">{c.desc}</p>
                 </div>
               ))}
             </div>
@@ -283,7 +283,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-slate-800">
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-4">Diğer Rehberler</p>
+            <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-4">Diğer Rehberler</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
                 { href: '/rehber/estetik-uygulamalar', label: 'Estetik Uygulamalar', icon: '💉' },

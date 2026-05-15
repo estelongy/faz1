@@ -77,7 +77,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
         <Link href="/panel/kurslarim" className="text-slate-400 hover:text-white text-sm">
           ← Kurslarım
         </Link>
-        <div className="text-emerald-400 text-xs font-medium">
+        <div className="text-emerald-400 text-sm font-medium">
           {completedCount}/{totalVideos} tamamlandı
         </div>
       </header>
@@ -109,7 +109,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
               />
               <div>
                 <h1 className="text-xl font-bold text-white">{activeVideo.title}</h1>
-                {clinic && <p className="text-slate-500 text-xs mt-1">Eğitmen: {clinic.name}</p>}
+                {clinic && <p className="text-slate-500 text-sm mt-1">Eğitmen: {clinic.name}</p>}
                 {activeVideo.description && (
                   <p className="text-slate-300 text-sm mt-3 whitespace-pre-wrap leading-relaxed">{activeVideo.description}</p>
                 )}
@@ -127,7 +127,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
           <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
             <div className="p-4 border-b border-slate-800">
               <h2 className="text-white font-bold text-sm line-clamp-2">{pkg.title}</h2>
-              <p className="text-slate-500 text-xs mt-1">{totalVideos} video · {formatDuration(pkg.total_duration_seconds ?? 0)}</p>
+              <p className="text-slate-500 text-sm mt-1">{totalVideos} video · {formatDuration(pkg.total_duration_seconds ?? 0)}</p>
             </div>
             <div className="max-h-[600px] overflow-y-auto">
               {(videos ?? []).map((v, idx) => {
@@ -142,7 +142,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-xs font-medium ${
+                      <div className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-sm font-medium ${
                         isCompleted
                           ? 'bg-emerald-500 text-white'
                           : isActive
@@ -155,7 +155,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
                         <p className={`text-sm font-medium line-clamp-2 ${isActive ? 'text-emerald-300' : 'text-white'}`}>
                           {v.title}
                         </p>
-                        <p className="text-slate-500 text-xs mt-0.5">{formatDuration(v.duration_seconds)}</p>
+                        <p className="text-slate-500 text-sm mt-0.5">{formatDuration(v.duration_seconds)}</p>
                       </div>
                     </div>
                   </Link>

@@ -157,7 +157,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
       {/* Üst bar — sidebar ile uyumlu */}
       <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5 h-14 flex items-center justify-between px-4 lg:px-8">
         <div className="lg:hidden w-10" />
-        <span className="text-slate-400 text-xs hidden sm:block truncate">{profile?.full_name ?? user.email}</span>
+        <span className="text-slate-400 text-sm hidden sm:block truncate">{profile?.full_name ?? user.email}</span>
         <form action={handleSignOut}>
           <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
             Çıkış
@@ -177,7 +177,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               <p className="text-emerald-300 font-medium text-sm">
                 {basvuruSuccess === 'klinik' ? 'Klinik başvurunuz alındı!' : 'İş Ortağı başvurunuz alındı!'}
               </p>
-              <p className="text-emerald-400/70 text-xs mt-0.5">
+              <p className="text-emerald-400/70 text-sm mt-0.5">
                 Başvurunuz en kısa sürede incelenecek, onaylandığında bilgilendirileceksiniz.
               </p>
             </div>
@@ -216,10 +216,10 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                 <h3 className="text-white font-bold text-base leading-tight mb-1">
                   {latestAnalysis ? 'Skoru Güncelle' : 'Skorunu Öğren'}
                 </h3>
-                <p className="text-slate-400 text-xs leading-relaxed">
+                <p className="text-slate-400 text-sm leading-relaxed">
                   {latestAnalysis ? 'Yeni selfie ile skorunu yenile' : 'Selfie ile saniyeler içinde'}
                 </p>
-                <div className="mt-3 flex items-center gap-1 text-violet-300 text-xs font-semibold">
+                <div className="mt-3 flex items-center gap-1 text-violet-300 text-sm font-semibold">
                   <span>{latestAnalysis ? 'Yeni Analiz' : 'Analizi Başlat'}</span>
                   <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -241,10 +241,10 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                 <h3 className="text-white font-bold text-base leading-tight mb-1">
                   Klinikten Randevu Al
                 </h3>
-                <p className="text-slate-400 text-xs leading-relaxed">
+                <p className="text-slate-400 text-sm leading-relaxed">
                   Onaylı estetik kliniklerinden
                 </p>
-                <div className="mt-3 flex items-center gap-1 text-blue-300 text-xs font-semibold">
+                <div className="mt-3 flex items-center gap-1 text-blue-300 text-sm font-semibold">
                   <span>Klinik Seç</span>
                   <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -264,10 +264,10 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                   </svg>
                 </div>
                 <h3 className="text-white font-bold text-base leading-tight mb-1">EsteStore</h3>
-                <p className="text-slate-400 text-xs leading-relaxed">
+                <p className="text-slate-400 text-sm leading-relaxed">
                   Estelongy puanlı bakım ürünleri
                 </p>
-                <div className="mt-3 flex items-center gap-1 text-amber-300 text-xs font-semibold">
+                <div className="mt-3 flex items-center gap-1 text-amber-300 text-sm font-semibold">
                   <span>Ürünleri Gör</span>
                   <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -285,7 +285,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               {/* Faz rozeti */}
               <div className="flex justify-center mb-3">
                 <div
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border ${
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-bold border ${
                     skorDurumu === 'guncelleniyor' ? 'skor-guncelleniyor-rozet' : ''
                   }`}
                   style={{
@@ -307,7 +307,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               {/* Aksiyon satırı */}
               <div className="mt-5 pt-5 border-t border-slate-700/50 flex flex-wrap items-center gap-3 justify-between">
                 <div>
-                  <p className="text-slate-500 text-xs">
+                  <p className="text-slate-500 text-sm">
                     {new Date(latestAnalysis.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
@@ -347,10 +347,10 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           <div className="flex items-center gap-3">
             <span className="text-2xl shrink-0">{nextAction.emoji}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Sıradaki adım</p>
+              <p className="text-white/70 text-sm uppercase tracking-widest font-bold">Sıradaki adım</p>
               <h3 className="text-white font-bold text-sm leading-tight">{nextAction.title}</h3>
             </div>
-            <span className="text-white font-semibold text-xs shrink-0">{nextAction.cta}</span>
+            <span className="text-white font-semibold text-sm shrink-0">{nextAction.cta}</span>
           </div>
         </Link>
 

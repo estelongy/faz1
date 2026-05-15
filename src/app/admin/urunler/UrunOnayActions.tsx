@@ -24,7 +24,7 @@ export default function UrunOnayActions({
       <button
         onClick={() => run('rejected')}
         disabled={pending}
-        className="text-xs px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl transition-all disabled:opacity-40">
+        className="text-sm px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl transition-all disabled:opacity-40">
         Yayından Kaldır
       </button>
     )
@@ -35,13 +35,13 @@ export default function UrunOnayActions({
       <button
         onClick={() => run('approved')}
         disabled={pending}
-        className="text-xs px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl transition-all disabled:opacity-40">
+        className="text-sm px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl transition-all disabled:opacity-40">
         Onayla
       </button>
       <button
         onClick={() => run('rejected')}
         disabled={pending}
-        className="text-xs px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl transition-all disabled:opacity-40">
+        className="text-sm px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl transition-all disabled:opacity-40">
         Reddet
       </button>
     </div>

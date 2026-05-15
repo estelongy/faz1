@@ -129,7 +129,7 @@ export default async function SaticiBasvurPage({
           <p className="text-slate-400 text-sm mb-2">
             Başvurunuz incelemeye alındı. En kısa sürede değerlendirilecek.
           </p>
-          <p className="text-slate-500 text-xs mb-6">
+          <p className="text-slate-500 text-sm mb-6">
             Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-400">giriş yaparak</strong> iş ortağı panelinize erişebilirsiniz.
           </p>
           <Link href="/giris"
@@ -173,7 +173,7 @@ export default async function SaticiBasvurPage({
               <div className="text-2xl shrink-0 sm:mb-2">{icon}</div>
               <div className="flex-1 sm:flex-initial">
                 <div className="text-white text-sm font-medium">{title}</div>
-                <div className="text-slate-500 text-xs mt-0.5">{desc}</div>
+                <div className="text-slate-500 text-sm mt-0.5">{desc}</div>
               </div>
             </div>
           ))}

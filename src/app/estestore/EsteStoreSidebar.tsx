@@ -25,11 +25,11 @@ export default function EsteStoreSidebar() {
         {/* Sticky header */}
         <div className="sticky top-0 z-10 bg-[#0F172A] border-b border-slate-800 h-12 flex items-center px-4">
           {open ? (
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C9A961] whitespace-nowrap">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#C9A961] whitespace-nowrap">
               Kategoriler
             </p>
           ) : (
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
               ☰
             </p>
           )}
@@ -59,7 +59,7 @@ export default function EsteStoreSidebar() {
                   />
                 </span>
                 <span
-                  className={`flex-1 text-[13px] font-medium truncate leading-tight transition-opacity duration-200 ${
+                  className={`flex-1 text-sm font-medium truncate leading-tight transition-opacity duration-200 ${
                     open ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
@@ -83,12 +83,12 @@ export default function EsteStoreSidebar() {
 
         {open && (
           <div className="px-4 py-4 mt-2 border-t border-slate-800">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-[#C9A961] mb-2">
+            <p className="text-sm uppercase tracking-[0.18em] text-[#C9A961] mb-2">
               Diğer
             </p>
             <Link
               href="/estestore/kategori/tum-kategoriler"
-              className="block text-[13px] text-slate-300 hover:text-white transition-colors py-1.5 font-medium"
+              className="block text-sm text-slate-300 hover:text-white transition-colors py-1.5 font-medium"
             >
               Tüm Kategoriler →
             </Link>

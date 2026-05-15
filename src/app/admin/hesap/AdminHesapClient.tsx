@@ -36,7 +36,7 @@ export default function AdminHesapClient() {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Yeni şifre</label>
+        <label className="block text-slate-400 text-sm mb-1">Yeni şifre</label>
         <input
           type="password"
           required
@@ -47,7 +47,7 @@ export default function AdminHesapClient() {
         />
       </div>
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Yeni şifre (tekrar)</label>
+        <label className="block text-slate-400 text-sm mb-1">Yeni şifre (tekrar)</label>
         <input
           type="password"
           required

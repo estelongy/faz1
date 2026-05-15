@@ -43,12 +43,12 @@ export default async function AdminKuponlarPage() {
                 <div className="flex items-center justify-between mb-2">
                   <code className="text-white font-black font-mono text-lg tracking-widest">{c.code}</code>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-500'}`}>
+                    <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${c.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-500'}`}>
                       {c.is_active ? 'Aktif' : 'Devre Dışı'}
                     </span>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-xs">
+                <div className="grid grid-cols-3 gap-2 text-sm">
                   <div>
                     <p className="text-slate-500">İndirim</p>
                     <p className="text-white font-bold">
@@ -69,7 +69,7 @@ export default async function AdminKuponlarPage() {
                   </div>
                 </div>
                 {c.valid_until && (
-                  <p className="text-slate-500 text-xs mt-2">
+                  <p className="text-slate-500 text-sm mt-2">
                     Geçerlilik: {new Date(c.valid_until).toLocaleDateString('tr-TR')}
                   </p>
                 )}

@@ -13,7 +13,7 @@ export default function UpdatePasswordLoading() {
           </div>
         </div>
         <p className="text-slate-400 text-sm font-medium">Oturum doğrulanıyor...</p>
-        <p className="text-slate-600 text-xs mt-1">Lütfen bekleyin</p>
+        <p className="text-slate-600 text-sm mt-1">Lütfen bekleyin</p>
       </div>
     </main>
   )

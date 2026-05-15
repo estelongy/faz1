@@ -279,7 +279,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
           <label className="block text-sm text-slate-500 mb-2">
             Telefon <span className="text-red-400">*</span>
             {otpVerified && (
-              <span className="ml-2 text-emerald-400 text-xs font-normal">✓ Doğrulandı</span>
+              <span className="ml-2 text-emerald-400 text-sm font-normal">✓ Doğrulandı</span>
             )}
           </label>
           <input type="tel" name="phone" required placeholder="05XX XXX XX XX"
@@ -375,14 +375,14 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm text-slate-500">
               Hizmetleriniz
-              {clinicType && <span className="ml-2 text-xs text-slate-500">— {treatments.length} seçenek</span>}
-              {selectedSpecialties.length > 0 && <span className="ml-2 text-xs text-[#10876B]">· {selectedSpecialties.length} seçili</span>}
+              {clinicType && <span className="ml-2 text-sm text-slate-500">— {treatments.length} seçenek</span>}
+              {selectedSpecialties.length > 0 && <span className="ml-2 text-sm text-[#10876B]">· {selectedSpecialties.length} seçili</span>}
             </label>
             {clinicType && treatments.length > 0 && (
               <button
                 type="button"
                 onClick={selectAllBranch}
-                className="text-xs text-[#10876B] hover:text-[#10876B] transition-colors font-medium"
+                className="text-sm text-[#10876B] hover:text-[#10876B] transition-colors font-medium"
               >
                 {allBranchSelected ? 'Tümünü Kaldır' : 'Tümünü Seç'}
               </button>
@@ -431,7 +431,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                 <button
                   type="button"
                   onClick={() => setExtraOpen(true)}
-                  className="inline-flex items-center gap-1.5 text-xs text-[#10876B] hover:text-[#10876B] transition-colors font-medium"
+                  className="inline-flex items-center gap-1.5 text-sm text-[#10876B] hover:text-[#10876B] transition-colors font-medium"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -488,7 +488,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                       ))}
                     </div>
                   )}
-                  <p className="text-[11px] text-slate-600 mt-1">Listeden seç veya yaz + Enter</p>
+                  <p className="text-sm text-slate-600 mt-1">Listeden seç veya yaz + Enter</p>
                 </div>
               )}
             </div>
@@ -497,12 +497,12 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
           {/* Ekstra (branş dışı) tag listesi */}
           {extraSpecialties.length > 0 && (
             <div className="mt-3">
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1.5">Ekstra Tedaviler ({extraSpecialties.length})</p>
+              <p className="text-sm uppercase tracking-widest text-slate-500 mb-1.5">Ekstra Tedaviler ({extraSpecialties.length})</p>
               <div className="flex flex-wrap gap-1.5">
                 {extraSpecialties.map(s => (
                   <span
                     key={s}
-                    className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md bg-[#10876B]/10 text-[#10876B] border border-[#10876B]/30"
+                    className="inline-flex items-center gap-1 text-sm px-2 py-1 rounded-md bg-[#10876B]/10 text-[#10876B] border border-[#10876B]/30"
                   >
                     {s}
                     <button
@@ -547,7 +547,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
               </svg>
               <div className="flex-1">
                 <p className="text-amber-300 text-sm font-medium">Bu e-posta zaten kayıtlı.</p>
-                <p className="text-amber-300/80 text-xs mt-1">
+                <p className="text-amber-300/80 text-sm mt-1">
                   Daha önce başvuru yapmış olabilirsin. <a href="/giris" className="underline font-semibold">Giriş yap</a> — başvurunun durumunu paneline dönerek görebilirsin.
                 </p>
               </div>

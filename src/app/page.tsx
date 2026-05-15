@@ -249,7 +249,7 @@ export default async function Home({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-3">
+                <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-bold uppercase tracking-widest mb-3">
                   Ücretsiz
                 </div>
                 <h3 className="text-2xl font-black text-white mb-2 leading-tight">
@@ -276,7 +276,7 @@ export default async function Home({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <div className="inline-block px-2.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 text-[10px] font-bold uppercase tracking-widest mb-3">
+                <div className="inline-block px-2.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 text-sm font-bold uppercase tracking-widest mb-3">
                   Klinik Onaylı
                 </div>
                 <h3 className="text-2xl font-black text-white mb-2 leading-tight">
@@ -303,7 +303,7 @@ export default async function Home({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
                 </div>
-                <div className="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-bold uppercase tracking-widest mb-3">
+                <div className="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-sm font-bold uppercase tracking-widest mb-3">
                   Hekim Puanlı
                 </div>
                 <h3 className="text-2xl font-black text-white mb-2 leading-tight">
@@ -369,7 +369,7 @@ export default async function Home({
 
                   {/* 03 — +10 puan highlight */}
                   {step.num === '03' && (
-                    <div className="mt-3 inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                    <div className="mt-3 inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold">
                       ✦ Skorunu Artır
                     </div>
                   )}
@@ -377,7 +377,7 @@ export default async function Home({
                   {/* 04 — hover önizleme */}
                   {step.num === '04' && (
                     <div className="relative group mt-3 self-start inline-block">
-                      <span className="inline-flex items-center gap-1.5 text-xs text-amber-400/70 group-hover:text-amber-400 transition-colors cursor-default select-none">
+                      <span className="inline-flex items-center gap-1.5 text-sm text-amber-400/70 group-hover:text-amber-400 transition-colors cursor-default select-none">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -423,9 +423,9 @@ export default async function Home({
                     <div className="w-2 h-2 rounded-full bg-violet-500 shrink-0" />
                     <div className="flex-1">
                       <span className="text-white font-medium text-sm">{item.label}</span>
-                      <span className="text-slate-500 text-xs ml-2">— {item.desc}</span>
+                      <span className="text-slate-500 text-sm ml-2">— {item.desc}</span>
                     </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 font-medium shrink-0">
+                    <span className="text-sm px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 font-medium shrink-0">
                       {item.badge}
                     </span>
                   </div>
@@ -447,7 +447,7 @@ export default async function Home({
                   </div>
                   <div>
                     <div className={`font-black text-lg ${z.text}`}>{z.label}</div>
-                    <div className="text-slate-400 text-xs">{z.range} puan · {z.desc}</div>
+                    <div className="text-slate-400 text-sm">{z.range} puan · {z.desc}</div>
                   </div>
                 </div>
               ))}
@@ -484,7 +484,7 @@ export default async function Home({
                 <Link
                   key={alan}
                   href={`/esteklinik?tip=${encodeURIComponent(alan)}`}
-                  className="px-3.5 py-1.5 rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300 text-xs font-medium tracking-wide hover:border-blue-400/60 hover:bg-blue-500/20 hover:text-white transition-all">
+                  className="px-3.5 py-1.5 rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300 text-sm font-medium tracking-wide hover:border-blue-400/60 hover:bg-blue-500/20 hover:text-white transition-all">
                   {alan}
                 </Link>
               ))}
@@ -516,7 +516,7 @@ export default async function Home({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
-            <p className="text-slate-600 text-xs mt-3">Kurulum ve İleri Analiz Hizmetlerimiz Ücretsizdir</p>
+            <p className="text-slate-600 text-sm mt-3">Kurulum ve İleri Analiz Hizmetlerimiz Ücretsizdir</p>
           </div>
         </div>
       </section>

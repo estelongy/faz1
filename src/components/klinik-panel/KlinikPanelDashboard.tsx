@@ -53,7 +53,7 @@ export default function KlinikPanelDashboard({
         </div>
         <div className="flex items-center gap-3">
           {/* Faz rozeti — gerçek akreditasyon */}
-          <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${
+          <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-bold ${
             accreditation.phase === 0 ? 'bg-slate-700/30 border-slate-600 text-slate-400' :
             accreditation.phase === 1 ? 'bg-violet-500/10 border-violet-500/30 text-violet-300' :
             accreditation.phase === 2 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' :
@@ -63,7 +63,7 @@ export default function KlinikPanelDashboard({
             {accreditation.phase === 0 ? 'Yeni Klinik' : `Faz ${accreditation.phase} — ${accreditation.phaseLabel}`}
           </div>
           <Link href="/klinik/panel/kredi"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold hover:opacity-80 transition-opacity">
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-bold hover:opacity-80 transition-opacity">
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
               <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -71,7 +71,7 @@ export default function KlinikPanelDashboard({
             {totalCredit} Kredi
           </Link>
           <Link href="/estestore"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-bold hover:bg-violet-500/20 transition-colors">
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-sm font-bold hover:bg-violet-500/20 transition-colors">
             <span>🛒</span>
             EsteStore
           </Link>
@@ -91,7 +91,7 @@ export default function KlinikPanelDashboard({
             <p className="text-white font-bold text-sm sm:text-base">
               <span className="text-violet-300">EsteStore</span> — Klinikler için pazaryeri
             </p>
-            <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+            <p className="text-slate-400 text-sm sm:text-sm mt-0.5">
               Kozmetik, sarf & medikal ve akademik eğitim paketleri tek çatıda. Profesyonel fiyat ve toplu alım baremi.
             </p>
           </div>
@@ -106,7 +106,7 @@ export default function KlinikPanelDashboard({
 
       {/* ─── KATMAN 1 — ŞİMDİ ─────────────────────────────────────── */}
       <section>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-2 px-1">Şimdi</p>
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-600 mb-2 px-1">Şimdi</p>
         <BugununAkisiCard
           todayAppts={todayAppts}
           tomorrowApptsCount={tomorrowApptsCount}
@@ -119,7 +119,7 @@ export default function KlinikPanelDashboard({
 
       {/* ─── KATMAN 2 — BU AY ─────────────────────────────────────── */}
       <section>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 mb-2 px-1">Bu Ay</p>
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-600 mb-2 px-1">Bu Ay</p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <UretiminCard metrics={uretimMetrics} />
           <AkreditasyonKart accreditation={accreditation} />
@@ -158,7 +158,7 @@ function UretiminCard({ metrics }: { metrics: UretimMetrics }) {
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-white font-bold">Üretimin</h3>
-          <p className="text-slate-500 text-xs mt-0.5">Bu ay</p>
+          <p className="text-slate-500 text-sm mt-0.5">Bu ay</p>
         </div>
         <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
           <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,14 +171,14 @@ function UretiminCard({ metrics }: { metrics: UretimMetrics }) {
         <Metric
           label="Yönlendirilen"
           value={thisMonthCount}
-          extra={<span className={`text-xs font-semibold ${deltaColor}`}>{deltaSign}{Math.abs(monthDelta)}</span>}
+          extra={<span className={`text-sm font-semibold ${deltaColor}`}>{deltaSign}{Math.abs(monthDelta)}</span>}
         />
         <Metric label="Kabul oranı" value={`${acceptanceRate}%`} />
         <Metric label="Klinik onayı" value={klinikOnayiSayisi} />
         <Metric label="Skoru artan" value="—" subtle />
       </div>
 
-      <div className="mt-4 pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs">
+      <div className="mt-4 pt-3 border-t border-slate-700/50 flex items-center justify-between text-sm">
         <span className="text-slate-500">Detaylı rapor</span>
         <span className="text-emerald-400 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
       </div>
@@ -203,7 +203,7 @@ function SonucVitriniCard({ cases }: { cases: SharedCaseWithProfile[] }) {
         <div className="flex items-start justify-between mb-4">
           <div>
             <h3 className="text-white font-bold">Sonuç Vitrini</h3>
-            <p className="text-slate-500 text-xs mt-0.5">En iyi vakaların</p>
+            <p className="text-slate-500 text-sm mt-0.5">En iyi vakaların</p>
           </div>
           <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
             <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -215,7 +215,7 @@ function SonucVitriniCard({ cases }: { cases: SharedCaseWithProfile[] }) {
         <div className="py-4 text-center">
           <div className="text-4xl mb-2 opacity-40">✦</div>
           <p className="text-slate-400 text-sm font-medium mb-1">Vitrinin boş</p>
-          <p className="text-slate-500 text-xs leading-relaxed">
+          <p className="text-slate-500 text-sm leading-relaxed">
             Hasta detayında &quot;Paylaşım izni iste&quot; butonuyla en iyi vakalarını burada sergileyebilirsin.
           </p>
         </div>
@@ -234,7 +234,7 @@ function SonucVitriniCard({ cases }: { cases: SharedCaseWithProfile[] }) {
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-white font-bold">Sonuç Vitrini</h3>
-          <p className="text-slate-500 text-xs mt-0.5">{cases.length} onaylı vaka</p>
+          <p className="text-slate-500 text-sm mt-0.5">{cases.length} onaylı vaka</p>
         </div>
         <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
           <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -245,39 +245,39 @@ function SonucVitriniCard({ cases }: { cases: SharedCaseWithProfile[] }) {
 
       {/* Top vaka */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs text-amber-300/80">
+        <div className="flex items-center gap-2 text-sm text-amber-300/80">
           <span>🏆</span>
           <span className="font-bold uppercase tracking-wider">Bu ayın en yüksek Δ</span>
         </div>
 
         <div className="flex items-baseline gap-3">
           <span className="text-white font-bold text-base">{anonName}</span>
-          {ageGenderLine && <span className="text-slate-500 text-xs">{ageGenderLine}</span>}
+          {ageGenderLine && <span className="text-slate-500 text-sm">{ageGenderLine}</span>}
         </div>
 
         <div className="flex items-center gap-3">
           <div className="text-center">
-            <p className="text-slate-600 text-[10px] uppercase tracking-wider">Ön</p>
+            <p className="text-slate-600 text-sm uppercase tracking-wider">Ön</p>
             <p className="text-slate-400 text-2xl font-bold">{topCase.initial_score ?? '—'}</p>
           </div>
           <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 12h15" />
           </svg>
           <div className="text-center">
-            <p className="text-emerald-400/70 text-[10px] uppercase tracking-wider">Klinik Onaylı</p>
+            <p className="text-emerald-400/70 text-sm uppercase tracking-wider">Klinik Onaylı</p>
             <p className="text-emerald-400 text-2xl font-black">{topCase.final_score ?? '—'}</p>
           </div>
           {delta != null && delta > 0 && (
             <div className="ml-auto px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30">
               <span className="text-emerald-300 font-black text-sm">+{delta}</span>
-              <span className="text-emerald-400/70 text-[10px] ml-1">puan</span>
+              <span className="text-emerald-400/70 text-sm ml-1">puan</span>
             </div>
           )}
         </div>
       </div>
 
       {cases.length > 1 && (
-        <p className="mt-4 pt-3 border-t border-slate-700/30 text-xs text-slate-500 text-center">
+        <p className="mt-4 pt-3 border-t border-slate-700/30 text-sm text-slate-500 text-center">
           + {cases.length - 1} vaka daha vitrinde
         </p>
       )}
@@ -288,7 +288,7 @@ function SonucVitriniCard({ cases }: { cases: SharedCaseWithProfile[] }) {
 function Metric({ label, value, extra, subtle }: { label: string; value: number | string; extra?: React.ReactNode; subtle?: boolean }) {
   return (
     <div>
-      <p className="text-slate-500 text-xs">{label}</p>
+      <p className="text-slate-500 text-sm">{label}</p>
       <div className="flex items-baseline gap-1.5 mt-0.5">
         <span className={`text-xl font-black ${subtle ? 'text-slate-600' : 'text-white'}`}>{value}</span>
         {extra}

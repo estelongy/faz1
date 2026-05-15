@@ -130,10 +130,10 @@ export default function CihazTedavileriPage() {
 
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+              <span className="text-sm font-bold px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
                 Cihaz Tedavileri
               </span>
-              <span className="text-slate-500 text-xs">7 dk okuma</span>
+              <span className="text-slate-500 text-sm">7 dk okuma</span>
             </div>
             <h1 className="text-4xl font-black text-white leading-tight mb-4">
               Cihaz ile Yapılan Estetik Tedaviler:<br />
@@ -175,18 +175,18 @@ export default function CihazTedavileriPage() {
                   <div className="flex items-start gap-3 mb-3">
                     <span className="text-3xl shrink-0">{dev.icon}</span>
                     <div>
-                      <span className="text-slate-500 text-xs font-mono">0{i + 1}</span>
+                      <span className="text-slate-500 text-sm font-mono">0{i + 1}</span>
                       <h2 className="text-white font-black text-xl leading-tight">{dev.name}</h2>
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Mekanizma</h3>
+                    <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1.5">Mekanizma</h3>
                     <p className="text-slate-300 text-sm leading-relaxed">{dev.mechanism}</p>
                   </div>
 
                   <div className="mb-4">
-                    <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Neler İyileşiyor?</h3>
+                    <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-2">Neler İyileşiyor?</h3>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                       {dev.benefits.map(b => (
                         <li key={b} className="flex items-center gap-2 text-slate-300 text-sm">
@@ -197,7 +197,7 @@ export default function CihazTedavileriPage() {
                     </ul>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 text-xs">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 text-sm">
                     {[
                       { label: 'Seans', val: dev.sessions },
                       { label: 'İyileşme', val: dev.recovery },
@@ -205,16 +205,16 @@ export default function CihazTedavileriPage() {
                     ].map(item => (
                       <div key={item.label} className="bg-slate-900/50 rounded-lg p-2.5 col-span-1">
                         <p className="text-slate-500 mb-0.5">{item.label}</p>
-                        <p className="text-white font-semibold text-xs">{item.val}</p>
+                        <p className="text-white font-semibold text-sm">{item.val}</p>
                       </div>
                     ))}
                     <div className="bg-slate-900/50 rounded-lg p-2.5 col-span-1">
-                      <p className="text-slate-500 mb-0.5 text-xs">Uygun Profil</p>
-                      <p className="text-white font-semibold text-xs leading-snug">{dev.who}</p>
+                      <p className="text-slate-500 mb-0.5 text-sm">Uygun Profil</p>
+                      <p className="text-white font-semibold text-sm leading-snug">{dev.who}</p>
                     </div>
                   </div>
 
-                  <div className="flex gap-2 text-xs text-amber-400/80 leading-relaxed bg-amber-500/5 border border-amber-500/15 rounded-lg p-3">
+                  <div className="flex gap-2 text-sm text-amber-400/80 leading-relaxed bg-amber-500/5 border border-amber-500/15 rounded-lg p-3">
                     <span className="shrink-0">⚠️</span>
                     <span>{dev.caution}</span>
                   </div>
@@ -240,7 +240,7 @@ export default function CihazTedavileriPage() {
                 <div key={c.combo} className="flex gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700 text-sm">
                   <div className="shrink-0 text-right">
                     <p className="text-white font-bold">{c.combo}</p>
-                    <p className="text-slate-500 text-xs">{c.goal}</p>
+                    <p className="text-slate-500 text-sm">{c.goal}</p>
                   </div>
                   <div className="w-px bg-slate-700 shrink-0" />
                   <p className="text-slate-400 leading-relaxed">{c.desc}</p>
@@ -268,7 +268,7 @@ export default function CihazTedavileriPage() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-slate-800">
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-4">Diğer Rehberler</p>
+            <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-4">Diğer Rehberler</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
                 { href: '/rehber/estetik-uygulamalar', label: 'Estetik Uygulamalar', icon: '💉' },

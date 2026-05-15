@@ -8,22 +8,22 @@ export default function TestSkorPage() {
       <h1 className="text-white text-xl font-bold tracking-widest">SCOREBAR TEST</h1>
 
       <div className="w-full max-w-xs">
-        <p className="text-slate-500 text-xs mb-2 text-center">Normal — 73</p>
+        <p className="text-slate-500 text-sm mb-2 text-center">Normal — 73</p>
         <ScoreBar score={73} phase="ai_analiz" animated={false} />
       </div>
 
       <div className="w-full max-w-xs">
-        <p className="text-slate-500 text-xs mb-2 text-center">İyi — 85</p>
+        <p className="text-slate-500 text-sm mb-2 text-center">İyi — 85</p>
         <ScoreBar score={85} phase="longevity_anketi" animated={false} />
       </div>
 
       <div className="w-full max-w-xs">
-        <p className="text-slate-500 text-xs mb-2 text-center">Klinik Onaylı — 91</p>
+        <p className="text-slate-500 text-sm mb-2 text-center">Klinik Onaylı — 91</p>
         <ScoreBar score={91} phase="klinik_onayli" animated={false} />
       </div>
 
       <div className="w-full max-w-xs">
-        <p className="text-slate-500 text-xs mb-2 text-center">Düşük — 60</p>
+        <p className="text-slate-500 text-sm mb-2 text-center">Düşük — 60</p>
         <ScoreBar score={60} phase="randevu" animated={false} />
       </div>
     </div>

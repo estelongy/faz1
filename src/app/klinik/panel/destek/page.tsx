@@ -30,7 +30,7 @@ export default function DestekPage() {
             </div>
             <div>
               <p className="text-white font-bold">E-posta</p>
-              <p className="text-slate-500 text-xs">2 iş günü içinde dönüş</p>
+              <p className="text-slate-500 text-sm">2 iş günü içinde dönüş</p>
             </div>
           </div>
           <p className="text-violet-400 font-mono text-sm group-hover:text-violet-300 transition-colors">
@@ -48,7 +48,7 @@ export default function DestekPage() {
             </div>
             <div>
               <p className="text-white font-bold">WhatsApp</p>
-              <p className="text-slate-500 text-xs">Hızlı yanıt — mesai saatleri</p>
+              <p className="text-slate-500 text-sm">Hızlı yanıt — mesai saatleri</p>
             </div>
           </div>
           <p className="text-emerald-400 font-mono text-sm group-hover:text-emerald-300 transition-colors">
@@ -84,9 +84,9 @@ export default function DestekPage() {
           <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center text-2xl shrink-0">💬</div>
           <div>
             <p className="text-white font-bold text-sm mb-0.5">
-              Canlı destek <span className="ml-2 text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">Yakında</span>
+              Canlı destek <span className="ml-2 text-sm font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">Yakında</span>
             </p>
-            <p className="text-slate-400 text-xs leading-relaxed">
+            <p className="text-slate-400 text-sm leading-relaxed">
               Estelongy ekibiyle uygulama içi anlık sohbet. Şu an e-posta ve WhatsApp aktif — chat lansmandan kısa süre sonra açılacak.
             </p>
           </div>

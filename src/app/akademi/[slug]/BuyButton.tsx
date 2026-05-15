@@ -42,7 +42,7 @@ export default function BuyButton({ packageId }: Props) {
         {loading ? 'Yönlendiriliyor...' : 'Satın Al'}
       </button>
       {error && (
-        <div className="p-2.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs">
+        <div className="p-2.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
           {error}
         </div>
       )}

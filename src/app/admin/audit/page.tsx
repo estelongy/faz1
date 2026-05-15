@@ -136,7 +136,7 @@ export default async function AuditLogPage({
       {actionTypes.length > 0 && !filterAction && (
         <div className="flex flex-wrap gap-1.5 mb-5">
           {actionTypes.map(a => (
-            <span key={a} className={`text-[10px] px-2 py-0.5 rounded-full ${ACTION_COLOR[a] ?? 'bg-slate-700 text-slate-300'}`}>
+            <span key={a} className={`text-sm px-2 py-0.5 rounded-full ${ACTION_COLOR[a] ?? 'bg-slate-700 text-slate-300'}`}>
               {ACTION_LABEL[a] ?? a}
             </span>
           ))}
@@ -160,11 +160,11 @@ export default async function AuditLogPage({
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${actionColor}`}>
+                        <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${actionColor}`}>
                           {actionLabel}
                         </span>
                         {log.table_name && (
-                          <span className="text-xs text-slate-500 font-mono">
+                          <span className="text-sm text-slate-500 font-mono">
                             {log.table_name}{log.record_id ? `#${log.record_id.slice(0, 8)}` : ''}
                           </span>
                         )}
@@ -172,25 +172,25 @@ export default async function AuditLogPage({
                       <div className="text-sm text-slate-300">
                         <span className="text-slate-500">Aktör:</span>{' '}
                         <span className="font-medium">{actorName}</span>
-                        {log.user_id && <span className="text-slate-600 font-mono text-xs ml-2">{log.user_id.slice(0, 8)}</span>}
+                        {log.user_id && <span className="text-slate-600 font-mono text-sm ml-2">{log.user_id.slice(0, 8)}</span>}
                       </div>
                     </div>
-                    <span className="text-xs text-slate-500 shrink-0 font-mono">
+                    <span className="text-sm text-slate-500 shrink-0 font-mono">
                       {formatDate(log.created_at)}
                     </span>
                   </div>
                   {(log.old_data || log.new_data) && (
                     <details className="mt-2">
-                      <summary className="text-xs text-slate-500 cursor-pointer hover:text-slate-300">
+                      <summary className="text-sm text-slate-500 cursor-pointer hover:text-slate-300">
                         Değişiklik detayı
                       </summary>
-                      <pre className="mt-2 p-3 bg-slate-950 border border-slate-800 rounded-lg text-[11px] text-slate-400 overflow-x-auto whitespace-pre-wrap">
+                      <pre className="mt-2 p-3 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-400 overflow-x-auto whitespace-pre-wrap">
 {JSON.stringify({ old: log.old_data, new: log.new_data }, null, 2)}
                       </pre>
                     </details>
                   )}
                   {log.ip_address && (
-                    <div className="text-[10px] text-slate-600 mt-1.5 font-mono">
+                    <div className="text-sm text-slate-600 mt-1.5 font-mono">
                       IP: {log.ip_address}
                       {log.user_agent && <span className="ml-3">UA: {log.user_agent.slice(0, 80)}</span>}
                     </div>
@@ -202,7 +202,7 @@ export default async function AuditLogPage({
         )}
       </div>
 
-      <p className="mt-4 text-xs text-slate-500">
+      <p className="mt-4 text-sm text-slate-500">
         Audit kayıtları KVKK denetim için 12 ay saklanır. Daha eskiye erişim için DB üzerinden sorgulayın.
       </p>
     </div>

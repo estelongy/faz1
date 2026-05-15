@@ -75,26 +75,26 @@ export default async function KrediPage({
         {/* Özet kartları */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-            <p className="text-emerald-300 text-xs mb-1">🎁 Ücretsiz Hak</p>
+            <p className="text-emerald-300 text-sm mb-1">🎁 Ücretsiz Hak</p>
             <p className={`text-4xl font-black ${
               clinic.free_appointments_remaining === 0 ? 'text-slate-500' : 'text-emerald-400'
             }`}>{clinic.free_appointments_remaining ?? 0}</p>
-            <p className="text-emerald-300/60 text-[10px] mt-1">Estelongy hediyesi</p>
+            <p className="text-emerald-300/60 text-sm mt-1">Estelongy hediyesi</p>
           </div>
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700 text-center">
-            <p className="text-slate-400 text-xs mb-1">💳 Ücretli Bakiye</p>
+            <p className="text-slate-400 text-sm mb-1">💳 Ücretli Bakiye</p>
             <p className={`text-4xl font-black ${
               clinic.credit_balance === 0 ? 'text-red-400' :
               clinic.credit_balance <= 10 ? 'text-amber-400' : 'text-violet-400'
             }`}>{clinic.credit_balance}</p>
-            <p className="text-slate-500 text-[10px] mt-1">Satın alınmış</p>
+            <p className="text-slate-500 text-sm mt-1">Satın alınmış</p>
           </div>
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700 text-center">
-            <p className="text-slate-400 text-xs mb-1">Toplam Yüklenen</p>
+            <p className="text-slate-400 text-sm mb-1">Toplam Yüklenen</p>
             <p className="text-2xl font-black text-violet-400">{totalYukleme}</p>
           </div>
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700 text-center">
-            <p className="text-slate-400 text-xs mb-1">Toplam Kullanılan</p>
+            <p className="text-slate-400 text-sm mb-1">Toplam Kullanılan</p>
             <p className="text-2xl font-black text-slate-300">{totalKullanim}</p>
           </div>
         </div>
@@ -136,18 +136,18 @@ export default async function KrediPage({
                 <tbody className="divide-y divide-slate-800">
                   {transactions.map(t => (
                     <tr key={t.id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="px-4 py-3 text-slate-400 text-xs whitespace-nowrap">
+                      <td className="px-4 py-3 text-slate-400 text-sm whitespace-nowrap">
                         {new Date(t.created_at).toLocaleDateString('tr-TR', {
                           day: 'numeric', month: 'long', year: 'numeric',
                           hour: '2-digit', minute: '2-digit',
                         })}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs font-medium ${TYPE_COLOR[t.type] ?? 'text-slate-400'}`}>
+                        <span className={`text-sm font-medium ${TYPE_COLOR[t.type] ?? 'text-slate-400'}`}>
                           {TYPE_LABEL[t.type] ?? t.type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-slate-400 text-xs">
+                      <td className="px-4 py-3 text-slate-400 text-sm">
                         {t.description ?? '—'}
                         {t.appointment_id && (
                           <Link href={`/klinik/panel/randevu/${t.appointment_id}`}

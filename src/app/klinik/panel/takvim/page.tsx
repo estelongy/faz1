@@ -99,7 +99,7 @@ export default async function KlinikTakvimPage() {
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">Takvim</h1>
-        <Link href="/klinik/panel/musaitlik" className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors">
+        <Link href="/klinik/panel/musaitlik" className="text-sm px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors">
           ⚙ Müsaitlik Ayarları
         </Link>
       </div>

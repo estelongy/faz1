@@ -126,18 +126,18 @@ export default async function SiparisPage({
         {/* Özet */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
-            <p className="text-slate-400 text-xs mb-1">Sipariş No</p>
+            <p className="text-slate-400 text-sm mb-1">Sipariş No</p>
             <p className="text-white font-black font-mono">{order.order_number}</p>
           </div>
           <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
-            <p className="text-slate-400 text-xs mb-1">Tarih</p>
+            <p className="text-slate-400 text-sm mb-1">Tarih</p>
             <p className="text-white font-bold text-sm">
               {new Date(order.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
           </div>
           <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
-            <p className="text-slate-400 text-xs mb-1">Ödeme</p>
-            <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full ${paymentBadge.color}`}>
+            <p className="text-slate-400 text-sm mb-1">Ödeme</p>
+            <span className={`inline-block text-sm font-bold px-2.5 py-1 rounded-full ${paymentBadge.color}`}>
               {paymentBadge.label}
             </span>
           </div>
@@ -148,7 +148,7 @@ export default async function SiparisPage({
           <div className="mb-6 p-5 bg-slate-800/50 border border-slate-700 rounded-2xl">
             <h3 className="text-white font-bold text-sm mb-2">📍 Teslimat Adresi</h3>
             <p className="text-slate-300 text-sm">{order.address_snapshot.full_name}</p>
-            <p className="text-slate-500 text-xs mt-0.5">{order.address_snapshot.phone}</p>
+            <p className="text-slate-500 text-sm mt-0.5">{order.address_snapshot.phone}</p>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
               {order.address_snapshot.address_line},
               {order.address_snapshot.neighborhood && ` ${order.address_snapshot.neighborhood},`}
@@ -164,7 +164,7 @@ export default async function SiparisPage({
               <div className="px-5 py-3 border-b border-slate-700 flex items-center justify-between">
                 <span className="text-slate-300 text-sm font-medium">{vendorName}</span>
                 {items[0]?.fulfillment_status && (
-                  <span className={`text-xs font-medium ${FULFILLMENT_STATUS_LABEL[items[0].fulfillment_status]?.color ?? 'text-slate-500'}`}>
+                  <span className={`text-sm font-medium ${FULFILLMENT_STATUS_LABEL[items[0].fulfillment_status]?.color ?? 'text-slate-500'}`}>
                     {FULFILLMENT_STATUS_LABEL[items[0].fulfillment_status]?.icon}{' '}
                     {FULFILLMENT_STATUS_LABEL[items[0].fulfillment_status]?.label ?? items[0].fulfillment_status}
                   </span>
@@ -191,7 +191,7 @@ export default async function SiparisPage({
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-white text-sm font-medium">{snap?.name ?? 'Ürün'}</p>
-                          <p className="text-slate-500 text-xs mt-0.5">
+                          <p className="text-slate-500 text-sm mt-0.5">
                             {item.quantity} adet × ₺{Number(item.unit_price).toLocaleString('tr-TR')}
                           </p>
                         </div>
@@ -201,7 +201,7 @@ export default async function SiparisPage({
                       </div>
                       {/* İade penceresi göstergesi */}
                       {item.fulfillment_status === 'delivered' && deadline && (
-                        <div className={`mx-4 mb-2 px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 ${
+                        <div className={`mx-4 mb-2 px-3 py-1.5 rounded-lg text-sm flex items-center gap-1.5 ${
                           canReturn
                             ? daysLeft! <= 3
                               ? 'bg-amber-500/10 text-amber-400'
@@ -232,7 +232,7 @@ export default async function SiparisPage({
 
               {/* Kargo takip */}
               {items[0]?.tracking_number && (
-                <div className="px-5 py-3 bg-slate-900/50 border-t border-slate-700 text-xs">
+                <div className="px-5 py-3 bg-slate-900/50 border-t border-slate-700 text-sm">
                   <span className="text-slate-500">Takip No: </span>
                   <span className="text-violet-400 font-mono">{items[0].tracking_number}</span>
                   {items[0].tracking_carrier && (

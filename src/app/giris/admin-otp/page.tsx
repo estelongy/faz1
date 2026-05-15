@@ -48,7 +48,7 @@ export default async function AdminOtpPage({ searchParams }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
               </svg>
             </div>
-            <p className="inline-block px-2.5 py-0.5 mb-3 text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-full">
+            <p className="inline-block px-2.5 py-0.5 mb-3 text-sm font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-full">
               {badgeLabel}
             </p>
             <h1 className="text-2xl font-bold text-white">{title}</h1>
@@ -58,7 +58,7 @@ export default async function AdminOtpPage({ searchParams }: Props) {
           <AdminOtpForm next={safeNext} />
 
           <div className="mt-6 pt-4 border-t border-slate-700 text-center">
-            <p className="text-slate-500 text-xs">
+            <p className="text-slate-500 text-sm">
               {isStepUp
                 ? 'Doğrulamadan sonra ilgili sayfaya geri yönlendirileceksin. Aksiyonu tekrar tıklamak yeterli.'
                 : 'Bu adım her admin oturumu için bir kez gereklidir. Doğrulama 30 dakika geçerlidir; kritik aksiyonlar için 5 dakikadan eski doğrulama tazelenir.'}

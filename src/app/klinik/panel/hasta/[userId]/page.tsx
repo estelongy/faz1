@@ -206,7 +206,7 @@ export default async function HastaDetayPage({
         </Link>
         <span className="text-slate-700">|</span>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 text-xs font-bold">
+          <div className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 text-sm font-bold">
             {(profile?.full_name ?? '?')[0].toUpperCase()}
           </div>
           <span className="text-white font-bold text-sm">{profile?.full_name ?? 'Hasta'}</span>
@@ -255,7 +255,7 @@ export default async function HastaDetayPage({
                 </div>
                 <div>
                   <p className="text-slate-400 font-medium text-sm">Estelongy Gençlik Skoru yok</p>
-                  <p className="text-slate-600 text-xs mt-0.5">Hasta henüz analiz yapmamış</p>
+                  <p className="text-slate-600 text-sm mt-0.5">Hasta henüz analiz yapmamış</p>
                 </div>
               </div>
             )}

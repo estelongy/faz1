@@ -75,12 +75,12 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
 
               <div className="flex flex-wrap gap-6 text-sm">
                 <div>
-                  <p className="text-slate-500 text-xs">Ürün Sayısı</p>
+                  <p className="text-slate-500 text-sm">Ürün Sayısı</p>
                   <p className="text-slate-900 font-black text-xl">{totalProducts}</p>
                 </div>
                 {avgScore !== null && (
                   <div>
-                    <p className="text-slate-500 text-xs">Ortalama EGP</p>
+                    <p className="text-slate-500 text-sm">Ortalama EGP</p>
                     <p className={`font-black text-xl ${
                       avgScore >= 9 ? 'text-[#10876B]' : avgScore >= 7 ? 'text-[#8B7339]' : 'text-red-500'
                     }`}>
@@ -112,7 +112,7 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
                   <div className="p-4">
                     <h3 className="text-slate-900 font-bold text-sm group-hover:text-[#8B7339] transition-colors line-clamp-1">{p.name}</h3>
                     {p.category && (
-                      <p className="text-slate-500 text-xs mt-1">{CATEGORY_LABELS[p.category] ?? p.category}</p>
+                      <p className="text-slate-500 text-sm mt-1">{CATEGORY_LABELS[p.category] ?? p.category}</p>
                     )}
                     <div className="flex items-end justify-between mt-3">
                       {p.price && (

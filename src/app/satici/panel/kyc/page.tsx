@@ -66,7 +66,7 @@ export default async function VendorKycPage({
             <p className="text-emerald-300 text-sm">
               Bilgileriniz {vendor.kyc_reviewed_at ? new Date(vendor.kyc_reviewed_at).toLocaleDateString('tr-TR') : ''} tarihinde onaylandı.
             </p>
-            <p className="text-slate-400 text-xs mt-4">
+            <p className="text-slate-400 text-sm mt-4">
               KYC bilgilerini güncellemek için <a href="mailto:destek@estelongy.com" className="text-violet-400 hover:underline">destek@estelongy.com</a> adresinden iletişime geçin.
             </p>
           </div>
@@ -123,8 +123,8 @@ export default async function VendorKycPage({
         {vendor.kyc_status === 'rejected' && vendor.kyc_review_note && (
           <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
             <p className="font-semibold mb-1">⚠ Önceki başvurunuz reddedildi</p>
-            <p className="text-xs whitespace-pre-wrap">{vendor.kyc_review_note}</p>
-            <p className="text-xs mt-2 text-red-200/80">Lütfen aşağıdaki bilgileri düzeltip tekrar gönderin.</p>
+            <p className="text-sm whitespace-pre-wrap">{vendor.kyc_review_note}</p>
+            <p className="text-sm mt-2 text-red-200/80">Lütfen aşağıdaki bilgileri düzeltip tekrar gönderin.</p>
           </div>
         )}
 

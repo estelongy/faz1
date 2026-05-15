@@ -259,7 +259,7 @@ function SkorMerkeziInner() {
               Panel
             </Link>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500">Skor Merkezi</span>
+              <span className="text-sm text-slate-500">Skor Merkezi</span>
               <div className="w-7 h-7 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -357,7 +357,7 @@ function SkorMerkeziInner() {
             preview={
               <div className="relative">
                 <p className="text-slate-300 text-sm mb-2">{HASTA_ANKET_SORULARI[0].emoji} {HASTA_ANKET_SORULARI[0].label}</p>
-                <p className="text-slate-500 text-xs blur-sm select-none">
+                <p className="text-slate-500 text-sm blur-sm select-none">
                   {HASTA_ANKET_SORULARI.slice(1, 3).map(s => s.label).join(' · ')}
                 </p>
               </div>
@@ -395,14 +395,14 @@ function SkorMerkeziInner() {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={c.logo_url} alt={c.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-black text-xs">
+                        <div className="w-full h-full bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-black text-sm">
                           {(c.name?.charAt(0) ?? '?').toLocaleUpperCase('tr-TR')}
                         </div>
                       )}
                     </div>
                     <div className="min-w-0 flex-1 text-left">
-                      <p className="text-white text-[11px] font-semibold truncate">{c.name}</p>
-                      {c.location && <p className="text-slate-500 text-[10px] truncate">📍 {c.location}</p>}
+                      <p className="text-white text-sm font-semibold truncate">{c.name}</p>
+                      {c.location && <p className="text-slate-500 text-sm truncate">📍 {c.location}</p>}
                     </div>
                   </div>
                 ))}
@@ -446,9 +446,9 @@ function SkorMerkeziInner() {
                         )}
                       </div>
                       <p className="text-white text-sm font-bold leading-tight mb-1 line-clamp-2">{c.name}</p>
-                      {c.location && <p className="text-slate-500 text-[11px] truncate">📍 {c.location}</p>}
+                      {c.location && <p className="text-slate-500 text-sm truncate">📍 {c.location}</p>}
                       {c.specialties && c.specialties.length > 0 && (
-                        <p className="text-violet-400 text-[10px] mt-1 truncate">{c.specialties.slice(0, 2).join(' · ')}</p>
+                        <p className="text-violet-400 text-sm mt-1 truncate">{c.specialties.slice(0, 2).join(' · ')}</p>
                       )}
                     </button>
                   ))}
@@ -466,7 +466,7 @@ function SkorMerkeziInner() {
                     <p className="text-white font-bold text-base sm:text-lg leading-tight">
                       Başka bir klinik arıyorum
                     </p>
-                    <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                    <p className="text-slate-400 text-sm sm:text-sm mt-0.5">
                       Branş, konum, tedavi türüne göre filtrele
                     </p>
                   </div>
@@ -520,13 +520,13 @@ function SkorMerkeziInner() {
                       )}
                     </div>
                     <div className="p-2.5">
-                      <p className="text-white text-xs font-semibold leading-tight mb-1 line-clamp-2 min-h-[2.4em]">{p.name}</p>
+                      <p className="text-white text-sm font-semibold leading-tight mb-1 line-clamp-2 min-h-[2.4em]">{p.name}</p>
                       <div className="flex items-center justify-between">
                         {p.price !== null && (
                           <span className="text-white text-sm font-bold">₺{p.price.toLocaleString('tr-TR')}</span>
                         )}
                         {p.final_score && (
-                          <span className="text-violet-400 text-[10px] font-semibold">EGP {p.final_score.toFixed(1)}</span>
+                          <span className="text-violet-400 text-sm font-semibold">EGP {p.final_score.toFixed(1)}</span>
                         )}
                       </div>
                     </div>
@@ -546,7 +546,7 @@ function SkorMerkeziInner() {
                   <p className="text-white font-bold text-base sm:text-lg leading-tight">
                     EsteStore’a göz atmak istiyorum
                   </p>
-                  <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                  <p className="text-slate-400 text-sm sm:text-sm mt-0.5">
                     Kategori, marka ve EGP skoruna göre keşfet
                   </p>
                 </div>
@@ -665,7 +665,7 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
       <div className="py-2 space-y-5">
         {/* Başlık */}
         <div className="text-center space-y-1">
-          <p className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Longevity Başarı Analizi</p>
+          <p className="text-sm font-bold uppercase tracking-widest text-violet-400 mb-3">Longevity Başarı Analizi</p>
           <p className="text-slate-400 text-sm">(Sağlıklı Yaşam Analizi)</p>
           <h2 className="text-2xl font-black text-white mt-2 leading-snug">
             Biyolojik Sermayenizi<br />Ne Kadar Korudunuz?
@@ -684,8 +684,8 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
 
         {/* Nasıl değerlendirmelisiniz */}
         <div className="space-y-3">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">📊 Nasıl değerlendirmelisiniz?</p>
-          <p className="text-slate-400 text-xs leading-relaxed">
+          <p className="text-sm font-bold uppercase tracking-widest text-slate-500">📊 Nasıl değerlendirmelisiniz?</p>
+          <p className="text-slate-400 text-sm leading-relaxed">
             Geçici dönemleri değil, <span className="text-slate-300">20&apos;li yaşlarınızdan bugüne uzanan genel ortalamanızı</span> esas alın.
           </p>
           <div className="space-y-2">
@@ -696,7 +696,7 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
             ].map(row => (
               <div key={row.pct} className={`flex items-start gap-3 p-3 rounded-xl border ${row.bg}`}>
                 <span className={`font-black text-sm shrink-0 w-10 ${row.color}`}>{row.pct}</span>
-                <span className="text-slate-300 text-xs leading-relaxed">{row.label}</span>
+                <span className="text-slate-300 text-sm leading-relaxed">{row.label}</span>
               </div>
             ))}
           </div>
@@ -705,13 +705,13 @@ function AnketWizard({ currentIdx, onPrev, onNext, cevap, setCevap, onSubmit, su
         {/* Hatırlatma */}
         <div className="flex items-start gap-3 p-4 rounded-2xl bg-violet-500/10 border border-violet-500/20">
           <span className="text-lg shrink-0">💡</span>
-          <p className="text-slate-300 text-xs leading-relaxed">
+          <p className="text-slate-300 text-sm leading-relaxed">
             Burada kendinizi yargılamıyorsunuz — <span className="text-white font-medium">nerede olduğunuzu görüyorsunuz.</span>
           </p>
         </div>
 
         {/* Meta */}
-        <div className="flex items-center justify-center gap-6 text-xs text-slate-500">
+        <div className="flex items-center justify-center gap-6 text-sm text-slate-500">
           <span>⏱ 3–5 dakika</span>
           <span className="w-px h-4 bg-slate-700" />
           <span>📋 5 soru</span>

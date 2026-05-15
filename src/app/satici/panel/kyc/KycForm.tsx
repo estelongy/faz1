@@ -133,36 +133,36 @@ export default function KycForm({ vendorId, initial }: Props) {
       <section className="rounded-2xl border border-slate-700 bg-slate-800/50 p-5 space-y-4">
         <div>
           <h2 className="text-white font-bold text-base">Kurumsal Kimlik</h2>
-          <p className="text-slate-400 text-xs">Vergi mükellefi bilgileriniz</p>
+          <p className="text-slate-400 text-sm">Vergi mükellefi bilgileriniz</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">Vergi/T.C. Numarası *</label>
+            <label className="block text-sm text-slate-400 mb-1.5">Vergi/T.C. Numarası *</label>
             <input type="text" required value={taxNumber} onChange={e => setTaxNumber(e.target.value.replace(/\D/g, '').slice(0, 11))}
               placeholder="10 veya 11 haneli" maxLength={11}
               className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 font-mono text-sm" />
           </div>
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">Ticaret Sicil No</label>
+            <label className="block text-sm text-slate-400 mb-1.5">Ticaret Sicil No</label>
             <input type="text" value={tradeRegistryNo} onChange={e => setTradeRegistryNo(e.target.value)}
               placeholder="Opsiyonel"
               className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm" />
           </div>
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">MERSIS No</label>
+            <label className="block text-sm text-slate-400 mb-1.5">MERSIS No</label>
             <input type="text" value={mersisNo} onChange={e => setMersisNo(e.target.value.replace(/\D/g, '').slice(0, 16))}
               placeholder="Opsiyonel — 16 hane"
               className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 font-mono text-sm" />
           </div>
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">KEP Adresi *</label>
+            <label className="block text-sm text-slate-400 mb-1.5">KEP Adresi *</label>
             <input type="email" required value={kepAddress} onChange={e => setKepAddress(e.target.value)}
               placeholder="ornek@kep.tr"
               className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm" />
           </div>
         </div>
         <div>
-          <label className="block text-xs text-slate-400 mb-1.5">Şirket Adresi *</label>
+          <label className="block text-sm text-slate-400 mb-1.5">Şirket Adresi *</label>
           <textarea required value={companyAddress} onChange={e => setCompanyAddress(e.target.value)}
             rows={2} placeholder="Vergi levhasındaki adres"
             className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm resize-none" />
@@ -178,23 +178,23 @@ export default function KycForm({ vendorId, initial }: Props) {
       <section className="rounded-2xl border border-slate-700 bg-slate-800/50 p-5 space-y-4">
         <div>
           <h2 className="text-white font-bold text-base">Banka Bilgisi</h2>
-          <p className="text-slate-400 text-xs">Komisyonlu kazançlarınız bu IBAN&apos;a aktarılır</p>
+          <p className="text-slate-400 text-sm">Komisyonlu kazançlarınız bu IBAN&apos;a aktarılır</p>
         </div>
         <div>
-          <label className="block text-xs text-slate-400 mb-1.5">IBAN *</label>
+          <label className="block text-sm text-slate-400 mb-1.5">IBAN *</label>
           <input type="text" required value={formatIban(iban)} onChange={e => setIban(e.target.value)}
             placeholder="TR00 0000 0000 0000 0000 0000 00" maxLength={32}
             className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 font-mono text-sm" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">Hesap Sahibi *</label>
+            <label className="block text-sm text-slate-400 mb-1.5">Hesap Sahibi *</label>
             <input type="text" required value={ibanHolderName} onChange={e => setIbanHolderName(e.target.value)}
               placeholder="Şirket veya kişi adı"
               className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm" />
           </div>
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">Banka *</label>
+            <label className="block text-sm text-slate-400 mb-1.5">Banka *</label>
             <input type="text" required value={bankName} onChange={e => setBankName(e.target.value)}
               placeholder="Garanti BBVA, Akbank, ..."
               className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm" />
@@ -206,7 +206,7 @@ export default function KycForm({ vendorId, initial }: Props) {
       <section className="rounded-2xl border border-slate-700 bg-slate-800/50 p-5 space-y-4">
         <div>
           <h2 className="text-white font-bold text-base">Belgeler</h2>
-          <p className="text-slate-400 text-xs">PDF veya görsel — maks. {MAX_DOC_MB} MB</p>
+          <p className="text-slate-400 text-sm">PDF veya görsel — maks. {MAX_DOC_MB} MB</p>
         </div>
 
         <DocSlot
@@ -240,9 +240,9 @@ export default function KycForm({ vendorId, initial }: Props) {
       <section className="rounded-2xl border border-slate-700 bg-slate-800/50 p-5 space-y-4">
         <div>
           <h2 className="text-white font-bold text-base">Pazaryeri Sözleşmesi</h2>
-          <p className="text-slate-400 text-xs">E-onay yeterli — ancak ıslak imzalı versiyon yüklerseniz onay süreci hızlanır</p>
+          <p className="text-slate-400 text-sm">E-onay yeterli — ancak ıslak imzalı versiyon yüklerseniz onay süreci hızlanır</p>
         </div>
-        <div className="max-h-72 overflow-y-auto p-4 rounded-xl bg-slate-950 border border-slate-700 text-slate-300 text-xs leading-relaxed space-y-3">
+        <div className="max-h-72 overflow-y-auto p-4 rounded-xl bg-slate-950 border border-slate-700 text-slate-300 text-sm leading-relaxed space-y-3">
           <p><strong className="text-white">1. Taraflar.</strong> İşbu sözleşme Estelongy platformunu işleten Vestoriq OÜ (Estonya) ile iş ortağı arasında akdedilir.</p>
           <p><strong className="text-white">2. Konu.</strong> İş Ortağı, Estelongy platformu üzerinden ürünlerini Türkiye&apos;deki tüketicilere satmayı, platform da satışın gerçekleşmesi için altyapı sağlamayı kabul eder.</p>
           <p><strong className="text-white">3. Komisyon.</strong> Platform, her satıştan KDV hariç tutar üzerinden varsayılan %12 komisyon alır. Komisyon oranı kategoriye göre ürün listelemesinde belirtilir.</p>
@@ -272,7 +272,7 @@ export default function KycForm({ vendorId, initial }: Props) {
         {submitting ? 'Gönderiliyor…' : 'KYC Bilgilerini Onaya Gönder'}
       </button>
 
-      <p className="text-center text-slate-500 text-xs">
+      <p className="text-center text-slate-500 text-sm">
         Gönderdikten sonra admin incelemesi 1-2 iş günü sürer. Onay sonrası ürün satışına başlayabilirsiniz.
       </p>
     </form>
@@ -291,7 +291,7 @@ function DocSlot({
   return (
     <div>
       <label className="block text-sm text-white font-medium mb-1">{label}</label>
-      <p className="text-slate-500 text-xs mb-2">{hint}</p>
+      <p className="text-slate-500 text-sm mb-2">{hint}</p>
       {uploaded ? (
         <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
           <div className="flex items-center gap-2 min-w-0">
@@ -301,11 +301,11 @@ function DocSlot({
             <div className="min-w-0">
               <p className="text-sm text-emerald-300 truncate">{uploaded.name}</p>
               {uploaded.size > 0 && (
-                <p className="text-xs text-emerald-400/70">{(uploaded.size / 1024 / 1024).toFixed(1)} MB</p>
+                <p className="text-sm text-emerald-400/70">{(uploaded.size / 1024 / 1024).toFixed(1)} MB</p>
               )}
             </div>
           </div>
-          <label className="text-xs text-emerald-300 hover:text-emerald-100 cursor-pointer underline shrink-0">
+          <label className="text-sm text-emerald-300 hover:text-emerald-100 cursor-pointer underline shrink-0">
             Değiştir
             <input type="file" accept={ALLOWED_DOC_TYPES.join(',')} className="hidden"
               onChange={e => e.target.files?.[0] && onPick(e.target.files[0])} />

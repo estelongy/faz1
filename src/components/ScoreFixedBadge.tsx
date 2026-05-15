@@ -62,8 +62,8 @@ export default function ScoreFixedBadge() {
         <div className={`w-2 h-2 rounded-full animate-pulse ${dot}`} />
         <span className="text-slate-300 text-sm font-medium">Gençlik Skoru</span>
         <span className={`text-2xl font-black ${num}`}>{score}</span>
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badge}`}>{label}</span>
-        {approved && <span className="text-emerald-400 text-xs font-medium">✦ Onaylı</span>}
+        <span className={`text-sm font-semibold px-2 py-0.5 rounded-full ${badge}`}>{label}</span>
+        {approved && <span className="text-emerald-400 text-sm font-medium">✦ Onaylı</span>}
       </div>
     </div>
   )

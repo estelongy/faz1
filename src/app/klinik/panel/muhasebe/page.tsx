@@ -113,7 +113,7 @@ export default async function MuhasebePage() {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-6">
-        <nav className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/klinik/panel" className="hover:text-white transition-colors">Klinik Panel</Link>
           <span>›</span>
           <span className="text-slate-300">Muhasebe</span>

@@ -141,7 +141,7 @@ export function KlinikSearchInputs() {
       </div>
 
       {s.hasFilter && (
-        <div className="flex items-center justify-between text-xs pt-2.5 mt-1">
+        <div className="flex items-center justify-between text-sm pt-2.5 mt-1">
           <span className="text-emerald-100/80">{s.filtered.length} klinik bulundu</span>
           <button
             onClick={s.clearAll}
@@ -176,7 +176,7 @@ export function KlinikSearchResults() {
 
   return (
     <>
-      <p className="text-slate-500 text-xs mb-4">{s.filtered.length} klinik</p>
+      <p className="text-slate-500 text-sm mb-4">{s.filtered.length} klinik</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {s.filtered.map(c => <ClinicCard key={c.id} clinic={c} />)}
       </div>

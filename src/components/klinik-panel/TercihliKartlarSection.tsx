@@ -137,7 +137,7 @@ export default function TercihliKartlarSection({ postsByCategory }: Props) {
   return (
     <section>
       <div className="flex items-center justify-between mb-2 px-1">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-600">
           Senin Seçtiklerin
           <span className="ml-2 text-slate-700 font-normal normal-case">
             ({openIds.length}/{MAX_TERCIHLI})
@@ -204,7 +204,7 @@ function PreferredCard({
           <div className="text-2xl">{card.icon}</div>
           <div className="flex-1 min-w-0">
             <h3 className="text-white font-bold text-sm">{card.title}</h3>
-            <p className="text-slate-500 text-xs mt-0.5">{card.subtitle}</p>
+            <p className="text-slate-500 text-sm mt-0.5">{card.subtitle}</p>
           </div>
           {!hasCategory && (
             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-400 uppercase tracking-wider shrink-0">Yakında</span>
@@ -221,13 +221,13 @@ function PreferredCard({
               <button
                 type="button"
                 onClick={() => setExpanded(true)}
-                className="w-full text-left text-violet-300 hover:text-violet-200 text-xs font-semibold pt-1 transition-colors"
+                className="w-full text-left text-violet-300 hover:text-violet-200 text-sm font-semibold pt-1 transition-colors"
               >
                 Hepsini gör →
               </button>
             </div>
           ) : (
-            <div className="py-4 text-center text-slate-500 text-xs">
+            <div className="py-4 text-center text-slate-500 text-sm">
               Henüz içerik yok
             </div>
           )
@@ -239,7 +239,7 @@ function PreferredCard({
               <div className="h-2 rounded bg-slate-800/60 w-1/2"></div>
               <div className="h-2 rounded bg-slate-800/60 w-2/3"></div>
             </div>
-            <div className="mt-4 pt-3 border-t border-slate-700/30 text-xs text-slate-600 italic">
+            <div className="mt-4 pt-3 border-t border-slate-700/30 text-sm text-slate-600 italic">
               İçerik akışı yakında
             </div>
           </>
@@ -262,11 +262,11 @@ function PostMiniRow({ post }: { post: EditorialPost }) {
       {...(post.external_url ? { href: post.external_url, target: '_blank', rel: 'noopener noreferrer' } : {})}
       className={`block p-2.5 rounded-lg bg-slate-900/40 border border-slate-700/40 ${post.external_url ? 'hover:border-slate-600 hover:bg-slate-900/60 cursor-pointer' : ''} transition-all`}
     >
-      <p className="text-white text-xs font-semibold leading-snug line-clamp-2">{post.title}</p>
+      <p className="text-white text-sm font-semibold leading-snug line-clamp-2">{post.title}</p>
       {post.excerpt && (
-        <p className="text-slate-500 text-[11px] mt-1 leading-relaxed line-clamp-2">{post.excerpt}</p>
+        <p className="text-slate-500 text-sm mt-1 leading-relaxed line-clamp-2">{post.excerpt}</p>
       )}
-      <p className="text-slate-600 text-[10px] mt-1.5 flex items-center gap-1">
+      <p className="text-slate-600 text-sm mt-1.5 flex items-center gap-1">
         {dateStr}
         {post.external_url && (
           <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,7 +311,7 @@ function PostListModal({
             <div className="text-2xl">{card.icon}</div>
             <div>
               <h2 className="text-white font-bold">{card.title}</h2>
-              <p className="text-slate-500 text-xs">{card.subtitle}</p>
+              <p className="text-slate-500 text-sm">{card.subtitle}</p>
             </div>
           </div>
           <button
@@ -346,12 +346,12 @@ function PostFullRow({ post }: { post: EditorialPost }) {
     >
       <p className="text-white text-sm font-bold leading-snug">{post.title}</p>
       {post.excerpt && (
-        <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">{post.excerpt}</p>
+        <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">{post.excerpt}</p>
       )}
       {post.body && (
-        <p className="text-slate-500 text-xs mt-2 leading-relaxed">{post.body}</p>
+        <p className="text-slate-500 text-sm mt-2 leading-relaxed">{post.body}</p>
       )}
-      <div className="flex items-center justify-between mt-3 text-[11px]">
+      <div className="flex items-center justify-between mt-3 text-sm">
         <span className="text-slate-600">{dateStr}</span>
         {post.external_url && (
           <span className="text-violet-300 font-semibold flex items-center gap-1">
@@ -397,7 +397,7 @@ function KartEkleButton({ onClick }: { onClick: () => void }) {
       </div>
       <div className="text-center">
         <p className="text-slate-400 group-hover:text-white text-sm font-medium transition-colors">Kart Ekle</p>
-        <p className="text-slate-600 text-xs mt-0.5">Kütüphaneden seç</p>
+        <p className="text-slate-600 text-sm mt-0.5">Kütüphaneden seç</p>
       </div>
     </button>
   )
@@ -434,7 +434,7 @@ function KartPaleti({
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
           <div>
             <h3 className="text-white font-bold">Kart Kütüphanesi</h3>
-            <p className="text-slate-500 text-xs mt-0.5">
+            <p className="text-slate-500 text-sm mt-0.5">
               {closedCards.length > 0 ? `${closedCards.length} kart eklenebilir` : 'Tüm kartların açık'}
             </p>
           </div>
@@ -455,7 +455,7 @@ function KartPaleti({
             <div className="py-12 text-center">
               <div className="text-4xl mb-3 opacity-40">✨</div>
               <p className="text-slate-400 text-sm font-medium">Tüm kartların açık</p>
-              <p className="text-slate-600 text-xs mt-1">Yeni kart önerin için destek bölümünü kullanabilirsin.</p>
+              <p className="text-slate-600 text-sm mt-1">Yeni kart önerin için destek bölümünü kullanabilirsin.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -469,7 +469,7 @@ function KartPaleti({
                   <div className="text-2xl shrink-0">{card.icon}</div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-white font-bold text-sm">{card.title}</h4>
-                    <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{card.subtitle}</p>
+                    <p className="text-slate-500 text-sm mt-0.5 leading-relaxed">{card.subtitle}</p>
                   </div>
                   <div className="w-7 h-7 rounded-full bg-slate-900/60 group-hover:bg-violet-500/40 flex items-center justify-center text-slate-400 group-hover:text-white transition-all shrink-0">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>

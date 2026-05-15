@@ -184,7 +184,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
       <div className="space-y-4 pb-5 border-b border-slate-700/50">
         {/* Kapak */}
         <div>
-          <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Kapak Görseli</label>
+          <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Kapak Görseli</label>
           <div className="relative w-full aspect-[3/1] rounded-xl overflow-hidden bg-slate-900 border border-slate-700">
             {coverPreview ? (
               <>
@@ -197,12 +197,12 @@ export default function EditForm({ initial }: { initial: Initial }) {
                 <svg className="w-10 h-10 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <p className="text-xs">Kapak görseli yok</p>
+                <p className="text-sm">Kapak görseli yok</p>
               </div>
             )}
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <label className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium rounded-lg cursor-pointer transition-colors">
+            <label className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium rounded-lg cursor-pointer transition-colors">
               {coverPreview ? 'Değiştir' : 'Kapak Yükle'}
               <input
                 ref={coverInputRef}
@@ -217,18 +217,18 @@ export default function EditForm({ initial }: { initial: Initial }) {
               <button
                 type="button"
                 onClick={clearCover}
-                className="px-3 py-1.5 text-slate-500 hover:text-red-400 text-xs font-medium transition-colors"
+                className="px-3 py-1.5 text-slate-500 hover:text-red-400 text-sm font-medium transition-colors"
               >
                 Kaldır
               </button>
             )}
-            <p className="text-[10px] text-slate-600 ml-auto">JPG/PNG/WebP · Max 5 MB · 3:1 önerilir</p>
+            <p className="text-sm text-slate-600 ml-auto">JPG/PNG/WebP · Max 5 MB · 3:1 önerilir</p>
           </div>
         </div>
 
         {/* Logo */}
         <div>
-          <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Logo / Avatar</label>
+          <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Logo / Avatar</label>
           <div className="flex items-center gap-4">
             <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-900 border border-slate-700 shrink-0">
               {logoPreview ? (
@@ -244,7 +244,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <label className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium rounded-lg cursor-pointer transition-colors">
+                <label className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium rounded-lg cursor-pointer transition-colors">
                   {logoPreview ? 'Değiştir' : 'Logo Yükle'}
                   <input
                     ref={logoInputRef}
@@ -259,13 +259,13 @@ export default function EditForm({ initial }: { initial: Initial }) {
                   <button
                     type="button"
                     onClick={clearLogo}
-                    className="px-3 py-1.5 text-slate-500 hover:text-red-400 text-xs font-medium transition-colors"
+                    className="px-3 py-1.5 text-slate-500 hover:text-red-400 text-sm font-medium transition-colors"
                   >
                     Kaldır
                   </button>
                 )}
               </div>
-              <p className="text-[10px] text-slate-600 mt-1.5">Kare format · Max 5 MB · Logo yoksa baş harfin gösterilir</p>
+              <p className="text-sm text-slate-600 mt-1.5">Kare format · Max 5 MB · Logo yoksa baş harfin gösterilir</p>
             </div>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
 
       {/* Klinik adı */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Klinik Adı *</label>
+        <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Klinik Adı *</label>
         <input
           name="name"
           required
@@ -288,7 +288,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
 
       {/* Konum */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Konum</label>
+        <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Konum</label>
         <input
           name="location"
           maxLength={200}
@@ -297,12 +297,12 @@ export default function EditForm({ initial }: { initial: Initial }) {
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
           placeholder="Örn. İstanbul, Beşiktaş"
         />
-        <p className="text-[11px] text-slate-600 mt-1">İlçe + il yazılırsa filtrelerde daha iyi eşleşir.</p>
+        <p className="text-sm text-slate-600 mt-1">İlçe + il yazılırsa filtrelerde daha iyi eşleşir.</p>
       </div>
 
       {/* Klinik tipi (uzmanlık dalı) */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Klinik Tipi / Uzmanlık Dalı</label>
+        <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Klinik Tipi / Uzmanlık Dalı</label>
         <select
           name="clinic_type"
           value={clinicType}
@@ -314,12 +314,12 @@ export default function EditForm({ initial }: { initial: Initial }) {
             <option key={t} value={t}>{t}</option>
           ))}
         </select>
-        <p className="text-[11px] text-slate-600 mt-1">Hekim diploma branşınız — kart üzerinde isim altında görünür.</p>
+        <p className="text-sm text-slate-600 mt-1">Hekim diploma branşınız — kart üzerinde isim altında görünür.</p>
       </div>
 
       {/* Telefon */}
       <div>
-        <label className="block text-xs uppercase tracking-widest text-slate-500 mb-1.5">Telefon</label>
+        <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Telefon</label>
         <input
           name="phone"
           type="tel"
@@ -333,9 +333,9 @@ export default function EditForm({ initial }: { initial: Initial }) {
 
       {/* Hakkında */}
       <div>
-        <label className="flex items-center justify-between text-xs uppercase tracking-widest text-slate-500 mb-1.5">
+        <label className="flex items-center justify-between text-sm uppercase tracking-widest text-slate-500 mb-1.5">
           <span>Hakkında</span>
-          <span className={`text-[10px] normal-case tracking-normal ${bioCharsLeft < 100 ? 'text-amber-400' : 'text-slate-600'}`}>
+          <span className={`text-sm normal-case tracking-normal ${bioCharsLeft < 100 ? 'text-amber-400' : 'text-slate-600'}`}>
             {bioCharsLeft} karakter
           </span>
         </label>
@@ -353,7 +353,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
       {/* Hizmetleriniz — branş bazlı checkbox grid + Tümünü Seç + Ayrıca Ekle */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="text-xs uppercase tracking-widest text-slate-500">
+          <label className="text-sm uppercase tracking-widest text-slate-500">
             Hizmetleriniz
             {clinicType && branchTreatments.length > 0 && (
               <span className="ml-2 normal-case tracking-normal text-slate-600">— {branchTreatments.length} seçenek</span>
@@ -364,7 +364,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
             <button
               type="button"
               onClick={toggleSelectAllBranch}
-              className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium"
+              className="text-sm text-violet-400 hover:text-violet-300 transition-colors font-medium"
             >
               {allBranchSelected ? 'Tümünü Kaldır' : 'Tümünü Seç'}
             </button>
@@ -418,7 +418,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
               type="button"
               onClick={() => setExtraSearchOpen(true)}
               disabled={specialtyTags.length >= MAX_SPECIALTIES}
-              className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 disabled:text-slate-600 disabled:cursor-not-allowed transition-colors font-medium"
+              className="inline-flex items-center gap-1.5 text-sm text-violet-400 hover:text-violet-300 disabled:text-slate-600 disabled:cursor-not-allowed transition-colors font-medium"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -478,7 +478,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
                 </div>
               )}
 
-              <p className="text-[11px] text-slate-600 mt-1">
+              <p className="text-sm text-slate-600 mt-1">
                 Listeden seç veya yaz + Enter · Branş dışı tedaviler buraya
               </p>
             </div>
@@ -488,12 +488,12 @@ export default function EditForm({ initial }: { initial: Initial }) {
         {/* Ekstra (branş dışı) tag'ler — ayrı bölüm */}
         {extraTags.length > 0 && (
           <div className="mt-3">
-            <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1.5">Ekstra Tedaviler ({extraTags.length})</p>
+            <p className="text-sm uppercase tracking-widest text-slate-500 mb-1.5">Ekstra Tedaviler ({extraTags.length})</p>
             <div className="flex flex-wrap gap-1.5">
               {extraTags.map(s => (
                 <span
                   key={s}
-                  className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-1 rounded-md bg-violet-500/10 text-violet-300 border border-violet-500/30"
+                  className="inline-flex items-center gap-1 text-sm uppercase tracking-wider px-2 py-1 rounded-md bg-violet-500/10 text-violet-300 border border-violet-500/30"
                 >
                   {s}
                   <button

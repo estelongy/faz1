@@ -48,24 +48,24 @@ export function PrivateReplyForm({ reviewId }: { reviewId: string }) {
         disabled={pending}
       />
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[10px] text-slate-600">
+        <p className="text-sm text-slate-600">
           {text.length}/1000 · <span className="text-amber-500">Tek seferlik — sonradan değiştirilemez</span>
         </p>
         <button
           type="submit"
           disabled={pending || text.trim().length < 3}
-          className="px-4 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-lg transition-colors"
+          className="px-4 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
         >
           {pending ? 'Gönderiliyor…' : 'Yanıt Gönder'}
         </button>
       </div>
       {error && (
-        <p className="text-red-400 text-xs px-2 py-1.5 bg-red-500/10 border border-red-500/20 rounded">
+        <p className="text-red-400 text-sm px-2 py-1.5 bg-red-500/10 border border-red-500/20 rounded">
           ✗ {error}
         </p>
       )}
       {success && (
-        <p className="text-emerald-400 text-xs px-2 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
+        <p className="text-emerald-400 text-sm px-2 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
           ✓ Yanıtın hastaya iletildi
         </p>
       )}
@@ -100,11 +100,11 @@ export function MarkReadButton({ reviewId }: { reviewId: string }) {
         type="button"
         onClick={mark}
         disabled={pending}
-        className="px-3 py-1 text-[10px] uppercase tracking-wider rounded-md border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-white transition-colors disabled:opacity-50"
+        className="px-3 py-1 text-sm uppercase tracking-wider rounded-md border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-white transition-colors disabled:opacity-50"
       >
         {pending ? '…' : 'Okundu işaretle'}
       </button>
-      {error && <span className="text-red-400 text-[10px]">✗ {error}</span>}
+      {error && <span className="text-red-400 text-sm">✗ {error}</span>}
     </div>
   )
 }

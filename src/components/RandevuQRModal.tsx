@@ -46,7 +46,7 @@ export default function RandevuQRModal({ appointmentId, clinicName, appointmentD
           >
             {/* Başlık */}
             <div className="text-center mb-4">
-              <p className="text-slate-500 text-xs uppercase tracking-wider font-bold">Klinik Check-in</p>
+              <p className="text-slate-500 text-sm uppercase tracking-wider font-bold">Klinik Check-in</p>
               <h2 className="text-slate-900 text-xl font-black mt-1">{clinicName}</h2>
               {appointmentDate && (
                 <p className="text-slate-600 text-sm mt-1">
@@ -66,13 +66,13 @@ export default function RandevuQRModal({ appointmentId, clinicName, appointmentD
 
             {/* Kod bilgisi */}
             <div className="text-center mb-4">
-              <p className="text-slate-500 text-xs">Randevu Kodu</p>
+              <p className="text-slate-500 text-sm">Randevu Kodu</p>
               <p className="text-slate-900 font-mono font-bold text-lg tracking-widest">{shortId}</p>
             </div>
 
             {/* Talimat */}
             <div className="bg-violet-50 rounded-xl p-3 mb-4 text-center">
-              <p className="text-violet-900 text-xs">
+              <p className="text-violet-900 text-sm">
                 Kliniğe vardığında bu QR&apos;ı resepsiyona göster.<br/>
                 Klinik telefonuyla okutup seni sisteme kaydedecek.
               </p>

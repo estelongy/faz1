@@ -40,7 +40,7 @@ export default function ErrorPage({
 
         {error.digest && (
           <div className="mb-8 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700 inline-block">
-            <p className="text-[11px] text-slate-500 font-mono">
+            <p className="text-sm text-slate-500 font-mono">
               Hata kodu: <span className="text-slate-400">{error.digest}</span>
             </p>
           </div>

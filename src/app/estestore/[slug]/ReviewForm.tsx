@@ -61,8 +61,8 @@ export default function ReviewForm({ productId }: { productId: string }) {
       </div>
 
       <div>
-        <label className="block text-slate-500 text-xs mb-2 uppercase tracking-wide font-semibold">
-          Puan: <span className={`font-black text-lg ${ratingColor}`}>{rating}<span className="text-slate-400 text-xs font-normal">/10</span></span>
+        <label className="block text-slate-500 text-sm mb-2 uppercase tracking-wide font-semibold">
+          Puan: <span className={`font-black text-lg ${ratingColor}`}>{rating}<span className="text-slate-400 text-sm font-normal">/10</span></span>
         </label>
         <input
           type="range" min={1} max={10} step={0.5}
@@ -70,13 +70,13 @@ export default function ReviewForm({ productId }: { productId: string }) {
           onChange={e => setRating(Number(e.target.value))}
           className="w-full accent-[#C9A961]"
         />
-        <div className="flex justify-between text-xs text-slate-400 mt-1">
+        <div className="flex justify-between text-sm text-slate-400 mt-1">
           <span>1</span><span>5</span><span>10</span>
         </div>
       </div>
 
       <div>
-        <label className="block text-slate-500 text-xs mb-1 font-semibold">Başlık <span className="text-slate-400 font-normal">(isteğe bağlı)</span></label>
+        <label className="block text-slate-500 text-sm mb-1 font-semibold">Başlık <span className="text-slate-400 font-normal">(isteğe bağlı)</span></label>
         <input
           type="text"
           value={title}
@@ -88,7 +88,7 @@ export default function ReviewForm({ productId }: { productId: string }) {
       </div>
 
       <div>
-        <label className="block text-slate-500 text-xs mb-1 font-semibold">Deneyim <span className="text-slate-400 font-normal">(isteğe bağlı)</span></label>
+        <label className="block text-slate-500 text-sm mb-1 font-semibold">Deneyim <span className="text-slate-400 font-normal">(isteğe bağlı)</span></label>
         <textarea
           value={body}
           onChange={e => setBody(e.target.value)}

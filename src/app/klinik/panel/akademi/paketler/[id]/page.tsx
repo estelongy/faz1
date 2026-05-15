@@ -82,9 +82,9 @@ export default async function PaketDetayPage({ params }: Props) {
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h1 className="text-2xl font-bold text-white truncate">{pkg.title}</h1>
             {pkg.is_published ? (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">Yayında</span>
+              <span className="text-sm px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">Yayında</span>
             ) : (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-medium">Taslak</span>
+              <span className="text-sm px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-medium">Taslak</span>
             )}
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-500">
@@ -132,19 +132,19 @@ export default async function PaketDetayPage({ params }: Props) {
       {/* Satış özeti */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-          <div className="text-slate-500 text-xs mb-1">Toplam Satış</div>
+          <div className="text-slate-500 text-sm mb-1">Toplam Satış</div>
           <div className="text-xl font-bold text-white">{paidPurchases.length}</div>
         </div>
         <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-          <div className="text-slate-500 text-xs mb-1">Kazanç</div>
+          <div className="text-slate-500 text-sm mb-1">Kazanç</div>
           <div className="text-xl font-bold text-emerald-400">{formatPrice(totalEarnings)}</div>
         </div>
         <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-          <div className="text-slate-500 text-xs mb-1">Puan</div>
+          <div className="text-slate-500 text-sm mb-1">Puan</div>
           <div className="text-xl font-bold text-white">
             {pkg.avg_rating !== null && pkg.avg_rating !== undefined ? `⭐ ${pkg.avg_rating.toFixed(1)}` : '—'}
           </div>
-          <div className="text-slate-500 text-xs mt-0.5">{pkg.total_reviews} yorum</div>
+          <div className="text-slate-500 text-sm mt-0.5">{pkg.total_reviews} yorum</div>
         </div>
       </div>
 
@@ -257,18 +257,18 @@ export default async function PaketDetayPage({ params }: Props) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-white font-medium truncate">{v.title}</span>
-                  {v.is_preview && <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-medium">ÖNİZLEME</span>}
+                  {v.is_preview && <span className="text-sm px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-medium">ÖNİZLEME</span>}
                   {v.stream_status === 'ready' ? (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">HAZIR</span>
+                    <span className="text-sm px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">HAZIR</span>
                   ) : v.stream_status === 'processing' ? (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">İŞLENİYOR</span>
+                    <span className="text-sm px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">İŞLENİYOR</span>
                   ) : v.stream_status === 'error' ? (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-medium">HATA</span>
+                    <span className="text-sm px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-medium">HATA</span>
                   ) : (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 font-medium">BEKLEMEDE</span>
+                    <span className="text-sm px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 font-medium">BEKLEMEDE</span>
                   )}
                 </div>
-                <div className="text-slate-500 text-xs mt-0.5 flex items-center gap-2">
+                <div className="text-slate-500 text-sm mt-0.5 flex items-center gap-2">
                   {v.duration_seconds > 0 && <span>{formatDuration(v.duration_seconds)}</span>}
                   {v.stream_uid && <span className="font-mono">UID: {v.stream_uid.slice(0, 8)}…</span>}
                 </div>
@@ -298,7 +298,7 @@ export default async function PaketDetayPage({ params }: Props) {
           <form action={addVideo} className="p-4 space-y-3 border-t border-slate-800">
             <input type="hidden" name="package_id" value={pkg.id} />
             <div>
-              <label className="block text-xs text-slate-400 mb-1.5">Video Başlığı *</label>
+              <label className="block text-sm text-slate-400 mb-1.5">Video Başlığı *</label>
               <input
                 type="text"
                 name="title"
@@ -309,7 +309,7 @@ export default async function PaketDetayPage({ params }: Props) {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1.5">Açıklama (opsiyonel)</label>
+              <label className="block text-sm text-slate-400 mb-1.5">Açıklama (opsiyonel)</label>
               <textarea
                 name="description"
                 rows={2}
@@ -318,7 +318,7 @@ export default async function PaketDetayPage({ params }: Props) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5">
+                <label className="block text-sm text-slate-400 mb-1.5">
                   Cloudflare Stream UID
                   <span className="text-slate-600 ml-1">(şimdilik boş bırakabilirsiniz)</span>
                 </label>
@@ -330,7 +330,7 @@ export default async function PaketDetayPage({ params }: Props) {
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5">Süre (saniye, opsiyonel)</label>
+                <label className="block text-sm text-slate-400 mb-1.5">Süre (saniye, opsiyonel)</label>
                 <input
                   type="number"
                   name="duration_seconds"

@@ -48,7 +48,7 @@ export default function NotFound() {
           </Link>
         </div>
 
-        <div className="pt-6 border-t border-slate-800 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-slate-600">
+        <div className="pt-6 border-t border-slate-800 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-slate-600">
           <Link href="/analiz" className="hover:text-slate-400 transition-colors">Ön Analiz</Link>
           <span className="text-slate-800">·</span>
           <Link href="/esteklinik" className="hover:text-slate-400 transition-colors">Klinik Randevu</Link>

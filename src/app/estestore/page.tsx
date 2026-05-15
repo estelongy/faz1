@@ -487,7 +487,7 @@ function AkademiCard({
               }).format(Number(pkg.price))}
             </div>
           ) : (
-            <p className="text-xs text-slate-500">
+            <p className="text-sm text-slate-500">
               Fiyat için <span className="text-slate-700 font-medium">giriş yapın</span>
             </p>
           )}

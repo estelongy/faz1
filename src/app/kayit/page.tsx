@@ -276,7 +276,7 @@ function KayitInner() {
                       }`} />
                     ))}
                   </div>
-                  <p className={`${t.strengthText} text-xs`}>
+                  <p className={`${t.strengthText} text-sm`}>
                     {password.length < 6 ? 'Çok zayıf' : password.length < 8 ? 'Zayıf' : password.length < 12 ? 'Orta' : password.length < 16 ? 'Güçlü' : 'Çok güçlü'}
                   </p>
                 </div>
@@ -286,14 +286,14 @@ function KayitInner() {
             {/* Referans kodu (opsiyonel) */}
             <div>
               <label className={labelCls}>
-                Referans Kodu <span className={`${t.strengthText} text-xs`}>(opsiyonel)</span>
+                Referans Kodu <span className={`${t.strengthText} text-sm`}>(opsiyonel)</span>
               </label>
               <input type="text" value={refCode}
                 onChange={e => setRefCode(e.target.value.toUpperCase().replace(/\s/g, '').slice(0, 12))}
                 placeholder="Bir arkadaşın kodu varsa girin"
                 className={`${inputCls} uppercase tracking-wider`} />
               {refCode && (
-                <p className={`${t.accent} text-xs mt-1.5 opacity-90`}>✨ Referans kodun arkadaşına +10 puan kazandıracak</p>
+                <p className={`${t.accent} text-sm mt-1.5 opacity-90`}>✨ Referans kodun arkadaşına +10 puan kazandıracak</p>
               )}
             </div>
 

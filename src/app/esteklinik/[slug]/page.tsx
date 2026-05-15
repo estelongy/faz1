@@ -95,12 +95,12 @@ export default async function PublicClinicPage({ params }: Props) {
             style={{ background: 'radial-gradient(circle, #10876B 0%, transparent 70%)' }}
           />
           <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-6">
-            <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-3">
+            <nav className="flex items-center gap-2 text-sm text-emerald-200/70 mb-3">
               <Link href="/esteklinik" className="hover:text-white transition-colors">EsteKlinik</Link>
               <span>›</span>
               <span className="text-white font-semibold truncate">{clinic.name}</span>
             </nav>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-1">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-emerald-300 mb-1">
               EsteKlinik · Onaylı Merkez
             </p>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">{clinic.name}</h1>
@@ -136,7 +136,7 @@ export default async function PublicClinicPage({ params }: Props) {
                 <div className="min-w-0 flex-1">
                   <h2 className="text-slate-900 font-bold text-lg">{clinic.name}</h2>
                   {clinic.location && (
-                    <p className="text-slate-500 text-xs mt-0.5 flex items-center gap-1">
+                    <p className="text-slate-500 text-sm mt-0.5 flex items-center gap-1">
                       <MapPin size={11} className="text-[#10876B]" /> {clinic.location}
                     </p>
                   )}
@@ -150,7 +150,7 @@ export default async function PublicClinicPage({ params }: Props) {
               {Array.isArray(clinic.specialties) && clinic.specialties.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {clinic.specialties.map((s: string, i: number) => (
-                    <span key={i} className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-[#10876B]/10 text-[#0E7559] border border-[#10876B]/25">
+                    <span key={i} className="text-sm font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-[#10876B]/10 text-[#0E7559] border border-[#10876B]/25">
                       {s}
                     </span>
                   ))}
@@ -164,13 +164,13 @@ export default async function PublicClinicPage({ params }: Props) {
                 <MeasuringBadge reviewCount={reviewCount} variant="badge" />
               ) : (
                 <div className={`p-5 rounded-2xl border-2 bg-white ${egpBadgeColor(egp)}`}>
-                  <p className="text-[10px] uppercase tracking-widest opacity-70 font-semibold mb-1">Klinik EGP</p>
+                  <p className="text-sm uppercase tracking-widest opacity-70 font-semibold mb-1">Klinik EGP</p>
                   <div className="flex items-baseline gap-2 mb-1">
                     <span className="text-5xl font-black leading-none">{egpPublic ?? '—'}</span>
-                    {egpPublic && egpPublic !== '<7' && <span className="text-xs opacity-70">/10</span>}
+                    {egpPublic && egpPublic !== '<7' && <span className="text-sm opacity-70">/10</span>}
                   </div>
-                  <p className="text-xs font-bold uppercase tracking-wider mt-2">{egpLabel(egp)}</p>
-                  <p className="text-[11px] opacity-80 mt-2"><strong>{reviewCount}</strong> deneyim · son 12 ay</p>
+                  <p className="text-sm font-bold uppercase tracking-wider mt-2">{egpLabel(egp)}</p>
+                  <p className="text-sm opacity-80 mt-2"><strong>{reviewCount}</strong> deneyim · son 12 ay</p>
                 </div>
               )}
 
@@ -185,7 +185,7 @@ export default async function PublicClinicPage({ params }: Props) {
           </div>
 
           {/* Felsefe notu — sade dil */}
-          <div className="p-4 rounded-xl bg-[#FAFAF7] border border-slate-200 text-xs text-slate-600 leading-relaxed mb-6">
+          <div className="p-4 rounded-xl bg-[#FAFAF7] border border-slate-200 text-sm text-slate-600 leading-relaxed mb-6">
             <strong className="text-slate-900">Estelongy Güven Puanı (EGP)</strong>, hastaların son 12 ayda
             klinik için verdiği tavsiye eğilimine göre hesaplanır. Reklam etkilemez, hasta deneyimi konuşur.
             {' '}<strong className="text-slate-900">{MIN_REVIEWS_THRESHOLD}</strong> deneyim altındaki klinikler &ldquo;Ölçülüyor&rdquo; rozeti taşır.
@@ -266,14 +266,14 @@ function PublicReviewCard({ review, userName }: { review: ClinicReviewRow; userN
         <div className="min-w-0">
           <p className="text-slate-900 font-semibold text-sm">
             {userName ?? 'Estelongy Kullanıcısı'}
-            {review.is_anonymous && <span className="ml-2 text-[10px] text-slate-400 uppercase font-medium">Anonim</span>}
+            {review.is_anonymous && <span className="ml-2 text-sm text-slate-400 uppercase font-medium">Anonim</span>}
           </p>
-          <p className="text-slate-500 text-xs mt-0.5">
+          <p className="text-slate-500 text-sm mt-0.5">
             {new Date(review.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-[11px] text-slate-400">Tavsiye</p>
+          <p className="text-sm text-slate-400">Tavsiye</p>
           <p className="text-slate-900 font-semibold text-sm">{NPS_LABELS[review.nps] ?? '—'}</p>
         </div>
       </header>
@@ -287,9 +287,9 @@ function PublicReviewCard({ review, userName }: { review: ClinicReviewRow; userN
       {review.clinic_response && (
         <div className="p-3 rounded-lg bg-slate-100 border border-slate-200">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-[#0E7559] text-[10px] uppercase tracking-wider font-bold">Klinik Cevabı</p>
+            <p className="text-[#0E7559] text-sm uppercase tracking-wider font-bold">Klinik Cevabı</p>
             {review.clinic_responded_at && (
-              <p className="text-slate-400 text-[10px]">
+              <p className="text-slate-400 text-sm">
                 {new Date(review.clinic_responded_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
               </p>
             )}

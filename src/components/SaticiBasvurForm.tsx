@@ -200,7 +200,7 @@ export default function SaticiBasvurForm({ action, hasError, isLoggedIn }: Props
         <div>
           <label className="block text-sm text-slate-400 mb-2">
             Telefon <span className="text-red-400">*</span>
-            {otpVerified && <span className="ml-2 text-emerald-400 text-xs font-normal">✓ Doğrulandı</span>}
+            {otpVerified && <span className="ml-2 text-emerald-400 text-sm font-normal">✓ Doğrulandı</span>}
           </label>
           <input type="tel" name="phone" required placeholder="05XX XXX XX XX"
             disabled={otpVerified}
@@ -211,7 +211,7 @@ export default function SaticiBasvurForm({ action, hasError, isLoggedIn }: Props
           <label className="block text-sm text-slate-400 mb-2">Vergi Numarası</label>
           <input type="text" name="tax_number" placeholder="1234567890"
             className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
-          <p className="text-slate-500 text-xs mt-1">Fatura işlemleri için gereklidir</p>
+          <p className="text-slate-500 text-sm mt-1">Fatura işlemleri için gereklidir</p>
         </div>
 
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">

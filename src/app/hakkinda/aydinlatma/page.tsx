@@ -32,7 +32,7 @@ export default function AydinlatmaPage() {
                 Estelongy, Vestoriq OÜ&apos;nün tescilli markasıdır. Türkiye&apos;de yerleşik
                 kullanıcılar açısından KVKK madde 3/ç anlamında veri sorumlusu sıfatı taşır.
               </p>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-sm text-slate-500">
                 İletişim: <a href="mailto:kvkk@estelongy.com" className="text-violet-400 hover:text-violet-300">kvkk@estelongy.com</a>
               </p>
             </section>
@@ -72,7 +72,7 @@ export default function AydinlatmaPage() {
                 Hepsiyle KVKK m.9 ve GDPR Art.28 uyarınca veri işleme sözleşmesi (DPA) bulunmaktadır.
               </p>
               <div className="overflow-x-auto mt-3">
-                <table className="w-full text-xs border-collapse">
+                <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="border-b border-slate-700">
                       <th className="text-left py-2 pr-4 text-slate-300 font-semibold">Sağlayıcı</th>
@@ -124,7 +124,7 @@ export default function AydinlatmaPage() {
                   </tbody>
                 </table>
               </div>
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-sm text-slate-500">
                 ABD&apos;deki sağlayıcılar için aktarım, AB Standart Sözleşme Hükümleri (SCC) ve KVKK m.9
                 kapsamında açık rızanıza dayanılarak gerçekleştirilir.
               </p>
@@ -166,7 +166,7 @@ export default function AydinlatmaPage() {
                 <li><strong className="text-slate-300">Açık rızanın geri alınması:</strong> Pazarlama veya biyometrik analiz için verilen rızayı her zaman geri alabilirsiniz.</li>
                 <li><strong className="text-slate-300">Şikâyet:</strong> Kişisel Verileri Koruma Kurumu (KVKK) veya AB üye devletinizin Veri Koruma Otoritesine başvurma.</li>
               </ul>
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-sm text-slate-500">
                 Talepler en geç 30 gün içinde, yazılı bildirim halinde KVKK m.13 kapsamında
                 ücretsiz olarak yanıtlanır.
               </p>

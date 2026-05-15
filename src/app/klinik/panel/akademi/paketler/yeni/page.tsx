@@ -116,7 +116,7 @@ export default async function YeniPaketPage() {
               />
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">₺</span>
             </div>
-            <p className="text-xs text-slate-500 mt-1.5">
+            <p className="text-sm text-slate-500 mt-1.5">
               Bu fiyatın <span className="text-emerald-400 font-medium">%70&apos;i (eğitmen payı)</span> size, %30&apos;u Estelongy&apos;ye gider. Ödemeler ay sonu IBAN&apos;a transfer edilir.
             </p>
           </div>
@@ -124,7 +124,7 @@ export default async function YeniPaketPage() {
           {/* Kapak görseli */}
           <div>
             <label className="block text-sm text-slate-300 mb-2">
-              Kapak Görseli URL <span className="text-slate-600 text-xs">(opsiyonel — sonra ekleyebilirsiniz)</span>
+              Kapak Görseli URL <span className="text-slate-600 text-sm">(opsiyonel — sonra ekleyebilirsiniz)</span>
             </label>
             <input
               type="url"

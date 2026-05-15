@@ -78,7 +78,7 @@ export default function TierBuilder({
       <div className="flex items-baseline justify-between">
         <div>
           <h3 className="text-white font-bold text-sm">Profesyonel Toplu Alım Baremleri</h3>
-          <p className="text-slate-500 text-xs mt-0.5">
+          <p className="text-slate-500 text-sm mt-0.5">
             Klinik ve sağlık profesyoneli müşteriler için. En fazla 3 barem.
             {category === 'kozmetik' && (
               <span className="block">
@@ -91,7 +91,7 @@ export default function TierBuilder({
 
       <div className="space-y-2">
         {rows.length === 0 ? (
-          <div className="p-3 rounded-xl border border-dashed border-slate-700 text-slate-500 text-xs text-center">
+          <div className="p-3 rounded-xl border border-dashed border-slate-700 text-slate-500 text-sm text-center">
             Henüz barem eklenmedi — opsiyonel ama öneririz.
           </div>
         ) : (
@@ -112,7 +112,7 @@ export default function TierBuilder({
               >
                 <div className="grid grid-cols-12 gap-2 items-center">
                   <div className="col-span-3">
-                    <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-0.5">
+                    <label className="block text-sm uppercase tracking-wider text-slate-500 mb-0.5">
                       Min adet
                     </label>
                     <input
@@ -124,7 +124,7 @@ export default function TierBuilder({
                     />
                   </div>
                   <div className="col-span-3">
-                    <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-0.5">
+                    <label className="block text-sm uppercase tracking-wider text-slate-500 mb-0.5">
                       Max adet
                     </label>
                     {row.max === null ? (
@@ -142,7 +142,7 @@ export default function TierBuilder({
                     )}
                   </div>
                   <div className="col-span-3">
-                    <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-0.5">
+                    <label className="block text-sm uppercase tracking-wider text-slate-500 mb-0.5">
                       İndirim
                     </label>
                     <div className="relative">
@@ -159,11 +159,11 @@ export default function TierBuilder({
                         }
                         className="w-full px-2 py-1.5 pr-6 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm text-right focus:outline-none focus:border-violet-500"
                       />
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 text-xs">%</span>
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 text-sm">%</span>
                     </div>
                   </div>
                   <div className="col-span-2 text-right">
-                    <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-0.5">Birim</p>
+                    <p className="text-sm uppercase tracking-wider text-slate-500 mb-0.5">Birim</p>
                     <p className="text-emerald-400 text-sm font-bold">{formatTRY(unitPrice)}</p>
                   </div>
                   <div className="col-span-1 flex justify-end">
@@ -185,14 +185,14 @@ export default function TierBuilder({
                   <button
                     type="button"
                     onClick={makeLastUnbounded}
-                    className="mt-2 text-xs text-violet-300 hover:text-violet-200 underline"
+                    className="mt-2 text-sm text-violet-300 hover:text-violet-200 underline"
                   >
                     Son baremi sınırsız (∞) yap
                   </button>
                 )}
 
                 {rowErrors.length > 0 && (
-                  <ul className="mt-2 text-xs text-red-400 list-disc list-inside space-y-0.5">
+                  <ul className="mt-2 text-sm text-red-400 list-disc list-inside space-y-0.5">
                     {rowErrors.map((m, j) => <li key={j}>{m}</li>)}
                   </ul>
                 )}
@@ -216,7 +216,7 @@ export default function TierBuilder({
           <button
             type="button"
             onClick={() => setRows([{ ...EMPTY_TIER, discount_rate: minProfessionalDiscount }])}
-            className="px-4 py-2 rounded-xl bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold hover:bg-violet-500/20"
+            className="px-4 py-2 rounded-xl bg-violet-500/10 border border-violet-500/30 text-violet-300 text-sm font-semibold hover:bg-violet-500/20"
           >
             Önerilen 3 baremi yükle
           </button>
@@ -224,7 +224,7 @@ export default function TierBuilder({
       </div>
 
       {globalErrors.length > 0 && (
-        <ul className="text-xs text-red-400 list-disc list-inside space-y-0.5">
+        <ul className="text-sm text-red-400 list-disc list-inside space-y-0.5">
           {globalErrors.map((m, i) => <li key={i}>{m}</li>)}
         </ul>
       )}

@@ -209,17 +209,17 @@ export default function MuhasebeShellClient({
       {/* Hızlı Kayıt formu */}
       {showQuick && (
         <form onSubmit={handleQuickSubmit} className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-800/60 border border-violet-500/30 space-y-4">
-          <p className="text-xs uppercase tracking-widest text-violet-300/80 font-bold">Hızlı Kayıt — Hasta + İşlem + Ürün + Tahsilat</p>
+          <p className="text-sm uppercase tracking-widest text-violet-300/80 font-bold">Hızlı Kayıt — Hasta + İşlem + Ürün + Tahsilat</p>
 
           {/* ── Hasta Seçimi ── */}
           <div className="space-y-2">
             <div className="flex gap-2">
               <button type="button" onClick={() => { setPatientMode('new'); setSelectedPatientId('') }}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${patientMode === 'new' ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}>
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${patientMode === 'new' ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}>
                 Yeni Hasta
               </button>
               <button type="button" onClick={() => setPatientMode('existing')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${patientMode === 'existing' ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}>
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${patientMode === 'existing' ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}>
                 Mevcut Hasta ({rows.length})
               </button>
             </div>
@@ -227,13 +227,13 @@ export default function MuhasebeShellClient({
             {patientMode === 'new' ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ad Soyad *</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Ad Soyad *</label>
                   <input name="new_patient_name" autoFocus minLength={2} maxLength={120}
                     placeholder="Örn. Ayşe Y."
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Telefon</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Telefon</label>
                   <input name="new_patient_phone" type="tel" maxLength={32}
                     placeholder="0555…"
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
@@ -241,7 +241,7 @@ export default function MuhasebeShellClient({
               </div>
             ) : (
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Hasta Seç *</label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Hasta Seç *</label>
                 <input
                   type="text"
                   value={patientSearch}
@@ -256,22 +256,22 @@ export default function MuhasebeShellClient({
                       {rows.find(r => r.id === selectedPatientId)?.name}
                     </span>
                     <button type="button" onClick={() => { setSelectedPatientId(''); setPatientSearch('') }}
-                      className="ml-auto text-slate-500 hover:text-white text-xs">Değiştir</button>
+                      className="ml-auto text-slate-500 hover:text-white text-sm">Değiştir</button>
                   </div>
                 ) : (
                   <div className="max-h-32 overflow-y-auto space-y-0.5">
                     {filteredPatients.length === 0 ? (
-                      <p className="text-slate-600 text-xs px-2 py-1">Hasta bulunamadı — &quot;Yeni Hasta&quot; seçin.</p>
+                      <p className="text-slate-600 text-sm px-2 py-1">Hasta bulunamadı — &quot;Yeni Hasta&quot; seçin.</p>
                     ) : (
                       filteredPatients.map(r => (
                         <button key={r.id} type="button"
                           onClick={() => { setSelectedPatientId(r.id); setPatientSearch(r.name) }}
-                          className="w-full text-left px-2 py-1.5 rounded hover:bg-slate-800/60 text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-[10px] shrink-0">
+                          className="w-full text-left px-2 py-1.5 rounded hover:bg-slate-800/60 text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
                             {r.name.charAt(0).toLocaleUpperCase('tr-TR')}
                           </span>
                           <span className="truncate">{r.name}</span>
-                          {r.remaining > 0 && <span className="ml-auto text-amber-400 text-[10px] shrink-0">{formatTRY(r.remaining)}</span>}
+                          {r.remaining > 0 && <span className="ml-auto text-amber-400 text-sm shrink-0">{formatTRY(r.remaining)}</span>}
                         </button>
                       ))
                     )}
@@ -286,14 +286,14 @@ export default function MuhasebeShellClient({
           {/* ── İşlem ── */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">İşlem Bilgisi</p>
+              <p className="text-sm uppercase tracking-widest text-slate-500 font-bold">İşlem Bilgisi</p>
               <div className="flex gap-1.5">
                 <button type="button" onClick={() => { setTreatmentMode('catalog') }}
-                  className={`px-2.5 py-1 text-[10px] font-semibold rounded transition-colors ${treatmentMode === 'catalog' ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-400 hover:text-white'}`}>
+                  className={`px-2.5 py-1 text-sm font-semibold rounded transition-colors ${treatmentMode === 'catalog' ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-400 hover:text-white'}`}>
                   Katalogtan Seç
                 </button>
                 <button type="button" onClick={() => { setTreatmentMode('custom'); clearCatalogPick() }}
-                  className={`px-2.5 py-1 text-[10px] font-semibold rounded transition-colors ${treatmentMode === 'custom' ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-400 hover:text-white'}`}>
+                  className={`px-2.5 py-1 text-sm font-semibold rounded transition-colors ${treatmentMode === 'custom' ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-400 hover:text-white'}`}>
                   Özel Ad Gir
                 </button>
               </div>
@@ -305,7 +305,7 @@ export default function MuhasebeShellClient({
 
             {treatmentMode === 'catalog' ? (
               <div className="relative">
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Ara *</label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">İşlem Ara *</label>
                 {selectedCatalogId ? (
                   <div className="flex items-center gap-2 px-3 py-2 bg-violet-500/10 border border-violet-500/30 rounded-lg">
                     <span className="text-violet-300 text-sm font-semibold">{treatmentName}</span>
@@ -314,14 +314,14 @@ export default function MuhasebeShellClient({
                       if (!item) return null
                       return (
                         <>
-                          {item.category && <span className="text-[10px] text-slate-500">· {item.category}</span>}
-                          {item.default_unit && <span className="text-[10px] text-slate-500">· {item.default_unit}</span>}
-                          {item.egp_linked && <span className="text-[10px] text-amber-300 font-semibold">EGP</span>}
+                          {item.category && <span className="text-sm text-slate-500">· {item.category}</span>}
+                          {item.default_unit && <span className="text-sm text-slate-500">· {item.default_unit}</span>}
+                          {item.egp_linked && <span className="text-sm text-amber-300 font-semibold">EGP</span>}
                         </>
                       )
                     })()}
                     <button type="button" onClick={clearCatalogPick}
-                      className="ml-auto text-slate-500 hover:text-white text-xs">Değiştir</button>
+                      className="ml-auto text-slate-500 hover:text-white text-sm">Değiştir</button>
                   </div>
                 ) : (
                   <>
@@ -337,7 +337,7 @@ export default function MuhasebeShellClient({
                     {treatmentFocused && (
                       <div className="absolute z-20 left-0 right-0 mt-1 max-h-64 overflow-y-auto bg-slate-900 border border-slate-700 rounded-lg shadow-xl">
                         {filteredCatalog.length === 0 ? (
-                          <div className="px-3 py-3 text-xs text-slate-500">
+                          <div className="px-3 py-3 text-sm text-slate-500">
                             Eşleşme yok.
                             <button type="button"
                               onMouseDown={(e) => { e.preventDefault(); setTreatmentMode('custom'); setTreatmentName(treatmentSearch); setSelectedCatalogId('') }}
@@ -351,9 +351,9 @@ export default function MuhasebeShellClient({
                               onMouseDown={(e) => { e.preventDefault(); pickCatalogItem(c) }}
                               className="w-full text-left px-3 py-2 hover:bg-slate-800 transition-colors flex items-center gap-2 border-b border-slate-800 last:border-b-0">
                               <span className="text-sm text-white font-semibold flex-1 truncate">{c.name}</span>
-                              {c.category && <span className="text-[10px] text-slate-500">{c.category}</span>}
-                              {c.default_unit && <span className="text-[10px] text-slate-600">{c.default_unit}</span>}
-                              {c.egp_linked && <span className="text-[10px] text-amber-300 font-semibold">EGP</span>}
+                              {c.category && <span className="text-sm text-slate-500">{c.category}</span>}
+                              {c.default_unit && <span className="text-sm text-slate-600">{c.default_unit}</span>}
+                              {c.egp_linked && <span className="text-sm text-amber-300 font-semibold">EGP</span>}
                             </button>
                           ))
                         )}
@@ -364,7 +364,7 @@ export default function MuhasebeShellClient({
               </div>
             ) : (
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Adı * <span className="text-slate-600 normal-case">(özel)</span></label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">İşlem Adı * <span className="text-slate-600 normal-case">(özel)</span></label>
                 <input
                   type="text"
                   value={treatmentName}
@@ -380,17 +380,17 @@ export default function MuhasebeShellClient({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ücret (₺)</label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Ücret (₺)</label>
                 <input name="treatment_amount" type="number" step="0.01" min="0" defaultValue="0"
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Tarihi</label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">İşlem Tarihi</label>
                 <input name="treatment_date" type="date" defaultValue={new Date().toISOString().slice(0,10)}
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Not</label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Not</label>
                 <input name="treatment_notes" maxLength={300} placeholder="Opsiyonel…"
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
               </div>
@@ -402,17 +402,17 @@ export default function MuhasebeShellClient({
           {/* ── Kullanılan Ürünler (opsiyonel) ── */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+              <p className="text-sm uppercase tracking-widest text-slate-500 font-bold">
                 Kullanılan Ürünler <span className="text-slate-600">(opsiyonel)</span>
               </p>
               <button type="button" onClick={addProductRow}
-                className="text-xs text-violet-400 hover:text-violet-300 font-medium transition-colors">
+                className="text-sm text-violet-400 hover:text-violet-300 font-medium transition-colors">
                 + Ürün Ekle
               </button>
             </div>
             <input type="hidden" name="product_count" value={productRows.length} />
             {productRows.length === 0 ? (
-              <p className="text-xs text-slate-600 italic">Ürün eklenmedi — işlem için gerekli değil.</p>
+              <p className="text-sm text-slate-600 italic">Ürün eklenmedi — işlem için gerekli değil.</p>
             ) : (
               <div className="space-y-1.5">
                 {productRows.map((row, i) => (
@@ -425,7 +425,7 @@ export default function MuhasebeShellClient({
                       required
                       minLength={2}
                       maxLength={120}
-                      className="col-span-5 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500"
+                      className="col-span-5 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500"
                     />
                     <input
                       name={`product_qty_${i}`}
@@ -435,7 +435,7 @@ export default function MuhasebeShellClient({
                       step="0.001"
                       min="0"
                       placeholder="Miktar"
-                      className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500"
+                      className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500"
                     />
                     <input
                       name={`product_unit_${i}`}
@@ -443,7 +443,7 @@ export default function MuhasebeShellClient({
                       onChange={e => updateProductRow(i, 'unit', e.target.value)}
                       placeholder="Birim (ml…)"
                       maxLength={20}
-                      className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500"
+                      className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500"
                     />
                     <button type="button" onClick={() => removeProductRow(i)}
                       className="col-span-1 flex items-center justify-center text-slate-600 hover:text-red-400 transition-colors">
@@ -461,20 +461,20 @@ export default function MuhasebeShellClient({
 
           {/* ── Tahsilat (opsiyonel) ── */}
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Tahsilat <span className="text-slate-600">(opsiyonel — boş bırakırsan sadece işlem eklenir)</span></p>
+            <p className="text-sm uppercase tracking-widest text-slate-500 font-bold">Tahsilat <span className="text-slate-600">(opsiyonel — boş bırakırsan sadece işlem eklenir)</span></p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Tahsilat (₺)</label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Tahsilat (₺)</label>
                 <input name="payment_amount" type="number" step="0.01" min="0" defaultValue="0"
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500" />
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ödeme Tarihi</label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Ödeme Tarihi</label>
                 <input name="payment_date" type="date" defaultValue={new Date().toISOString().slice(0,10)}
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500" />
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Yöntem</label>
+                <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Yöntem</label>
                 <select name="payment_method"
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500">
                   <option value="">—</option>
@@ -489,12 +489,12 @@ export default function MuhasebeShellClient({
           </div>
 
           {quickError && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
               {quickError}
             </div>
           )}
           {quickSuccess && (
-            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-medium">
               ✓ Kayıt başarıyla eklendi!
             </div>
           )}
@@ -516,11 +516,11 @@ export default function MuhasebeShellClient({
       <div className="mb-5 rounded-2xl bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 border border-violet-500/30 p-4 sm:p-5">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-[10px] uppercase tracking-widest text-violet-300/80 font-bold">Bu Ay</p>
+            <p className="text-sm uppercase tracking-widest text-violet-300/80 font-bold">Bu Ay</p>
             <p className="text-white font-black text-lg sm:text-xl capitalize">{monthLabel}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-widest text-slate-400">Net</p>
+            <p className="text-sm uppercase tracking-widest text-slate-400">Net</p>
             <p className={`font-black text-lg sm:text-xl ${monthRemaining > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
               {monthRemaining > 0 ? '−' : '+'}{formatTRY(Math.abs(monthRemaining))}
             </p>
@@ -538,7 +538,7 @@ export default function MuhasebeShellClient({
       </div>
 
       {/* Genel toplam mini özet */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-5 text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-5 text-sm">
         <SoftCard label="Toplam Hasta" value={patientCount.toString()} />
         <SoftCard
           label={debtorCount > 0 ? `Borçlu Hasta (${debtorCount})` : 'Borçlu Hasta'}
@@ -589,7 +589,7 @@ function MiniStat({ label, value, tone }: { label: string; value: string; tone: 
     'text-slate-200'
   return (
     <div className="rounded-lg bg-slate-900/50 border border-slate-700/60 px-3 py-2">
-      <p className="text-[10px] uppercase tracking-widest text-slate-500">{label}</p>
+      <p className="text-sm uppercase tracking-widest text-slate-500">{label}</p>
       <p className={`text-base font-black mt-0.5 ${colors}`}>{value}</p>
     </div>
   )
@@ -602,7 +602,7 @@ function SoftCard({ label, value, highlight }: { label: string; value: string; h
     'border-slate-700/60 text-slate-300'
   return (
     <div className={`rounded-lg border ${c} bg-slate-800/30 px-3 py-2`}>
-      <p className="text-[10px] uppercase tracking-widest opacity-70">{label}</p>
+      <p className="text-sm uppercase tracking-widest opacity-70">{label}</p>
       <p className="text-sm font-bold mt-0.5">{value}</p>
     </div>
   )
@@ -644,19 +644,19 @@ function DailyTimeline({ days }: { days: DayGroup[] }) {
               </svg>
               <div className="flex-1 min-w-0">
                 <p className="text-white font-bold text-sm">{formatDayLabel(d.date)}</p>
-                <p className="text-slate-500 text-[11px] capitalize">
+                <p className="text-slate-500 text-sm capitalize">
                   {totalCount} hareket
                   {d.treatments.length > 0 && <span> · {d.treatments.length} işlem</span>}
                   {d.payments.length > 0 && <span> · {d.payments.length} tahsilat</span>}
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <div className="flex items-center gap-2 text-xs">
+                <div className="flex items-center gap-2 text-sm">
                   {d.billed > 0 && <span className="text-slate-300">+{formatTRY(d.billed)}</span>}
                   {d.collected > 0 && <span className="text-emerald-400 font-bold">{formatTRY(d.collected)} ✓</span>}
                 </div>
                 {(d.billed > 0 || d.collected > 0) && (
-                  <p className={`text-[10px] mt-0.5 ${net >= 0 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                  <p className={`text-sm mt-0.5 ${net >= 0 ? 'text-emerald-500' : 'text-amber-500'}`}>
                     Net {net >= 0 ? '+' : '−'}{formatTRY(Math.abs(net))}
                   </p>
                 )}
@@ -667,13 +667,13 @@ function DailyTimeline({ days }: { days: DayGroup[] }) {
               <div className="border-t border-slate-700/40 bg-slate-900/40 divide-y divide-slate-800/60">
                 {d.treatments.length > 0 && (
                   <div className="p-3">
-                    <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-2">İşlemler</p>
+                    <p className="text-sm uppercase tracking-widest text-slate-500 mb-2">İşlemler</p>
                     <div className="space-y-1">
                       {d.treatments.map(t => (
                         <Link
                           key={t.id}
                           href={`/klinik/panel/muhasebe/${t.patient_id}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800/60 text-xs transition-colors"
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800/60 text-sm transition-colors"
                         >
                           <span className="text-violet-300 font-medium truncate">{t.patient_name}</span>
                           <span className="text-slate-500 truncate">— {t.name}</span>
@@ -685,13 +685,13 @@ function DailyTimeline({ days }: { days: DayGroup[] }) {
                 )}
                 {d.payments.length > 0 && (
                   <div className="p-3">
-                    <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Tahsilatlar</p>
+                    <p className="text-sm uppercase tracking-widest text-slate-500 mb-2">Tahsilatlar</p>
                     <div className="space-y-1">
                       {d.payments.map(p => (
                         <Link
                           key={p.id}
                           href={`/klinik/panel/muhasebe/${p.patient_id}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800/60 text-xs transition-colors"
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800/60 text-sm transition-colors"
                         >
                           <span className="text-emerald-300 font-medium truncate">{p.patient_name}</span>
                           {p.method && <span className="text-slate-600 truncate">— {p.method}</span>}

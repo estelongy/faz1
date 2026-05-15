@@ -166,7 +166,7 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
               </span>
               <div>
                 <div className="text-[9px] uppercase tracking-widest text-slate-400 leading-none">Ölçülüyor</div>
-                <div className="text-xs font-bold text-slate-200 leading-tight">{reviewCount}/{MIN_REVIEWS_THRESHOLD}</div>
+                <div className="text-sm font-bold text-slate-200 leading-tight">{reviewCount}/{MIN_REVIEWS_THRESHOLD}</div>
               </div>
             </div>
           ) : egpPublic && (
@@ -199,12 +199,12 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
           {(clinic.clinic_type || (clinic.specialties && clinic.specialties.length > 0)) && (
             <div className="flex flex-wrap gap-1.5">
               {clinic.clinic_type && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-teal-500/15 text-teal-300 border border-teal-500/30">
+                <span className="text-sm font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-teal-500/15 text-teal-300 border border-teal-500/30">
                   {CLINIC_TYPE_LABEL[clinic.clinic_type] ?? clinic.clinic_type}
                 </span>
               )}
               {(clinic.specialties ?? []).slice(0, 6).map((s, i) => (
-                <span key={i} className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                <span key={i} className="text-sm uppercase tracking-wider px-2 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
                   {s}
                 </span>
               ))}
@@ -214,7 +214,7 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
           {/* Bio */}
           {clinic.bio && (
             <div>
-              <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Hakkında</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Hakkında</h3>
               <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">{clinic.bio}</p>
             </div>
           )}
@@ -222,16 +222,16 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
           {/* Stats şeridi */}
           <div className="grid grid-cols-3 gap-2">
             <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-center">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Deneyim</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wider">Deneyim</div>
               <div className="text-white font-bold text-lg">{reviewCount}</div>
               <div className="text-[9px] text-slate-600">son 12 ay</div>
             </div>
             <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-center">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Yöntem</div>
-              <div className="text-slate-300 font-bold text-xs leading-tight mt-1">NHS FFT<br/>+Bayesian</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wider">Yöntem</div>
+              <div className="text-slate-300 font-bold text-sm leading-tight mt-1">NHS FFT<br/>+Bayesian</div>
             </div>
             <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-center">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Onay</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wider">Onay</div>
               <div className="text-emerald-400 font-bold text-lg">KYC ✓</div>
             </div>
           </div>
@@ -243,21 +243,21 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
             <div className={`p-3 rounded-xl border ${egpBadgeColor(egp)} flex items-center gap-3`}>
               <div className="text-2xl font-black">{egpPublic}</div>
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] uppercase tracking-widest opacity-80">Estelongy Güven Puanı</div>
-                <div className="text-xs font-bold uppercase tracking-wider">{egpLabel(egp)}</div>
+                <div className="text-sm uppercase tracking-widest opacity-80">Estelongy Güven Puanı</div>
+                <div className="text-sm font-bold uppercase tracking-wider">{egpLabel(egp)}</div>
               </div>
             </div>
           )}
 
           {/* Son deneyimler */}
           <div>
-            <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Son Deneyimler</h3>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-2">Son Deneyimler</h3>
             {loadingReviews ? (
               <div className="space-y-2">
                 {[1, 2].map(i => <div key={i} className="h-16 rounded-xl bg-slate-800/40 animate-pulse" />)}
               </div>
             ) : reviews.length === 0 ? (
-              <p className="text-slate-500 text-xs italic">Henüz yorum yok — ilk deneyim senin olsun.</p>
+              <p className="text-slate-500 text-sm italic">Henüz yorum yok — ilk deneyim senin olsun.</p>
             ) : (
               <div className="space-y-2">
                 {reviews.map(r => {
@@ -271,16 +271,16 @@ export default function ClinicPreviewModal({ clinic, onClose, onSelect }: Props)
                   return (
                     <div key={r.id} className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/60">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-white font-semibold">
+                        <span className="text-sm text-white font-semibold">
                           {displayName}
                           {r.is_anonymous && <span className="ml-1.5 text-[9px] text-slate-600 uppercase tracking-wider font-normal">Anonim</span>}
                         </span>
-                        <span className="text-[10px] text-slate-600 shrink-0">
+                        <span className="text-sm text-slate-600 shrink-0">
                           {new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
                         </span>
                       </div>
                       {r.pozitif_metin && (
-                        <p className="text-slate-300 text-xs leading-relaxed line-clamp-2">{r.pozitif_metin}</p>
+                        <p className="text-slate-300 text-sm leading-relaxed line-clamp-2">{r.pozitif_metin}</p>
                       )}
                     </div>
                   )

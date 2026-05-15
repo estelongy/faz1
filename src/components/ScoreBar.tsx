@@ -190,7 +190,7 @@ export default function ScoreBar({
 
       {/* ── Başlık ── */}
       <div className="text-center mb-1">
-        <p className="text-[11px] font-black tracking-[0.3em] uppercase"
+        <p className="text-sm font-black tracking-[0.3em] uppercase"
            style={{ color: zone.color }}>
           ESTELONGY
         </p>
@@ -333,7 +333,7 @@ export default function ScoreBar({
           {getMsg(score, isClinicView, age, previousScore)}
         </p>
         {isLast && (
-          <p className="text-xs text-slate-500 mt-0.5">Hekim tarafından doğrulandı ✓</p>
+          <p className="text-sm text-slate-500 mt-0.5">Hekim tarafından doğrulandı ✓</p>
         )}
       </div>
 

@@ -127,10 +127,10 @@ export default function EstetikUygulamalarPage() {
           {/* Hero */}
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+              <span className="text-sm font-bold px-2.5 py-1 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
                 Estetik
               </span>
-              <span className="text-slate-500 text-xs">8 dk okuma</span>
+              <span className="text-slate-500 text-sm">8 dk okuma</span>
             </div>
             <h1 className="text-4xl font-black text-white leading-tight mb-4">
               Estetik Uygulamalar Rehberi:<br />
@@ -159,7 +159,7 @@ export default function EstetikUygulamalarPage() {
                     <span className="text-3xl shrink-0">{app.icon}</span>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-slate-500 text-xs font-mono">0{i + 1}</span>
+                        <span className="text-slate-500 text-sm font-mono">0{i + 1}</span>
                       </div>
                       <h2 className="text-white font-black text-xl leading-tight">{app.name}</h2>
                     </div>
@@ -171,13 +171,13 @@ export default function EstetikUygulamalarPage() {
 
                   {/* Nasıl çalışır */}
                   <div className="mb-4">
-                    <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Nasıl Çalışır?</h3>
+                    <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1.5">Nasıl Çalışır?</h3>
                     <p className="text-slate-300 text-sm leading-relaxed">{app.howItWorks}</p>
                   </div>
 
                   {/* Kullanım alanları */}
                   <div className="mb-4">
-                    <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Kullanım Alanları</h3>
+                    <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-2">Kullanım Alanları</h3>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                       {app.usedFor.map(u => (
                         <li key={u} className="flex items-center gap-2 text-slate-300 text-sm">
@@ -191,17 +191,17 @@ export default function EstetikUygulamalarPage() {
                   {/* Süre bilgisi */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="bg-slate-900/50 rounded-xl p-3">
-                      <p className="text-slate-500 text-xs mb-0.5">Etki Süresi</p>
+                      <p className="text-slate-500 text-sm mb-0.5">Etki Süresi</p>
                       <p className="text-white text-sm font-semibold">{app.duration}</p>
                     </div>
                     <div className="bg-slate-900/50 rounded-xl p-3">
-                      <p className="text-slate-500 text-xs mb-0.5">Etki Başlangıcı</p>
+                      <p className="text-slate-500 text-sm mb-0.5">Etki Başlangıcı</p>
                       <p className="text-white text-sm font-semibold">{app.onset}</p>
                     </div>
                   </div>
 
                   {/* Not */}
-                  <div className="flex gap-2 text-xs text-slate-400 leading-relaxed">
+                  <div className="flex gap-2 text-sm text-slate-400 leading-relaxed">
                     <span className="shrink-0 mt-0.5">💡</span>
                     <span>{app.note}</span>
                   </div>
@@ -226,9 +226,9 @@ export default function EstetikUygulamalarPage() {
                 { goal: 'Cilt kalitesini artırmak', rec: 'PRP + Mezoterapi', color: '#34d399' },
               ].map(item => (
                 <div key={item.goal} className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-                  <p className="text-slate-400 text-xs mb-1">Hedefiniz:</p>
+                  <p className="text-slate-400 text-sm mb-1">Hedefiniz:</p>
                   <p className="text-white font-medium mb-2">{item.goal}</p>
-                  <p className="text-xs font-bold" style={{ color: item.color }}>→ {item.rec}</p>
+                  <p className="text-sm font-bold" style={{ color: item.color }}>→ {item.rec}</p>
                 </div>
               ))}
             </div>
@@ -261,7 +261,7 @@ export default function EstetikUygulamalarPage() {
 
           {/* Diğer makaleler */}
           <div className="mt-12 pt-8 border-t border-slate-800">
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-4">Diğer Rehberler</p>
+            <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-4">Diğer Rehberler</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
                 { href: '/rehber/cihaz-tedavileri', label: 'Cihaz Tedavileri', icon: '⚡' },

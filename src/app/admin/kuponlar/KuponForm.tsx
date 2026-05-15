@@ -41,7 +41,7 @@ export default function KuponForm() {
     <form onSubmit={handleSubmit} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 space-y-4">
       {/* Kod */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Kupon Kodu</label>
+        <label className="block text-slate-400 text-sm mb-1">Kupon Kodu</label>
         <div className="flex gap-2">
           <input
             type="text"
@@ -55,7 +55,7 @@ export default function KuponForm() {
           <button
             type="button"
             onClick={generate}
-            className="px-3 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs rounded-xl transition-colors">
+            className="px-3 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-xl transition-colors">
             Üret
           </button>
         </div>
@@ -64,7 +64,7 @@ export default function KuponForm() {
       {/* İndirim tipi + değer */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-400 text-xs mb-1">Tip</label>
+          <label className="block text-slate-400 text-sm mb-1">Tip</label>
           <select
             value={type}
             onChange={e => setType(e.target.value as 'percent' | 'fixed')}
@@ -75,7 +75,7 @@ export default function KuponForm() {
           </select>
         </div>
         <div>
-          <label className="block text-slate-400 text-xs mb-1">
+          <label className="block text-slate-400 text-sm mb-1">
             {type === 'percent' ? 'Yüzde' : 'Tutar (₺)'}
           </label>
           <input
@@ -93,7 +93,7 @@ export default function KuponForm() {
       {/* Min sipariş + Max kullanım */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-400 text-xs mb-1">Min. Sipariş (₺)</label>
+          <label className="block text-slate-400 text-sm mb-1">Min. Sipariş (₺)</label>
           <input
             type="number"
             min={0}
@@ -103,7 +103,7 @@ export default function KuponForm() {
           />
         </div>
         <div>
-          <label className="block text-slate-400 text-xs mb-1">Max Kullanım <span className="text-slate-600">(boş=sınırsız)</span></label>
+          <label className="block text-slate-400 text-sm mb-1">Max Kullanım <span className="text-slate-600">(boş=sınırsız)</span></label>
           <input
             type="number"
             min={1}
@@ -117,7 +117,7 @@ export default function KuponForm() {
 
       {/* Geçerlilik tarihi */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Geçerlilik Tarihi <span className="text-slate-600">(boş=süresiz)</span></label>
+        <label className="block text-slate-400 text-sm mb-1">Geçerlilik Tarihi <span className="text-slate-600">(boş=süresiz)</span></label>
         <input
           type="datetime-local"
           value={validUntil}

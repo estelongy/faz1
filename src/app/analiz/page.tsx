@@ -232,7 +232,7 @@ export default function AnalizPage() {
               </svg>
               <div className="flex-1">
                 <p className="text-amber-300 text-sm font-semibold mb-1">Doğum yılı gerekli</p>
-                <p className="text-slate-400 text-xs mb-3">
+                <p className="text-slate-400 text-sm mb-3">
                   Skor yaşa göre normalize edilir. Analiz yapabilmek için doğum yılınızı girmeniz gerekiyor.
                 </p>
                 <div className="flex gap-2">
@@ -254,7 +254,7 @@ export default function AnalizPage() {
                     {bySaving ? '…' : 'Kaydet'}
                   </button>
                 </div>
-                {byError && <p className="text-red-400 text-xs mt-2">{byError}</p>}
+                {byError && <p className="text-red-400 text-sm mt-2">{byError}</p>}
               </div>
             </div>
           </div>
@@ -322,7 +322,7 @@ export default function AnalizPage() {
                 </svg>
                 <div>
                   <p className="text-white text-sm font-medium">Gizlilik güvencesi</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Fotoğrafınız yalnızca analiz için kullanılır, sunucularda saklanmaz.</p>
+                  <p className="text-slate-500 text-sm mt-0.5">Fotoğrafınız yalnızca analiz için kullanılır, sunucularda saklanmaz.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 rounded-xl bg-violet-500/5 border border-violet-500/20">
@@ -331,7 +331,7 @@ export default function AnalizPage() {
                 </svg>
                 <div>
                   <p className="text-white text-sm font-medium">Estelongy AI + Estelongy Algoritması</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Bileşen skorları: nem, kırışıklık, pigmentasyon, ton ve göz altı analizi.</p>
+                  <p className="text-slate-500 text-sm mt-0.5">Bileşen skorları: nem, kırışıklık, pigmentasyon, ton ve göz altı analizi.</p>
                 </div>
               </div>
             </div>
@@ -390,7 +390,7 @@ export default function AnalizPage() {
         {step === 'result' && result && (
           <div>
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-semibold mb-4">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -412,7 +412,7 @@ export default function AnalizPage() {
                 aiActive={!usedFallback}
               />
               {/* Güven skoru */}
-              <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+              <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
                 <span>AI Güven Skoru</span>
                 <span className={result.confidence >= 0.7 ? 'text-emerald-400' : result.confidence >= 0.5 ? 'text-amber-400' : 'text-red-400'}>
                   %{Math.round(result.confidence * 100)}
@@ -438,16 +438,16 @@ export default function AnalizPage() {
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-lg">🧬</span>
                     <span className="text-white font-semibold text-sm">Biyolojik Yaş Analizi</span>
-                    <span className="ml-auto text-[10px] text-slate-500 italic">placeholder · yakında güncellenir</span>
+                    <span className="ml-auto text-sm text-slate-500 italic">placeholder · yakında güncellenir</span>
                   </div>
                   <div className="flex items-center justify-around">
                     <div className="text-center">
-                      <p className="text-slate-400 text-xs mb-1">Gerçek Yaşınız</p>
+                      <p className="text-slate-400 text-sm mb-1">Gerçek Yaşınız</p>
                       <p className="text-white text-3xl font-bold">{gercekYas}</p>
                     </div>
                     <div className="text-slate-600 text-2xl">→</div>
                     <div className="text-center">
-                      <p className="text-slate-400 text-xs mb-1">Görünüm Yaşınız</p>
+                      <p className="text-slate-400 text-sm mb-1">Görünüm Yaşınız</p>
                       <p className={`text-3xl font-bold ${pozitif ? 'text-emerald-400' : fark < 0 ? 'text-amber-400' : 'text-white'}`}>
                         {gorunumYas}
                       </p>
@@ -478,10 +478,10 @@ export default function AnalizPage() {
                 const displayScore = invert ? 100 - value : value
                 return (
                   <div key={label} className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-                    <p className="text-slate-500 text-xs mb-2">{label}</p>
+                    <p className="text-slate-500 text-sm mb-2">{label}</p>
                     <div className="flex items-baseline gap-1 mb-2">
                       <span className={`text-2xl font-bold ${noBar ? 'text-white' : scoreColor(displayScore)}`}>{value}</span>
-                      <span className="text-slate-500 text-xs">{unit}</span>
+                      <span className="text-slate-500 text-sm">{unit}</span>
                     </div>
                     {!noBar && (
                       <div className="h-1.5 rounded-full bg-slate-700 overflow-hidden">

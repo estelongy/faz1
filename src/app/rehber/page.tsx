@@ -139,10 +139,10 @@ export default function RehberPage() {
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <div className="text-3xl">{a.icon}</div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${c.badge}`}>
+                    <span className={`text-sm font-semibold px-2.5 py-1 rounded-full border ${c.badge}`}>
                       {a.category}
                     </span>
-                    <span className="text-slate-600 text-xs">{a.readTime}</span>
+                    <span className="text-slate-600 text-sm">{a.readTime}</span>
                   </div>
                 </div>
 
@@ -157,7 +157,7 @@ export default function RehberPage() {
                 {/* Etiketler */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {a.tags.map(t => (
-                    <span key={t} className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.tag}`}>
+                    <span key={t} className={`text-sm font-medium px-2 py-0.5 rounded-full ${c.tag}`}>
                       {t}
                     </span>
                   ))}

@@ -102,7 +102,7 @@ function GalaxyOverlay({ meta }: { meta: GalaxyMeta }) {
 
       <div className="relative text-center px-6">
         <p
-          className="text-[11px] font-bold uppercase tracking-[0.4em] mb-3 gt-eyebrow"
+          className="text-sm font-bold uppercase tracking-[0.4em] mb-3 gt-eyebrow"
           style={{ color: meta.color, textShadow: `0 0 18px ${meta.color}66` }}
         >
           {meta.name}

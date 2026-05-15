@@ -67,10 +67,10 @@ export default async function AdminPage() {
           </span>
           <div className="ml-auto flex gap-2">
             {(pendingClinics ?? 0) > 0 && (
-              <Link href="/admin/klinikler" className="text-xs px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">Kliniklere git →</Link>
+              <Link href="/admin/klinikler" className="text-sm px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">Kliniklere git →</Link>
             )}
             {(pendingVendors ?? 0) > 0 && (
-              <Link href="/admin/saticilar" className="text-xs px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">İş Ortaklarına git →</Link>
+              <Link href="/admin/saticilar" className="text-sm px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">İş Ortaklarına git →</Link>
             )}
           </div>
         </div>
@@ -98,7 +98,7 @@ export default async function AdminPage() {
           const inner = (
             <>
               {badge ? (
-                <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center font-bold">{badge}</span>
+                <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center font-bold">{badge}</span>
               ) : null}
               {!link && (
                 <span className="absolute top-3 right-3 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-700 text-slate-500">yakında</span>
@@ -126,7 +126,7 @@ export default async function AdminPage() {
       <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-white font-bold">Son Kayıt Olanlar</h2>
-          <Link href="/admin/kullanicilar" className="text-xs text-slate-400 hover:text-white transition-colors">
+          <Link href="/admin/kullanicilar" className="text-sm text-slate-400 hover:text-white transition-colors">
             Tümünü gör →
           </Link>
         </div>
@@ -139,10 +139,10 @@ export default async function AdminPage() {
                 </div>
                 <div>
                   <div className="text-white text-sm font-medium">{u.full_name ?? 'İsimsiz'}</div>
-                  <div className="text-slate-500 text-xs">{new Date(u.created_at).toLocaleDateString('tr-TR')}</div>
+                  <div className="text-slate-500 text-sm">{new Date(u.created_at).toLocaleDateString('tr-TR')}</div>
                 </div>
               </div>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${ROLE_COLOR[u.role] ?? ROLE_COLOR.user}`}>
+              <span className={`text-sm px-2 py-0.5 rounded-full ${ROLE_COLOR[u.role] ?? ROLE_COLOR.user}`}>
                 {u.role}
               </span>
             </div>

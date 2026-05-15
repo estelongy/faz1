@@ -51,7 +51,7 @@ export default async function PatientDetailPage({
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-6">
-        <nav className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/klinik/panel" className="hover:text-white transition-colors">Klinik Panel</Link>
           <span>›</span>
           <Link href="/klinik/panel/muhasebe" className="hover:text-white transition-colors">Muhasebe</Link>
@@ -61,7 +61,7 @@ export default async function PatientDetailPage({
         <h1 className="text-2xl font-black text-white">{patient.name}</h1>
         {patient.phone && <p className="text-slate-400 mt-0.5 text-sm">📞 {patient.phone}</p>}
         {patient.notes && (
-          <p className="text-slate-500 mt-1 text-xs italic">{patient.notes}</p>
+          <p className="text-slate-500 mt-1 text-sm italic">{patient.notes}</p>
         )}
       </div>
 
@@ -106,7 +106,7 @@ function SummaryCard({ label, value, tone }: { label: string; value: string; ton
     'text-slate-200 border-slate-700 bg-slate-800/50'
   return (
     <div className={`rounded-xl p-3 border ${colors}`}>
-      <p className="text-[10px] uppercase tracking-widest opacity-70">{label}</p>
+      <p className="text-sm uppercase tracking-widest opacity-70">{label}</p>
       <p className="text-base sm:text-lg font-black mt-0.5">{value}</p>
     </div>
   )

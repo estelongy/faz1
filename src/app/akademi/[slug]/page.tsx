@@ -73,7 +73,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6">
+        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
           <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
           <span>›</span>
           <Link href="/akademi" className="hover:text-white transition-colors">EsteStore — Akademi</Link>
@@ -94,7 +94,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
             </div>
 
             <div>
-              <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
+              <div className="flex flex-wrap items-center gap-2 mb-3 text-sm">
                 {categoryLabel && (
                   <span className="px-2 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-md text-emerald-400">
                     {categoryLabel}
@@ -158,14 +158,14 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-sm font-medium truncate">{v.title}</p>
                       {v.description && (
-                        <p className="text-slate-500 text-xs truncate">{v.description}</p>
+                        <p className="text-slate-500 text-sm truncate">{v.description}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {v.is_preview && (
-                        <span className="text-emerald-400 text-[10px] uppercase tracking-wider font-bold">Önizleme</span>
+                        <span className="text-emerald-400 text-sm uppercase tracking-wider font-bold">Önizleme</span>
                       )}
-                      <span className="text-slate-500 text-xs">{formatDuration(v.duration_seconds)}</span>
+                      <span className="text-slate-500 text-sm">{formatDuration(v.duration_seconds)}</span>
                     </div>
                   </div>
                 ))}
@@ -183,7 +183,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
                 <div className="text-3xl font-bold text-emerald-400">
                   {formatPrice(Number(pkg.price), pkg.currency || 'TRY')}
                 </div>
-                <p className="text-slate-500 text-xs mt-1">Tek seferlik · Ömür boyu erişim</p>
+                <p className="text-slate-500 text-sm mt-1">Tek seferlik · Ömür boyu erişim</p>
               </div>
 
               {alreadyOwned ? (
@@ -204,7 +204,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
                 <BuyButton packageId={pkg.id} />
               ) : (
                 <div className="space-y-3">
-                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs leading-relaxed">
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm leading-relaxed">
                     Bu eğitim sağlık profesyonelleri ve klinikler içindir. Satın almak için Sağlık Profesyoneli kaydı oluşturun.
                   </div>
                   <Link
@@ -216,7 +216,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
                 </div>
               )}
 
-              <div className="pt-3 border-t border-slate-800 space-y-2 text-xs text-slate-400">
+              <div className="pt-3 border-t border-slate-800 space-y-2 text-sm text-slate-400">
                 <div className="flex items-center gap-2">
                   <span className="text-emerald-400">✓</span>
                   <span>{pkg.total_videos ?? 0} HD video — toplam {formatDuration(pkg.total_duration_seconds ?? 0)}</span>

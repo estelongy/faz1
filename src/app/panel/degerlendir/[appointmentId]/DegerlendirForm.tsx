@@ -97,12 +97,12 @@ export default function DegerlendirForm({
           )}
         </p>
         {isEdit && !editLocked && (
-          <p className="text-amber-400 text-xs mt-2">
+          <p className="text-amber-400 text-sm mt-2">
             Yorumunu düzenliyorsun. 7 gün boyunca güncelleyebilirsin.
           </p>
         )}
         {editLocked && (
-          <p className="text-slate-500 text-xs mt-2">
+          <p className="text-slate-500 text-sm mt-2">
             Düzenleme süresi (7 gün) doldu. Yorumun kalıcı kaydedildi.
           </p>
         )}
@@ -127,7 +127,7 @@ export default function DegerlendirForm({
               type="button"
               disabled={editLocked}
               onClick={() => setNps(i)}
-              className={`px-2 py-3 rounded-xl border text-xs font-medium transition-all ${
+              className={`px-2 py-3 rounded-xl border text-sm font-medium transition-all ${
                 nps === i
                   ? 'bg-emerald-500/20 border-emerald-500 text-white'
                   : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
@@ -154,7 +154,7 @@ export default function DegerlendirForm({
           />
           <span className="text-sm text-slate-300 leading-relaxed">
             Sana ihtiyacın <strong className="text-white">olmayan bir işlem</strong> önerildi mi?
-            <span className="block text-xs text-slate-500 mt-0.5">
+            <span className="block text-sm text-slate-500 mt-0.5">
               (Bilgi gizlidir, kliniğe gösterilmez. Estelongy iç filtresinde kullanılır.)
             </span>
           </span>
@@ -169,7 +169,7 @@ export default function DegerlendirForm({
                 type="button"
                 disabled={editLocked}
                 onClick={() => setTekrarGelir(key)}
-                className={`px-3 py-2 rounded-lg border text-xs font-medium transition-all ${
+                className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                   tekrarGelir === key
                     ? 'bg-emerald-500/20 border-emerald-500 text-white'
                     : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
@@ -188,7 +188,7 @@ export default function DegerlendirForm({
           <h2 className="text-sm font-bold text-emerald-300 uppercase tracking-wider">
             Deneyimini Kullanıcılar ile Paylaş
           </h2>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-0.5">
             Bu yorum klinik sayfasında <strong className="text-emerald-300">herkese açık</strong> görünür.
           </p>
         </div>
@@ -201,7 +201,7 @@ export default function DegerlendirForm({
           placeholder="Diğer kullanıcılara faydalı olacak deneyimini kısaca yaz…"
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500 resize-y disabled:opacity-50"
         />
-        <p className="text-[10px] text-slate-600 -mt-1 text-right">{pozitif.length}/1000</p>
+        <p className="text-sm text-slate-600 -mt-1 text-right">{pozitif.length}/1000</p>
 
         <label className={`flex items-start gap-3 cursor-pointer ${editLocked ? 'opacity-50 cursor-not-allowed' : ''}`}>
           <input
@@ -213,7 +213,7 @@ export default function DegerlendirForm({
           />
           <span className="text-sm text-slate-300 leading-relaxed">
             <strong className="text-white">Anonim</strong> yayınla
-            <span className="block text-xs text-slate-500 mt-0.5">
+            <span className="block text-sm text-slate-500 mt-0.5">
               İsmin yerine &quot;Estelongy Kullanıcısı&quot; yazar.
             </span>
           </span>
@@ -226,7 +226,7 @@ export default function DegerlendirForm({
           <h2 className="text-sm font-bold text-violet-300 uppercase tracking-wider">
             Dilek, İstek, Şikayet, Teşekkür Kutusu
           </h2>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-0.5">
             Bu mesaj <strong className="text-violet-300">sadece klinik</strong> tarafından görülür. Estelongy ekibi okumaz.
           </p>
         </div>
@@ -239,9 +239,9 @@ export default function DegerlendirForm({
           placeholder="Kliniğe iletmek istediğin dilek, istek, şikayet ya da teşekkür…"
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500 resize-y disabled:opacity-50"
         />
-        <p className="text-[10px] text-slate-600 -mt-1 text-right">{iyilestirme.length}/1000</p>
+        <p className="text-sm text-slate-600 -mt-1 text-right">{iyilestirme.length}/1000</p>
 
-        <p className="text-[11px] text-slate-500 italic">
+        <p className="text-sm text-slate-500 italic">
           Klinik mesajını okur ve dilerse yanıtlar. Yanıt gelirse panelinde görünür.
         </p>
       </section>

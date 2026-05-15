@@ -83,11 +83,11 @@ export default function SiparisSuccessOverlay({ orderNumber, total }: Props) {
         <p className="text-emerald-300 text-sm mb-4">İş Ortaklarımız hazırlığa başlıyor</p>
         <div className="flex items-center justify-between pt-4 border-t border-emerald-500/20">
           <div className="text-left">
-            <p className="text-slate-400 text-xs">Sipariş No</p>
+            <p className="text-slate-400 text-sm">Sipariş No</p>
             <p className="text-white font-mono font-bold text-sm">{orderNumber}</p>
           </div>
           <div className="text-right">
-            <p className="text-slate-400 text-xs">Toplam</p>
+            <p className="text-slate-400 text-sm">Toplam</p>
             <p className="text-white font-black">₺{total.toLocaleString('tr-TR')}</p>
           </div>
         </div>

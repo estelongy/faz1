@@ -142,7 +142,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
             </div>
             <div className={`min-w-0 transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0 lg:hidden'}`}>
               <p className="text-white font-bold text-sm truncate group-hover:text-violet-400 transition-colors">{clinicName}</p>
-              <p className="text-slate-500 text-[10px] uppercase tracking-widest">Estelongy Klinik</p>
+              <p className="text-slate-500 text-sm uppercase tracking-widest">Estelongy Klinik</p>
             </div>
           </Link>
 
@@ -151,7 +151,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
             <Link
               href="/klinik/panel/kredi"
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center ${expanded ? 'justify-between px-3 py-2' : 'justify-center w-9 h-9'} rounded-lg border text-xs transition-all hover:opacity-80 ${creditColor}`}
+              className={`flex items-center ${expanded ? 'justify-between px-3 py-2' : 'justify-center w-9 h-9'} rounded-lg border text-sm transition-all hover:opacity-80 ${creditColor}`}
               title={!expanded ? `${totalCredit} kredi` : undefined}
             >
               <div className="flex items-center gap-1.5">
@@ -161,7 +161,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
                 </svg>
                 <span className={`font-bold transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0 hidden lg:hidden'}`}>{totalCredit} Kredi</span>
               </div>
-              {freeCredit > 0 && expanded && <span className="opacity-70 text-[10px]">{freeCredit} hediye</span>}
+              {freeCredit > 0 && expanded && <span className="opacity-70 text-sm">{freeCredit} hediye</span>}
             </Link>
           </div>
         </div>
@@ -171,7 +171,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
           {navGroups.map((group, gi) => (
             <div key={gi}>
               {group.title && expanded && (
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-1.5 px-2">{group.title}</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-slate-600 mb-1.5 px-2">{group.title}</p>
               )}
               <div className="space-y-0.5">
                 {group.items.map(item => {
@@ -197,12 +197,12 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 uppercase tracking-wider">Yeni</span>
                       )}
                       {expanded && typeof item.badge === 'number' && item.badge > 0 && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-500 text-white">{item.badge}</span>
+                        <span className="text-sm font-bold px-1.5 py-0.5 rounded-full bg-violet-500 text-white">{item.badge}</span>
                       )}
 
                       {/* Collapsed modda tooltip */}
                       {!expanded && (
-                        <span className="hidden lg:group-hover/item:block absolute left-[60px] top-1/2 -translate-y-1/2 px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-white text-xs whitespace-nowrap shadow-xl z-[60]">
+                        <span className="hidden lg:group-hover/item:block absolute left-[60px] top-1/2 -translate-y-1/2 px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-white text-sm whitespace-nowrap shadow-xl z-[60]">
                           {item.label}
                         </span>
                       )}
@@ -219,7 +219,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
           {/* Pin butonu — sadece desktop */}
           <button
             onClick={togglePin}
-            className={`hidden lg:flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+            className={`hidden lg:flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${
               pinned
                 ? 'text-violet-300 bg-violet-500/10 border border-violet-500/30'
                 : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 border border-transparent'
@@ -239,7 +239,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
 
           <Link
             href="/panel"
-            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors ${expanded ? '' : 'justify-center'}`}
+            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors ${expanded ? '' : 'justify-center'}`}
             title={!expanded ? 'Hasta paneline geç' : undefined}
           >
             <span className="shrink-0">←</span>
@@ -247,7 +247,7 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
           </Link>
           <Link
             href="/"
-            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors ${expanded ? '' : 'justify-center'}`}
+            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors ${expanded ? '' : 'justify-center'}`}
             title={!expanded ? 'Anasayfa' : undefined}
           >
             <span className="shrink-0">⌂</span>

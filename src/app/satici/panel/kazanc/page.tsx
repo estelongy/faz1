@@ -106,7 +106,7 @@ export default async function KazancPage() {
             <span className="text-2xl shrink-0">⚠</span>
             <div className="flex-1">
               <p className="text-amber-300 font-bold text-sm">Banka çekimi henüz aktif değil</p>
-              <p className="text-slate-400 text-xs mt-0.5">Kazançlarının banka hesabına çekilebilmesi için ödeme hesabını tamamla</p>
+              <p className="text-slate-400 text-sm mt-0.5">Kazançlarının banka hesabına çekilebilmesi için ödeme hesabını tamamla</p>
             </div>
             <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -131,11 +131,11 @@ export default async function KazancPage() {
                 <div key={ym} className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl flex items-center justify-between gap-4">
                   <div>
                     <p className="text-white font-bold text-sm">{formatMonth(ym)}</p>
-                    <p className="text-slate-500 text-xs mt-0.5">{m.count} satış · ₺{m.gross.toLocaleString('tr-TR')} ciro</p>
+                    <p className="text-slate-500 text-sm mt-0.5">{m.count} satış · ₺{m.gross.toLocaleString('tr-TR')} ciro</p>
                   </div>
                   <div className="text-right">
                     <p className="text-emerald-400 font-black text-lg">₺{m.net.toLocaleString('tr-TR')}</p>
-                    <p className="text-slate-500 text-[11px]">komisyon: ₺{m.commis.toLocaleString('tr-TR')}</p>
+                    <p className="text-slate-500 text-sm">komisyon: ₺{m.commis.toLocaleString('tr-TR')}</p>
                   </div>
                 </div>
               ))}
@@ -164,13 +164,13 @@ export default async function KazancPage() {
                     const o = Array.isArray(l.orders) ? l.orders[0] : l.orders
                     return (
                       <tr key={l.id} className="hover:bg-slate-800/40 transition-colors">
-                        <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">
+                        <td className="px-4 py-3 text-slate-500 text-sm whitespace-nowrap">
                           {new Date(o?.paid_at ?? l.created_at).toLocaleDateString('tr-TR', {
                             day: 'numeric', month: 'short', year: 'numeric',
                           })}
                         </td>
-                        <td className="px-4 py-3 text-violet-400 font-mono text-xs">{o?.order_number}</td>
-                        <td className="px-4 py-3 text-slate-400 text-xs">
+                        <td className="px-4 py-3 text-violet-400 font-mono text-sm">{o?.order_number}</td>
+                        <td className="px-4 py-3 text-slate-400 text-sm">
                           {FULFILLMENT_LABEL[l.fulfillment_status] ?? l.fulfillment_status}
                         </td>
                         <td className="px-4 py-3 text-right text-slate-300">₺{Number(l.line_total).toLocaleString('tr-TR')}</td>
@@ -186,7 +186,7 @@ export default async function KazancPage() {
             <div className="text-center py-16 text-slate-600">
               <div className="text-5xl mb-4">💰</div>
               <p>Henüz satış yok</p>
-              <p className="text-xs mt-1">İlk satışını yaptığında buradan takip edebilirsin</p>
+              <p className="text-sm mt-1">İlk satışını yaptığında buradan takip edebilirsin</p>
             </div>
           )}
         </div>
@@ -204,11 +204,11 @@ function StatCard({ label, value, color, note }: { label: string; value: number;
   }
   return (
     <div className="p-5 bg-slate-800/50 border border-slate-700 rounded-2xl">
-      <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">{label}</p>
+      <p className="text-slate-500 text-sm uppercase tracking-wider mb-2">{label}</p>
       <p className={`text-2xl font-black ${colorMap[color]}`}>
         ₺{value.toLocaleString('tr-TR', { maximumFractionDigits: 2 })}
       </p>
-      {note && <p className="text-slate-600 text-[11px] mt-1">{note}</p>}
+      {note && <p className="text-slate-600 text-sm mt-1">{note}</p>}
     </div>
   )
 }

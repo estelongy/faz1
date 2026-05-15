@@ -85,20 +85,20 @@ export default function AdresForm({ initial, onClose, onSaved }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-400 text-xs mb-1">Adres Başlığı *</label>
+          <label className="block text-slate-400 text-sm mb-1">Adres Başlığı *</label>
           <input type="text" required value={title} onChange={e => setTitle(e.target.value)}
             placeholder="Ev / İş"
             className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
         </div>
         <div>
-          <label className="block text-slate-400 text-xs mb-1">Ad Soyad *</label>
+          <label className="block text-slate-400 text-sm mb-1">Ad Soyad *</label>
           <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)}
             className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
         </div>
       </div>
 
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Telefon *</label>
+        <label className="block text-slate-400 text-sm mb-1">Telefon *</label>
         <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)}
           placeholder="+90 5XX XXX XX XX"
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
@@ -106,13 +106,13 @@ export default function AdresForm({ initial, onClose, onSaved }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-400 text-xs mb-1">İl *</label>
+          <label className="block text-slate-400 text-sm mb-1">İl *</label>
           <input type="text" required value={city} onChange={e => setCity(e.target.value)}
             placeholder="İstanbul"
             className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
         </div>
         <div>
-          <label className="block text-slate-400 text-xs mb-1">İlçe *</label>
+          <label className="block text-slate-400 text-sm mb-1">İlçe *</label>
           <input type="text" required value={district} onChange={e => setDistrict(e.target.value)}
             placeholder="Kadıköy"
             className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
@@ -120,20 +120,20 @@ export default function AdresForm({ initial, onClose, onSaved }: Props) {
       </div>
 
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Mahalle</label>
+        <label className="block text-slate-400 text-sm mb-1">Mahalle</label>
         <input type="text" value={hood} onChange={e => setHood(e.target.value)}
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
       </div>
 
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Açık Adres *</label>
+        <label className="block text-slate-400 text-sm mb-1">Açık Adres *</label>
         <textarea required value={addr} onChange={e => setAddr(e.target.value)}
           rows={2} placeholder="Sokak, No, Daire"
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500 resize-none" />
       </div>
 
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Posta Kodu</label>
+        <label className="block text-slate-400 text-sm mb-1">Posta Kodu</label>
         <input type="text" value={postal} onChange={e => setPostal(e.target.value)}
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
       </div>

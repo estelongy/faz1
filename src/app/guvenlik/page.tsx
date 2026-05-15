@@ -43,7 +43,7 @@ export default function GuvenlikPage() {
                 estelongy@gmail.com
               </a>
             </div>
-            <div className="text-xs text-slate-500 pt-2">
+            <div className="text-sm text-slate-500 pt-2">
               Lütfen bildiriminize: zafiyetin tipi, etkilenen URL/endpoint, yeniden üretim adımları, (varsa) PoC
               ve etki analizi ekleyin.
             </div>
@@ -114,7 +114,7 @@ export default function GuvenlikPage() {
                 kvkk@estelongy.com
               </a>
             </div>
-            <div className="text-xs text-slate-500 pt-2">
+            <div className="text-sm text-slate-500 pt-2">
               KVKK 11. madde kapsamındaki haklarınızı (silme/unutulma, erişim, düzeltme) hesap panelinizden
               doğrudan kullanabilirsiniz: <Link href="/panel/hesabim" className="text-violet-400 hover:underline">/panel/hesabim</Link>
             </div>
@@ -129,7 +129,7 @@ export default function GuvenlikPage() {
           </p>
         </section>
 
-        <div className="text-xs text-slate-500 pt-8 border-t border-slate-800">
+        <div className="text-sm text-slate-500 pt-8 border-t border-slate-800">
           security.txt: <Link href="/.well-known/security.txt" className="text-slate-400 hover:underline">
             /.well-known/security.txt
           </Link>

@@ -19,7 +19,7 @@ export default function AdminNavLink({ href, label, icon, exact = false, mobile 
     return (
       <Link
         href={href}
-        className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all shrink-0 ${
+        className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all shrink-0 ${
           isActive
             ? 'bg-slate-800 text-white'
             : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'

@@ -92,11 +92,11 @@ export default async function SharePage(
       >
         {/* Onay rozeti */}
         {card.is_clinic_approved ? (
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-emerald-500 text-white text-xs font-black rounded-full shadow-lg whitespace-nowrap">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-emerald-500 text-white text-sm font-black rounded-full shadow-lg whitespace-nowrap">
             ✦ KLİNİK ONAYLI ✦
           </div>
         ) : (
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-violet-600 text-white text-xs font-black rounded-full shadow-lg whitespace-nowrap">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-violet-600 text-white text-sm font-black rounded-full shadow-lg whitespace-nowrap">
             ✦ AI ANALİZİ ✦
           </div>
         )}
@@ -120,11 +120,11 @@ export default async function SharePage(
           style={{ background: `${zone.color}15`, borderColor: `${zone.color}40`, color: zone.color }}
         >
           <span className="font-bold text-base">{zone.name}</span>
-          <span className="text-xs ml-2 opacity-80">— {zone.label}</span>
+          <span className="text-sm ml-2 opacity-80">— {zone.label}</span>
         </div>
 
         {/* Alt bilgi */}
-        <div className="pt-5 border-t border-slate-700/50 text-xs text-slate-500 space-y-1">
+        <div className="pt-5 border-t border-slate-700/50 text-sm text-slate-500 space-y-1">
           {card.is_clinic_approved && card.clinic_name && <p>{card.clinic_name}</p>}
           <p>{dateStr}</p>
         </div>
@@ -149,11 +149,11 @@ export default async function SharePage(
           </svg>
           Ücretsiz Analiz Başlat
         </Link>
-        <p className="text-slate-600 text-xs mt-4">30 saniye · Selfie yeterli</p>
+        <p className="text-slate-600 text-sm mt-4">30 saniye · Selfie yeterli</p>
       </div>
 
       {/* Footer */}
-      <div className="mt-12 text-center text-slate-600 text-xs">
+      <div className="mt-12 text-center text-slate-600 text-sm">
         <Link href="/" className="hover:text-slate-400 transition-colors">estelongy.com</Link>
       </div>
     </main>

@@ -94,7 +94,7 @@ export default async function AdminIadelerPage({
           <div className="flex items-center gap-3 mt-1">
             <h1 className="text-2xl font-bold text-white">İade Arabulucu</h1>
             {counts.stale > 0 && (
-              <span className="bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-full animate-pulse">
+              <span className="bg-red-500 text-white text-sm font-black px-2.5 py-1 rounded-full animate-pulse">
                 {counts.stale} GECİKEN
               </span>
             )}
@@ -107,19 +107,19 @@ export default async function AdminIadelerPage({
         {/* Özet Kartları */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
-            <p className="text-amber-400/70 text-xs">Bekleyen</p>
+            <p className="text-amber-400/70 text-sm">Bekleyen</p>
             <p className="text-2xl font-black text-amber-400">{counts.pending}</p>
           </div>
           <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/20">
-            <p className="text-red-400/70 text-xs">Geciken (3+ gün)</p>
+            <p className="text-red-400/70 text-sm">Geciken (3+ gün)</p>
             <p className="text-2xl font-black text-red-400">{counts.stale}</p>
           </div>
           <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-            <p className="text-emerald-400/70 text-xs">Onaylanan</p>
+            <p className="text-emerald-400/70 text-sm">Onaylanan</p>
             <p className="text-2xl font-black text-emerald-400">{counts.approved + counts.completed}</p>
           </div>
           <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-            <p className="text-slate-500 text-xs">Toplam</p>
+            <p className="text-slate-500 text-sm">Toplam</p>
             <p className="text-2xl font-black text-white">{counts.tumu}</p>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default async function AdminIadelerPage({
             { key: 'completed', label: `Tamamlanan (${counts.completed})` },
           ].map(f => (
             <Link key={f.key} href={`/admin/iadeler?durum=${f.key}`}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 (durum ?? 'tumu') === f.key
                   ? 'bg-violet-600 text-white'
                   : 'bg-slate-800 border border-slate-700 text-slate-400 hover:text-white'
@@ -171,7 +171,7 @@ export default async function AdminIadelerPage({
                     stale ? 'border-red-500/40 ring-1 ring-red-500/20' : 'border-slate-700'
                   }`}>
                   {stale && (
-                    <div className="mb-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs font-bold">
+                    <div className="mb-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm font-bold">
                       ⚠ Bu talep {Math.floor((Date.now() - new Date(ret.created_at).getTime()) / (1000 * 60 * 60 * 24))} gündür yanıt bekliyor
                     </div>
                   )}
@@ -179,7 +179,7 @@ export default async function AdminIadelerPage({
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-bold truncate">{item?.product_snapshot?.name ?? 'Ürün'}</p>
-                      <div className="text-slate-500 text-xs mt-1 space-y-0.5">
+                      <div className="text-slate-500 text-sm mt-1 space-y-0.5">
                         {item?.orders?.order_number && <p>Sipariş: <span className="font-mono">#{item.orders.order_number}</span></p>}
                         <p>İş Ortağı: <span className="text-slate-400">{item?.vendors?.company_name ?? '—'}</span></p>
                         <p>Müşteri: <span className="text-slate-400">{customerName}</span></p>
@@ -191,27 +191,27 @@ export default async function AdminIadelerPage({
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${badge.color}`}>{badge.label}</span>
+                      <span className={`text-sm font-bold px-2.5 py-1 rounded-full ${badge.color}`}>{badge.label}</span>
                       {item?.line_total && (
                         <p className="text-white font-bold mt-1.5">₺{Number(item.line_total).toLocaleString('tr-TR')}</p>
                       )}
                       {item?.quantity && item.quantity > 1 && (
-                        <p className="text-slate-500 text-xs">{item.quantity} adet</p>
+                        <p className="text-slate-500 text-sm">{item.quantity} adet</p>
                       )}
                     </div>
                   </div>
 
-                  <div className="space-y-1 text-xs text-slate-400 mb-4">
+                  <div className="space-y-1 text-sm text-slate-400 mb-4">
                     <p><span className="text-slate-500">Sebep:</span> {ret.reason}</p>
                     {ret.description && <p><span className="text-slate-500">Açıklama:</span> {ret.description}</p>}
                     {ret.resolver_note && resolverBadge && (
                       <div className="mt-2 p-2.5 bg-slate-900/50 rounded-lg">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${resolverBadge.color}`}>
+                          <span className={`text-sm font-bold px-1.5 py-0.5 rounded ${resolverBadge.color}`}>
                             {resolverBadge.label}
                           </span>
                           {ret.resolved_at && (
-                            <span className="text-slate-600 text-[10px]">
+                            <span className="text-slate-600 text-sm">
                               {new Date(ret.resolved_at).toLocaleDateString('tr-TR')}
                             </span>
                           )}
@@ -220,7 +220,7 @@ export default async function AdminIadelerPage({
                       </div>
                     )}
                     {ret.stripe_refund_id && (
-                      <p className="text-emerald-400 text-[11px] mt-2">
+                      <p className="text-emerald-400 text-sm mt-2">
                         ✓ Stripe iade: <span className="font-mono">{ret.stripe_refund_id}</span>
                       </p>
                     )}
@@ -228,7 +228,7 @@ export default async function AdminIadelerPage({
 
                   {ret.status === 'pending' && (
                     <div className="border-t border-slate-700 pt-3">
-                      <p className="text-red-400 text-xs font-bold mb-2">
+                      <p className="text-red-400 text-sm font-bold mb-2">
                         🛡 Admin Müdahale — İş Ortağı henüz karar vermedi
                       </p>
                       <IadeKararForm returnId={ret.id} />

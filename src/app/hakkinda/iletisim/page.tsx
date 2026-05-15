@@ -62,9 +62,9 @@ export default function IletisimPage() {
                 {c.icon}
               </div>
               <h3 className="text-white font-bold mb-1">{c.title}</h3>
-              <p className="text-slate-400 text-xs mb-3 leading-relaxed">{c.desc}</p>
+              <p className="text-slate-400 text-sm mb-3 leading-relaxed">{c.desc}</p>
               <p className="text-violet-400 font-mono text-sm group-hover:text-violet-300 transition-colors break-all">{c.email}</p>
-              <p className="text-slate-600 text-[11px] mt-1">{c.response}</p>
+              <p className="text-slate-600 text-sm mt-1">{c.response}</p>
             </a>
           ))}
         </div>
@@ -82,7 +82,7 @@ export default function IletisimPage() {
         {/* Şirket bilgisi */}
         <div className="p-5 rounded-2xl bg-slate-900/50 border border-slate-800">
           <h3 className="text-white font-bold mb-3 text-sm">Şirket Bilgisi</h3>
-          <div className="text-slate-400 text-xs space-y-1 leading-relaxed">
+          <div className="text-slate-400 text-sm space-y-1 leading-relaxed">
             <p><span className="text-slate-500">Yasal Ünvan:</span> Vestoriq OÜ</p>
             <p><span className="text-slate-500">Marka:</span> Estelongy</p>
             <p><span className="text-slate-500">Merkez:</span> Tallinn, Estonya</p>

@@ -49,7 +49,7 @@ export default async function RandevuSlugPage({ params }: PageProps) {
         {/* Hero: yeşil bant kontrast verir, landing ile aile bağı */}
         <section className="bg-gradient-to-br from-[#064E3B] via-[#0A6347] to-[#053527]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-6">
-            <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-3">
+            <nav className="flex items-center gap-2 text-sm text-emerald-200/70 mb-3">
               <Link href="/esteklinik" className="hover:text-white transition-colors">EsteKlinik</Link>
               <span>·</span>
               <Link href={`/esteklinik/${clinic.slug}`} className="hover:text-white transition-colors">
@@ -58,7 +58,7 @@ export default async function RandevuSlugPage({ params }: PageProps) {
               <span>·</span>
               <span className="text-white font-semibold">Randevu</span>
             </nav>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-1">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-emerald-300 mb-1">
               Randevu Oluştur
             </p>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">{clinic.name}</h1>

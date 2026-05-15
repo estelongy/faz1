@@ -139,14 +139,14 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
         <div className={`bg-slate-800/50 border rounded-2xl p-6 ${step === 'address' ? 'border-violet-500/50' : 'border-slate-700'}`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-white font-bold flex items-center gap-2">
-              <span className={`w-6 h-6 rounded-full text-xs flex items-center justify-center font-black ${step === 'address' ? 'bg-violet-600 text-white' : 'bg-emerald-500 text-white'}`}>
+              <span className={`w-6 h-6 rounded-full text-sm flex items-center justify-center font-black ${step === 'address' ? 'bg-violet-600 text-white' : 'bg-emerald-500 text-white'}`}>
                 {step === 'address' ? '1' : '✓'}
               </span>
               Teslimat Adresi
             </h2>
             {step !== 'address' && selectedAddrId && (
               <button onClick={() => setStep('address')}
-                className="text-violet-400 hover:text-violet-300 text-xs transition-colors">
+                className="text-violet-400 hover:text-violet-300 text-sm transition-colors">
                 Değiştir
               </button>
             )}
@@ -168,13 +168,13 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
                     <div className="flex items-center gap-2">
                       <span className="text-white font-bold text-sm">{a.title}</span>
                       {a.is_default && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
+                        <span className="text-sm font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
                           VARSAYILAN
                         </span>
                       )}
                     </div>
                     <p className="text-slate-300 text-sm mt-0.5">{a.full_name} · {a.phone}</p>
-                    <p className="text-slate-400 text-xs mt-1 leading-relaxed">
+                    <p className="text-slate-400 text-sm mt-1 leading-relaxed">
                       {a.address_line}, {a.district} / {a.city}
                     </p>
                   </div>
@@ -225,7 +225,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
         {/* Adım 2: Ödeme */}
         <div className={`bg-slate-800/50 border rounded-2xl p-6 ${step === 'payment' ? 'border-violet-500/50' : 'border-slate-700'}`}>
           <h2 className="text-white font-bold flex items-center gap-2 mb-4">
-            <span className={`w-6 h-6 rounded-full text-xs flex items-center justify-center font-black ${step === 'payment' ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400'}`}>
+            <span className={`w-6 h-6 rounded-full text-sm flex items-center justify-center font-black ${step === 'payment' ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400'}`}>
               2
             </span>
             Ödeme
@@ -266,9 +266,9 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                   ) : null}
                 </div>
-                <span className="text-slate-500 text-xs shrink-0">{item.quantity}×</span>
-                <span className="flex-1 text-slate-300 text-xs line-clamp-2">{item.name}</span>
-                <span className="text-white text-xs font-medium shrink-0">
+                <span className="text-slate-500 text-sm shrink-0">{item.quantity}×</span>
+                <span className="flex-1 text-slate-300 text-sm line-clamp-2">{item.name}</span>
+                <span className="text-white text-sm font-medium shrink-0">
                   ₺{(item.price * item.quantity).toLocaleString('tr-TR')}
                 </span>
               </div>
@@ -280,17 +280,17 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
             {appliedCoupon ? (
               <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between">
                 <div>
-                  <p className="text-emerald-400 text-xs font-bold">✓ {appliedCoupon.code}</p>
-                  <p className="text-emerald-400/70 text-[10px] mt-0.5">−₺{appliedCoupon.discount.toLocaleString('tr-TR')} indirim</p>
+                  <p className="text-emerald-400 text-sm font-bold">✓ {appliedCoupon.code}</p>
+                  <p className="text-emerald-400/70 text-sm mt-0.5">−₺{appliedCoupon.discount.toLocaleString('tr-TR')} indirim</p>
                 </div>
                 <button onClick={removeCoupon}
-                  className="text-slate-500 hover:text-red-400 text-xs transition-colors">
+                  className="text-slate-500 hover:text-red-400 text-sm transition-colors">
                   Kaldır
                 </button>
               </div>
             ) : (
               <div>
-                <label className="text-slate-400 text-xs mb-1.5 block">Kupon kodu</label>
+                <label className="text-slate-400 text-sm mb-1.5 block">Kupon kodu</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -301,12 +301,12 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
                     className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm font-mono uppercase tracking-wider focus:outline-none focus:border-violet-500" />
                   <button onClick={applyCoupon}
                     disabled={!couponInput.trim() || couponLoading}
-                    className="px-3 py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-colors">
+                    className="px-3 py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-white text-sm font-bold rounded-lg transition-colors">
                     {couponLoading ? '...' : 'Uygula'}
                   </button>
                 </div>
                 {couponError && (
-                  <p className="text-red-400 text-[11px] mt-1.5">✕ {couponError}</p>
+                  <p className="text-red-400 text-sm mt-1.5">✕ {couponError}</p>
                 )}
               </div>
             )}
@@ -315,7 +315,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
           {/* Ücretsiz kargo barı */}
           {remainingForFreeShip > 0 && subtotal > 0 && (
             <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl">
-              <p className="text-amber-400 text-[11px]">
+              <p className="text-amber-400 text-sm">
                 <strong>₺{remainingForFreeShip.toLocaleString('tr-TR')}</strong> daha ekle, kargo ücretsiz!
               </p>
               <div className="mt-1.5 h-1 bg-amber-500/20 rounded-full overflow-hidden">
@@ -352,7 +352,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
           </div>
 
           {/* Güvenli ödeme rozeti */}
-          <div className="flex items-start gap-2 text-slate-500 text-[11px] pt-2 border-t border-slate-700">
+          <div className="flex items-start gap-2 text-slate-500 text-sm pt-2 border-t border-slate-700">
             <svg className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
@@ -410,7 +410,7 @@ function StripePaymentForm({ orderNumber, onSuccess }: { orderNumber: string; on
         className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-xl transition-all text-sm shadow-lg shadow-violet-500/20">
         {loading ? 'Ödeme işleniyor...' : 'Ödemeyi Tamamla'}
       </button>
-      <p className="text-slate-600 text-xs text-center">
+      <p className="text-slate-600 text-sm text-center">
         🔒 Stripe · PCI DSS sertifikalı · kart bilgin bize ulaşmaz
       </p>
     </form>

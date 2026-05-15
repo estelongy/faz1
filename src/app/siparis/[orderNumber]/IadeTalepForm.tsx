@@ -71,7 +71,7 @@ export function IadeTalepForm({
   if (existingReturn && existingReturn.status !== 'cancelled') {
     const badge = STATUS_LABEL[existingReturn.status]
     return (
-      <div className="mt-3 p-3 bg-slate-900/50 border border-slate-700 rounded-xl text-xs">
+      <div className="mt-3 p-3 bg-slate-900/50 border border-slate-700 rounded-xl text-sm">
         <div className="flex items-center justify-between gap-2">
           <div>
             <span className="text-slate-400">İade talebi: </span>
@@ -80,7 +80,7 @@ export function IadeTalepForm({
           </div>
           {existingReturn.status === 'pending' && (
             <button onClick={handleCancel} disabled={cancelLoading}
-              className="shrink-0 text-xs text-red-400 hover:text-red-300 disabled:opacity-40 transition-colors">
+              className="shrink-0 text-sm text-red-400 hover:text-red-300 disabled:opacity-40 transition-colors">
               {cancelLoading ? '...' : 'İptal Et'}
             </button>
           )}
@@ -91,7 +91,7 @@ export function IadeTalepForm({
 
   if (success) {
     return (
-      <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-400">
+      <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-sm text-emerald-400">
         İade talebin alındı. İş Ortağı 2 iş günü içinde yanıtlayacak.
       </div>
     )
@@ -103,33 +103,33 @@ export function IadeTalepForm({
     <div className="mt-3">
       {!open ? (
         <button onClick={() => setOpen(true)}
-          className="text-xs text-slate-500 hover:text-slate-300 transition-colors underline underline-offset-2">
+          className="text-sm text-slate-500 hover:text-slate-300 transition-colors underline underline-offset-2">
           İade / Değişim Talebi Oluştur
         </button>
       ) : (
         <form onSubmit={handleSubmit} className="p-4 bg-slate-900/60 border border-slate-700 rounded-xl space-y-3">
-          <p className="text-white text-xs font-bold">{productName} — İade Talebi</p>
+          <p className="text-white text-sm font-bold">{productName} — İade Talebi</p>
           <div>
-            <label className="text-slate-400 text-xs block mb-1">Sebep</label>
+            <label className="text-slate-400 text-sm block mb-1">Sebep</label>
             <select value={reason} onChange={e => setReason(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-violet-500">
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500">
               {REASONS.map(r => <option key={r}>{r}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-slate-400 text-xs block mb-1">Açıklama (opsiyonel)</label>
+            <label className="text-slate-400 text-sm block mb-1">Açıklama (opsiyonel)</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)}
               rows={2} maxLength={500} placeholder="Detay eklemek istersen..."
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs resize-none focus:outline-none focus:border-violet-500 placeholder-slate-600" />
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-violet-500 placeholder-slate-600" />
           </div>
-          {error && <p className="text-red-400 text-xs">{error}</p>}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
           <div className="flex gap-2">
             <button type="submit" disabled={loading}
-              className="flex-1 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-colors">
+              className="flex-1 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm font-bold rounded-lg transition-colors">
               {loading ? 'Gönderiliyor...' : 'Talep Gönder'}
             </button>
             <button type="button" onClick={() => setOpen(false)}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-400 text-xs rounded-lg transition-colors">
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-400 text-sm rounded-lg transition-colors">
               Vazgeç
             </button>
           </div>

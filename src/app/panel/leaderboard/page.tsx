@@ -96,7 +96,7 @@ export default async function LeaderboardPage() {
             Hekim onaylı skorların top 20&apos;si · Anonim olarak gösterilir
           </p>
           {totalPlayers > 0 && (
-            <p className="text-slate-500 text-xs mt-2">
+            <p className="text-slate-500 text-sm mt-2">
               {totalPlayers} kullanıcı skor almış
             </p>
           )}
@@ -107,7 +107,7 @@ export default async function LeaderboardPage() {
           <div className="mb-6 p-5 rounded-2xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/30">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-violet-400 text-xs font-bold uppercase tracking-wider mb-1">Senin Sıran</p>
+                <p className="text-violet-400 text-sm font-bold uppercase tracking-wider mb-1">Senin Sıran</p>
                 <p className="text-3xl font-black text-white">
                   {myRank > 0 ? `#${myRank}` : '—'}
                   <span className="text-slate-500 text-sm font-normal ml-2">
@@ -116,14 +116,14 @@ export default async function LeaderboardPage() {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-slate-400 text-xs">Skorun</p>
+                <p className="text-slate-400 text-sm">Skorun</p>
                 <p className="text-4xl font-black" style={{ color: scoreColor(myScore) }}>
                   {myScore.toFixed(1)}
                 </p>
               </div>
             </div>
             {myRank > 20 && (
-              <p className="text-slate-500 text-xs mt-3">
+              <p className="text-slate-500 text-sm mt-3">
                 Top 20&apos;ye girmek için <strong className="text-white">
                   {(top20[19]?.score - myScore).toFixed(1)} puan
                 </strong> daha kazan
@@ -173,7 +173,7 @@ export default async function LeaderboardPage() {
                     <p className={`font-bold truncate ${isMe ? 'text-violet-300' : 'text-white'}`}>
                       {isMe ? 'Sen 🙋' : name}
                     </p>
-                    <p className="text-slate-500 text-xs">
+                    <p className="text-slate-500 text-sm">
                       {new Date(r.date).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' })}
                     </p>
                   </div>
@@ -193,7 +193,7 @@ export default async function LeaderboardPage() {
         {/* Nasıl çıkarım */}
         <div className="mt-8 p-5 rounded-2xl bg-slate-800/30 border border-slate-700 text-sm">
           <h3 className="text-white font-bold mb-2">🎯 Sıralamada nasıl yükselirim?</h3>
-          <ul className="space-y-2 text-slate-400 text-xs">
+          <ul className="space-y-2 text-slate-400 text-sm">
             <li className="flex gap-2">
               <span className="text-violet-400">1.</span>
               <span>AI ön analiz yap (fotoğraf → Estelongy AI)</span>
@@ -217,7 +217,7 @@ export default async function LeaderboardPage() {
           </Link>
         </div>
 
-        <p className="text-center text-slate-600 text-xs mt-6">
+        <p className="text-center text-slate-600 text-sm mt-6">
           🔒 Tüm isimler gizlilik için anonimleştirilmiştir (A*** Y***)
         </p>
       </div>

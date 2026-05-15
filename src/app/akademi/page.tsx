@@ -46,7 +46,7 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
       <section className="border-b border-slate-800 bg-slate-900/60">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs text-slate-500 mb-4">
+          <nav className="flex items-center gap-2 text-sm text-slate-500 mb-4">
             <Link href="/" className="hover:text-white transition-colors">Anasayfa</Link>
             <span>›</span>
             <span className="text-slate-400">EsteStore</span>
@@ -55,7 +55,7 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
           </nav>
 
           {/* Üst kavram — EsteStore */}
-          <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-2">
+          <p className="text-emerald-400 text-sm font-bold uppercase tracking-widest mb-2">
             🛒 EsteStore
           </p>
           <div className="flex items-center gap-3 mb-3">
@@ -67,7 +67,7 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
           </p>
 
           <div className="flex flex-wrap gap-2">
-            <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-emerald-300 text-xs leading-relaxed">
+            <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-emerald-300 text-sm leading-relaxed">
               <span className="shrink-0">🔒</span>
               <span>
                 <strong>Sağlık profesyonelleri ve klinikler</strong> içindir.{' '}
@@ -75,7 +75,7 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
                 {' '}gerekir.
               </span>
             </div>
-            <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-slate-800/50 border border-slate-700 text-slate-400 text-xs leading-relaxed">
+            <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-slate-800/50 border border-slate-700 text-slate-400 text-sm leading-relaxed">
               <span className="shrink-0">🚀</span>
               <span>Yakında: <strong>tıbbi ürün, dolgu, sarf malzeme</strong> kategorileri</span>
             </div>
@@ -124,7 +124,7 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
               </Link>
             )}
           </form>
-          <div className="ml-auto text-slate-500 text-xs">
+          <div className="ml-auto text-slate-500 text-sm">
             {packages?.length ?? 0} paket
           </div>
         </div>
@@ -158,7 +158,7 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">🎓</div>
                     )}
-                    <div className="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/70 backdrop-blur text-emerald-400 text-xs font-medium">
+                    <div className="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/70 backdrop-blur text-emerald-400 text-sm font-medium">
                       {LEVEL_LABELS[pkg.level as keyof typeof LEVEL_LABELS]}
                     </div>
                   </div>
@@ -169,10 +169,10 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
                     </h3>
 
                     {clinic && (
-                      <div className="text-slate-500 text-xs">{clinic.name}</div>
+                      <div className="text-slate-500 text-sm">{clinic.name}</div>
                     )}
 
-                    <div className="flex items-center gap-3 text-xs text-slate-400 pt-1">
+                    <div className="flex items-center gap-3 text-sm text-slate-400 pt-1">
                       <span className="flex items-center gap-1">
                         <span>📹</span>
                         <span>{pkg.total_videos ?? 0} video</span>
@@ -193,7 +193,7 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
                       <span className="text-emerald-400 font-bold text-base">
                         {formatPrice(Number(pkg.price), pkg.currency || 'TRY')}
                       </span>
-                      <span className="text-slate-500 text-xs">
+                      <span className="text-slate-500 text-sm">
                         {pkg.total_purchases ?? 0} satış
                       </span>
                     </div>

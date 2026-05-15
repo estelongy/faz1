@@ -62,7 +62,7 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride }:
 
         {!showPrice && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center">
-            <div className="px-3 py-1.5 rounded-full bg-[#C9A961]/15 border border-[#C9A961]/40 text-[#8B7339] text-xs font-semibold">
+            <div className="px-3 py-1.5 rounded-full bg-[#C9A961]/15 border border-[#C9A961]/40 text-[#8B7339] text-sm font-semibold">
               🔒 Profesyonel
             </div>
           </div>
@@ -72,7 +72,7 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride }:
       {/* Bilgi */}
       <div className="p-4 flex-1 flex flex-col">
         {product.subcategory && (
-          <p className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">
+          <p className="text-sm uppercase tracking-wider text-slate-500 font-semibold mb-1">
             {product.subcategory}
           </p>
         )}
@@ -83,13 +83,13 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride }:
         {/* Fiyat alanı */}
         <div className="mt-auto">
           {!showPrice ? (
-            <div className="text-xs text-slate-500">
+            <div className="text-sm text-slate-500">
               Fiyat için <span className="text-[#8B7339] font-semibold">giriş yapın</span>
             </div>
           ) : isPro && firstTier && proPriceFromFirstTier !== null ? (
             <>
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-slate-400 text-xs line-through">{formatTRY(product.price)}</span>
+                <span className="text-slate-400 text-sm line-through">{formatTRY(product.price)}</span>
                 <span className="text-[#10876B] font-bold text-lg">
                   {formatTRY(proPriceFromFirstTier)}
                 </span>
@@ -99,7 +99,7 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride }:
                   {summary.map((row, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between text-[11px]"
+                      className="flex items-center justify-between text-sm"
                     >
                       <span className="text-slate-500">{row.rangeLabel}</span>
                       <span className="text-slate-700 font-medium">
@@ -119,7 +119,7 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride }:
                 {formatTRY(product.price)}
               </div>
               {firstTier && proPriceFromFirstTier !== null && (
-                <p className="text-[11px] text-slate-500">
+                <p className="text-sm text-slate-500">
                   Profesyonel: <span className="text-[#10876B] font-medium">{formatTRY(proPriceFromFirstTier)}</span> ({formatPercent(firstTier.discount_rate)} indirim)
                 </p>
               )}

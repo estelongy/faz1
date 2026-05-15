@@ -25,7 +25,7 @@ export default async function ProfilDuzenlePage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
-        <nav className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/klinik/panel/profil" className="hover:text-white transition-colors">Klinik Profilim</Link>
           <span>›</span>
           <span className="text-slate-300">Düzenle</span>
@@ -47,7 +47,7 @@ export default async function ProfilDuzenlePage() {
         }} />
       </div>
 
-      <p className="mt-4 text-[11px] text-slate-600">
+      <p className="mt-4 text-sm text-slate-600">
         Güncelleme sonrası değişiklikler hem klinik panelinde hem de hasta tarafında (klinik detayı, randevu önizleme) anında görünür.
       </p>
     </div>

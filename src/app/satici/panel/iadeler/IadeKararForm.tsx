@@ -24,7 +24,7 @@ export default function IadeKararForm({ returnId }: { returnId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="border-t border-slate-700 pt-4 space-y-3">
-      <p className="text-white text-xs font-bold">Karar Ver</p>
+      <p className="text-white text-sm font-bold">Karar Ver</p>
 
       <div className="flex gap-2">
         <button type="button"
@@ -55,9 +55,9 @@ export default function IadeKararForm({ returnId }: { returnId: string }) {
             placeholder={decision === 'approved' ? 'Müşteriye not (opsiyonel)...' : 'Red sebebi (opsiyonel)...'}
             rows={2}
             maxLength={500}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs resize-none focus:outline-none focus:border-violet-500 placeholder-slate-600"
+            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-violet-500 placeholder-slate-600"
           />
-          {error && <p className="text-red-400 text-xs">{error}</p>}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
           <button type="submit" disabled={loading}
             className={`w-full py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 transition-all ${
               decision === 'approved'

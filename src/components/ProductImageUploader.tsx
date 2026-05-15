@@ -123,7 +123,7 @@ export default function ProductImageUploader({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt={`Ürün ${i + 1}`} className="w-full h-full object-cover" />
               {i === 0 && (
-                <div className="absolute top-1 left-1 bg-violet-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                <div className="absolute top-1 left-1 bg-violet-600 text-white text-sm font-bold px-1.5 py-0.5 rounded">
                   KAPAK
                 </div>
               )}
@@ -145,7 +145,7 @@ export default function ProductImageUploader({
                   </button>
                 </div>
                 <button type="button" onClick={() => removeImage(url)}
-                  className="px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-xs font-medium rounded-lg">
+                  className="px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-sm font-medium rounded-lg">
                   Sil
                 </button>
               </div>
@@ -171,7 +171,7 @@ export default function ProductImageUploader({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           <p className="text-white text-sm font-medium">Görsel yükle veya sürükle</p>
-          <p className="text-slate-500 text-xs mt-1">
+          <p className="text-slate-500 text-sm mt-1">
             JPG, PNG, WEBP — maks. {MAX_SIZE_MB}MB · {remaining} hak kaldı
           </p>
           <input
@@ -191,9 +191,9 @@ export default function ProductImageUploader({
           {uploading.map(u => (
             <div key={u.id} className="flex items-center gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
               <div className="flex-1 min-w-0">
-                <p className="text-white text-xs truncate">{u.name}</p>
+                <p className="text-white text-sm truncate">{u.name}</p>
                 {u.error ? (
-                  <p className="text-red-400 text-[11px] mt-0.5">{u.error}</p>
+                  <p className="text-red-400 text-sm mt-0.5">{u.error}</p>
                 ) : (
                   <div className="w-full bg-slate-700 rounded-full h-1.5 mt-1.5 overflow-hidden">
                     <div
@@ -203,7 +203,7 @@ export default function ProductImageUploader({
                   </div>
                 )}
               </div>
-              <span className="text-[11px] text-slate-500 shrink-0">
+              <span className="text-sm text-slate-500 shrink-0">
                 {u.error ? '!' : `${u.progress}%`}
               </span>
             </div>
@@ -211,7 +211,7 @@ export default function ProductImageUploader({
         </div>
       )}
 
-      <p className="text-[11px] text-slate-500 leading-relaxed">
+      <p className="text-sm text-slate-500 leading-relaxed">
         İlk görsel kapak olarak kullanılır. Ok tuşlarıyla sıralayabilir, fare üzerindeyken silebilirsin.
       </p>
     </div>

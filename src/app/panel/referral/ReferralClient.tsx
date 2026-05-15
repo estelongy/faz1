@@ -58,14 +58,14 @@ export default function ReferralClient({ code, pointsBalance, referredCount, tra
       {/* Bakiye + İstatistikler */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-500/20 rounded-2xl p-5">
-          <p className="text-emerald-300 text-xs mb-1">Puan Bakiyem</p>
+          <p className="text-emerald-300 text-sm mb-1">Puan Bakiyem</p>
           <p className="text-4xl font-black text-emerald-400">{pointsBalance.toLocaleString('tr-TR')}</p>
-          <p className="text-emerald-300/60 text-[10px] mt-1">≈ ₺{pointsBalance.toLocaleString('tr-TR')} değerinde</p>
+          <p className="text-emerald-300/60 text-sm mt-1">≈ ₺{pointsBalance.toLocaleString('tr-TR')} değerinde</p>
         </div>
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
-          <p className="text-slate-400 text-xs mb-1">Davet Ettiğin</p>
+          <p className="text-slate-400 text-sm mb-1">Davet Ettiğin</p>
           <p className="text-4xl font-black text-violet-400">{referredCount}</p>
-          <p className="text-slate-500 text-[10px] mt-1">üye</p>
+          <p className="text-slate-500 text-sm mt-1">üye</p>
         </div>
       </div>
 
@@ -88,8 +88,8 @@ export default function ReferralClient({ code, pointsBalance, referredCount, tra
 
         {/* Link */}
         <div className="flex items-center gap-2 p-3 bg-slate-900/50 rounded-xl mb-4">
-          <span className="text-violet-400 text-xs flex-1 font-mono truncate">{referralLink}</span>
-          <button onClick={copyLink} className={`text-xs px-2 py-1 rounded-lg transition-colors ${copied === 'link' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 hover:bg-slate-600 text-slate-400'}`}>
+          <span className="text-violet-400 text-sm flex-1 font-mono truncate">{referralLink}</span>
+          <button onClick={copyLink} className={`text-sm px-2 py-1 rounded-lg transition-colors ${copied === 'link' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 hover:bg-slate-600 text-slate-400'}`}>
             {copied === 'link' ? '✓' : 'Kopyala'}
           </button>
         </div>
@@ -146,7 +146,7 @@ export default function ReferralClient({ code, pointsBalance, referredCount, tra
             <span className="text-amber-400 font-bold">%5</span>
           </div>
         </div>
-        <p className="text-slate-500 text-xs mt-4">
+        <p className="text-slate-500 text-sm mt-4">
           Puanlarını mağazada veya klinikte indirim olarak kullanabilirsin (yakında).
         </p>
       </div>
@@ -164,7 +164,7 @@ export default function ReferralClient({ code, pointsBalance, referredCount, tra
                   <p className="text-white text-sm font-medium truncate">
                     {t.description ?? TYPE_LABEL[t.type] ?? t.type}
                   </p>
-                  <p className="text-slate-500 text-xs">
+                  <p className="text-slate-500 text-sm">
                     {new Date(t.createdAt).toLocaleDateString('tr-TR', {
                       day: 'numeric', month: 'long', year: 'numeric',
                       hour: '2-digit', minute: '2-digit',

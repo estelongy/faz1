@@ -44,7 +44,7 @@ export default async function AdminHesapPage() {
             <Row label="Rol" value="Admin" />
           </div>
           {!phone && (
-            <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
+            <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm">
               Hesabınızda telefon yok — admin SMS doğrulaması çalışmaz. Yöneticiyle iletişime geçin.
             </div>
           )}
@@ -53,7 +53,7 @@ export default async function AdminHesapPage() {
         {/* Postmark test */}
         <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
           <h2 className="text-white font-bold text-base mb-1">E-posta Sistemi Testi</h2>
-          <p className="text-slate-500 text-xs mb-4">
+          <p className="text-slate-500 text-sm mb-4">
             Postmark altyapısının çalışıp çalışmadığını test etmek için kendi adresinize bir mail göndertir.
             Sender Signature: <code className="text-slate-400">{process.env.FROM_EMAIL ?? 'noreply@estelongy.com'}</code>
           </p>
@@ -63,7 +63,7 @@ export default async function AdminHesapPage() {
         {/* Şifre değiştir */}
         <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
           <h2 className="text-white font-bold text-base mb-1">Şifre Değiştir</h2>
-          <p className="text-slate-500 text-xs mb-4">
+          <p className="text-slate-500 text-sm mb-4">
             Yeni şifren en az 8 karakter olmalı. Kayıt sonrası SMS OTP zaten ek koruma sağlar — yine de uzun, eşsiz bir parola kullan.
           </p>
           <AdminHesapClient />
@@ -79,7 +79,7 @@ function Row({ label, value, verified }: { label: string; value: string; verifie
       <span className="text-slate-500 w-28 shrink-0">{label}</span>
       <span className="text-white truncate flex-1">{value}</span>
       {verified !== undefined && value !== '—' && value !== 'Tanımlı değil' && (
-        <span className={`text-[10px] shrink-0 ${verified ? 'text-emerald-400' : 'text-amber-400'}`}>
+        <span className={`text-sm shrink-0 ${verified ? 'text-emerald-400' : 'text-amber-400'}`}>
           {verified ? '✓ doğrulandı' : '⚠ doğrulanmamış'}
         </span>
       )}

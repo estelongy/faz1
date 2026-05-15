@@ -134,12 +134,12 @@ export default function BrandMorphButton() {
               }}
             />
             <span
-              className="text-[13px] font-medium tracking-tight flex-1"
+              className="text-sm font-medium tracking-tight flex-1"
               style={{ color: brand.color }}
             >
               {brand.name}
             </span>
-            <span className="text-[10px] uppercase tracking-[0.14em] text-slate-500 group-hover/card:text-slate-300 transition-colors">
+            <span className="text-sm uppercase tracking-[0.14em] text-slate-500 group-hover/card:text-slate-300 transition-colors">
               {brand.tag}
             </span>
             <ArrowRight

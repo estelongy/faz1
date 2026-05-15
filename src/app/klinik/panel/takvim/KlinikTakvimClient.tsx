@@ -119,7 +119,7 @@ export default function KlinikTakvimClient({ appointments, onConfirm, onReject, 
         <div className="flex items-center gap-2">
           <button onClick={prevMonth} className="w-9 h-9 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 flex items-center justify-center transition-colors">‹</button>
           <button onClick={() => { setViewYear(now.getFullYear()); setViewMonth(now.getMonth()) }}
-            className="px-3 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-medium transition-colors">Bugün</button>
+            className="px-3 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-medium transition-colors">Bugün</button>
           <button onClick={nextMonth} className="w-9 h-9 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 flex items-center justify-center transition-colors">›</button>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function KlinikTakvimClient({ appointments, onConfirm, onReject, 
         <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden">
           <div className="grid grid-cols-7 border-b border-slate-700">
             {DAYS_TR.map(d => (
-              <div key={d} className="text-center text-slate-500 text-xs py-3 font-medium">{d}</div>
+              <div key={d} className="text-center text-slate-500 text-sm py-3 font-medium">{d}</div>
             ))}
           </div>
           <div className="grid grid-cols-7">
@@ -164,14 +164,14 @@ export default function KlinikTakvimClient({ appointments, onConfirm, onReject, 
                     isSelected ? 'bg-violet-500/20 border-violet-500/40' : 'hover:bg-slate-700/30'
                   }`}
                 >
-                  <span className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full mb-1 ${
+                  <span className={`text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full mb-1 ${
                     isToday ? 'bg-violet-500 text-white' : isSelected ? 'text-violet-300' : 'text-slate-400'
                   }`}>
                     {day}
                   </span>
                   <div className="space-y-0.5">
                     {dayAppts.slice(0, 2).map(a => (
-                      <div key={a.id} className={`text-[10px] truncate rounded px-1 ${STATUS_COLOR[a.status] ?? 'bg-slate-600 text-slate-300'}`}>
+                      <div key={a.id} className={`text-sm truncate rounded px-1 ${STATUS_COLOR[a.status] ?? 'bg-slate-600 text-slate-300'}`}>
                         {new Date(a.date).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })} {a.patientName.split(' ')[0]}
                       </div>
                     ))}
@@ -194,11 +194,11 @@ export default function KlinikTakvimClient({ appointments, onConfirm, onReject, 
                   ? new Date(selected + 'T12:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })
                   : filterTitle(filter)}
               </h3>
-              <p className="text-slate-500 text-xs mt-0.5">{listAppts.length} randevu</p>
+              <p className="text-slate-500 text-sm mt-0.5">{listAppts.length} randevu</p>
             </div>
             {selected && (
               <button onClick={() => setSelected(null)}
-                className="text-slate-500 hover:text-white text-xs px-2 py-1 rounded transition-colors">
+                className="text-slate-500 hover:text-white text-sm px-2 py-1 rounded transition-colors">
                 ✕ Filtreye Dön
               </button>
             )}
@@ -261,7 +261,7 @@ function FilterPill({
         <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
       )}
       <div className={`text-xl font-black ${active ? a.num : 'text-white'}`}>{count}</div>
-      <div className="text-[10px] mt-0.5 font-semibold uppercase tracking-wide">{label}</div>
+      <div className="text-sm mt-0.5 font-semibold uppercase tracking-wide">{label}</div>
     </button>
   )
 }
@@ -313,13 +313,13 @@ function RandevuListSatir({
           className="text-white text-sm font-bold hover:text-violet-400 transition-colors truncate flex-1 min-w-0">
           {appt.patientName}
         </Link>
-        <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 ${
+        <span className={`text-sm px-2 py-0.5 rounded-full shrink-0 ${
           STATUS_COLOR[appt.status] ?? 'bg-slate-600 text-slate-300'
         }`}>
           {STATUS_LABEL[appt.status] ?? appt.status}
         </span>
       </div>
-      <p className="text-slate-500 text-xs mb-2">
+      <p className="text-slate-500 text-sm mb-2">
         {dateStr} · {timeStr}
       </p>
 
@@ -330,13 +330,13 @@ function RandevuListSatir({
             <button
               onClick={() => doAction('confirm')}
               disabled={isPending}
-              className="flex-1 min-w-[80px] px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold transition-colors">
+              className="flex-1 min-w-[80px] px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-sm font-bold transition-colors">
               {isPending ? '…' : '✓ Onayla'}
             </button>
             <button
               onClick={() => doAction('reject')}
               disabled={isPending}
-              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-xs font-bold transition-colors border border-slate-700"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-sm font-bold transition-colors border border-slate-700"
               title="Reddet">
               ✕
             </button>
@@ -346,20 +346,20 @@ function RandevuListSatir({
           <>
             <Link
               href={`/klinik/panel/randevu/${appt.id}`}
-              className="flex-1 min-w-[120px] text-center px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-xs font-bold transition-colors">
+              className="flex-1 min-w-[120px] text-center px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-sm font-bold transition-colors">
               Hasta Geldi →
             </Link>
             <button
               onClick={() => doAction('noshow')}
               disabled={isPending}
-              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-xs font-bold transition-colors border border-slate-700"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-sm font-bold transition-colors border border-slate-700"
               title="Gelmedi">
               ⊘
             </button>
             <button
               onClick={() => doAction('reject')}
               disabled={isPending}
-              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-xs font-bold transition-colors border border-slate-700"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-sm font-bold transition-colors border border-slate-700"
               title="İptal">
               ✕
             </button>
@@ -368,26 +368,26 @@ function RandevuListSatir({
         {appt.status === 'in_progress' && (
           <Link
             href={`/klinik/panel/randevu/${appt.id}`}
-            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-colors">
+            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold transition-colors">
             Akışı Sürdür →
           </Link>
         )}
         {appt.status === 'completed' && (
           <Link
             href={`/klinik/panel/randevu/${appt.id}`}
-            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-semibold transition-colors">
+            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-semibold transition-colors">
             Detayı Gör →
           </Link>
         )}
         {(appt.status === 'cancelled' || appt.status === 'no_show') && (
           <Link
             href={`/klinik/panel/hasta/${appt.userId}`}
-            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-500 text-xs transition-colors">
+            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-500 text-sm transition-colors">
             Hasta Detayı
           </Link>
         )}
       </div>
-      {err && <p className="text-red-400 text-xs mt-1.5">{err}</p>}
+      {err && <p className="text-red-400 text-sm mt-1.5">{err}</p>}
     </div>
   )
 }

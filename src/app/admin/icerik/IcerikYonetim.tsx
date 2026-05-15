@@ -54,7 +54,7 @@ export default function IcerikYonetim({ posts, createAction, toggleAction, delet
         <button
           type="button"
           onClick={() => setFilter('all')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+          className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-colors ${
             filter === 'all'
               ? 'bg-white/10 text-white border-white/30'
               : 'bg-slate-800/60 text-slate-400 border-slate-700 hover:border-slate-600'
@@ -67,7 +67,7 @@ export default function IcerikYonetim({ posts, createAction, toggleAction, delet
             key={cat.id}
             type="button"
             onClick={() => setFilter(cat.id)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-colors ${
               filter === cat.id ? cat.color : 'bg-slate-800/60 text-slate-400 border-slate-700 hover:border-slate-600'
             }`}
           >
@@ -121,23 +121,23 @@ function PostRow({ post, toggleAction, deleteAction }: {
         <span className="text-xl shrink-0">{cat?.emoji ?? '•'}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${cat?.color ?? ''}`}>
+            <span className={`text-sm font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${cat?.color ?? ''}`}>
               {cat?.label ?? post.category}
             </span>
             {!post.is_published && (
-              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              <span className="text-sm font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
                 Yayında değil
               </span>
             )}
-            <span className="text-slate-600 text-xs">{dateStr}</span>
+            <span className="text-slate-600 text-sm">{dateStr}</span>
           </div>
           <p className="text-white font-semibold text-sm leading-snug">{post.title}</p>
           {post.excerpt && (
-            <p className="text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2">{post.excerpt}</p>
+            <p className="text-slate-400 text-sm mt-1 leading-relaxed line-clamp-2">{post.excerpt}</p>
           )}
           {post.external_url && (
             <a href={post.external_url} target="_blank" rel="noopener noreferrer"
-              className="inline-block text-violet-400 hover:text-violet-300 text-[11px] mt-1.5 truncate max-w-full">
+              className="inline-block text-violet-400 hover:text-violet-300 text-sm mt-1.5 truncate max-w-full">
               ↗ {post.external_url}
             </a>
           )}
@@ -148,7 +148,7 @@ function PostRow({ post, toggleAction, deleteAction }: {
             <input type="hidden" name="next" value={post.is_published ? '0' : '1'} />
             <button
               type="submit"
-              className={`text-[10px] px-2 py-1 rounded font-bold transition-colors ${
+              className={`text-sm px-2 py-1 rounded font-bold transition-colors ${
                 post.is_published
                   ? 'bg-slate-700 hover:bg-slate-600 text-slate-300'
                   : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300'
@@ -161,7 +161,7 @@ function PostRow({ post, toggleAction, deleteAction }: {
             <input type="hidden" name="id" value={post.id} />
             <button
               type="submit"
-              className="text-[10px] px-2 py-1 rounded font-bold bg-red-500/15 hover:bg-red-500/25 text-red-400 transition-colors"
+              className="text-sm px-2 py-1 rounded font-bold bg-red-500/15 hover:bg-red-500/25 text-red-400 transition-colors"
             >
               Sil
             </button>

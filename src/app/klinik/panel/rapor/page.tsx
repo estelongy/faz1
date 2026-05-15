@@ -160,9 +160,9 @@ export default async function KlinikRaporPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {/* Toplam Randevu */}
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700">
-            <p className="text-slate-500 text-xs mb-1">Toplam Randevu</p>
+            <p className="text-slate-500 text-sm mb-1">Toplam Randevu</p>
             <p className="text-3xl font-black text-white">{current.total}</p>
-            <p className={`text-xs mt-2 ${trendTotal.up ? 'text-emerald-400' : 'text-red-400'}`}>
+            <p className={`text-sm mt-2 ${trendTotal.up ? 'text-emerald-400' : 'text-red-400'}`}>
               {trendTotal.up ? '↑' : '↓'} geçen aya göre {Math.abs(trendTotal.delta)}
               {previous.total > 0 && ` (${trendTotal.up ? '+' : ''}${trendTotal.pct.toFixed(0)}%)`}
             </p>
@@ -170,27 +170,27 @@ export default async function KlinikRaporPage() {
 
           {/* Tamamlanan */}
           <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
-            <p className="text-emerald-400/70 text-xs mb-1">Tamamlanan</p>
+            <p className="text-emerald-400/70 text-sm mb-1">Tamamlanan</p>
             <p className="text-3xl font-black text-emerald-400">{current.completed}</p>
-            <p className={`text-xs mt-2 ${trendCompleted.up ? 'text-emerald-400' : 'text-red-400'}`}>
+            <p className={`text-sm mt-2 ${trendCompleted.up ? 'text-emerald-400' : 'text-red-400'}`}>
               {trendCompleted.up ? '↑' : '↓'} {Math.abs(trendCompleted.delta)}
             </p>
           </div>
 
           {/* Kabul Oranı */}
           <div className="p-5 rounded-2xl bg-violet-500/5 border border-violet-500/20">
-            <p className="text-violet-400/70 text-xs mb-1">Kabul Oranı</p>
+            <p className="text-violet-400/70 text-sm mb-1">Kabul Oranı</p>
             <p className="text-3xl font-black text-violet-400">{acceptRate.toFixed(0)}%</p>
-            <p className="text-xs text-slate-500 mt-2">
+            <p className="text-sm text-slate-500 mt-2">
               {current.completed} / {finalized} finalize
             </p>
           </div>
 
           {/* Kredi Kullanımı */}
           <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20">
-            <p className="text-amber-400/70 text-xs mb-1">Kredi Kullanımı</p>
+            <p className="text-amber-400/70 text-sm mb-1">Kredi Kullanımı</p>
             <p className="text-3xl font-black text-amber-400">{current.creditUsed}</p>
-            <p className="text-xs text-slate-500 mt-2">
+            <p className="text-sm text-slate-500 mt-2">
               Bakiye: {((clinic as { credit_balance?: number }).credit_balance ?? 0) + ((clinic as { free_appointments_remaining?: number }).free_appointments_remaining ?? 0)}
             </p>
           </div>
@@ -199,22 +199,22 @@ export default async function KlinikRaporPage() {
         {/* Skor Metrikleri */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700">
-            <p className="text-slate-500 text-xs mb-1">Ortalama Klinik Onaylı Gençlik Skoru</p>
+            <p className="text-slate-500 text-sm mb-1">Ortalama Klinik Onaylı Gençlik Skoru</p>
             <p className="text-4xl font-black text-white">
               {current.avgFinalScore != null ? current.avgFinalScore.toFixed(1) : '—'}
             </p>
-            <p className="text-xs text-slate-500 mt-2">
+            <p className="text-sm text-slate-500 mt-2">
               Bu ay hekim onayı verilen randevuların ortalaması
             </p>
           </div>
           <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700">
-            <p className="text-slate-500 text-xs mb-1">Ortalama Skor Artışı</p>
+            <p className="text-slate-500 text-sm mb-1">Ortalama Skor Artışı</p>
             <p className={`text-4xl font-black ${(current.avgScoreGain ?? 0) > 0 ? 'text-emerald-400' : 'text-slate-400'}`}>
               {current.avgScoreGain != null
                 ? `${current.avgScoreGain > 0 ? '+' : ''}${current.avgScoreGain.toFixed(1)}`
                 : '—'}
             </p>
-            <p className="text-xs text-slate-500 mt-2">
+            <p className="text-sm text-slate-500 mt-2">
               Ön analiz skorundan klinik onaylı skora fark ortalaması
             </p>
           </div>
@@ -226,7 +226,7 @@ export default async function KlinikRaporPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-900/50 text-slate-400 text-xs uppercase tracking-wider">
+                <tr className="bg-slate-900/50 text-slate-400 text-sm uppercase tracking-wider">
                   <th className="px-4 py-3 text-left">Ay</th>
                   <th className="px-4 py-3 text-center">Toplam</th>
                   <th className="px-4 py-3 text-center">✓ Tamam</th>

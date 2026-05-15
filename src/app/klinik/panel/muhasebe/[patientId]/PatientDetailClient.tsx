@@ -144,7 +144,7 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
       </div>
 
       {error && (
-        <div className="mb-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+        <div className="mb-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
           {error}
         </div>
       )}
@@ -168,23 +168,23 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
             <form onSubmit={handleAddTreatment} className="mb-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşlem Adı *</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">İşlem Adı *</label>
                   <input name="name" required minLength={2} maxLength={120} autoFocus
                     placeholder="Örn. Botoks 30 ünite"
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Tarih</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Tarih</label>
                   <input name="treatment_date" type="date" defaultValue={new Date().toISOString().slice(0,10)}
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ücret (TRY)</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Ücret (TRY)</label>
                   <input name="amount" type="number" step="0.01" min="0" defaultValue="0"
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Not</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Not</label>
                   <input name="notes" maxLength={300}
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
                 </div>
@@ -219,7 +219,7 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
                         </svg>
                         <div className="flex-1 min-w-0">
                           <p className="text-white font-semibold text-sm truncate">{t.name}</p>
-                          <p className="text-slate-500 text-xs">
+                          <p className="text-slate-500 text-sm">
                             {formatDate(t.treatment_date)}
                             {t.products.length > 0 && <span className="ml-2">· {t.products.length} ürün</span>}
                           </p>
@@ -237,13 +237,13 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
                     {expanded && (
                       <div className="px-3 pb-3 pt-1 border-t border-slate-700/40 bg-slate-900/40">
                         {t.notes && (
-                          <p className="text-slate-400 text-xs italic mb-3">{t.notes}</p>
+                          <p className="text-slate-400 text-sm italic mb-3">{t.notes}</p>
                         )}
 
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-[10px] uppercase tracking-widest text-slate-500">Kullanılan Ürünler</p>
+                          <p className="text-sm uppercase tracking-widest text-slate-500">Kullanılan Ürünler</p>
                           <button type="button" onClick={() => setProductFormFor(productFormFor === t.id ? null : t.id)}
-                            className="text-xs text-violet-400 hover:text-violet-300 font-medium">
+                            className="text-sm text-violet-400 hover:text-violet-300 font-medium">
                             {productFormFor === t.id ? 'Vazgeç' : '+ Ürün Ekle'}
                           </button>
                         </div>
@@ -251,25 +251,25 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
                         {productFormFor === t.id && (
                           <form onSubmit={e => handleAddProduct(e, t.id)} className="mb-3 p-3 rounded-lg bg-slate-900/60 border border-slate-700 grid grid-cols-2 sm:grid-cols-4 gap-2">
                             <input name="name" required minLength={2} maxLength={120} placeholder="Ürün adı *" autoFocus
-                              className="col-span-2 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500" />
+                              className="col-span-2 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
                             <input name="quantity" type="number" step="0.001" min="0" defaultValue="1" placeholder="Miktar"
-                              className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500" />
+                              className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
                             <input name="unit" maxLength={20} placeholder="Birim (ml, ad)"
-                              className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500" />
+                              className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
                             <input name="notes" maxLength={200} placeholder="Not (ops.)"
-                              className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-xs focus:outline-none focus:border-violet-500" />
-                            <button type="submit" disabled={pending} className="px-2 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-xs font-semibold rounded transition-colors">
+                              className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
+                            <button type="submit" disabled={pending} className="px-2 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold rounded transition-colors">
                               Ekle
                             </button>
                           </form>
                         )}
 
                         {t.products.length === 0 ? (
-                          <p className="text-slate-600 text-xs italic">Bu işlemde ürün kaydı yok.</p>
+                          <p className="text-slate-600 text-sm italic">Bu işlemde ürün kaydı yok.</p>
                         ) : (
                           <div className="space-y-1">
                             {t.products.map(p => (
-                              <div key={p.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-slate-800/40 text-xs">
+                              <div key={p.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-slate-800/40 text-sm">
                                 <span className="text-white font-medium">{p.name}</span>
                                 <span className="text-slate-500">— {p.quantity}{p.unit ? ` ${p.unit}` : ''}</span>
                                 {p.notes && <span className="text-slate-600 italic truncate">· {p.notes}</span>}
@@ -312,17 +312,17 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
             <form onSubmit={handleAddPayment} className="mb-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Tutar (TRY) *</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Tutar (TRY) *</label>
                   <input name="amount" type="number" step="0.01" min="0.01" required autoFocus
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500" />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Tarih</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Tarih</label>
                   <input name="paid_at" type="date" defaultValue={new Date().toISOString().slice(0,10)}
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500" />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Yöntem</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Yöntem</label>
                   <select name="method" className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500">
                     <option value="">—</option>
                     <option value="Nakit">Nakit</option>
@@ -333,7 +333,7 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
                   </select>
                 </div>
                 <div className="sm:col-span-3">
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">İşleme Bağla (ops.)</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">İşleme Bağla (ops.)</label>
                   <select name="treatment_id" className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500">
                     <option value="">—</option>
                     {treatments.map(t => (
@@ -342,7 +342,7 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
                   </select>
                 </div>
                 <div className="sm:col-span-3">
-                  <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Not</label>
+                  <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Not</label>
                   <input name="notes" maxLength={300}
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500" />
                 </div>
@@ -373,12 +373,12 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-bold text-sm">{formatTRY(p.amount)}</p>
-                      <p className="text-slate-500 text-xs">
+                      <p className="text-slate-500 text-sm">
                         {formatDate(p.paid_at)}
                         {p.method && <span className="ml-2">· {p.method}</span>}
                         {linkedT && <span className="ml-2 text-violet-400">· {linkedT.name}</span>}
                       </p>
-                      {p.notes && <p className="text-slate-600 text-xs italic mt-0.5">{p.notes}</p>}
+                      {p.notes && <p className="text-slate-600 text-sm italic mt-0.5">{p.notes}</p>}
                     </div>
                     <button type="button" onClick={() => handleDeletePayment(p.id)} disabled={pending}
                       className="p-1.5 text-slate-600 hover:text-red-400 transition-colors" title="Sil">

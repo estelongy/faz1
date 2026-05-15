@@ -158,7 +158,7 @@ export default async function KlinikBasvurPage({
             <p className="text-slate-600 text-sm mb-2">
               Başvurunuz incelemeye alındı. En kısa sürede değerlendirilecek.
             </p>
-            <p className="text-slate-500 text-xs mb-6">
+            <p className="text-slate-500 text-sm mb-6">
               Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-700">giriş yaparak</strong> klinik panelinize erişebilirsiniz.
             </p>
             <Link href="/giris"
@@ -184,12 +184,12 @@ export default async function KlinikBasvurPage({
             style={{ background: 'radial-gradient(circle, #10876B 0%, transparent 70%)' }}
           />
           <div className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-8">
-            <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-3">
+            <nav className="flex items-center gap-2 text-sm text-emerald-200/70 mb-3">
               <Link href="/esteklinik" className="hover:text-white transition-colors">EsteKlinik</Link>
               <span>·</span>
               <span className="text-white font-semibold">Başvuru</span>
             </nav>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-2">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-emerald-300 mb-2">
               EsteKlinik · Klinik Katılım
             </p>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">Klinik Olarak Katıl</h1>

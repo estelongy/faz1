@@ -26,7 +26,7 @@ export default function MeasuringBadge({
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60" />
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400" />
         </span>
-        <p className="text-[10px] uppercase tracking-wider text-slate-300 font-bold leading-none">Ölçülüyor</p>
+        <p className="text-sm uppercase tracking-wider text-slate-300 font-bold leading-none">Ölçülüyor</p>
       </div>
     )
   }
@@ -39,11 +39,11 @@ export default function MeasuringBadge({
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60" />
           <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-teal-400" />
         </span>
-        <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Ölçüm Devam Ediyor</p>
+        <p className="text-sm uppercase tracking-widest text-slate-400 font-bold">Ölçüm Devam Ediyor</p>
       </div>
       <div className="mb-3">
         <p className="text-3xl font-black text-slate-300">{n}<span className="text-slate-600 text-xl">/{MIN_REVIEWS_THRESHOLD}</span></p>
-        <p className="text-[11px] text-slate-500 mt-1">deneyim toplandı</p>
+        <p className="text-sm text-slate-500 mt-1">deneyim toplandı</p>
       </div>
       {/* Progress bar */}
       <div className="h-1.5 rounded-full bg-slate-700/50 overflow-hidden mb-2">
@@ -52,7 +52,7 @@ export default function MeasuringBadge({
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="text-[11px] text-slate-500 leading-relaxed">
+      <p className="text-sm text-slate-500 leading-relaxed">
         {remaining > 0
           ? <>Klinik EGP rozeti için <strong className="text-slate-300">{remaining} yorum</strong> daha gerekli. NHS FFT standardı: az veride puan göstermek yanıltıcı.</>
           : <>Eşik tamamlandı, EGP yakında görünür.</>}

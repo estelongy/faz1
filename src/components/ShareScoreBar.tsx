@@ -94,7 +94,7 @@ export default function ShareScoreBar({ score, color }: ShareScoreBarProps) {
       </div>
 
       {/* Yüzde göstergesi */}
-      <div className="flex justify-between mt-2 text-xs text-slate-600">
+      <div className="flex justify-between mt-2 text-sm text-slate-600">
         <span>0</span>
         <span>50</span>
         <span>100</span>

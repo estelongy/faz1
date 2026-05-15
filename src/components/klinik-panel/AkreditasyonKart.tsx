@@ -20,7 +20,7 @@ export default function AkreditasyonKart({ accreditation }: Props) {
         <div className="flex items-start justify-between mb-4">
           <div>
             <h3 className="text-white font-bold">Akreditasyon Yolu</h3>
-            <p className={`${accreditation.phaseColor} text-xs mt-0.5 font-semibold`}>
+            <p className={`${accreditation.phaseColor} text-sm mt-0.5 font-semibold`}>
               {accreditation.phase === 0 ? '' : `Faz ${accreditation.phase} — `}{accreditation.phaseLabel}
             </p>
           </div>
@@ -35,7 +35,7 @@ export default function AkreditasyonKart({ accreditation }: Props) {
           <>
             {/* İlerleme barı */}
             <div className="mb-4">
-              <div className="flex items-center justify-between text-xs mb-1.5">
+              <div className="flex items-center justify-between text-sm mb-1.5">
                 <span className="text-slate-400">{accreditation.nextPhaseLabel}&apos;e ilerleme</span>
                 <span className="text-violet-300 font-bold">%{accreditation.progressPct}</span>
               </div>
@@ -48,7 +48,7 @@ export default function AkreditasyonKart({ accreditation }: Props) {
             </div>
 
             {/* Kriter listesi — kompakt */}
-            <div className="space-y-1.5 text-xs">
+            <div className="space-y-1.5 text-sm">
               {accreditation.criteria.slice(0, 3).map(c => (
                 <div key={c.id} className={`flex items-center gap-2 ${c.completed ? 'text-slate-400' : 'text-slate-500'}`}>
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.completed ? 'bg-emerald-400' : 'bg-slate-700'}`}></span>
@@ -70,13 +70,13 @@ export default function AkreditasyonKart({ accreditation }: Props) {
               <span className="text-2xl">🏆</span>
               <span className="font-bold text-sm">En Üst Kademe</span>
             </div>
-            <p className="text-slate-400 text-xs leading-relaxed">
+            <p className="text-slate-400 text-sm leading-relaxed">
               Estelongy Uzmanı statüsündesin. Tüm avantajların açık.
             </p>
           </div>
         )}
 
-        <div className="mt-4 pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs">
+        <div className="mt-4 pt-3 border-t border-slate-700/50 flex items-center justify-between text-sm">
           <span className="text-slate-500">Detayları gör</span>
           <span className="text-violet-400 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
         </div>
@@ -125,7 +125,7 @@ function AkreditasyonModal({ accreditation, onClose }: { accreditation: Accredit
             </div>
             <div>
               <h2 className="text-white font-bold">Akreditasyon Yolu</h2>
-              <p className={`${accreditation.phaseColor} text-xs font-semibold`}>
+              <p className={`${accreditation.phaseColor} text-sm font-semibold`}>
                 {accreditation.phase === 0 ? '' : `Faz ${accreditation.phase} — `}{accreditation.phaseLabel}
               </p>
             </div>
@@ -147,7 +147,7 @@ function AkreditasyonModal({ accreditation, onClose }: { accreditation: Accredit
 
           {/* Mevcut faz ödülleri */}
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-3">
               {accreditation.phase === 0 ? 'Şu An' : 'Mevcut Avantajların'}
             </h3>
             <div className="space-y-2">
@@ -165,7 +165,7 @@ function AkreditasyonModal({ accreditation, onClose }: { accreditation: Accredit
             <>
               <section>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">
                     Sıradaki: {accreditation.nextPhaseLabel}
                   </h3>
                   <span className="text-violet-300 font-bold text-sm">%{accreditation.progressPct}</span>
@@ -180,7 +180,7 @@ function AkreditasyonModal({ accreditation, onClose }: { accreditation: Accredit
 
               {/* Kriterler */}
               <section>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-3">
                   Yapılacaklar
                 </h3>
                 <div className="space-y-2">
@@ -205,14 +205,14 @@ function AkreditasyonModal({ accreditation, onClose }: { accreditation: Accredit
                           <p className={`text-sm font-medium ${c.completed ? 'text-slate-300' : 'text-white'}`}>
                             {c.label}
                           </p>
-                          <span className={`text-xs font-bold shrink-0 ${
+                          <span className={`text-sm font-bold shrink-0 ${
                             c.completed ? 'text-emerald-400' : 'text-slate-400'
                           }`}>
                             {c.current}{typeof c.target === 'number' ? ` / ${c.target}` : ''}
                           </span>
                         </div>
                         {c.hint && !c.completed && (
-                          <p className="text-slate-500 text-xs mt-1 leading-relaxed">{c.hint}</p>
+                          <p className="text-slate-500 text-sm mt-1 leading-relaxed">{c.hint}</p>
                         )}
                       </div>
                     </div>
@@ -223,7 +223,7 @@ function AkreditasyonModal({ accreditation, onClose }: { accreditation: Accredit
               {/* Bir sonraki faz ödülleri */}
               {accreditation.nextRewards.length > 0 && (
                 <section>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-3">
                     Geçince Açılacaklar
                   </h3>
                   <div className="space-y-2">

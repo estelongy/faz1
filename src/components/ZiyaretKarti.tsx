@@ -203,13 +203,13 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
           </div>
           <div>
             <div className="text-white font-bold text-sm">{journeyTitle}</div>
-            <div className="text-slate-500 text-xs">{formatDate(item.date)}</div>
+            <div className="text-slate-500 text-sm">{formatDate(item.date)}</div>
             {/* Journey adım göstergesi */}
             <div className="flex items-center gap-1 mt-1.5 flex-wrap">
               {journeySteps.map((step, i) => (
                 <div key={step.key} className="flex items-center gap-1">
                   {i > 0 && <div className="w-3 h-px bg-slate-700" />}
-                  <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${step.done ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <span className={`inline-flex items-center gap-1 text-sm font-medium ${step.done ? 'text-slate-400' : 'text-slate-600'}`}>
                     <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${step.done ? 'bg-emerald-400/80' : 'bg-slate-600'}`} />
                     {step.label}
                   </span>
@@ -221,19 +221,19 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
 
         <div className="flex items-center gap-3 flex-wrap">
           {preScore != null && (
-            <div className="text-xs">
+            <div className="text-sm">
               <span className="text-slate-500 mr-1.5">Ön</span>
               <span className="text-white font-bold text-sm">{preScore}</span>
             </div>
           )}
           {finalScore != null && (
-            <div className="text-xs">
+            <div className="text-sm">
               <span className="text-slate-500 mr-1.5">Final</span>
               <span className="text-[#00d4ff] font-black text-sm">{finalScore}</span>
             </div>
           )}
           {item.scoreDelta != null && item.scoreDelta !== 0 && (
-            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+            <span className={`text-sm px-2 py-0.5 rounded-full font-semibold ${
               item.scoreDelta > 0
                 ? 'bg-emerald-500/20 text-emerald-400'
                 : 'bg-red-500/20 text-red-400'
@@ -242,7 +242,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
             </span>
           )}
           {item.kind === 'visit' && (
-            <span className={`text-xs px-2 py-1 rounded-full ${STATUS_COLOR[item.status] ?? STATUS_COLOR.pending}`}>
+            <span className={`text-sm px-2 py-1 rounded-full ${STATUS_COLOR[item.status] ?? STATUS_COLOR.pending}`}>
               {STATUS_LABEL[item.status] ?? item.status}
             </span>
           )}
@@ -250,7 +250,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
             <Link
               href={`/klinik/panel/randevu/${item.appointmentId}`}
               onClick={e => e.stopPropagation()}
-              className="text-xs px-3 py-1.5 rounded-lg bg-violet-600/20 text-violet-400 hover:bg-violet-600/30 transition-colors font-medium">
+              className="text-sm px-3 py-1.5 rounded-lg bg-violet-600/20 text-violet-400 hover:bg-violet-600/30 transition-colors font-medium">
               {item.status === 'in_progress' ? 'Devam Et →' : 'Başlat →'}
             </Link>
           )}
@@ -271,7 +271,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {item.reasonNote && (
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-800">
-                <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2">
+                <div className="text-sm uppercase tracking-wider text-slate-500 font-semibold mb-2">
                   Geliş Sebebi
                 </div>
                 <p className="text-slate-200 text-sm whitespace-pre-wrap">{item.reasonNote}</p>
@@ -279,7 +279,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
             )}
             {item.clinicNote && (
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-800">
-                <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2">
+                <div className="text-sm uppercase tracking-wider text-slate-500 font-semibold mb-2">
                   Klinik Notu
                 </div>
                 <p className="text-slate-200 text-sm whitespace-pre-wrap">{item.clinicNote}</p>
@@ -294,12 +294,12 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
             {/* Yapılan işlem */}
             <div className="bg-gradient-to-br from-violet-500/5 to-purple-500/5 rounded-xl p-4 border border-violet-500/20">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-xs uppercase tracking-wider text-violet-400 font-semibold">
+                <div className="text-sm uppercase tracking-wider text-violet-400 font-semibold">
                   Yapılan İşlem
                 </div>
                 {editable && !edit && (
                   <button onClick={() => setEdit(true)}
-                    className="text-xs text-slate-400 hover:text-white transition-colors">
+                    className="text-sm text-slate-400 hover:text-white transition-colors">
                     {item.procedureNotes ? 'Düzenle' : '+ Ekle'}
                   </button>
                 )}
@@ -322,12 +322,12 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
             {/* Hekim önerileri */}
             <div className="bg-gradient-to-br from-amber-500/5 to-orange-500/5 rounded-xl p-4 border border-amber-500/20">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-xs uppercase tracking-wider text-amber-400 font-semibold">
+                <div className="text-sm uppercase tracking-wider text-amber-400 font-semibold">
                   Hekim Önerileri
                 </div>
                 {editable && !edit && (
                   <button onClick={() => setEdit(true)}
-                    className="text-xs text-slate-400 hover:text-white transition-colors">
+                    className="text-sm text-slate-400 hover:text-white transition-colors">
                     {item.recommendations ? 'Düzenle' : '+ Ekle'}
                   </button>
                 )}
@@ -366,7 +366,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
                   className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm">
                   İptal
                 </button>
-                {err && <span className="text-red-400 text-xs">{err}</span>}
+                {err && <span className="text-red-400 text-sm">{err}</span>}
               </div>
             )}
           </div>
@@ -377,7 +377,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.keys(ws).length > 0 && (
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-800">
-                <h3 className="text-violet-400 font-semibold text-xs uppercase tracking-wider mb-3">Ön Analiz</h3>
+                <h3 className="text-violet-400 font-semibold text-sm uppercase tracking-wider mb-3">Ön Analiz</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {C250_LABELS.map(([k, label]) => ws[k] != null && (
                     <div key={k} className="flex justify-between">
@@ -391,7 +391,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
 
             {tetkikEntries.length > 0 && (
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-800">
-                <h3 className="text-emerald-400 font-semibold text-xs uppercase tracking-wider mb-3">Tetkik Sonuçları</h3>
+                <h3 className="text-emerald-400 font-semibold text-sm uppercase tracking-wider mb-3">Tetkik Sonuçları</h3>
                 <div className="space-y-1.5 text-sm">
                   {tetkikEntries.map(r => {
                     const inRange = r.value! >= r.min && r.value! <= r.max
@@ -402,7 +402,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
                           <span className={inRange ? 'text-emerald-400 font-medium' : 'text-amber-400 font-medium'}>
                             {r.value} {r.unit}
                           </span>
-                          <span className="text-slate-600 text-xs">({r.min}–{r.max})</span>
+                          <span className="text-slate-600 text-sm">({r.min}–{r.max})</span>
                         </div>
                       </div>
                     )
@@ -413,7 +413,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
 
             {ileri && (
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-800">
-                <h3 className="text-cyan-400 font-semibold text-xs uppercase tracking-wider mb-3">İleri Analiz (Cihaz)</h3>
+                <h3 className="text-cyan-400 font-semibold text-sm uppercase tracking-wider mb-3">İleri Analiz (Cihaz)</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {C250_LABELS.map(([k, label]) => {
                     const v = ileri[k as keyof typeof ileri]
@@ -431,11 +431,11 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
 
             {(hekim != null || a.doctor_notes) && (
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-800">
-                <h3 className="text-amber-400 font-semibold text-xs uppercase tracking-wider mb-3">Hekim Değerlendirmesi</h3>
+                <h3 className="text-amber-400 font-semibold text-sm uppercase tracking-wider mb-3">Hekim Değerlendirmesi</h3>
                 {hekim != null && (
                   <div className="flex items-baseline gap-2 mb-2">
                     <span className="text-3xl font-black text-amber-400">{hekim}</span>
-                    <span className="text-slate-500 text-xs">/ 100</span>
+                    <span className="text-slate-500 text-sm">/ 100</span>
                   </div>
                 )}
                 {a.doctor_notes && (

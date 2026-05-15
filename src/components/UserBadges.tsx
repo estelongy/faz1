@@ -20,7 +20,7 @@ export default function UserBadges({ badgeKeys, streak }: Props) {
             <p className="text-white font-bold">
               {streak.current} günlük seri!
             </p>
-            <p className="text-amber-400/70 text-xs">
+            <p className="text-amber-400/70 text-sm">
               En uzun: {streak.longest} gün
             </p>
           </div>
@@ -45,11 +45,11 @@ export default function UserBadges({ badgeKeys, streak }: Props) {
                   className={`group relative flex items-center gap-2 px-3 py-2 rounded-xl border bg-gradient-to-br ${meta.color} cursor-default`}
                 >
                   <span className="text-lg">{meta.emoji}</span>
-                  <span className="text-white text-xs font-bold">{meta.label}</span>
+                  <span className="text-white text-sm font-bold">{meta.label}</span>
 
                   {/* Tooltip */}
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
-                    <div className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-300 whitespace-nowrap shadow-xl">
+                    <div className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 whitespace-nowrap shadow-xl">
                       {meta.desc}
                     </div>
                   </div>
@@ -75,12 +75,12 @@ export default function UserBadges({ badgeKeys, streak }: Props) {
                   className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-700/50 bg-slate-800/30 opacity-40 cursor-default"
                 >
                   <span className="text-lg grayscale">{meta.emoji}</span>
-                  <span className="text-slate-600 text-xs font-medium">{meta.label}</span>
+                  <span className="text-slate-600 text-sm font-medium">{meta.label}</span>
                 </div>
               )
             })}
           {badgeKeys.length < Object.keys(BADGE_META).length - 3 && (
-            <span className="text-slate-600 text-xs self-center">
+            <span className="text-slate-600 text-sm self-center">
               +{Object.keys(BADGE_META).length - badgeKeys.length - 3} daha...
             </span>
           )}

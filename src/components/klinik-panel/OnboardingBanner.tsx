@@ -50,7 +50,7 @@ export default function OnboardingBanner({ onboarding }: Props) {
           <button
             type="button"
             onClick={markCelebrated}
-            className="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition-colors"
+            className="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-sm font-bold transition-colors"
           >
             Anladım
           </button>
@@ -82,12 +82,12 @@ export default function OnboardingBanner({ onboarding }: Props) {
             <h3 className="text-white font-bold text-sm sm:text-base">
               Hoşgeldin Yolculuğu
             </h3>
-            <span className="text-violet-300 text-xs font-semibold">
+            <span className="text-violet-300 text-sm font-semibold">
               {onboarding.completedCount}/{onboarding.totalCount} tamam · %{progressPct}
             </span>
           </div>
           {onboarding.nextStep && !expanded && (
-            <p className="text-slate-400 text-xs mt-0.5 truncate">
+            <p className="text-slate-400 text-sm mt-0.5 truncate">
               Sıradaki: {onboarding.nextStep.title}
             </p>
           )}
@@ -147,14 +147,14 @@ function StepRow({ step }: { step: { id: string; number: number; title: string; 
           {!step.completed && (
             <Link
               href={step.ctaHref}
-              className="text-violet-300 hover:text-violet-200 text-xs font-bold transition-colors shrink-0"
+              className="text-violet-300 hover:text-violet-200 text-sm font-bold transition-colors shrink-0"
             >
               {step.ctaLabel} →
             </Link>
           )}
         </div>
-        <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{step.description}</p>
-        <div className={`flex items-center gap-1.5 mt-1.5 text-xs ${step.completed ? 'text-emerald-400/70' : 'text-amber-300/80'}`}>
+        <p className="text-slate-500 text-sm mt-0.5 leading-relaxed">{step.description}</p>
+        <div className={`flex items-center gap-1.5 mt-1.5 text-sm ${step.completed ? 'text-emerald-400/70' : 'text-amber-300/80'}`}>
           <span>{step.rewardEmoji}</span>
           <span className="font-medium">{step.reward}</span>
         </div>

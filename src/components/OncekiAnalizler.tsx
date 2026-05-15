@@ -86,7 +86,7 @@ export default function OncekiAnalizler({ analyses }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className="text-white text-sm font-semibold">{tarih}</span>
-                    <span className="text-slate-500 text-xs">· {saat}</span>
+                    <span className="text-slate-500 text-sm">· {saat}</span>
                   </div>
                   {/* İlerleme skalası (mini) */}
                   {score !== null && (
@@ -101,7 +101,7 @@ export default function OncekiAnalizler({ analyses }: Props) {
 
                 {/* Sağ: durum + chevron */}
                 <div className="shrink-0 flex items-center gap-2">
-                  <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${durum.renk}`}>
+                  <span className={`text-sm font-bold px-2 py-1 rounded-full border ${durum.renk}`}>
                     {durum.label}
                   </span>
                   <svg
@@ -126,7 +126,7 @@ export default function OncekiAnalizler({ analyses }: Props) {
 
                 {/* Cilt metrikleri */}
                 {a.web_scores && (
-                  <div className="grid grid-cols-2 gap-2 mt-4 text-xs">
+                  <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
                     {a.web_scores.hydration !== undefined && (
                       <MiniMetric label="Nem" value={a.web_scores.hydration} />
                     )}

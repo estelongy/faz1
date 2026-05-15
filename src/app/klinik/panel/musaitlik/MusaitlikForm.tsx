@@ -107,18 +107,18 @@ export default function MusaitlikForm({
       <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl flex items-center gap-4">
         <div className="text-center">
           <p className="text-3xl font-black text-violet-400">{activeDays.length}</p>
-          <p className="text-slate-500 text-xs">Aktif Gün</p>
+          <p className="text-slate-500 text-sm">Aktif Gün</p>
         </div>
         <div className="w-px h-10 bg-slate-700" />
         <div className="text-center">
           <p className="text-3xl font-black text-emerald-400">{totalSlotsPerWeek}</p>
-          <p className="text-slate-500 text-xs">Haftalık Slot</p>
+          <p className="text-slate-500 text-sm">Haftalık Slot</p>
         </div>
         <div className="ml-auto">
           <button
             type="button"
             onClick={applyToWeekdays}
-            className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors">
+            className="text-sm px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors">
             Pazartesi ayarlarını Sal-Cum&apos;a uygula
           </button>
         </div>
@@ -149,14 +149,14 @@ export default function MusaitlikForm({
                 <span className="text-white font-bold">{gun.label}</span>
               </div>
               {d.is_active && (
-                <span className="text-slate-400 text-xs">{slots} slot / gün</span>
+                <span className="text-slate-400 text-sm">{slots} slot / gün</span>
               )}
             </div>
 
             {d.is_active && (
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-500 text-xs mb-1">Açılış</label>
+                  <label className="block text-slate-500 text-sm mb-1">Açılış</label>
                   <input
                     type="time"
                     value={d.start_time}
@@ -165,7 +165,7 @@ export default function MusaitlikForm({
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-500 text-xs mb-1">Kapanış</label>
+                  <label className="block text-slate-500 text-sm mb-1">Kapanış</label>
                   <input
                     type="time"
                     value={d.end_time}
@@ -174,7 +174,7 @@ export default function MusaitlikForm({
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-500 text-xs mb-1">Slot Süresi</label>
+                  <label className="block text-slate-500 text-sm mb-1">Slot Süresi</label>
                   <select
                     value={d.slot_duration_minutes}
                     onChange={e => updateDay(gun.id, { slot_duration_minutes: Number(e.target.value) })}

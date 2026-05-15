@@ -80,7 +80,7 @@ export default function VideoPlayer({
           <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 p-6 text-center">
             <div className="text-5xl mb-3">🎬</div>
             <p className="text-sm font-medium text-slate-300 mb-1">Video hazırlanıyor</p>
-            <p className="text-xs">
+            <p className="text-sm">
               {streamStatus === 'pending'
                 ? 'Eğitmen henüz video yüklemedi.'
                 : streamStatus === 'processing'
@@ -107,7 +107,7 @@ export default function VideoPlayer({
           <span>{completed ? 'Tamamlandı' : 'Tamamlandı işaretle'}</span>
         </button>
         {error && (
-          <span className="text-red-400 text-xs">{error}</span>
+          <span className="text-red-400 text-sm">{error}</span>
         )}
       </div>
     </div>

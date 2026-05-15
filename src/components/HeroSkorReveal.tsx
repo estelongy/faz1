@@ -150,7 +150,7 @@ function PhoneCard({
 
         {/* Profil */}
         <div className="px-3 pb-1">
-          <p className="text-white text-[10px] font-bold leading-tight">{name}</p>
+          <p className="text-white text-sm font-bold leading-tight">{name}</p>
           <p className="text-slate-500 text-[8px]">{sub}</p>
         </div>
 

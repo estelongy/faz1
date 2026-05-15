@@ -88,7 +88,7 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
                     <p className="text-white font-bold">{snap?.name ?? 'Ürün'}</p>
                     <StatusBadge status={item.fulfillment_status} />
                   </div>
-                  <div className="text-slate-500 text-xs">
+                  <div className="text-slate-500 text-sm">
                     {item.quantity} adet · ₺{Number(item.unit_price).toLocaleString('tr-TR')} birim
                   </div>
                   <div className="text-slate-400 text-sm mt-2">
@@ -97,13 +97,13 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
                 </div>
 
                 <div className="text-right shrink-0">
-                  <p className="text-slate-500 text-xs">Net Kazanç</p>
+                  <p className="text-slate-500 text-sm">Net Kazanç</p>
                   <p className="text-emerald-400 font-black text-lg">₺{Number(item.vendor_payout).toLocaleString('tr-TR')}</p>
                 </div>
               </div>
 
               <button onClick={() => setExpandedId(expanded ? null : item.id)}
-                className="mt-4 text-xs text-violet-400 hover:text-violet-300 transition-colors">
+                className="mt-4 text-sm text-violet-400 hover:text-violet-300 transition-colors">
                 {expanded ? '− Küçült' : '+ Detay & İşlemler'}
               </button>
             </div>
@@ -112,9 +112,9 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
               <div className="px-5 pb-5 pt-0 border-t border-slate-700/50 space-y-4">
                 {/* Teslim adresi */}
                 <div className="bg-slate-900/50 rounded-xl p-4 text-sm">
-                  <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Teslimat Adresi</p>
+                  <p className="text-slate-500 text-sm uppercase tracking-wider mb-2">Teslimat Adresi</p>
                   <p className="text-white font-medium">{addr?.full_name}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{addr?.phone}</p>
+                  <p className="text-slate-400 text-sm mt-0.5">{addr?.phone}</p>
                   <p className="text-slate-300 mt-2">
                     {addr?.address_line}, {addr?.neighborhood && `${addr.neighborhood}, `}
                     {addr?.district} / {addr?.city}
@@ -159,7 +159,7 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
                   <div className="space-y-3">
                     <div className="p-3 bg-violet-500/10 border border-violet-500/30 rounded-xl">
                       <p className="text-violet-300 text-sm font-medium">Kargoda</p>
-                      <p className="text-slate-400 text-xs mt-1">
+                      <p className="text-slate-400 text-sm mt-1">
                         {item.tracking_carrier} · <span className="font-mono">{item.tracking_number}</span>
                       </p>
                     </div>
@@ -195,5 +195,5 @@ function StatusBadge({ status }: { status: string }) {
     returned:   { label: 'İade',       cls: 'bg-slate-500/20 text-slate-400' },
   }
   const s = map[status] ?? { label: status, cls: 'bg-slate-700 text-slate-400' }
-  return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.cls}`}>{s.label}</span>
+  return <span className={`text-sm font-bold px-2 py-0.5 rounded-full ${s.cls}`}>{s.label}</span>
 }

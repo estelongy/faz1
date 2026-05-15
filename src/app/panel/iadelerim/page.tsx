@@ -60,17 +60,17 @@ export default async function IadelerimPage() {
                       <p className="text-white font-bold text-sm">{item?.product_snapshot?.name ?? 'Ürün'}</p>
                       {item?.orders?.order_number && (
                         <Link href={`/siparis/${item.orders.order_number}`}
-                          className="text-violet-400 hover:text-violet-300 text-xs transition-colors">
+                          className="text-violet-400 hover:text-violet-300 text-sm transition-colors">
                           Sipariş #{item.orders.order_number}
                         </Link>
                       )}
                     </div>
-                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${badge.color}`}>
+                    <span className={`text-sm font-bold px-2.5 py-1 rounded-full shrink-0 ${badge.color}`}>
                       {badge.label}
                     </span>
                   </div>
 
-                  <div className="space-y-1 text-xs text-slate-500">
+                  <div className="space-y-1 text-sm text-slate-500">
                     <p><span className="text-slate-400">Sebep:</span> {ret.reason}</p>
                     {ret.description && <p><span className="text-slate-400">Açıklama:</span> {ret.description}</p>}
                     <p><span className="text-slate-400">Talep Tarihi:</span> {new Date(ret.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>

@@ -61,13 +61,13 @@ export default async function SiparislerimPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-bold font-mono text-sm">{o.order_number}</p>
-                      <p className="text-slate-400 text-xs mt-1 line-clamp-1">{firstNames}{more}</p>
-                      <p className="text-slate-600 text-xs mt-1">
+                      <p className="text-slate-400 text-sm mt-1 line-clamp-1">{firstNames}{more}</p>
+                      <p className="text-slate-600 text-sm mt-1">
                         {new Date(o.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full ${badge.color}`}>
+                      <span className={`inline-block text-sm font-bold px-2.5 py-1 rounded-full ${badge.color}`}>
                         {badge.label}
                       </span>
                       <p className="text-white font-black mt-2">₺{Number(o.total ?? 0).toLocaleString('tr-TR')}</p>

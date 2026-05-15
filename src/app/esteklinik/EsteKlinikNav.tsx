@@ -23,7 +23,7 @@ export default function EsteKlinikNav() {
         <nav className="flex items-center gap-1 sm:gap-2 order-1">
           <Link
             href="/rehber"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium text-emerald-100 hover:bg-white/10 transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-emerald-100 hover:bg-white/10 transition-colors"
           >
             <ShieldCheck size={13} />
             Rehber
@@ -31,7 +31,7 @@ export default function EsteKlinikNav() {
           {isLoggedIn ? (
             <Link
               href="/panel"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white text-[#064E3B] hover:bg-emerald-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-white text-[#064E3B] hover:bg-emerald-50 transition-colors"
             >
               <LayoutDashboard size={13} />
               Panel
@@ -40,14 +40,14 @@ export default function EsteKlinikNav() {
             <>
               <Link
                 href="/giris?g=esteklinik"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium text-emerald-100 hover:bg-white/10 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-emerald-100 hover:bg-white/10 transition-colors"
               >
                 <User size={13} />
                 Giriş
               </Link>
               <Link
                 href="/kayit?g=esteklinik"
-                className="inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white text-[#064E3B] hover:bg-emerald-50 transition-colors"
+                className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-white text-[#064E3B] hover:bg-emerald-50 transition-colors"
               >
                 Kayıt Ol
               </Link>

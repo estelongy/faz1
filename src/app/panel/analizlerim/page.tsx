@@ -192,7 +192,7 @@ export default async function GecmisimPage() {
           <section className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-white">Skor Geçmişi</h2>
-              <span className="text-xs text-slate-500">{chartPoints.length} veri noktası</span>
+              <span className="text-sm text-slate-500">{chartPoints.length} veri noktası</span>
             </div>
             <ScoreChart points={chartPoints} />
           </section>
@@ -203,7 +203,7 @@ export default async function GecmisimPage() {
           <section className="space-y-3">
             <div className="flex items-baseline justify-between px-1">
               <h2 className="text-white font-bold text-lg">Gençleşme Yolculukların</h2>
-              <span className="text-slate-500 text-xs">
+              <span className="text-slate-500 text-sm">
                 Son {journeyViews.length} yolculuk
               </span>
             </div>

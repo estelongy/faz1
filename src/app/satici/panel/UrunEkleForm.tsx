@@ -126,7 +126,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       {/* Ad */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Ürün / İşlem Adı <span className="text-red-400">*</span></label>
+        <label className="block text-slate-400 text-sm mb-1">Ürün / İşlem Adı <span className="text-red-400">*</span></label>
         <input
           type="text" required value={name} onChange={e => setName(e.target.value)}
           placeholder="ör. Hyaluronik Asit Serum"
@@ -137,7 +137,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
       {/* Ana kategori (EsteStore) */}
       {treatmentType === 'product' && (
         <div>
-          <label className="block text-slate-400 text-xs mb-2">EsteStore EsteStore</label>
+          <label className="block text-slate-400 text-sm mb-2">EsteStore EsteStore</label>
           <div className="grid grid-cols-2 gap-2">
             {ANA_KATEGORI.map(c => (
               <button
@@ -151,7 +151,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
                 }`}
               >
                 <p className="font-bold text-sm">{c.label}</p>
-                <p className="text-[11px] mt-1 opacity-80">{c.help}</p>
+                <p className="text-sm mt-1 opacity-80">{c.help}</p>
               </button>
             ))}
           </div>
@@ -160,7 +160,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       {/* Alt kategori */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Alt Kategori</label>
+        <label className="block text-slate-400 text-sm mb-1">Alt Kategori</label>
         <select
           value={subcategory} onChange={e => setSubcategory(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500">
@@ -170,7 +170,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       {/* Fiyat */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Fiyat (₺) <span className="text-slate-600">(isteğe bağlı)</span></label>
+        <label className="block text-slate-400 text-sm mb-1">Fiyat (₺) <span className="text-slate-600">(isteğe bağlı)</span></label>
         <input
           type="number" min={0} step={0.01} value={price} onChange={e => setPrice(e.target.value)}
           placeholder="ör. 450"
@@ -192,7 +192,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       {/* Açıklama */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Açıklama <span className="text-slate-600">(isteğe bağlı)</span></label>
+        <label className="block text-slate-400 text-sm mb-1">Açıklama <span className="text-slate-600">(isteğe bağlı)</span></label>
         <textarea
           value={description} onChange={e => setDescription(e.target.value)}
           placeholder="Ürün veya işlem hakkında kısa bilgi..."
@@ -204,7 +204,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
       {/* İçerikler */}
       {treatmentType === 'product' && (
         <div>
-          <label className="block text-slate-400 text-xs mb-1">İçerikler / Bileşenler <span className="text-slate-600">(virgülle ayır)</span></label>
+          <label className="block text-slate-400 text-sm mb-1">İçerikler / Bileşenler <span className="text-slate-600">(virgülle ayır)</span></label>
           <input
             type="text" value={ingredients} onChange={e => setIngredients(e.target.value)}
             placeholder="ör. Hyaluronik Asit, Retinol, Niasinamid"
@@ -215,11 +215,11 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       {/* Görseller */}
       <div>
-        <label className="block text-slate-400 text-xs mb-2">Görseller <span className="text-slate-600">(en az 1 önerilir)</span></label>
+        <label className="block text-slate-400 text-sm mb-2">Görseller <span className="text-slate-600">(en az 1 önerilir)</span></label>
         <ProductImageUploader vendorId={vendorId} initialImages={images} onChange={setImages} />
       </div>
 
-      <p className="text-slate-600 text-xs">* Eklenen ürünler admin onayından sonra mağazada yayınlanır.</p>
+      <p className="text-slate-600 text-sm">* Eklenen ürünler admin onayından sonra mağazada yayınlanır.</p>
 
       {error && (
         <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{error}</div>

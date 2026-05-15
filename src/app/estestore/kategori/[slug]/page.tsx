@@ -71,7 +71,7 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6 bg-white min-h-screen">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-slate-500">
+      <nav className="flex items-center gap-2 text-sm text-slate-500">
         <Link href="/estestore" className="hover:text-slate-900 transition-colors font-semibold text-[#8B7339]">EsteStore</Link>
         <span>›</span>
         <span className="text-slate-900 font-medium">{categoryLabel}</span>
@@ -79,14 +79,14 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
 
       {/* Header */}
       <header className="space-y-2">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8B7339]">
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#8B7339]">
           {sellerLabel}
         </p>
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 flex items-center gap-3">
           <span>{icon}</span> {categoryLabel}
         </h1>
         {access.mode === 'preview' && (
-          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#C9A961]/10 border border-[#C9A961]/40 text-[#8B7339] text-xs">
+          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#C9A961]/10 border border-[#C9A961]/40 text-[#8B7339] text-sm">
             <span>🔒</span>
             <span>
               Bu kategori klinik ve sağlık profesyonelleri içindir. Fiyat görmek ve satın almak için{' '}

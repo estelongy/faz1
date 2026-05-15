@@ -173,7 +173,7 @@ export default function RandevuOnayModal({ taslak, onClose, onSuccess }: Props) 
         onClick={e => e.stopPropagation()}>
 
         {/* Özet bant */}
-        <div className="mb-5 p-3 rounded-xl bg-slate-800/50 border border-slate-700 text-xs">
+        <div className="mb-5 p-3 rounded-xl bg-slate-800/50 border border-slate-700 text-sm">
           <div className="text-slate-500 mb-1">Randevu</div>
           <div className="text-white font-semibold">{taslak.clinicName}</div>
           <div className="text-violet-400 mt-0.5">{taslak.dayLabel} · {taslak.timeLabel}</div>

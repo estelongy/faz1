@@ -176,7 +176,7 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
             </div>
             {emailStep === 'enter' && (
               <div className="mt-3 p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-3">
-                <p className="text-slate-400 text-xs">
+                <p className="text-slate-400 text-sm">
                   Yeni e-posta adresinize bir onay bağlantısı gönderilir. Onaylanana kadar mevcut adresiniz aktif kalır.
                 </p>
                 <input type="email" value={newEmail} onChange={ev => setNewEmail(ev.target.value)}
@@ -199,7 +199,7 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
               <div className="mt-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
                 ✓ <strong>{newEmail}</strong> adresine onay bağlantısı gönderildi. Linke tıkladıktan sonra yeni e-posta aktif olur. Spam&apos;a düşmüş olabilir.
                 <button type="button" onClick={() => { setEmailStep('idle'); setNewEmail('') }}
-                  className="mt-3 w-full py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-lg transition-colors">
+                  className="mt-3 w-full py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
                   Tamam
                 </button>
               </div>
@@ -225,7 +225,7 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
         {phoneStep === 'idle' && (
           <div className="flex items-center justify-between p-4 rounded-xl bg-slate-900 border border-slate-700">
             <div>
-              <p className="text-slate-500 text-xs">Mevcut numara</p>
+              <p className="text-slate-500 text-sm">Mevcut numara</p>
               <p className="text-white font-mono">{phone ?? '—'}</p>
             </div>
             <button onClick={startPhoneChange}
@@ -310,7 +310,7 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
         <p className="text-slate-400 text-sm mb-3">
           KVKK ve GDPR kapsamındaki <strong className="text-slate-300">unutulma hakkınız</strong>:
         </p>
-        <ul className="text-slate-400 text-xs space-y-1 mb-5 list-disc pl-5">
+        <ul className="text-slate-400 text-sm space-y-1 mb-5 list-disc pl-5">
           <li><strong className="text-slate-300">Silinir:</strong> Profil, telefon, e-posta, analizler, randevular, skorlar, adresler, sepet, yorumlar (anonimleşir), bildirimler.</li>
           <li><strong className="text-slate-300">Anonim kalır:</strong> Tamamlanmış siparişler, faturalar (vergi mevzuatı 5 yıl saklama zorunlu) — kişisel bağ kopar.</li>
           <li><strong className="text-slate-300">Aktif sipariş varsa:</strong> Önce teslimat/iptal tamamlanmalı.</li>

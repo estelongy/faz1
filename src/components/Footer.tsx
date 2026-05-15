@@ -42,13 +42,13 @@ function RootFooter() {
               </div>
               <span className="text-lg font-bold bg-gradient-to-r from-violet-300 to-purple-300 bg-clip-text text-transparent">Estelongy</span>
             </Link>
-            <p className="text-slate-300 text-xs leading-relaxed">
+            <p className="text-slate-300 text-sm leading-relaxed">
               Estelongy Gençlik Skoru platformu. Ön analiz, longevity anketi ve klinik onayıyla biyolojik gençliğinizi öğrenin.
             </p>
           </div>
 
           <div>
-            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Platform</h4>
+            <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">Platform</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/analiz" className="text-slate-200 hover:text-white transition-colors">Ön Analiz</Link></li>
               <li><Link href="/esteklinik" className="text-slate-200 hover:text-white transition-colors">Klinikler</Link></li>
@@ -60,7 +60,7 @@ function RootFooter() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">İş Ortakları</h4>
+            <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">İş Ortakları</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/esteklinik/basvur" className="text-slate-200 hover:text-white transition-colors">Klinik Başvuru</Link></li>
               <li><Link href="/satici/basvur" className="text-slate-200 hover:text-white transition-colors">İş Ortağı Başvuru</Link></li>
@@ -69,7 +69,7 @@ function RootFooter() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Hakkında</h4>
+            <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">Hakkında</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/hakkinda/sss" className="text-slate-200 hover:text-white transition-colors">SSS</Link></li>
               <li><Link href="/hakkinda/iletisim" className="text-slate-200 hover:text-white transition-colors">İletişim</Link></li>
@@ -99,13 +99,13 @@ function EsteStoreFooter() {
               <span className="w-1.5 h-1.5 rounded-full bg-[#C9A961] shadow-[0_0_8px_#C9A961]" />
               <span className="text-lg font-bold text-slate-900 tracking-tight">EsteStore</span>
             </Link>
-            <p className="text-slate-600 text-xs leading-relaxed">
+            <p className="text-slate-600 text-sm leading-relaxed">
               Estelongy Gençlik Puanlı (EGP) ürünler. Hekim değerlendirmeli, klinik ↔ ev sürekliliği.
             </p>
           </div>
 
           <div>
-            <h4 className="text-slate-900 font-bold text-xs uppercase tracking-wider mb-3">Mağaza</h4>
+            <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider mb-3">Mağaza</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/estestore" className="text-slate-600 hover:text-[#8B7339] transition-colors">Tüm Ürünler</Link></li>
               <li><Link href="/estestore/kategori/longevity" className="text-slate-600 hover:text-[#8B7339] transition-colors">Longevity</Link></li>
@@ -116,7 +116,7 @@ function EsteStoreFooter() {
           </div>
 
           <div>
-            <h4 className="text-slate-900 font-bold text-xs uppercase tracking-wider mb-3">Hesabım</h4>
+            <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider mb-3">Hesabım</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/giris" className="text-slate-600 hover:text-[#8B7339] transition-colors">Giriş</Link></li>
               <li><Link href="/kayit" className="text-slate-600 hover:text-[#8B7339] transition-colors">Kayıt Ol</Link></li>
@@ -127,7 +127,7 @@ function EsteStoreFooter() {
           </div>
 
           <div>
-            <h4 className="text-slate-900 font-bold text-xs uppercase tracking-wider mb-3">Hakkında</h4>
+            <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider mb-3">Hakkında</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/hakkinda/sss" className="text-slate-600 hover:text-[#8B7339] transition-colors">SSS</Link></li>
               <li><Link href="/hakkinda/iletisim" className="text-slate-600 hover:text-[#8B7339] transition-colors">İletişim</Link></li>
@@ -157,13 +157,13 @@ function EsteKlinikFooter() {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,0.8)]" />
               <span className="text-lg font-bold text-white tracking-tight">EsteKlinik</span>
             </Link>
-            <p className="text-emerald-100/90 text-xs leading-relaxed">
+            <p className="text-emerald-100/90 text-sm leading-relaxed">
               KYC onaylı estetik klinikleri ekosistemi. EGP puanı, hasta deneyimi ve direkt randevu.
             </p>
           </div>
 
           <div>
-            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Klinik</h4>
+            <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">Klinik</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/esteklinik" className="text-emerald-100 hover:text-white transition-colors">Tüm Klinikler</Link></li>
               <li><Link href="/esteklinik" className="text-emerald-100 hover:text-white transition-colors">Randevu Al</Link></li>
@@ -172,7 +172,7 @@ function EsteKlinikFooter() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Hesabım</h4>
+            <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">Hesabım</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/giris" className="text-emerald-100 hover:text-white transition-colors">Giriş</Link></li>
               <li><Link href="/kayit" className="text-emerald-100 hover:text-white transition-colors">Kayıt Ol</Link></li>
@@ -182,7 +182,7 @@ function EsteKlinikFooter() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Hakkında</h4>
+            <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">Hakkında</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/hakkinda/sss" className="text-emerald-100 hover:text-white transition-colors">SSS</Link></li>
               <li><Link href="/hakkinda/iletisim" className="text-emerald-100 hover:text-white transition-colors">İletişim</Link></li>
@@ -213,10 +213,10 @@ function FooterBottom({ light, dark }: { light?: boolean; dark?: boolean }) {
 
   return (
     <div className={`pt-6 border-t ${borderClass} flex flex-col sm:flex-row items-center justify-between gap-3`}>
-      <p className={`text-xs ${textClass}`}>
+      <p className={`text-sm ${textClass}`}>
         © {new Date().getFullYear()} Vestoriq OÜ — Estelongy markası. Tüm hakları saklıdır.
       </p>
-      <p className={`text-xs ${textClass}`}>
+      <p className={`text-sm ${textClass}`}>
         Estelongy Gençlik Skoru, tıbbi teşhis aracı değildir.
       </p>
     </div>

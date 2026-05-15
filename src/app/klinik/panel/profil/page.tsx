@@ -54,25 +54,25 @@ export default async function KlinikProfilPage() {
 
         <div className="space-y-4 text-sm">
           <div>
-            <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Hakkında</p>
+            <p className="text-slate-500 text-sm uppercase tracking-wider mb-1">Hakkında</p>
             <p className="text-slate-300 leading-relaxed">{clinic.bio ?? 'Henüz açıklama eklenmemiş.'}</p>
           </div>
 
           <div>
-            <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Uzmanlık Alanları</p>
+            <p className="text-slate-500 text-sm uppercase tracking-wider mb-2">Uzmanlık Alanları</p>
             <div className="flex flex-wrap gap-2">
               {((clinic.specialties as string[]) ?? []).length > 0
                 ? (clinic.specialties as string[]).map(s => (
-                    <span key={s} className="text-xs px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/30 text-violet-300">
+                    <span key={s} className="text-sm px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/30 text-violet-300">
                       {s}
                     </span>
                   ))
-                : <span className="text-slate-600 text-xs">—</span>}
+                : <span className="text-slate-600 text-sm">—</span>}
             </div>
           </div>
 
           <div>
-            <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Estelongy üyeliği</p>
+            <p className="text-slate-500 text-sm uppercase tracking-wider mb-1">Estelongy üyeliği</p>
             <p className="text-slate-300 text-sm">
               {new Date(clinic.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} tarihinden beri
             </p>
@@ -87,17 +87,17 @@ export default async function KlinikProfilPage() {
           <div className="flex-1 min-w-0">
             <p className="text-white font-bold text-sm mb-1">
               Estelongy Klinik Standartları
-              <span className="ml-2 text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-sm font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
                 Faz 1
               </span>
             </p>
-            <p className="text-slate-400 text-xs leading-relaxed mb-3">
+            <p className="text-slate-400 text-sm leading-relaxed mb-3">
               <strong className="text-emerald-300">Hekim Dostu Model</strong> — yorum platformu değil ölçüm platformuyuz.
               Hasta sonuçları (skor değişimi, NPS, operasyonel kalite) ölçülüyor.
               6-12 ay veri toplandıktan sonra <strong className="text-white">algoritmik EGP rozeti</strong> aktif olacak.
               Sonra <strong className="text-emerald-300">ELS sertifika kademeleri</strong> (Bronze/Silver/Gold/Platinum).
             </p>
-            <div className="flex items-center gap-2 text-[11px] text-slate-500">
+            <div className="flex items-center gap-2 text-sm text-slate-500">
               <span>📈 Sonuç Etkinliği</span>
               <span>·</span>
               <span>💚 Tavsiye (NPS)</span>
@@ -115,7 +115,7 @@ export default async function KlinikProfilPage() {
           <span className="text-2xl">📅</span>
           <div className="flex-1 min-w-0">
             <p className="text-white text-sm font-bold">Müsaitlik Saatleri</p>
-            <p className="text-slate-500 text-xs">Hangi gün/saat randevu alıyorsun</p>
+            <p className="text-slate-500 text-sm">Hangi gün/saat randevu alıyorsun</p>
           </div>
           <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -127,7 +127,7 @@ export default async function KlinikProfilPage() {
           <span className="text-2xl">✏️</span>
           <div className="flex-1 min-w-0">
             <p className="text-white text-sm font-bold">Profili Düzenle</p>
-            <p className="text-slate-500 text-xs">Ad, konum, bio, uzmanlık alanları</p>
+            <p className="text-slate-500 text-sm">Ad, konum, bio, uzmanlık alanları</p>
           </div>
           <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

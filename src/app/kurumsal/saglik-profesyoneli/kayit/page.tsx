@@ -148,7 +148,7 @@ export default function SaglikProfesyoneliKayitPage() {
           </div>
 
           {/* Bilgi kutusu */}
-          <div className="mb-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-slate-300 leading-relaxed">
+          <div className="mb-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-sm text-slate-300 leading-relaxed">
             <strong className="text-emerald-400">Kapsam:</strong> Hesap, Akademi (eğitim videoları satın alma & izleme),
             EsteStore ve Topluluk özelliklerine erişim sağlar. Hasta kabul / takvim modülleri açılmaz.
             <br /><br />
@@ -211,7 +211,7 @@ export default function SaglikProfesyoneliKayitPage() {
             {/* Kurum (opsiyonel) */}
             <div>
               <label className="block text-sm text-slate-300 mb-2">
-                Çalıştığınız Kurum <span className="text-slate-600 text-xs">(opsiyonel)</span>
+                Çalıştığınız Kurum <span className="text-slate-600 text-sm">(opsiyonel)</span>
               </label>
               <input
                 type="text" value={hpInstitution}
@@ -225,7 +225,7 @@ export default function SaglikProfesyoneliKayitPage() {
             <div>
               <label className="block text-sm text-slate-300 mb-2">
                 Telefon <span className="text-red-400">*</span>
-                <span className="text-slate-500 text-xs ml-2">(SMS doğrulama yapılacak)</span>
+                <span className="text-slate-500 text-sm ml-2">(SMS doğrulama yapılacak)</span>
               </label>
               <div className="flex gap-2">
                 <div className="flex items-center gap-1.5 px-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 text-sm shrink-0 select-none">

@@ -127,7 +127,7 @@ export default async function KullanicilarPage() {
         {(['user', 'clinic', 'health_professional', 'vendor', 'admin'] as UserRole[]).map(role => (
           <div key={role} className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center">
             <div className="text-2xl font-bold text-white">{roleCounts[role] ?? 0}</div>
-            <div className={`text-xs mt-1 px-2 py-0.5 rounded-full inline-block ${ROLE_COLOR[role]}`}>{ROLE_LABEL[role]}</div>
+            <div className={`text-sm mt-1 px-2 py-0.5 rounded-full inline-block ${ROLE_COLOR[role]}`}>{ROLE_LABEL[role]}</div>
           </div>
         ))}
       </div>
@@ -151,12 +151,12 @@ export default async function KullanicilarPage() {
                 <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center text-violet-400 text-xs font-bold shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center text-violet-400 text-sm font-bold shrink-0">
                         {(u.full_name ?? '?')[0].toUpperCase()}
                       </div>
                       <div>
                         <div className="text-white font-medium">{u.full_name ?? 'İsimsiz'}</div>
-                        <div className="text-slate-500 text-xs font-mono">{u.id.slice(0, 8)}…</div>
+                        <div className="text-slate-500 text-sm font-mono">{u.id.slice(0, 8)}…</div>
                       </div>
                     </div>
                   </td>
@@ -168,7 +168,7 @@ export default async function KullanicilarPage() {
                     <form action={toggleActive}>
                       <input type="hidden" name="userId" value={u.id} />
                       <input type="hidden" name="current" value={String(u.is_active)} />
-                      <button type="submit" className={`text-xs px-2 py-1 rounded-full transition-colors ${
+                      <button type="submit" className={`text-sm px-2 py-1 rounded-full transition-colors ${
                         u.is_active
                           ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
                           : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
@@ -178,7 +178,7 @@ export default async function KullanicilarPage() {
                     </form>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${ROLE_COLOR[u.role]}`}>
+                    <span className={`text-sm px-2 py-0.5 rounded-full ${ROLE_COLOR[u.role]}`}>
                       {ROLE_LABEL[u.role]}
                     </span>
                   </td>
@@ -188,7 +188,7 @@ export default async function KullanicilarPage() {
                       <select
                         name="role"
                         defaultValue={u.role}
-                        className="bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-violet-500"
+                        className="bg-slate-800 border border-slate-700 text-slate-300 text-sm rounded-lg px-2 py-1 focus:outline-none focus:border-violet-500"
                       >
                         <option value="user">Kullanıcı</option>
                         <option value="clinic">Klinik</option>
@@ -198,7 +198,7 @@ export default async function KullanicilarPage() {
                       </select>
                       <button
                         type="submit"
-                        className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-xs rounded-lg transition-colors"
+                        className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-sm rounded-lg transition-colors"
                       >
                         Kaydet
                       </button>

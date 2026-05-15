@@ -113,7 +113,7 @@ export default function EstetikCerrahiPage() {
         <div className="mb-14">
           <div className="flex items-center gap-3 mb-5">
             <span className="text-4xl">🔬</span>
-            <span className="px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold">
+            <span className="px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-sm font-semibold">
               Cerrahi
             </span>
             <span className="text-slate-500 text-sm">10 dk okuma</span>
@@ -161,7 +161,7 @@ export default function EstetikCerrahiPage() {
                     <p className="text-slate-400 text-sm leading-relaxed mb-4">{proc.desc}</p>
                     <div className="flex flex-wrap gap-2">
                       {proc.tags.map(t => (
-                        <span key={t} className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${c.tag}`}>
+                        <span key={t} className={`text-sm font-medium px-2.5 py-1 rounded-full ${c.tag}`}>
                           {t}
                         </span>
                       ))}

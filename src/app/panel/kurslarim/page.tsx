@@ -92,7 +92,7 @@ export default async function KurslarimPage() {
                       <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">🎓</div>
                     )}
                     {progressPct === 100 && (
-                      <div className="absolute top-2 right-2 px-2 py-1 rounded-md bg-emerald-500 text-white text-xs font-bold">
+                      <div className="absolute top-2 right-2 px-2 py-1 rounded-md bg-emerald-500 text-white text-sm font-bold">
                         ✓ Tamamlandı
                       </div>
                     )}
@@ -102,15 +102,15 @@ export default async function KurslarimPage() {
                       {pkg.title}
                     </h3>
                     {pkg.clinics && (
-                      <div className="text-slate-500 text-xs">{pkg.clinics.name}</div>
+                      <div className="text-slate-500 text-sm">{pkg.clinics.name}</div>
                     )}
-                    <div className="flex items-center gap-3 text-xs text-slate-400">
+                    <div className="flex items-center gap-3 text-sm text-slate-400">
                       <span>📹 {totalVideos} video</span>
                       <span>⏱ {formatDuration(pkg.total_duration_seconds ?? 0)}</span>
                     </div>
                     {/* İlerleme barı */}
                     <div>
-                      <div className="flex items-center justify-between text-xs mb-1.5">
+                      <div className="flex items-center justify-between text-sm mb-1.5">
                         <span className="text-slate-400">İlerleme</span>
                         <span className="text-emerald-400 font-medium">{completedCount}/{totalVideos}</span>
                       </div>

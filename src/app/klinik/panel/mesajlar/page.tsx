@@ -67,7 +67,7 @@ export default async function KlinikMesajlarPage({
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       <header>
-        <Link href="/klinik/panel" className="text-slate-500 hover:text-white text-xs inline-flex items-center gap-1 mb-2">
+        <Link href="/klinik/panel" className="text-slate-500 hover:text-white text-sm inline-flex items-center gap-1 mb-2">
           ← Klinik Panel
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold text-white">Hasta Mesajları</h1>
@@ -78,7 +78,7 @@ export default async function KlinikMesajlarPage({
       </header>
 
       {/* Filtreler */}
-      <nav className="flex flex-wrap gap-2 text-xs">
+      <nav className="flex flex-wrap gap-2 text-sm">
         <FilterTab href="?f=inbox" active={f === 'inbox'} label="Tümü" count={all.length} />
         <FilterTab href="?f=unread" active={f === 'unread'} label="Okunmamış" count={unreadCount} highlight={unreadCount > 0} />
         <FilterTab href="?f=replied" active={f === 'replied'} label="Yanıtlandı" count={repliedCount} />
@@ -122,7 +122,7 @@ function FilterTab({
       }`}
     >
       {label}
-      <span className="ml-1.5 text-[10px] opacity-70">({count})</span>
+      <span className="ml-1.5 text-sm opacity-70">({count})</span>
     </Link>
   )
 }
@@ -142,17 +142,17 @@ function MessageCard({ review, userName }: { review: ClinicReviewRow; userName: 
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-white font-bold text-sm">{userName}</p>
             {isUnread && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 font-bold uppercase">
+              <span className="text-sm px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 font-bold uppercase">
                 Yeni
               </span>
             )}
             {replied && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold uppercase">
+              <span className="text-sm px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold uppercase">
                 Yanıtlandı
               </span>
             )}
           </div>
-          <p className="text-slate-500 text-xs mt-0.5">
+          <p className="text-slate-500 text-sm mt-0.5">
             {new Date(review.created_at).toLocaleString('tr-TR', {
               day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
             })}
@@ -175,9 +175,9 @@ function MessageCard({ review, userName }: { review: ClinicReviewRow; userName: 
       {replied ? (
         <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-emerald-300 text-[10px] uppercase tracking-wider font-bold">Yanıtın</p>
+            <p className="text-emerald-300 text-sm uppercase tracking-wider font-bold">Yanıtın</p>
             {review.private_responded_at && (
-              <p className="text-slate-600 text-[10px]">
+              <p className="text-slate-600 text-sm">
                 {new Date(review.private_responded_at).toLocaleDateString('tr-TR', {
                   day: 'numeric', month: 'short',
                 })}
@@ -185,13 +185,13 @@ function MessageCard({ review, userName }: { review: ClinicReviewRow; userName: 
             )}
           </div>
           <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.private_clinic_response}</p>
-          <p className="text-[10px] text-slate-600 mt-1.5 italic">
+          <p className="text-sm text-slate-600 mt-1.5 italic">
             Hastanın panelinde yanıtın görünüyor.
           </p>
         </div>
       ) : (
         <div className="space-y-2">
-          <p className="text-[11px] italic text-slate-500">
+          <p className="text-sm italic text-slate-500">
             İstersen yanıtla — hastanın panelinde görünür. Yanıt vermek zorunlu değil.
           </p>
           <PrivateReplyForm reviewId={review.id} />

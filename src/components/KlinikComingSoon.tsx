@@ -33,7 +33,7 @@ export default function KlinikComingSoon({
       {/* Hero başlık */}
       <div className="mb-8">
         {tagline && (
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/30 px-2.5 py-1 rounded-full mb-3">
+          <span className="inline-flex items-center gap-1.5 text-sm font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/30 px-2.5 py-1 rounded-full mb-3">
             <span className="w-1 h-1 rounded-full bg-blue-400 animate-pulse" />
             {tagline}
           </span>
@@ -41,7 +41,7 @@ export default function KlinikComingSoon({
         <h1 className="text-3xl font-black text-white flex items-center gap-3">
           <span className="text-2xl">{emoji}</span>
           {title}
-          <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full ml-2">
+          <span className="text-sm font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full ml-2">
             Yakında
           </span>
         </h1>
@@ -76,7 +76,7 @@ export default function KlinikComingSoon({
             )}
             <div className="text-2xl mb-3">{card.icon}</div>
             <h3 className="text-white font-bold mb-1.5 leading-tight">{card.title}</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">{card.description}</p>
+            <p className="text-slate-400 text-sm leading-relaxed">{card.description}</p>
           </div>
         ))}
       </div>
@@ -87,7 +87,7 @@ export default function KlinikComingSoon({
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <p className="text-white font-bold text-sm mb-0.5">Bu modül senin önerinle şekilleniyor</p>
-              <p className="text-slate-400 text-xs">Burada en çok ne görmek istersin? Önerilerini paylaş.</p>
+              <p className="text-slate-400 text-sm">Burada en çok ne görmek istersin? Önerilerini paylaş.</p>
             </div>
             <Link href={feedbackCta.href}
               className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap">

@@ -35,7 +35,7 @@ export default function RespondToReviewForm({ reviewId }: { reviewId: string }) 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-violet-400 hover:text-violet-300 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+        className="text-violet-400 hover:text-violet-300 text-sm font-semibold inline-flex items-center gap-1 transition-colors"
       >
         💬 Bu yoruma cevap yaz
       </button>
@@ -52,27 +52,27 @@ export default function RespondToReviewForm({ reviewId }: { reviewId: string }) 
         className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500 resize-y"
       />
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[10px] text-slate-600">
+        <p className="text-sm text-slate-600">
           {text.length}/1000 · <span className="text-amber-500">Tek seferlik — sonradan değiştirilemez</span>
         </p>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={() => { setOpen(false); setText(''); setError(null) }}
-            className="px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+            className="px-3 py-1.5 text-sm text-slate-400 hover:text-white transition-colors"
           >
             Vazgeç
           </button>
           <button
             type="submit"
             disabled={pending || text.trim().length < 3}
-            className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 text-white text-xs font-semibold rounded-lg transition-colors"
+            className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 text-white text-sm font-semibold rounded-lg transition-colors"
           >
             {pending ? 'Kaydediliyor…' : 'Cevap Gönder'}
           </button>
         </div>
       </div>
-      {error && <p className="text-red-400 text-xs">{error}</p>}
+      {error && <p className="text-red-400 text-sm">{error}</p>}
     </form>
   )
 }

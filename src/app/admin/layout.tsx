@@ -95,7 +95,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </svg>
           </div>
           <span className="text-white text-sm font-bold flex-1">Admin Panel</span>
-          <span className="text-slate-600 text-xs">Estelongy</span>
+          <span className="text-slate-600 text-sm">Estelongy</span>
         </Link>
         {/* Nav row */}
         <nav className="flex gap-1 px-3 pb-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -103,7 +103,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <AdminNavLink key={href} href={href} label={label} icon={icon} exact={exact} mobile />
           ))}
           <Link href="/panel"
-            className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-slate-500 hover:text-slate-300 transition-all shrink-0">
+            className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-300 transition-all shrink-0">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -111,7 +111,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </Link>
           <form action={handleSignOut} className="shrink-0">
             <button type="submit"
-              className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-slate-500 hover:text-red-400 transition-all w-full">
+              className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-500 hover:text-red-400 transition-all w-full">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
@@ -132,7 +132,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </div>
             <div>
               <div className="text-white text-sm font-bold">Admin Panel</div>
-              <div className="text-slate-500 text-xs">Estelongy</div>
+              <div className="text-slate-500 text-sm">Estelongy</div>
             </div>
           </div>
         </Link>
@@ -146,7 +146,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="p-3 border-t border-slate-800 space-y-2">
           <Link
             href="/panel"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-all text-xs"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-all text-sm"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -154,7 +154,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             Kullanıcı Paneline Dön
           </Link>
           <form action={handleSignOut}>
-            <button type="submit" className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-all text-xs text-left">
+            <button type="submit" className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-all text-sm text-left">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>

@@ -160,7 +160,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
               <p className={`font-bold text-sm truncate transition-colors ${
                 isHealthPro ? 'text-white group-hover:text-emerald-400' : 'text-white group-hover:text-violet-400'
               }`}>{userName ?? 'Kullanıcı'}</p>
-              <p className="text-slate-500 text-[10px] uppercase tracking-widest">
+              <p className="text-slate-500 text-sm uppercase tracking-widest">
                 {isHealthPro ? 'Sağlık Profesyoneli' : 'Estelongy'}
               </p>
             </div>
@@ -171,7 +171,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
             <Link
               href="/panel/referral"
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center ${expanded ? 'justify-between px-3 py-2' : 'justify-center w-9 h-9'} rounded-lg border text-xs transition-all hover:opacity-80 text-amber-400 bg-amber-500/10 border-amber-500/30`}
+              className={`flex items-center ${expanded ? 'justify-between px-3 py-2' : 'justify-center w-9 h-9'} rounded-lg border text-sm transition-all hover:opacity-80 text-amber-400 bg-amber-500/10 border-amber-500/30`}
               title={!expanded ? `${pointsBalance} puan` : undefined}
             >
               <div className="flex items-center gap-1.5">
@@ -189,7 +189,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
           {NAV_GROUPS.map((group, gi) => (
             <div key={gi}>
               {group.title && expanded && (
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-1.5 px-2">{group.title}</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-slate-600 mb-1.5 px-2">{group.title}</p>
               )}
               <div className="space-y-0.5">
                 {group.items.map(item => {
@@ -217,7 +217,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 uppercase tracking-wider">Yeni</span>
                       )}
                       {!expanded && (
-                        <span className="hidden lg:group-hover/item:block absolute left-[60px] top-1/2 -translate-y-1/2 px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-white text-xs whitespace-nowrap shadow-xl z-[60]">
+                        <span className="hidden lg:group-hover/item:block absolute left-[60px] top-1/2 -translate-y-1/2 px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-white text-sm whitespace-nowrap shadow-xl z-[60]">
                           {item.label}
                         </span>
                       )}
@@ -233,7 +233,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
         <div className="p-3 border-t border-slate-800 space-y-1 shrink-0">
           <button
             onClick={togglePin}
-            className={`hidden lg:flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+            className={`hidden lg:flex w-full items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${
               pinned
                 ? isHealthPro
                   ? 'text-emerald-300 bg-emerald-500/10 border border-emerald-500/30'
@@ -256,7 +256,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
           {hasClinicAccess && (
             <Link
               href="/klinik/panel"
-              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors ${expanded ? '' : 'justify-center'}`}
+              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors ${expanded ? '' : 'justify-center'}`}
               title={!expanded ? 'Klinik paneline geç' : undefined}
             >
               <span className="shrink-0">🏥</span>
@@ -265,7 +265,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
           )}
           <Link
             href="/"
-            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors ${expanded ? '' : 'justify-center'}`}
+            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors ${expanded ? '' : 'justify-center'}`}
             title={!expanded ? 'Anasayfa' : undefined}
           >
             <span className="shrink-0">⌂</span>
@@ -276,7 +276,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
           <form action={signOutAction}>
             <button
               type="submit"
-              className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors ${expanded ? '' : 'justify-center'}`}
+              className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors ${expanded ? '' : 'justify-center'}`}
               title={!expanded ? 'Çıkış Yap' : undefined}
             >
               <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -35,10 +35,10 @@ function Tab({
     >
       <span>{label}</span>
       {count != null && (
-        <span className="text-[10px] text-slate-500 font-normal">({count})</span>
+        <span className="text-sm text-slate-500 font-normal">({count})</span>
       )}
       {badge != null && (
-        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500 text-white font-bold">
+        <span className="text-sm px-1.5 py-0.5 rounded-full bg-violet-500 text-white font-bold">
           {badge}
         </span>
       )}

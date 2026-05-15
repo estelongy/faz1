@@ -26,7 +26,7 @@ function StatusBadge({ status }: { status: string }) {
     rejected: { label: 'Reddedildi', cls: 'bg-red-500/20 text-red-400' },
   }
   const s = map[status] ?? { label: status, cls: 'bg-slate-700 text-slate-400' }
-  return <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.cls}`}>{s.label}</span>
+  return <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${s.cls}`}>{s.label}</span>
 }
 
 async function handleSignOut() {
@@ -161,20 +161,20 @@ export default async function SaticiPanelPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
           <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 text-center">
             <p className="text-3xl font-black text-white">{totalProducts}</p>
-            <p className="text-slate-400 text-xs mt-1">Toplam Ürün</p>
+            <p className="text-slate-400 text-sm mt-1">Toplam Ürün</p>
           </div>
           <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 text-center">
             <p className="text-3xl font-black text-emerald-400">{approvedCount}</p>
-            <p className="text-slate-400 text-xs mt-1">Onaylı</p>
+            <p className="text-slate-400 text-sm mt-1">Onaylı</p>
           </div>
           <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 text-center">
             <p className="text-3xl font-black text-amber-400">{pendingCount}</p>
-            <p className="text-slate-400 text-xs mt-1">İncelemede</p>
+            <p className="text-slate-400 text-sm mt-1">İncelemede</p>
           </div>
           <Link href="/satici/panel/siparisler"
             className="bg-gradient-to-br from-violet-600/20 to-purple-600/20 hover:from-violet-600/30 hover:to-purple-600/30 border border-violet-500/30 rounded-2xl p-5 text-center transition-all group">
             <p className="text-3xl font-black text-violet-300 group-hover:text-white transition-colors">📦</p>
-            <p className="text-violet-400 text-xs font-bold mt-1 uppercase tracking-wider">Siparişlerim</p>
+            <p className="text-violet-400 text-sm font-bold mt-1 uppercase tracking-wider">Siparişlerim</p>
           </Link>
         </div>
 
@@ -185,7 +185,7 @@ export default async function SaticiPanelPage() {
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-xl">💰</div>
             <div>
               <p className="text-white font-bold text-sm">Kazançlarım</p>
-              <p className="text-slate-500 text-xs mt-0.5">Satış + komisyon özeti</p>
+              <p className="text-slate-500 text-sm mt-0.5">Satış + komisyon özeti</p>
             </div>
           </Link>
           <Link href="/satici/panel/odeme-hesabi"
@@ -193,7 +193,7 @@ export default async function SaticiPanelPage() {
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-xl">💳</div>
             <div>
               <p className="text-white font-bold text-sm">Ödeme Hesabı</p>
-              <p className="text-slate-500 text-xs mt-0.5">Stripe · banka bilgileri</p>
+              <p className="text-slate-500 text-sm mt-0.5">Stripe · banka bilgileri</p>
             </div>
           </Link>
           <Link href="/satici/panel/iadeler"
@@ -201,7 +201,7 @@ export default async function SaticiPanelPage() {
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-xl">↩</div>
             <div>
               <p className="text-white font-bold text-sm">İade Talepleri</p>
-              <p className="text-slate-500 text-xs mt-0.5">Müşteri iade yönetimi</p>
+              <p className="text-slate-500 text-sm mt-0.5">Müşteri iade yönetimi</p>
             </div>
           </Link>
         </div>
@@ -213,7 +213,7 @@ export default async function SaticiPanelPage() {
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-xl shrink-0">💳</div>
             <div className="flex-1">
               <p className="text-amber-300 font-bold text-sm">Ödeme hesabı kur</p>
-              <p className="text-slate-400 text-xs mt-0.5">Müşteri ödemelerini alabilmek için Stripe üzerinden hesap oluştur</p>
+              <p className="text-slate-400 text-sm mt-0.5">Müşteri ödemelerini alabilmek için Stripe üzerinden hesap oluştur</p>
             </div>
             <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -255,10 +255,10 @@ export default async function SaticiPanelPage() {
                         <span className="text-white font-medium text-sm truncate">{product.name}</span>
                         <StatusBadge status={product.approval_status} />
                         {product.treatment_type === 'treatment' && (
-                          <span className="text-xs bg-violet-600/20 text-violet-400 px-2 py-0.5 rounded-full">Klinik İşlem</span>
+                          <span className="text-sm bg-violet-600/20 text-violet-400 px-2 py-0.5 rounded-full">Klinik İşlem</span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-500">
+                      <div className="flex items-center gap-3 text-sm text-slate-500">
                         {product.category && <span>{CATEGORY_LABELS[product.category] ?? product.category}</span>}
                         {product.price && <span>₺{Number(product.price).toLocaleString('tr-TR')}</span>}
                         {product.stock != null && <span>Stok: {product.stock}</span>}
@@ -274,7 +274,7 @@ export default async function SaticiPanelPage() {
                     </div>
                     {/* Durum + ok */}
                     <div className="shrink-0 flex items-center gap-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${product.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-700 text-slate-500'}`}>
+                      <span className={`text-sm px-2 py-0.5 rounded-full ${product.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-700 text-slate-500'}`}>
                         {product.is_active ? 'Aktif' : 'Pasif'}
                       </span>
                       <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

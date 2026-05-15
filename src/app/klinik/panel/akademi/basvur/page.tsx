@@ -76,17 +76,17 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
             <div className="text-emerald-400 text-xl mb-1">💰</div>
             <div className="text-white font-semibold text-sm">%70 Gelir Payı</div>
-            <div className="text-slate-500 text-xs mt-0.5">Her satıştan ana pay sizde</div>
+            <div className="text-slate-500 text-sm mt-0.5">Her satıştan ana pay sizde</div>
           </div>
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
             <div className="text-emerald-400 text-xl mb-1">🎯</div>
             <div className="text-white font-semibold text-sm">İçerik Özgürlüğü</div>
-            <div className="text-slate-500 text-xs mt-0.5">Konu ve fiyatı siz belirlersiniz</div>
+            <div className="text-slate-500 text-sm mt-0.5">Konu ve fiyatı siz belirlersiniz</div>
           </div>
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
             <div className="text-emerald-400 text-xl mb-1">🌟</div>
             <div className="text-white font-semibold text-sm">Eğitmen Rozeti</div>
-            <div className="text-slate-500 text-xs mt-0.5">Rehber profilinizde görünür</div>
+            <div className="text-slate-500 text-sm mt-0.5">Rehber profilinizde görünür</div>
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
 
           {clinic.educator_application_message && (
             <div className="mt-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
-              <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Başvuru Mesajınız</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wider mb-2">Başvuru Mesajınız</div>
               <p className="text-slate-300 text-sm whitespace-pre-wrap">{clinic.educator_application_message}</p>
             </div>
           )}
@@ -119,7 +119,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
           <form action={withdrawApplication} className="mt-4">
             <button
               type="submit"
-              className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+              className="text-sm px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
             >
               Başvuruyu Geri Çek
             </button>
@@ -137,7 +137,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
             <div className="flex-1">
               <h2 className="text-white font-bold">Başvurunuz Reddedildi</h2>
               {clinic.educator_decided_at && (
-                <p className="text-slate-500 text-xs mt-1">
+                <p className="text-slate-500 text-sm mt-1">
                   Karar tarihi: {new Date(clinic.educator_decided_at).toLocaleDateString('tr-TR')}
                 </p>
               )}
@@ -146,7 +146,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
 
           {clinic.educator_decision_note && (
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 mb-4">
-              <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Estelongy Notu</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wider mb-2">Estelongy Notu</div>
               <p className="text-slate-300 text-sm whitespace-pre-wrap">{clinic.educator_decision_note}</p>
             </div>
           )}
@@ -169,7 +169,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
             <div>
               <label className="block text-sm text-slate-300 mb-2">
                 Başvuru Mesajınız <span className="text-red-400">*</span>
-                <span className="text-slate-500 text-xs ml-2">(en az 50 karakter)</span>
+                <span className="text-slate-500 text-sm ml-2">(en az 50 karakter)</span>
               </label>
               <textarea
                 name="message"
@@ -182,7 +182,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
               />
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-500">
+            <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-sm text-slate-500">
               <strong className="text-slate-400">Not:</strong> Estelongy başvuruyu rehber skorunuz, deneyim sürenizi, mesajdaki içerik planını ve klinik aktivitenizi göz önünde bulundurarak değerlendirir. Onay süresi tipik olarak 3-7 gündür.
             </div>
 

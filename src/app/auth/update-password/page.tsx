@@ -164,7 +164,7 @@ export default function UpdatePasswordPage() {
                   }`}
                 />
                 {confirm && confirm !== password && (
-                  <p className="text-red-400 text-xs mt-1">Şifreler eşleşmiyor</p>
+                  <p className="text-red-400 text-sm mt-1">Şifreler eşleşmiyor</p>
                 )}
               </div>
 
@@ -183,7 +183,7 @@ export default function UpdatePasswordPage() {
                       }`} />
                     ))}
                   </div>
-                  <p className="text-slate-500 text-xs">
+                  <p className="text-slate-500 text-sm">
                     {password.length < 6 ? 'Çok zayıf'
                       : password.length < 8 ? 'Zayıf'
                       : password.length < 12 ? 'Orta'

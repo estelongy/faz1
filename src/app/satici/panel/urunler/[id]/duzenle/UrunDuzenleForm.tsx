@@ -134,7 +134,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Durum */}
       <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-xl">
-        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${statusBadge.cls}`}>
+        <span className={`text-sm px-2.5 py-1 rounded-full font-semibold ${statusBadge.cls}`}>
           {statusBadge.label}
         </span>
         <label className="flex items-center gap-2 cursor-pointer ml-auto">
@@ -153,14 +153,14 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
 
       {/* Ad */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Ürün Adı <span className="text-red-400">*</span></label>
+        <label className="block text-slate-400 text-sm mb-1">Ürün Adı <span className="text-red-400">*</span></label>
         <input type="text" required value={name} onChange={e => setName(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
       </div>
 
       {/* Ana kategori */}
       <div>
-        <label className="block text-slate-400 text-xs mb-2">EsteStore EsteStore</label>
+        <label className="block text-slate-400 text-sm mb-2">EsteStore EsteStore</label>
         <div className="grid grid-cols-2 gap-2">
           {ANA_KATEGORI.map(c => (
             <button
@@ -181,7 +181,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
 
       {/* Alt kategori */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Alt Kategori</label>
+        <label className="block text-slate-400 text-sm mb-1">Alt Kategori</label>
         <select value={subcategory} onChange={e => setSubcategory(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500">
           {ALT_KATEGORILER.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
@@ -191,12 +191,12 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
       {/* Fiyat + Stok */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-400 text-xs mb-1">Fiyat (₺)</label>
+          <label className="block text-slate-400 text-sm mb-1">Fiyat (₺)</label>
           <input type="number" min={0} step="0.01" value={price} onChange={e => setPrice(e.target.value)}
             className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
         </div>
         <div>
-          <label className="block text-slate-400 text-xs mb-1">Stok (adet)</label>
+          <label className="block text-slate-400 text-sm mb-1">Stok (adet)</label>
           <input type="number" min={0} value={stock} onChange={e => setStock(e.target.value)}
             placeholder="Boş = sınırsız"
             className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
@@ -217,7 +217,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
 
       {/* Açıklama */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">Açıklama</label>
+        <label className="block text-slate-400 text-sm mb-1">Açıklama</label>
         <textarea value={description} onChange={e => setDescription(e.target.value)}
           rows={4} maxLength={500}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500 resize-none" />
@@ -225,14 +225,14 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
 
       {/* İçerikler */}
       <div>
-        <label className="block text-slate-400 text-xs mb-1">İçerikler (virgülle ayır)</label>
+        <label className="block text-slate-400 text-sm mb-1">İçerikler (virgülle ayır)</label>
         <input type="text" value={ingredients} onChange={e => setIngredients(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
       </div>
 
       {/* Görseller */}
       <div>
-        <label className="block text-slate-400 text-xs mb-2">Görseller</label>
+        <label className="block text-slate-400 text-sm mb-2">Görseller</label>
         <ProductImageUploader vendorId={vendorId} initialImages={images} onChange={setImages} />
       </div>
 

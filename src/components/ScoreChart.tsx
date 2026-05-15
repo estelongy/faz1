@@ -90,12 +90,12 @@ export default function ScoreChart({ points }: ScoreChartProps) {
         <div className="flex items-center gap-1.5">
           <div className="w-6 h-0.5 rounded-full" style={{ background: AI_COLOR }} />
           <div className="w-1.5 h-1.5 rounded-full" style={{ background: AI_COLOR }} />
-          <span className="text-[11px] text-slate-400">Ön Analiz</span>
+          <span className="text-sm text-slate-400">Ön Analiz</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-6 h-0.5 rounded-full" style={{ background: CLINIC_COLOR }} />
           <div className="w-1.5 h-1.5 rounded-full" style={{ background: CLINIC_COLOR }} />
-          <span className="text-[11px] text-slate-400">Klinik Onaylı</span>
+          <span className="text-sm text-slate-400">Klinik Onaylı</span>
         </div>
       </div>
 

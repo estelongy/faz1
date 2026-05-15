@@ -65,7 +65,7 @@ export default function AdresListe({ addresses }: { addresses: Adres[] }) {
               <div className="flex items-center gap-2">
                 <span className="text-white font-bold text-sm">{a.title}</span>
                 {a.is_default && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                  <span className="text-sm font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
                     VARSAYILAN
                   </span>
                 )}
@@ -73,22 +73,22 @@ export default function AdresListe({ addresses }: { addresses: Adres[] }) {
               <div className="flex items-center gap-2 shrink-0">
                 {!a.is_default && (
                   <button onClick={() => handleSetDefault(a.id)} disabled={isPending}
-                    className="text-xs text-slate-500 hover:text-emerald-400 transition-colors">
+                    className="text-sm text-slate-500 hover:text-emerald-400 transition-colors">
                     Varsayılan yap
                   </button>
                 )}
                 <button onClick={() => setEditingId(a.id)}
-                  className="text-xs text-slate-500 hover:text-violet-400 transition-colors">
+                  className="text-sm text-slate-500 hover:text-violet-400 transition-colors">
                   Düzenle
                 </button>
                 <button onClick={() => handleDelete(a.id)} disabled={isPending}
-                  className="text-xs text-slate-500 hover:text-red-400 transition-colors">
+                  className="text-sm text-slate-500 hover:text-red-400 transition-colors">
                   Sil
                 </button>
               </div>
             </div>
             <p className="text-slate-300 text-sm">{a.full_name}</p>
-            <p className="text-slate-500 text-xs mt-0.5">{a.phone}</p>
+            <p className="text-slate-500 text-sm mt-0.5">{a.phone}</p>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
               {a.address_line}
               {a.neighborhood && <>, {a.neighborhood}</>}

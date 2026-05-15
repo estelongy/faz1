@@ -294,7 +294,7 @@ export default async function SaticilarPage() {
                 <div key={v.id} className="rounded-2xl bg-slate-900 border border-amber-500/20 overflow-hidden">
                   {/* Üst şerit — şüphe bayrakları */}
                   {flags.length > 0 && (
-                    <div className="px-5 py-2.5 bg-red-500/10 border-b border-red-500/20 flex items-start gap-2 text-xs">
+                    <div className="px-5 py-2.5 bg-red-500/10 border-b border-red-500/20 flex items-start gap-2 text-sm">
                       <span className="text-red-400 font-bold shrink-0">⚠ ŞÜPHE:</span>
                       <span className="text-red-300">{flags.join(' · ')}</span>
                     </div>
@@ -309,13 +309,13 @@ export default async function SaticilarPage() {
                           {v.profiles?.full_name ?? 'İsim yok'}
                         </p>
                       </div>
-                      <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
+                      <span className="shrink-0 text-sm px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
                         {timeAgo(v.created_at)}
                       </span>
                     </div>
 
                     {/* Bilgi tablosu */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs bg-slate-800/40 border border-slate-700 rounded-xl p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm bg-slate-800/40 border border-slate-700 rounded-xl p-4">
                       <Field label="E-posta" value={auth?.email ?? '—'} verified={!!auth?.email_confirmed_at} />
                       <Field label="Telefon" value={v.phone ?? '—'} verified={!!auth?.phone_confirmed_at} />
                       <Field label="Vergi No" value={v.tax_number ?? '—'} />
@@ -412,12 +412,12 @@ export default async function SaticilarPage() {
                   <tr key={v.id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="px-4 py-3">
                       <div className="text-white font-medium">{v.company_name}</div>
-                      <div className="text-slate-500 text-xs">{v.profiles?.full_name ?? '—'}</div>
+                      <div className="text-slate-500 text-sm">{v.profiles?.full_name ?? '—'}</div>
                     </td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{auth?.email ?? '—'}</td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{v.phone ?? '—'}</td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{v.tax_number ?? '—'}</td>
-                    <td className="px-4 py-3 text-xs">
+                    <td className="px-4 py-3 text-slate-400 text-sm">{auth?.email ?? '—'}</td>
+                    <td className="px-4 py-3 text-slate-400 text-sm">{v.phone ?? '—'}</td>
+                    <td className="px-4 py-3 text-slate-400 text-sm">{v.tax_number ?? '—'}</td>
+                    <td className="px-4 py-3 text-sm">
                       {v.stripe_account_id ? (
                         v.stripe_charges_enabled ? (
                           <span className="text-emerald-400">✓ Aktif</span>
@@ -428,9 +428,9 @@ export default async function SaticilarPage() {
                         <span className="text-slate-600">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{new Date(v.created_at).toLocaleDateString('tr-TR')}</td>
+                    <td className="px-4 py-3 text-slate-400 text-sm">{new Date(v.created_at).toLocaleDateString('tr-TR')}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLOR[v.approval_status]}`}>
+                      <span className={`text-sm px-2 py-0.5 rounded-full ${STATUS_COLOR[v.approval_status]}`}>
                         {STATUS_LABEL[v.approval_status]}
                       </span>
                     </td>
@@ -438,12 +438,12 @@ export default async function SaticilarPage() {
                       <form action={updateVendor} className="flex gap-1">
                         <input type="hidden" name="vendorId" value={v.id} />
                         <select name="status" defaultValue={v.approval_status}
-                          className="bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-violet-500">
+                          className="bg-slate-800 border border-slate-700 text-slate-300 text-sm rounded-lg px-2 py-1 focus:outline-none focus:border-violet-500">
                           <option value="pending">Beklemede</option>
                           <option value="approved">Onayla</option>
                           <option value="rejected">Reddet</option>
                         </select>
-                        <button type="submit" className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-xs rounded-lg transition-colors">
+                        <button type="submit" className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-sm rounded-lg transition-colors">
                           Kaydet
                         </button>
                       </form>
@@ -480,7 +480,7 @@ function Field({
         {value}
       </span>
       {verified !== undefined && value !== '—' && (
-        <span className={`text-[10px] shrink-0 ${verified ? 'text-emerald-400' : 'text-amber-400'}`}>
+        <span className={`text-sm shrink-0 ${verified ? 'text-emerald-400' : 'text-amber-400'}`}>
           {verified ? '✓ doğrulu' : '⚠ doğrulanmamış'}
         </span>
       )}
@@ -523,11 +523,11 @@ function KycBlock({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-white font-bold text-sm">KYC</span>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${KYC_COLOR[status]}`}>
+          <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${KYC_COLOR[status]}`}>
             {KYC_LABEL[status]}
           </span>
           {vendor.kyc_submitted_at && (
-            <span className="text-slate-500 text-xs">
+            <span className="text-slate-500 text-sm">
               {new Date(vendor.kyc_submitted_at).toLocaleDateString('tr-TR')}
             </span>
           )}
@@ -535,7 +535,7 @@ function KycBlock({
       </div>
 
       {status === 'not_submitted' && (
-        <p className="text-slate-500 text-xs italic">
+        <p className="text-slate-500 text-sm italic">
           İş Ortağı KYC bilgilerini henüz göndermedi. Onay süreci için önce iş ortağının KYC formunu doldurması bekleniyor.
         </p>
       )}
@@ -543,7 +543,7 @@ function KycBlock({
       {status !== 'not_submitted' && (
         <>
           {/* Bilgi grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
             <Field label="IBAN" value={formatIban(vendor.iban)} mono />
             <Field label="IBAN Sahibi" value={vendor.iban_holder_name ?? '—'} />
             <Field label="Banka" value={vendor.bank_name ?? '—'} />
@@ -555,7 +555,7 @@ function KycBlock({
             </div>
             {vendor.sells_medical_products && (
               <div className="sm:col-span-2">
-                <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">
+                <span className="text-sm px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">
                   ⚕ Tıbbi ürün iş ortağı
                 </span>
               </div>
@@ -566,24 +566,24 @@ function KycBlock({
           <div className="flex flex-wrap gap-2 pt-2">
             {taxUrl && (
               <a href={taxUrl} target="_blank" rel="noopener noreferrer"
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
+                className="text-sm px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
                 📄 Vergi Levhası
               </a>
             )}
             {itsUrl && (
               <a href={itsUrl} target="_blank" rel="noopener noreferrer"
-                className="text-xs px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-500/30 transition-colors">
+                className="text-sm px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-500/30 transition-colors">
                 ⚕ ITS Belgesi
               </a>
             )}
             {contractUrl && (
               <a href={contractUrl} target="_blank" rel="noopener noreferrer"
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
+                className="text-sm px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
                 📜 İmzalı Sözleşme
               </a>
             )}
             {!vendor.contract_signed_url && (
-              <span className="text-xs px-3 py-1.5 rounded-lg bg-slate-800/50 text-slate-500 border border-slate-700/50">
+              <span className="text-sm px-3 py-1.5 rounded-lg bg-slate-800/50 text-slate-500 border border-slate-700/50">
                 Sözleşme: e-onay (ıslak imza yüklenmedi)
               </span>
             )}
@@ -591,7 +591,7 @@ function KycBlock({
 
           {/* Önceki ret notu */}
           {vendor.kyc_review_note && (
-            <div className="p-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-400">
+            <div className="p-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-slate-400">
               <span className="font-semibold text-slate-300">Önceki not:</span> {vendor.kyc_review_note}
             </div>
           )}
@@ -603,21 +603,21 @@ function KycBlock({
                 <input type="hidden" name="vendorId" value={vendor.id} />
                 <input type="hidden" name="decision" value="approved" />
                 <button type="submit"
-                  className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition-colors">
+                  className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-colors">
                   ✓ KYC Onayla
                 </button>
               </form>
               <details className="flex-1">
-                <summary className="cursor-pointer py-2 px-3 bg-red-900/40 hover:bg-red-800/50 text-red-300 text-xs font-semibold rounded-lg text-center border border-red-800/50">
+                <summary className="cursor-pointer py-2 px-3 bg-red-900/40 hover:bg-red-800/50 text-red-300 text-sm font-semibold rounded-lg text-center border border-red-800/50">
                   ✕ KYC Reddet
                 </summary>
                 <form action={decideKyc} className="mt-2 space-y-2">
                   <input type="hidden" name="vendorId" value={vendor.id} />
                   <input type="hidden" name="decision" value="rejected" />
                   <textarea name="note" required rows={2} placeholder="Ret nedeni — vendor görecek"
-                    className="w-full px-3 py-2 bg-slate-900 border border-red-500/30 rounded-lg text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500 resize-none" />
+                    className="w-full px-3 py-2 bg-slate-900 border border-red-500/30 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-red-500 resize-none" />
                   <button type="submit"
-                    className="w-full py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded-lg transition-colors">
+                    className="w-full py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg transition-colors">
                     Reddi Gönder
                   </button>
                 </form>
