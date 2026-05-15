@@ -109,28 +109,32 @@ export default async function BiyoAGEPage() {
           </svg>
 
           <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-14 pb-12 sm:pt-20 sm:pb-16">
-            <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#C9BBF5] mb-3">
+            {/* Eyebrow — 14px bold (kural: min 14, bold) */}
+            <p className="text-sm font-bold uppercase tracking-[0.32em] text-[#C9BBF5] mb-3">
               BiyoAGE · Ölçüm Galaksisi
             </p>
-            <h1 className="text-3xl sm:text-5xl font-black text-white leading-[1.05] max-w-2xl">
+            {/* Display H1 — 36/48px */}
+            <h1 className="text-4xl sm:text-5xl font-black text-white leading-[1.05] max-w-2xl">
               Biyolojik Yaşını <span className="text-[#C9BBF5]">Öğren.</span>
             </h1>
-            <p className="text-violet-100/70 text-base sm:text-lg mt-4 max-w-xl leading-relaxed">
+            {/* Body lead — 16/18px */}
+            <p className="text-violet-100 text-base sm:text-lg mt-4 max-w-xl leading-relaxed">
               Selfie ile ön analiz · hekim onaylı gençlik skoru · longevity yolculuğu.
               Veri konuşur, yaşlanma hızını yavaşlat.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mt-7">
+              {/* Button — 16px semibold (kural: tıklanma min 16) */}
               <Link
                 href={isLoggedIn ? '/analiz' : '/giris?g=biyoage&next=/analiz'}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9F8CE0] hover:bg-[#8B76D4] text-[#1B1330] font-bold text-sm transition-colors shadow-lg shadow-[#9F8CE0]/30"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9F8CE0] hover:bg-[#8B76D4] text-[#1B1330] font-bold text-base transition-colors shadow-lg shadow-[#9F8CE0]/30"
               >
                 Ön Analizi Başlat
-                <ArrowRight size={14} />
+                <ArrowRight size={16} />
               </Link>
               <Link
                 href="/skor"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-violet-300/30 text-violet-100 hover:bg-white/5 text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-violet-300/40 text-white hover:bg-white/10 text-base font-semibold transition-colors"
               >
                 Skorlama Nasıl İşler?
               </Link>
@@ -142,7 +146,8 @@ export default async function BiyoAGEPage() {
             4 KAPI — ölç / yorumla / anla / sürdür  (beyaz zemin, mor aksent)
             ============================================================ */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#7C3AED] mb-5">
+          {/* Eyebrow — 14px bold */}
+          <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#7C3AED] mb-5">
             BiyoAGE 4 perde
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -167,15 +172,19 @@ export default async function BiyoAGEPage() {
                       >
                         <Icon size={20} />
                       </div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">
+                      {/* Kart eyebrow — 14px bold */}
+                      <p className="text-sm font-bold uppercase tracking-[0.22em] text-slate-600">
                         {d.eyebrow}
                       </p>
                     </div>
-                    <h3 className="text-slate-900 font-bold text-xl mb-1.5">{d.title}</h3>
-                    <p className="text-slate-600 text-sm leading-relaxed">{d.desc}</p>
-                    <div className="flex items-center gap-1.5 text-[#7C3AED] text-sm font-semibold mt-4 group-hover:gap-2.5 transition-all">
+                    {/* H3 — 18px */}
+                    <h3 className="text-slate-900 font-bold text-lg mb-1.5">{d.title}</h3>
+                    {/* Body — 16px */}
+                    <p className="text-slate-700 text-base leading-relaxed">{d.desc}</p>
+                    {/* Link — 16px semibold (tıklanabilir) */}
+                    <div className="flex items-center gap-1.5 text-[#7C3AED] text-base font-semibold mt-4 group-hover:gap-2.5 transition-all">
                       <span>Gir</span>
-                      <ArrowRight size={14} />
+                      <ArrowRight size={16} />
                     </div>
                   </div>
                 </Link>
@@ -189,13 +198,16 @@ export default async function BiyoAGEPage() {
             ============================================================ */}
         <section className="border-t border-slate-200 bg-gradient-to-b from-[#F0FDF4] via-white to-[#FAFAF7]">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-16 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-[#7C3AED] mb-3">
+            {/* Eyebrow — 14px bold */}
+            <p className="text-sm font-bold uppercase tracking-[0.32em] text-[#7C3AED] mb-3">
               Estelongy ölçüm felsefesi
             </p>
+            {/* H1 section başlığı — 24/30px */}
             <h2 className="text-slate-900 font-bold text-2xl sm:text-3xl mb-4">
               Ölçemediğini iyileştiremezsin.
             </h2>
-            <p className="text-slate-600 text-base leading-relaxed">
+            {/* Body — 16px */}
+            <p className="text-slate-700 text-base leading-relaxed">
               BiyoAGE, biyolojik yaşlanmanı ölçülebilir kılar. Skor bir hedef değil, bir başlangıç çizgisi.
               Aksiyon <span className="text-[#10876B] font-semibold">EsteKlinik</span>&apos;te,
               süreklilik <span className="text-[#8B7339] font-semibold">EsteStore</span>&apos;da —
