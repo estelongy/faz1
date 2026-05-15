@@ -61,9 +61,9 @@ export default async function KliniklerPage() {
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-2">
                 EsteKlinik
               </p>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">Klinik Seçin</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Randevu Ara</h1>
               <p className="text-emerald-100/80 text-sm mt-1 mb-6">
-                Bilimi güzelliğe çeviren onaylı klinikleri keşfet
+                Bilimi Güzelliğe Dönüştüren Klinikleri Keşfet
               </p>
 
               <KlinikSearchInputs />
