@@ -243,11 +243,11 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
         <p className="text-slate-400 mb-2">
           <span className="text-white font-medium">{selectedClinic?.name}</span> kliniği için
         </p>
-        <p className="text-violet-400 font-medium mb-8">
+        <p className="text-emerald-400 font-medium mb-8">
           {selectedDay?.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })} · {selectedTime}
         </p>
         {!embedded && (
-          <Link href="/panel" className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
+          <Link href="/panel" className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl">
             Panele Dön
           </Link>
         )}
@@ -310,7 +310,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
               {hasFilter && (
                 <div className="flex items-center justify-between text-xs pt-0.5">
                   <span className="text-slate-500">{filteredClinics.length} klinik bulundu</span>
-                  <button onClick={clearAllFilters} className="text-violet-400 hover:text-violet-300 transition-colors">
+                  <button onClick={clearAllFilters} className="text-emerald-400 hover:text-emerald-300 transition-colors">
                     Tüm filtreleri temizle
                   </button>
                 </div>
@@ -336,7 +336,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                 <svg className="w-7 h-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </div>
               <p className="text-slate-400">Arama kriterlerinize uygun klinik bulunamadı.</p>
-              <button onClick={clearAllFilters} className="mt-3 text-violet-400 hover:text-violet-300 text-sm transition-colors">
+              <button onClick={clearAllFilters} className="mt-3 text-emerald-400 hover:text-emerald-300 text-sm transition-colors">
                 Filtreleri temizle
               </button>
             </div>
@@ -354,8 +354,8 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                   <button
                     key={clinic.id}
                     onClick={() => setPreviewClinic(clinic)}
-                    className={`group text-left rounded-2xl border transition-all hover:border-violet-500/50 hover:shadow-lg hover:shadow-violet-500/10 ${
-                      isSelected ? 'border-violet-500 bg-violet-500/10' : 'border-slate-700/80 bg-slate-900/60'
+                    className={`group text-left rounded-2xl border transition-all hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/10 ${
+                      isSelected ? 'border-emerald-500 bg-emerald-500/10' : 'border-slate-700/80 bg-slate-900/60'
                     }`}
                   >
                     {/* Üst blok — foto + bilgi */}
@@ -394,7 +394,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                         )}
 
                         {/* İsim — büyük başlık */}
-                        <h3 className="text-white font-extrabold text-base sm:text-lg leading-[1.2] tracking-tight group-hover:text-violet-200 transition-colors line-clamp-2">
+                        <h3 className="text-white font-extrabold text-base sm:text-lg leading-[1.2] tracking-tight group-hover:text-emerald-200 transition-colors line-clamp-2">
                           {formatClinicName(clinic.name)}
                         </h3>
 
@@ -433,7 +433,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                           <span className="truncate">{formatLocation(clinic.location)}</span>
                         </p>
                       ) : <span />}
-                      <span className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-violet-600 group-hover:bg-violet-500 text-white text-xs font-semibold transition-colors shadow-md shadow-violet-600/20">
+                      <span className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 group-hover:bg-emerald-500 text-white text-xs font-semibold transition-colors shadow-md shadow-emerald-600/20">
                         Önizle
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                       </span>
@@ -473,7 +473,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                     <button key={day.toISOString()} onClick={() => { setSelectedDay(day); setSelectedTime(null) }}
                       className={`shrink-0 flex flex-col items-center px-4 py-3 rounded-xl border transition-all ${
                         selectedDay?.toDateString() === day.toDateString()
-                          ? 'border-violet-500 bg-violet-500/20 text-white'
+                          ? 'border-emerald-500 bg-emerald-500/20 text-white'
                           : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
                       }`}>
                       <span className="text-xs uppercase">{day.toLocaleDateString('tr-TR', { weekday: 'short' })}</span>
@@ -507,7 +507,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                               isBusy
                                 ? 'border-slate-800 bg-slate-900 text-slate-700 cursor-not-allowed line-through'
                                 : selectedTime === t
-                                  ? 'border-violet-500 bg-violet-500/20 text-white'
+                                  ? 'border-emerald-500 bg-emerald-500/20 text-white'
                                   : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
                             }`}>
                             {t}
@@ -527,7 +527,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
           )}
 
           <button onClick={() => setStep(3)} disabled={!selectedDay || !selectedTime}
-            className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all">
+            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all">
             Devam Et
           </button>
         </div>
@@ -558,7 +558,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
             </div>
             <div className="h-px bg-slate-700" />
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shrink-0">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
               </div>
               <div>
@@ -566,7 +566,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                 <div className="text-white font-bold">
                   {selectedDay.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
-                <div className="text-violet-400 text-sm font-medium">{selectedTime}</div>
+                <div className="text-emerald-400 text-sm font-medium">{selectedTime}</div>
               </div>
             </div>
           </div>
@@ -574,13 +574,13 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
           <div className="mb-6">
             <label className="block text-sm text-slate-400 mb-2">Notlar (isteğe bağlı)</label>
             <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} placeholder="Şikayetleriniz veya eklemek istediğiniz bilgiler..."
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors resize-none" />
+              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none" />
           </div>
 
           {error && <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">{error}</div>}
 
           <button onClick={handleConfirm} disabled={saving}
-            className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all text-lg">
+            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all text-lg">
             {saving ? 'Kaydediliyor...' : 'Randevuyu Onayla'}
           </button>
         </div>
@@ -626,7 +626,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
           <span className="text-white font-bold">Randevu Al</span>
           <div className="flex gap-2">
             {[1, 2, 3].map(n => (
-              <div key={n} className={`w-2 h-2 rounded-full transition-all ${step >= n ? 'bg-violet-500' : 'bg-slate-700'}`} />
+              <div key={n} className={`w-2 h-2 rounded-full transition-all ${step >= n ? 'bg-emerald-500' : 'bg-slate-700'}`} />
             ))}
           </div>
         </div>

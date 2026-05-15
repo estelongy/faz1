@@ -8,7 +8,11 @@ type World = 'estestore' | 'klinik' | 'root'
 function detectWorld(path: string | null): World {
   if (!path) return 'root'
   if (path.startsWith('/estestore')) return 'estestore'
-  if (path.startsWith('/klinikler') || path.startsWith('/klinik/')) return 'klinik'
+  if (
+    path.startsWith('/klinikler') ||
+    path.startsWith('/klinik/') ||
+    path.startsWith('/randevu')
+  ) return 'klinik'
   return 'root'
 }
 
