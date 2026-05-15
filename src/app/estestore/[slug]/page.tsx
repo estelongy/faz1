@@ -10,10 +10,20 @@ import CartButton from '@/components/CartButton'
 
 const SITE_URL = 'https://estelongy.com'
 
+// products.category enum eşlemesi. Legacy değerler fallback olarak kalır.
 const CATEGORY_LABELS: Record<string, string> = {
+  kozmetik:     'Kozmetik',
+  sarf_medikal: 'Sarf & Medikal',
+  // Legacy
   botox: 'Botoks', filler: 'Dolgu', mezo: 'Mezoterapi', laser: 'Lazer',
   gold_needle: 'Altın İğne', peeling: 'Peeling', serum: 'Serum',
   supplement: 'Takviye', device: 'Cihaz', other: 'Diğer',
+}
+
+// products.category → /estestore/kategori/[slug] URL eşlemesi (kategori sayfası slug-based).
+const CATEGORY_URL_SLUG: Record<string, string> = {
+  kozmetik:     'kozmetik',
+  sarf_medikal: 'sarf-medikal',
 }
 
 export async function generateMetadata({
@@ -188,7 +198,7 @@ export default async function UrunDetayPage({
         '@type': 'ListItem',
         position: 3,
         name: CATEGORY_LABELS[product.category] ?? product.category,
-        item: `${SITE_URL}/estestore?kategori=${product.category}`,
+        item: `${SITE_URL}/estestore/kategori/${CATEGORY_URL_SLUG[product.category] ?? product.category}`,
       }] : []),
       {
         '@type': 'ListItem',
@@ -212,25 +222,29 @@ export default async function UrunDetayPage({
       <header className="sticky top-0 z-50 bg-[#0F172A] border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <Link href="/estestore" className="text-slate-300 hover:text-white transition-colors text-sm shrink-0">← EsteStore</Link>
+            <Link href="/estestore" className="text-base font-semibold text-slate-300 hover:text-white transition-colors shrink-0">← EsteStore</Link>
             <span className="text-slate-700">|</span>
-            <span className="text-white text-sm font-medium truncate">{product.name}</span>
+            <span className="text-white text-base font-bold truncate">{product.name}</span>
           </div>
           <CartButton />
         </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-16">
-        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6 flex-wrap">
-          <Link href="/estestore" className="hover:text-slate-900 font-semibold text-[#8B7339]">EsteStore</Link>
+        <nav className="flex items-center gap-2 text-sm font-bold text-slate-500 mb-6 flex-wrap">
+          <Link href="/estestore" className="hover:text-slate-900 transition-colors text-[#8B7339]">EsteStore</Link>
           {product.category && (
             <>
               <span>›</span>
-              <span className="text-slate-700">{CATEGORY_LABELS[product.category] ?? product.category}</span>
+              <Link
+                href={`/estestore/kategori/${CATEGORY_URL_SLUG[product.category] ?? product.category}`}
+                className="hover:text-slate-900 transition-colors text-[#8B7339]">
+                {CATEGORY_LABELS[product.category] ?? product.category}
+              </Link>
             </>
           )}
           <span>›</span>
-          <span className="text-slate-900 truncate font-medium">{product.name}</span>
+          <span className="text-slate-900 truncate">{product.name}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
