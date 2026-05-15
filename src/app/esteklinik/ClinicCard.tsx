@@ -76,7 +76,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
     <>
       <div
         onClick={() => setPreviewOpen(true)}
-        className="group relative rounded-2xl bg-white border border-slate-200 hover:border-[#10876B]/60 hover:shadow-2xl hover:shadow-[#064E3B]/15 hover:-translate-y-0.5 transition-all overflow-hidden flex flex-col shadow-sm cursor-pointer"
+        className="group relative h-full rounded-2xl bg-white border border-slate-200 hover:border-[#10876B]/60 hover:shadow-2xl hover:shadow-[#064E3B]/15 hover:-translate-y-0.5 transition-all overflow-hidden flex flex-col shadow-sm cursor-pointer"
       >
         {/* Kapak banner — yeşil/teal kalır */}
         <div className="relative aspect-[3/1] overflow-hidden bg-gradient-to-br from-[#10876B] via-[#0A6347] to-[#064E3B]">
@@ -129,32 +129,37 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
             )}
           </header>
 
-          {/* Etiketler */}
-          {(clinic.clinic_type || (clinic.specialties && clinic.specialties.length > 0)) && (
-            <div className="flex flex-wrap gap-1.5">
-              {clinic.clinic_type && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#10876B]/12 text-[#0E7559] border border-[#10876B]/30">
-                  {CLINIC_TYPE_LABEL[clinic.clinic_type] ?? clinic.clinic_type}
-                </span>
-              )}
-              {(clinic.specialties ?? []).slice(0, 3).map((s, i) => (
-                <span
-                  key={i}
-                  className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200"
-                >
-                  {s}
-                </span>
-              ))}
-              {(clinic.specialties ?? []).length > 3 && (
-                <span className="text-[10px] text-slate-400">+{(clinic.specialties ?? []).length - 3}</span>
-              )}
-            </div>
-          )}
+          {/* Etiketler — slot her zaman var (yer rezerve), boş kalabilir */}
+          <div className="flex flex-wrap gap-1.5 min-h-[24px]">
+            {clinic.clinic_type && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#10876B]/12 text-[#0E7559] border border-[#10876B]/30">
+                {CLINIC_TYPE_LABEL[clinic.clinic_type] ?? clinic.clinic_type}
+              </span>
+            )}
+            {(clinic.specialties ?? []).slice(0, 3).map((s, i) => (
+              <span
+                key={i}
+                className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200"
+              >
+                {s}
+              </span>
+            ))}
+            {(clinic.specialties ?? []).length > 3 && (
+              <span className="text-[10px] text-slate-400 self-center">+{(clinic.specialties ?? []).length - 3}</span>
+            )}
+          </div>
 
-          {/* Bio */}
-          {bioPreview && (
-            <p className="text-slate-700 text-sm leading-relaxed line-clamp-3">{bioPreview}</p>
-          )}
+          {/* Bio — sabit 3 satır yüksekliği, boşsa bile yer tutar */}
+          <p className="text-slate-700 text-sm leading-relaxed line-clamp-3 h-[60px]">
+            {bioPreview ?? <span className="text-slate-300 italic">Henüz açıklama eklenmedi.</span>}
+          </p>
+
+          {/* EGP açıklama — sabit slot (EGP varsa label, yoksa boş) */}
+          <div className="min-h-[14px]">
+            {!showMeasuring && egp != null && (
+              <p className="text-[10px] text-slate-400">{egpLabel(egp)}</p>
+            )}
+          </div>
 
           {/* Footer: deneyim sayısı + Randevu Al butonu (hover ile popover) */}
           <footer className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto gap-3">
@@ -188,10 +193,6 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
               )}
             </div>
           </footer>
-
-          {!showMeasuring && egp != null && (
-            <p className="text-[10px] text-slate-400">{egpLabel(egp)}</p>
-          )}
         </div>
       </div>
 
