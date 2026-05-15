@@ -70,7 +70,7 @@ export default async function KlinikPanelPage() {
     .limit(1)
     .maybeSingle()
 
-  if (!clinic) redirect('/klinik/basvur')
+  if (!clinic) redirect('/klinikler/basvur')
 
   // Profil — hekim adı için
   const { data: profile } = await supabase

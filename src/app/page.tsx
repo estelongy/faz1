@@ -111,7 +111,7 @@ export default async function Home({
   const isLoggedIn = !!user
   // 3 kapı linkleri — login varsa direkt, yoksa /giris?next=
   const dest1 = isLoggedIn ? '/analiz' : '/giris?next=/analiz'
-  const dest2 = '/randevu'
+  const dest2 = '/klinikler/randevu'
   // (kapı 3 zaten /estestore, login gerektirmez)
 
   return (
@@ -135,7 +135,7 @@ export default async function Home({
                 className="hidden md:block text-slate-400 hover:text-white text-sm transition-colors">
                 Estelongy Rehberi
               </Link>
-              <Link href="/klinik/basvur"
+              <Link href="/klinikler/basvur"
                 className="hidden lg:block text-slate-400 hover:text-white text-sm transition-colors">
                 Klinik Başvurusu
               </Link>
@@ -145,7 +145,7 @@ export default async function Home({
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Hesabım
                   </Link>
-                  <Link href="/randevu"
+                  <Link href="/klinikler/randevu"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
                   </Link>
@@ -163,7 +163,7 @@ export default async function Home({
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Ücretsiz Başla
                   </Link>
-                  <Link href="/randevu"
+                  <Link href="/klinikler/randevu"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
                   </Link>
@@ -224,7 +224,7 @@ export default async function Home({
               <span className="text-slate-700">·</span>
               <span>Kayıt gerekmez</span>
               <span className="text-slate-700">·</span>
-              <Link href="/klinik/basvur" className="text-slate-400 hover:text-white transition-colors">
+              <Link href="/klinikler/basvur" className="text-slate-400 hover:text-white transition-colors">
                 Klinik misin? <span className="text-violet-400">Başvur →</span>
               </Link>
             </div>
@@ -483,7 +483,7 @@ export default async function Home({
               ].map(alan => (
                 <Link
                   key={alan}
-                  href={`/randevu?tip=${encodeURIComponent(alan)}`}
+                  href={`/klinikler/randevu?tip=${encodeURIComponent(alan)}`}
                   className="px-3.5 py-1.5 rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300 text-xs font-medium tracking-wide hover:border-blue-400/60 hover:bg-blue-500/20 hover:text-white transition-all">
                   {alan}
                 </Link>
@@ -509,7 +509,7 @@ export default async function Home({
           </div>
 
           <div className="text-center">
-            <Link href="/klinik/basvur"
+            <Link href="/klinikler/basvur"
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/25 text-base">
               Kliniğini Kaydet — Ücretsiz Hasta Kabulüne Başla
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

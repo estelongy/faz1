@@ -261,7 +261,7 @@ export default function CihazTedavileriPage() {
               <Link href="/kayit?next=/analiz" className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
                 Ücretsiz Ön Analiz →
               </Link>
-              <Link href="/randevu" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">
+              <Link href="/klinikler/randevu" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">
                 Klinik Randevusu Al
               </Link>
             </div>

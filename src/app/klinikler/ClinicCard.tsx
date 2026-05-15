@@ -201,7 +201,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
           onClose={() => setPreviewOpen(false)}
           onSelect={() => {
             setPreviewOpen(false)
-            window.location.href = `/randevu?k=${clinic.id}`
+            window.location.href = `/klinikler/randevu?k=${clinic.id}`
           }}
         />
       )}

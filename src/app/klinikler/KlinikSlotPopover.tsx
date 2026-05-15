@@ -118,7 +118,7 @@ export default function KlinikSlotPopover({ clinicId, onClose, anchorRect }: Pro
   function handleSlotClick(time: string) {
     if (!selectedDay) return
     const d = dateKey(selectedDay)
-    window.location.href = `/randevu?k=${clinicId}&d=${d}&t=${encodeURIComponent(time)}`
+    window.location.href = `/klinikler/randevu?k=${clinicId}&d=${d}&t=${encodeURIComponent(time)}`
   }
 
   if (typeof window === 'undefined' || !anchorRect) return null

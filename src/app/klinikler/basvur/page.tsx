@@ -29,7 +29,7 @@ async function submitApplication(formData: FormData) {
     const phoneInput = (formData.get('phone') as string)?.trim()
     const phoneE164  = phoneInput ? (phoneInput.startsWith('+') ? phoneInput : (phoneInput.startsWith('0') ? '+9' + phoneInput.replace(/\D/g, '') : '+90' + phoneInput.replace(/\D/g, ''))) : undefined
 
-    if (!firstName || !email || !password) redirect('/klinik/basvur?error=eksik')
+    if (!firstName || !email || !password) redirect('/klinikler/basvur?error=eksik')
 
     const admin = createServiceClient()
     const { data: created, error: createErr } = await admin.auth.admin.createUser({
@@ -44,9 +44,9 @@ async function submitApplication(formData: FormData) {
       // Email zaten kayıtlıysa kullanıcıyı giriş ekranına yönlendir
       const msg = (createErr?.message ?? '').toLowerCase()
       if (msg.includes('already') || msg.includes('registered') || msg.includes('exists')) {
-        redirect('/klinik/basvur?error=email_var')
+        redirect('/klinikler/basvur?error=email_var')
       }
-      redirect('/klinik/basvur?error=hesap')
+      redirect('/klinikler/basvur?error=hesap')
     }
 
     // Profil güncelle
@@ -78,8 +78,8 @@ async function submitApplication(formData: FormData) {
     is_active:       false,
   })
 
-  if (error) redirect('/klinik/basvur?error=1')
-  redirect('/klinik/basvur?success=1')
+  if (error) redirect('/klinikler/basvur?error=1')
+  redirect('/klinikler/basvur?success=1')
 }
 
 export default async function KlinikBasvurPage({

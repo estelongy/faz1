@@ -112,7 +112,7 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
   const nextStep = (() => {
     if (isCompleted || y.status === 'abandoned') return null
     if (!stage1Done) return { label: 'Ön analiz yap', href: '/analiz' }
-    if (!y.appointment) return { label: 'Klinikten randevu al', href: '/randevu' }
+    if (!y.appointment) return { label: 'Klinikten randevu al', href: '/klinikler/randevu' }
     if (!stage2Done) return { label: 'Klinik onayı bekleniyor', href: null }
     if (isClinicDone && !stage3Done) return { label: 'Son selfie ile sonucu gör', href: '/analiz' }
     return null

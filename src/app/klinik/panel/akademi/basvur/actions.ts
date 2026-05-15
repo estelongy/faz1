@@ -25,7 +25,7 @@ export async function applyForEducator(formData: FormData) {
     .limit(1)
     .maybeSingle()
 
-  if (!clinic) redirect('/klinik/basvur')
+  if (!clinic) redirect('/klinikler/basvur')
   if (clinic.approval_status !== 'approved') {
     throw new Error('Klinik onayınız tamamlanmadan eğitmen başvurusu yapamazsınız.')
   }

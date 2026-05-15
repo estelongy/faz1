@@ -29,7 +29,7 @@ export default async function KlinikMesajlarPage({
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()
-  if (!clinic) redirect('/klinik/basvur')
+  if (!clinic) redirect('/klinikler/basvur')
 
   const sp = await searchParams
   const f: Filter = ((sp.f as Filter) ?? 'inbox')

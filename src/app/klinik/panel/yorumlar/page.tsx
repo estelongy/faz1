@@ -31,7 +31,7 @@ export default async function KlinikYorumlarPage() {
     .limit(1)
     .maybeSingle()
 
-  if (!clinic) redirect('/klinik/basvur')
+  if (!clinic) redirect('/klinikler/basvur')
 
   // Tüm yorumlar — önce cevaplanmamış, sonra yeni
   const { data: reviewsRaw } = await supabase

@@ -133,8 +133,8 @@ export async function updateClinicProfileAction(formData: FormData): Promise<Upd
 
   revalidatePath('/klinik/panel/profil')
   revalidatePath('/klinik/panel/profil/duzenle')
-  revalidatePath(`/klinik/${clinic.id}`)
+  revalidatePath(`/klinikler/${clinic.id}`)
   revalidatePath('/klinikler')
-  revalidatePath('/randevu')
+  revalidatePath('/klinikler/randevu')
   return { ok: true }
 }

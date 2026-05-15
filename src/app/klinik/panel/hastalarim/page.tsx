@@ -19,7 +19,7 @@ export default async function HastalarimPage() {
     .select('id, name')
     .eq('user_id', user.id)
     .single()
-  if (!clinic) redirect('/klinik/basvur')
+  if (!clinic) redirect('/klinikler/basvur')
 
   // Bu kliniğe randevu almış tüm benzersiz hastalar
   const { data: appts } = await supabase

@@ -324,7 +324,7 @@ export default async function UrunDetayPage({
             )}
 
             {product.treatment_type === 'treatment' ? (
-              <Link href="/randevu"
+              <Link href="/klinikler/randevu"
                 className="w-full flex items-center justify-center py-4 bg-[#10876B] hover:bg-[#0d6f57] text-white font-bold rounded-xl transition-all text-sm">
                 Bu İşlem İçin Randevu Al →
               </Link>

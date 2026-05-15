@@ -209,7 +209,7 @@ export default function EstetikCerrahiPage() {
               Ücretsiz Ön Analiz →
             </Link>
             <Link
-              href="/randevu"
+              href="/klinikler/randevu"
               className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors"
             >
               Klinik Randevusu Al

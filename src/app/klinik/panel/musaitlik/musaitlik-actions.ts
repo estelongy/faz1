@@ -48,6 +48,6 @@ export async function saveMusaitlikAction(
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/klinik/panel/musaitlik')
-  revalidatePath('/randevu')
+  revalidatePath('/klinikler/randevu')
   return { ok: true }
 }

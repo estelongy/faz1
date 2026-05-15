@@ -40,7 +40,7 @@ export default async function SiteHeader() {
                   Hesabım
                 </Link>
                 <Link
-                  href="/randevu"
+                  href="/klinikler/randevu"
                   className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all"
                 >
                   Randevu Al
@@ -64,7 +64,7 @@ export default async function SiteHeader() {
                   Kayıt Ol
                 </Link>
                 <Link
-                  href="/randevu"
+                  href="/klinikler/randevu"
                   className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all"
                 >
                   Randevu Al

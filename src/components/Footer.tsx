@@ -11,7 +11,7 @@ function detectWorld(path: string | null): World {
   if (
     path.startsWith('/klinikler') ||
     path.startsWith('/klinik/') ||
-    path.startsWith('/randevu')
+    path.startsWith('/klinikler/randevu')
   ) return 'klinik'
   return 'root'
 }
@@ -52,7 +52,7 @@ function RootFooter() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/analiz" className="text-slate-400 hover:text-white transition-colors">Ön Analiz</Link></li>
               <li><Link href="/klinikler" className="text-slate-400 hover:text-white transition-colors">Klinikler</Link></li>
-              <li><Link href="/randevu" className="text-slate-400 hover:text-white transition-colors">Klinik Randevu</Link></li>
+              <li><Link href="/klinikler/randevu" className="text-slate-400 hover:text-white transition-colors">Klinik Randevu</Link></li>
               <li><Link href="/estestore" className="text-slate-400 hover:text-white transition-colors">EsteStore</Link></li>
               <li><Link href="/panel" className="text-slate-400 hover:text-white transition-colors">Panelim</Link></li>
               <li><Link href="/rehber" className="text-slate-400 hover:text-white transition-colors">Estelongy Rehberi</Link></li>
@@ -62,7 +62,7 @@ function RootFooter() {
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">İş Ortakları</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/klinik/basvur" className="text-slate-400 hover:text-white transition-colors">Klinik Başvuru</Link></li>
+              <li><Link href="/klinikler/basvur" className="text-slate-400 hover:text-white transition-colors">Klinik Başvuru</Link></li>
               <li><Link href="/satici/basvur" className="text-slate-400 hover:text-white transition-colors">Satıcı Başvuru</Link></li>
               <li><Link href="/kurumsal/giris" className="text-slate-400 hover:text-white transition-colors">Kurumsal Giriş</Link></li>
             </ul>
@@ -166,7 +166,7 @@ function EsteKlinikFooter() {
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Klinik</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/klinikler" className="text-emerald-200/80 hover:text-white transition-colors">Tüm Klinikler</Link></li>
-              <li><Link href="/randevu" className="text-emerald-200/80 hover:text-white transition-colors">Randevu Al</Link></li>
+              <li><Link href="/klinikler/randevu" className="text-emerald-200/80 hover:text-white transition-colors">Randevu Al</Link></li>
               <li><Link href="/rehber" className="text-emerald-200/80 hover:text-white transition-colors">Rehber</Link></li>
             </ul>
           </div>
@@ -177,7 +177,7 @@ function EsteKlinikFooter() {
               <li><Link href="/giris" className="text-emerald-200/80 hover:text-white transition-colors">Giriş</Link></li>
               <li><Link href="/kayit" className="text-emerald-200/80 hover:text-white transition-colors">Kayıt Ol</Link></li>
               <li><Link href="/panel" className="text-emerald-200/80 hover:text-white transition-colors">Panelim</Link></li>
-              <li><Link href="/klinik/basvur" className="text-emerald-200/80 hover:text-white transition-colors">Klinik Başvuru</Link></li>
+              <li><Link href="/klinikler/basvur" className="text-emerald-200/80 hover:text-white transition-colors">Klinik Başvuru</Link></li>
             </ul>
           </div>
 
