@@ -51,7 +51,7 @@ export default async function UrunDuzenlePage({ params }: { params: Promise<{ id
           <p className="text-slate-400 text-sm mt-1">{vendor.company_name}</p>
         </div>
 
-        <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-sm">
+        <div className="mb-6 p-4 bg-[#C9A961]/10 border border-[#C9A961]/30 rounded-xl text-[#C9A961] text-sm">
           ⚠ İçerik değişikliği (ad, kategori, açıklama, görseller, içerikler) yaptığında ürün yeniden admin onayına düşer ve mağazada geçici olarak pasif olur.
         </div>
 

@@ -18,10 +18,15 @@ export async function generateMetadata({ params }: { params: Promise<{ vendorId:
   }
 }
 
+// EsteStore ana kategori (DB enum) etiketleri.
+// Alt-kategori detayı ürün kartında ayrıca göstermek yerine ana kategori burada yeterli.
 const CATEGORY_LABELS: Record<string, string> = {
-  botox:'Botoks', filler:'Dolgu', mezo:'Mezoterapi', laser:'Lazer',
-  gold_needle:'Altın İğne', peeling:'Peeling', serum:'Serum',
-  supplement:'Takviye', device:'Cihaz', other:'Diğer',
+  kozmetik:      'Kozmetik',
+  sarf_medikal:  'Sarf & Medikal',
+  // Legacy fallback
+  botox: 'Botoks', filler: 'Dolgu', mezo: 'Mezoterapi', laser: 'Lazer',
+  gold_needle: 'Altın İğne', peeling: 'Peeling', serum: 'Serum',
+  supplement: 'Takviye', device: 'Cihaz', other: 'Diğer',
 }
 
 export default async function SaticiMagazaPage({ params }: { params: Promise<{ vendorId: string }> }) {
@@ -54,9 +59,9 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
     <main className="min-h-screen bg-white">
       <header className="sticky top-0 z-50 bg-[#0F172A] border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center gap-3">
-          <Link href="/estestore" className="text-slate-300 hover:text-white transition-colors text-sm">← EsteStore</Link>
+          <Link href="/estestore" className="text-slate-300 hover:text-white transition-colors text-base font-semibold">← EsteStore</Link>
           <span className="text-slate-700">|</span>
-          <span className="text-white text-sm font-bold truncate">{vendor.company_name}</span>
+          <span className="text-white text-base font-bold truncate">{vendor.company_name}</span>
         </div>
       </header>
 
@@ -70,21 +75,21 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
               </svg>
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl font-black text-slate-900 mb-1">{vendor.company_name}</h1>
-              <p className="text-[#8B7339] text-sm font-semibold mb-4">Estelongy Onaylı İş Ortağı</p>
+              <h1 className="text-3xl font-black text-slate-900 mb-1 tracking-[-0.02em]">{vendor.company_name}</h1>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#8B7339] mb-4">Estelongy Onaylı İş Ortağı</p>
 
-              <div className="flex flex-wrap gap-6 text-sm">
+              <div className="flex flex-wrap gap-6">
                 <div>
-                  <p className="text-slate-500 text-sm">Ürün Sayısı</p>
-                  <p className="text-slate-900 font-black text-xl">{totalProducts}</p>
+                  <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Ürün Sayısı</p>
+                  <p className="text-slate-900 font-black text-xl mt-1">{totalProducts}</p>
                 </div>
                 {avgScore !== null && (
                   <div>
-                    <p className="text-slate-500 text-sm">Ortalama EGP</p>
-                    <p className={`font-black text-xl ${
+                    <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Ortalama EGP</p>
+                    <p className={`font-black text-xl mt-1 ${
                       avgScore >= 9 ? 'text-[#10876B]' : avgScore >= 7 ? 'text-[#8B7339]' : 'text-red-500'
                     }`}>
-                      {avgScore.toFixed(1)}<span className="text-slate-400 text-sm font-normal">/10</span>
+                      {avgScore.toFixed(1)}<span className="text-slate-400 text-sm font-bold ml-0.5">/10</span>
                     </p>
                   </div>
                 )}
@@ -96,7 +101,7 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
         {/* Ürünler */}
         {products && products.length > 0 ? (
           <>
-            <h2 className="text-slate-900 font-bold text-lg mb-4">Ürünler ({totalProducts})</h2>
+            <h2 className="text-slate-900 font-bold text-xl mb-4 tracking-[-0.01em]">Ürünler <span className="text-slate-400 font-medium">({totalProducts})</span></h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
               {products.map(p => (
                 <Link key={p.id} href={`/estestore/${p.slug ?? p.id}`}
@@ -110,13 +115,13 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="text-slate-900 font-bold text-sm group-hover:text-[#8B7339] transition-colors line-clamp-1">{p.name}</h3>
+                    <h3 className="text-slate-900 font-semibold text-base group-hover:text-[#8B7339] transition-colors line-clamp-2 leading-snug">{p.name}</h3>
                     {p.category && (
-                      <p className="text-slate-500 text-sm mt-1">{CATEGORY_LABELS[p.category] ?? p.category}</p>
+                      <p className="text-sm font-bold text-slate-500 mt-1">{CATEGORY_LABELS[p.category] ?? p.category}</p>
                     )}
                     <div className="flex items-end justify-between mt-3">
                       {p.price && (
-                        <span className="text-slate-900 font-black">₺{Number(p.price).toLocaleString('tr-TR')}</span>
+                        <span className="text-slate-900 font-black text-base">₺{Number(p.price).toLocaleString('tr-TR')}</span>
                       )}
                       {p.final_score && (
                         <span className={`font-bold text-sm ${
@@ -131,9 +136,9 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
             </div>
           </>
         ) : (
-          <div className="text-center py-16 text-slate-400">
-            <div className="text-5xl mb-4">📦</div>
-            <p>Bu mağazada henüz aktif ürün yok</p>
+          <div className="text-center py-16">
+            <div className="text-5xl mb-4 text-slate-300">📦</div>
+            <p className="text-base font-semibold text-slate-500">Bu mağazada henüz aktif ürün yok</p>
           </div>
         )}
       </div>

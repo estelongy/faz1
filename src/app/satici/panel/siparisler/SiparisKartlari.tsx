@@ -103,7 +103,7 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
               </div>
 
               <button onClick={() => setExpandedId(expanded ? null : item.id)}
-                className="mt-4 text-sm text-violet-400 hover:text-violet-300 transition-colors">
+                className="mt-4 text-sm text-[#C9A961] hover:text-[#C9A961] transition-colors">
                 {expanded ? '− Küçült' : '+ Detay & İşlemler'}
               </button>
             </div>
@@ -138,18 +138,18 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
                       <select
                         value={trackingDrafts[item.id]?.carrier ?? 'Yurtiçi Kargo'}
                         onChange={e => setDraft(item.id, 'carrier', e.target.value)}
-                        className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500">
+                        className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#C9A961]">
                         {CARRIERS.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
                       <input type="text"
                         value={trackingDrafts[item.id]?.no ?? ''}
                         onChange={e => setDraft(item.id, 'no', e.target.value)}
                         placeholder="Takip numarası"
-                        className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+                        className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#C9A961]" />
                     </div>
                     <button onClick={() => handleKargo(item.id)}
                       disabled={isPending || !trackingDrafts[item.id]?.no?.trim()}
-                      className="w-full py-2.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white font-semibold rounded-xl text-sm">
+                      className="w-full py-2.5 bg-[#C9A961] hover:bg-[#D4B872] disabled:opacity-40 text-white font-semibold rounded-xl text-sm">
                       🚚 Kargoya Verdim
                     </button>
                   </div>
@@ -157,8 +157,8 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
 
                 {item.fulfillment_status === 'shipped' && (
                   <div className="space-y-3">
-                    <div className="p-3 bg-violet-500/10 border border-violet-500/30 rounded-xl">
-                      <p className="text-violet-300 text-sm font-medium">Kargoda</p>
+                    <div className="p-3 bg-[#C9A961]/10 border border-[#C9A961]/30 rounded-xl">
+                      <p className="text-[#C9A961] text-sm font-medium">Kargoda</p>
                       <p className="text-slate-400 text-sm mt-1">
                         {item.tracking_carrier} · <span className="font-mono">{item.tracking_number}</span>
                       </p>
@@ -187,9 +187,9 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string }> = {
-    pending:    { label: 'Bekliyor',   cls: 'bg-amber-500/20 text-amber-400' },
+    pending:    { label: 'Bekliyor',   cls: 'bg-[#C9A961]/20 text-[#C9A961]' },
     preparing:  { label: 'Hazırlanıyor', cls: 'bg-blue-500/20 text-blue-400' },
-    shipped:    { label: 'Kargoda',    cls: 'bg-violet-500/20 text-violet-400' },
+    shipped:    { label: 'Kargoda',    cls: 'bg-[#C9A961]/20 text-[#C9A961]' },
     delivered:  { label: 'Teslim',     cls: 'bg-emerald-500/20 text-emerald-400' },
     cancelled:  { label: 'İptal',      cls: 'bg-red-500/20 text-red-400' },
     returned:   { label: 'İade',       cls: 'bg-slate-500/20 text-slate-400' },

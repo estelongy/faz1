@@ -10,7 +10,7 @@ import BackButton from '@/components/BackButton'
 export const metadata: Metadata = { title: 'İade Talepleri — İş Ortağı Paneli' }
 
 const STATUS_BADGE: Record<string, { label: string; color: string }> = {
-  pending:   { label: 'Bekliyor',    color: 'bg-amber-500/20 text-amber-400' },
+  pending:   { label: 'Bekliyor',    color: 'bg-[#C9A961]/20 text-[#C9A961]' },
   approved:  { label: 'Onaylandı',   color: 'bg-emerald-500/20 text-emerald-400' },
   rejected:  { label: 'Reddedildi',  color: 'bg-red-500/20 text-red-400' },
   completed: { label: 'Tamamlandı',  color: 'bg-blue-500/20 text-blue-400' },
@@ -55,7 +55,7 @@ export default async function SaticiIadelerPage({
           <span className="text-slate-700">|</span>
           <span className="text-white text-sm font-bold">İade Talepleri</span>
           {pendingCount > 0 && (
-            <span className="bg-amber-500 text-black text-sm font-black px-2 py-0.5 rounded-full">{pendingCount}</span>
+            <span className="bg-[#C9A961] text-slate-900 text-sm font-black px-2 py-0.5 rounded-full">{pendingCount}</span>
           )}
         </div>
       </header>
@@ -76,7 +76,7 @@ export default async function SaticiIadelerPage({
             <Link key={f.key} href={`/satici/panel/iadeler?durum=${f.key}`}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                 (durum ?? 'tumu') === f.key
-                  ? 'bg-violet-600 text-white'
+                  ? 'bg-[#C9A961] text-white'
                   : 'bg-slate-800 border border-slate-700 text-slate-400 hover:text-white'
               }`}>
               {f.label}

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { isProfessional, type UserRole } from '@/lib/estestore'
+import { isProfessional, getSectionBySlug, type UserRole } from '@/lib/estestore'
 import ProductCard, { type ProductCardData } from './ProductCard'
 import ProfessionalToggle from './ProfessionalToggle'
 import EsteStoreHero from './EsteStoreHero'
@@ -44,27 +44,43 @@ export default async function EsteStorePage() {
   const role = (user?.app_metadata as Record<string, string> | undefined)?.role as UserRole ?? null
   const isPro = isProfessional(role)
 
-  const { data: kozmetikProducts } = await supabase
-    .from('products')
-    .select(
-      'id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers'
-    )
-    .eq('category', 'kozmetik')
-    .eq('is_active', true)
-    .eq('approval_status', 'approved')
-    .order('created_at', { ascending: false })
-    .limit(18)
+  const PRODUCT_COLS =
+    'id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers'
 
-  const { data: sarfProducts } = await supabase
-    .from('products')
-    .select(
-      'id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers'
-    )
-    .eq('category', 'sarf_medikal')
-    .eq('is_active', true)
-    .eq('approval_status', 'approved')
-    .order('created_at', { ascending: false })
-    .limit(9)
+  async function loadSection(slug: string, limit = 8) {
+    const section = getSectionBySlug(slug)
+    if (!section) return []
+    let q = supabase
+      .from('products')
+      .select(PRODUCT_COLS)
+      .eq('category', section.category)
+      .eq('is_active', true)
+      .eq('approval_status', 'approved')
+    if (section.subcategoryIn && section.subcategoryIn.length > 0) {
+      q = q.in('subcategory', section.subcategoryIn)
+    }
+    const { data } = await q
+      .order('final_score', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(limit)
+    return data ?? []
+  }
+
+  const [longevityRaw, islemSonrasiRaw, biyohackingRaw, sarfRaw, heroPoolRaw] = await Promise.all([
+    loadSection('longevity', 8),
+    loadSection('islem-sonrasi', 8),
+    loadSection('biyohacking-olcum', 8),
+    loadSection('sarf-medikal', 9),
+    supabase
+      .from('products')
+      .select(PRODUCT_COLS)
+      .eq('category', 'kozmetik')
+      .eq('is_active', true)
+      .eq('approval_status', 'approved')
+      .order('final_score', { ascending: false, nullsFirst: false })
+      .limit(5)
+      .then(r => r.data ?? []),
+  ])
 
   const { data: akademiPackages } = await supabase
     .from('course_packages')
@@ -96,13 +112,11 @@ export default async function EsteStorePage() {
       : [],
   })
 
-  const allKozmetik = (kozmetikProducts ?? []).map(normalizeProduct)
-  const sarf = (sarfProducts ?? []).map(normalizeProduct)
-
-  const heroShowcase = allKozmetik.slice(0, 5)
-  const longevityFeatured = allKozmetik.slice(0, 6)
-  const islemSonrasiFeatured = allKozmetik.slice(6, 12)
-  const biyohackingFeatured = allKozmetik.slice(12, 18)
+  const longevityFeatured   = longevityRaw.map(normalizeProduct)
+  const islemSonrasiFeatured = islemSonrasiRaw.map(normalizeProduct)
+  const biyohackingFeatured = biyohackingRaw.map(normalizeProduct)
+  const sarf                = sarfRaw.map(normalizeProduct)
+  const heroShowcase        = heroPoolRaw.map(normalizeProduct)
 
   const ProSections = (
     <>
@@ -154,6 +168,8 @@ export default async function EsteStorePage() {
           <EsteStoreHero showcaseProducts={heroShowcase} />
 
           <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-12 lg:py-16 space-y-20">
+            <EGPExplainer />
+
             <section id="longevity" className="space-y-6">
               <SectionHeader
                 eyebrow="Marka Kimliği"
@@ -425,6 +441,51 @@ function ValueProp({
       <h3 className="text-lg font-bold text-slate-900 mb-2">{title}</h3>
       <p className="text-base text-slate-700 leading-relaxed">{body}</p>
     </div>
+  )
+}
+
+/* ============================================================
+   EGP Explainer — "Estelongy Gençlik Puanı nedir?" eğitici strip
+   Her ürün kartında gördüğü skorun anlamını kullanıcıya hızlıca öğretir.
+   ============================================================ */
+function EGPExplainer() {
+  const dims = [
+    { label: 'Bilimsel Kanıt', desc: 'Klinik çalışma & literatür' },
+    { label: 'Üretici Kalitesi', desc: 'GMP, INCI, sertifika' },
+    { label: 'Hekim Görüşü', desc: 'Estelongy doktor panel' },
+    { label: 'Longevity Katkısı', desc: 'Sağlıklı yaşam ekseni' },
+  ]
+  return (
+    <section
+      aria-label="Estelongy Gençlik Puanı hakkında"
+      className="rounded-3xl border border-[#C9A961]/30 bg-gradient-to-br from-[#FAFAF7] via-white to-[#F5EFE3] px-6 py-8 lg:px-10 lg:py-10"
+    >
+      <div className="grid lg:grid-cols-[1fr_2fr] gap-8 items-center">
+        <div className="space-y-3">
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#8B7339]">
+            Estelongy Gençlik Puanı
+          </p>
+          <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-[-0.02em]">
+            EGP — bir ürünün 10 üzerinden değeri
+          </h2>
+          <p className="text-base text-slate-700 leading-relaxed">
+            Her ürünü 4 eksende ölçer, tek skora indirgeriz.
+            9+ küratör seçkisidir; 7+ güvenle kullanılabilir.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {dims.map(d => (
+            <div
+              key={d.label}
+              className="rounded-2xl bg-white border border-slate-200 px-4 py-4"
+            >
+              <p className="text-base font-bold text-slate-900">{d.label}</p>
+              <p className="text-sm font-bold text-slate-500 mt-1">{d.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 

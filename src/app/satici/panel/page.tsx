@@ -21,7 +21,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string }> = {
-    pending:  { label: 'İncelemede', cls: 'bg-amber-500/20 text-amber-400' },
+    pending:  { label: 'İncelemede', cls: 'bg-[#C9A961]/20 text-[#C9A961]' },
     approved: { label: 'Onaylı',     cls: 'bg-emerald-500/20 text-emerald-400' },
     rejected: { label: 'Reddedildi', cls: 'bg-red-500/20 text-red-400' },
   }
@@ -59,7 +59,7 @@ export default async function SaticiPanelPage() {
           <h1 className="text-white font-bold text-xl mb-2">İş Ortağı Hesabı Bulunamadı</h1>
           <p className="text-slate-400 text-sm mb-6">Ürün eklemek için önce iş ortağı başvurusu yapmanız gerekiyor.</p>
           <Link href="/satici/basvur"
-            className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl text-sm">
+            className="px-6 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl text-sm">
             İş Ortağı Başvurusu Yap →
           </Link>
         </div>
@@ -97,7 +97,7 @@ export default async function SaticiPanelPage() {
           <p className="text-slate-400 text-sm mb-4">
             KYC bilgileriniz admin onayında. Onay sonrası satışa başlayabilirsiniz (1-2 iş günü).
           </p>
-          <Link href="/satici/panel/kyc" className="text-violet-400 hover:underline text-sm">
+          <Link href="/satici/panel/kyc" className="text-[#C9A961] hover:underline text-sm">
             Gönderilen bilgileri gör →
           </Link>
         </div>
@@ -168,13 +168,13 @@ export default async function SaticiPanelPage() {
             <p className="text-slate-400 text-sm mt-1">Onaylı</p>
           </div>
           <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 text-center">
-            <p className="text-3xl font-black text-amber-400">{pendingCount}</p>
+            <p className="text-3xl font-black text-[#C9A961]">{pendingCount}</p>
             <p className="text-slate-400 text-sm mt-1">İncelemede</p>
           </div>
           <Link href="/satici/panel/siparisler"
-            className="bg-gradient-to-br from-violet-600/20 to-purple-600/20 hover:from-violet-600/30 hover:to-purple-600/30 border border-violet-500/30 rounded-2xl p-5 text-center transition-all group">
-            <p className="text-3xl font-black text-violet-300 group-hover:text-white transition-colors">📦</p>
-            <p className="text-violet-400 text-sm font-bold mt-1 uppercase tracking-wider">Siparişlerim</p>
+            className="bg-gradient-to-br from-[#C9A961]/20 to-[#B8964F]/20 hover:from-[#C9A961]/30 hover:to-[#B8964F]/30 border border-[#C9A961]/30 rounded-2xl p-5 text-center transition-all group">
+            <p className="text-3xl font-black text-[#C9A961] group-hover:text-white transition-colors">📦</p>
+            <p className="text-[#C9A961] text-sm font-bold mt-1 uppercase tracking-wider">Siparişlerim</p>
           </Link>
         </div>
 
@@ -197,8 +197,8 @@ export default async function SaticiPanelPage() {
             </div>
           </Link>
           <Link href="/satici/panel/iadeler"
-            className="p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 rounded-2xl transition-all flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-xl">↩</div>
+            className="p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-[#C9A961]/50 rounded-2xl transition-all flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#C9A961]/10 flex items-center justify-center text-xl">↩</div>
             <div>
               <p className="text-white font-bold text-sm">İade Talepleri</p>
               <p className="text-slate-500 text-sm mt-0.5">Müşteri iade yönetimi</p>
@@ -209,13 +209,13 @@ export default async function SaticiPanelPage() {
         {/* Ödeme hesabı uyarı banner — henüz stripe_account_id yoksa */}
         {!vendor.stripe_account_id && (
           <Link href="/satici/panel/odeme-hesabi"
-            className="flex items-center gap-3 mb-8 p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-2xl hover:border-amber-500/50 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-xl shrink-0">💳</div>
+            className="flex items-center gap-3 mb-8 p-4 bg-gradient-to-r from-[#C9A961]/10 to-[#B8964F]/10 border border-[#C9A961]/30 rounded-2xl hover:border-[#C9A961]/50 transition-all">
+            <div className="w-10 h-10 rounded-xl bg-[#C9A961]/20 flex items-center justify-center text-xl shrink-0">💳</div>
             <div className="flex-1">
-              <p className="text-amber-300 font-bold text-sm">Ödeme hesabı kur</p>
+              <p className="text-[#D4B872] font-bold text-sm">Ödeme hesabı kur</p>
               <p className="text-slate-400 text-sm mt-0.5">Müşteri ödemelerini alabilmek için Stripe üzerinden hesap oluştur</p>
             </div>
-            <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-[#C9A961]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
@@ -237,7 +237,7 @@ export default async function SaticiPanelPage() {
                 const cover = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : null
                 return (
                   <Link key={product.id} href={`/satici/panel/urunler/${product.id}/duzenle`}
-                    className="flex items-center gap-4 p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-violet-500/50 rounded-2xl transition-all">
+                    className="flex items-center gap-4 p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-[#C9A961]/50 rounded-2xl transition-all">
                     {/* Thumbnail */}
                     <div className="shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-slate-900 border border-slate-700 flex items-center justify-center">
                       {cover ? (
@@ -255,7 +255,7 @@ export default async function SaticiPanelPage() {
                         <span className="text-white font-medium text-sm truncate">{product.name}</span>
                         <StatusBadge status={product.approval_status} />
                         {product.treatment_type === 'treatment' && (
-                          <span className="text-sm bg-violet-600/20 text-violet-400 px-2 py-0.5 rounded-full">Klinik İşlem</span>
+                          <span className="text-sm bg-[#C9A961]/20 text-[#C9A961] px-2 py-0.5 rounded-full">Klinik İşlem</span>
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-sm text-slate-500">
@@ -265,7 +265,7 @@ export default async function SaticiPanelPage() {
                         {product.final_score && (
                           <span className={
                             product.final_score >= 9 ? 'text-emerald-400' :
-                            product.final_score >= 7 ? 'text-amber-400' : 'text-red-400'
+                            product.final_score >= 7 ? 'text-[#C9A961]' : 'text-red-400'
                           }>
                             ★ {product.final_score.toFixed(1)}/10
                           </span>

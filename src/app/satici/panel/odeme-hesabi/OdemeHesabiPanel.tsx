@@ -84,12 +84,12 @@ export default function OdemeHesabiPanel({ initial }: { initial: Initial }) {
         fullyActive
           ? 'bg-emerald-500/10 border-emerald-500/30'
           : status.hasAccount
-            ? 'bg-amber-500/10 border-amber-500/30'
+            ? 'bg-[#C9A961]/10 border-[#C9A961]/30'
             : 'bg-slate-800/50 border-slate-700'
       }`}>
         <div className="flex items-start gap-4">
           <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 ${
-            fullyActive ? 'bg-emerald-500/20' : status.hasAccount ? 'bg-amber-500/20' : 'bg-slate-700'
+            fullyActive ? 'bg-emerald-500/20' : status.hasAccount ? 'bg-[#C9A961]/20' : 'bg-slate-700'
           }`}>
             {fullyActive ? '✓' : status.hasAccount ? '⏳' : '💳'}
           </div>
@@ -123,7 +123,7 @@ export default function OdemeHesabiPanel({ initial }: { initial: Initial }) {
         {/* Gereksinimler */}
         {status.hasAccount && !fullyActive && status.requirements?.currentlyDue && status.requirements.currentlyDue.length > 0 && (
           <div className="mt-5 pt-5 border-t border-white/10">
-            <p className="text-amber-400 font-bold text-sm uppercase tracking-widest mb-2">Eksik Bilgiler</p>
+            <p className="text-[#C9A961] font-bold text-sm uppercase tracking-widest mb-2">Eksik Bilgiler</p>
             <ul className="text-slate-400 text-sm space-y-0.5 list-disc list-inside">
               {status.requirements.currentlyDue.map(r => (
                 <li key={r} className="font-mono text-sm">{r}</li>
@@ -136,12 +136,12 @@ export default function OdemeHesabiPanel({ initial }: { initial: Initial }) {
         <div className="mt-6 flex gap-3">
           {!status.hasAccount ? (
             <button onClick={createAccount} disabled={loading || isPending}
-              className="flex-1 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-xl text-sm transition-all">
+              className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-bold rounded-xl text-sm transition-all">
               {loading ? 'Başlatılıyor...' : 'Stripe Hesabı Oluştur'}
             </button>
           ) : !fullyActive ? (
             <button onClick={startOnboarding} disabled={loading}
-              className="flex-1 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-40 text-white font-bold rounded-xl text-sm transition-all">
+              className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-bold rounded-xl text-sm transition-all">
               {loading ? 'Yönlendiriliyor...' : 'Bilgileri Tamamla'}
             </button>
           ) : (

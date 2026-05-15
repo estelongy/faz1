@@ -63,6 +63,84 @@ export function getCategoryAccess(
   return { canSeePrice: false, canBuy: false, mode: 'preview' }
 }
 
+// ─── Storefront sections (curated views over flat products) ────────
+/**
+ * Landing'in linklediği "section" slug'ları gerçek DB kategorisi değil — kürasyon görünümleri.
+ * Her bir section, products tablosu üzerinde bir filtre + UI metadatası taşır.
+ * DB enum'ları: kozmetik | sarf_medikal | akademi (flat).
+ * Yeni bir section eklemek için subcategory tag'leri buraya yaz, satıcı paneli aynı tag'leri kullansın.
+ */
+export interface SectionDef {
+  slug: string
+  label: string
+  icon: string
+  sellerLabel: string
+  accent: string
+  description: string
+  /** products.category filtresi (zorunlu) */
+  category: EsteStoreCategory
+  /** products.subcategory IN (...) filtresi — boşsa kategoriye giren her şey gelir */
+  subcategoryIn?: string[]
+  /** Bu section sadece profesyonellere mi açık? */
+  proOnly?: boolean
+}
+
+export const ESTESTORE_SECTIONS: SectionDef[] = [
+  {
+    slug: 'kozmetik',
+    label: 'Kozmetik',
+    icon: '🧴',
+    sellerLabel: 'Markalar',
+    accent: '#8B7339',
+    description: 'Bilim destekli, küratörlü güzellik ürünleri.',
+    category: 'kozmetik',
+  },
+  {
+    slug: 'longevity',
+    label: 'Longevity — İçten Zamansızlık',
+    icon: '⏳',
+    sellerLabel: 'Marka Kimliği',
+    accent: '#C9A961',
+    description: 'NAD+, NMN, resveratrol — bilim destekli yaşlanma karşıtı takviyeler.',
+    category: 'kozmetik',
+    subcategoryIn: ['longevity', 'nad', 'nmn', 'supplement', 'takviye'],
+  },
+  {
+    slug: 'islem-sonrasi',
+    label: 'İşlem Sonrası Bakım',
+    icon: '🩹',
+    sellerLabel: 'Klinik Köprüsü',
+    accent: '#10876B',
+    description: 'Dolgu, botoks, lazer sonrası iyileşmeni hızlandıran küratörlü bakım kitleri.',
+    category: 'kozmetik',
+    subcategoryIn: ['islem-sonrasi', 'post-treatment', 'iyilesme', 'serum'],
+  },
+  {
+    slug: 'biyohacking-olcum',
+    label: 'Biyohacking & Ölçüm',
+    icon: '📊',
+    sellerLabel: 'Diferansiyasyon',
+    accent: '#C9A961',
+    description: 'Vücudunu ölç, kendini tanı — DNA, mikrobiyom, CGM ve wearable.',
+    category: 'kozmetik',
+    subcategoryIn: ['biyohacking', 'dna', 'mikrobiyom', 'cgm', 'wearable', 'olcum'],
+  },
+  {
+    slug: 'sarf-medikal',
+    label: 'Sarf & Medikal',
+    icon: '💉',
+    sellerLabel: 'Tedarikçiler',
+    accent: '#8B7339',
+    description: 'Hekim kullanımına özel sarf, enjektabl ve medikal ürünler.',
+    category: 'sarf_medikal',
+    proOnly: true,
+  },
+]
+
+export function getSectionBySlug(slug: string): SectionDef | null {
+  return ESTESTORE_SECTIONS.find(s => s.slug === slug) ?? null
+}
+
 // ─── Tier pricing ──────────────────────────────────────────────────
 
 export interface PricingTier {

@@ -55,7 +55,7 @@ export default function IadeKararForm({ returnId }: { returnId: string }) {
             placeholder={decision === 'approved' ? 'Müşteriye not (opsiyonel)...' : 'Red sebebi (opsiyonel)...'}
             rows={2}
             maxLength={500}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-violet-500 placeholder-slate-600"
+            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-[#C9A961] placeholder-slate-600"
           />
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <button type="submit" disabled={loading}

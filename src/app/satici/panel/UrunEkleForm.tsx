@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { urunEkleAction } from './urun-ekle-action'
 import ProductImageUploader from '@/components/ProductImageUploader'
@@ -12,21 +12,58 @@ const ANA_KATEGORI = [
   { value: 'sarf_medikal', label: '💉 Sarf & Medikal', help: 'Yalnızca klinik / sağlık profesyonellerine satılır.' },
 ] as const
 
-const ALT_KATEGORILER = [
-  { value: 'serum',       label: 'Serum' },
-  { value: 'krem',        label: 'Krem' },
-  { value: 'maske',       label: 'Maske' },
-  { value: 'temizleyici', label: 'Temizleyici' },
-  { value: 'gunes',       label: 'Güneş Koruyucu' },
-  { value: 'supplement',  label: 'Takviye' },
-  { value: 'mezoterapi',  label: 'Mezoterapi' },
-  { value: 'dolgu',       label: 'Dolgu' },
-  { value: 'botoks',      label: 'Botoks' },
-  { value: 'altin_igne',  label: 'Altın İğne' },
-  { value: 'peeling',     label: 'Peeling' },
-  { value: 'lazer',       label: 'Lazer' },
-  { value: 'cihaz',       label: 'Cihaz' },
-  { value: 'other',       label: 'Diğer' },
+/**
+ * Alt kategori = storefront section eşlemesi.
+ * `section` alanı satıcıya hangi vitrinde görüneceğini söyler (UI hint).
+ * `cat` filtresi: hangi ana kategoride (kozmetik / sarf_medikal) bu alt kategori geçerli.
+ * Slug'lar src/lib/estestore.ts ESTESTORE_SECTIONS subcategoryIn listeleriyle birebir eşleşmeli.
+ */
+interface AltKategori {
+  value: string
+  label: string
+  cat: 'kozmetik' | 'sarf_medikal' | 'both'
+  section: string  // landing'de görüneceği bölüm (kullanıcıya gösterilen ipucu)
+}
+
+const ALT_KATEGORILER: AltKategori[] = [
+  // ─── Kozmetik → Longevity bölümü ───
+  { value: 'nmn',          label: 'NMN / NAD+ Öncülü',           cat: 'kozmetik', section: 'Longevity' },
+  { value: 'longevity',    label: 'Longevity / Resveratrol vb.', cat: 'kozmetik', section: 'Longevity' },
+  { value: 'supplement',   label: 'Takviye (genel)',             cat: 'kozmetik', section: 'Longevity' },
+  { value: 'takviye',      label: 'Glutatyon / Antioksidan',     cat: 'kozmetik', section: 'Longevity' },
+  { value: 'nad',          label: 'NAD+ Direkt',                 cat: 'kozmetik', section: 'Longevity' },
+
+  // ─── Kozmetik → İşlem Sonrası bölümü ───
+  { value: 'post-treatment', label: 'İşlem Sonrası Bakım',  cat: 'kozmetik', section: 'İşlem Sonrası' },
+  { value: 'islem-sonrasi',  label: 'Lazer / Dolgu Sonrası', cat: 'kozmetik', section: 'İşlem Sonrası' },
+  { value: 'iyilesme',       label: 'İyileşme & Onarım',     cat: 'kozmetik', section: 'İşlem Sonrası' },
+  { value: 'serum',          label: 'Serum',                 cat: 'kozmetik', section: 'İşlem Sonrası' },
+
+  // ─── Kozmetik → Biyohacking & Ölçüm bölümü ───
+  { value: 'dna',          label: 'DNA / Epigenetik Test',  cat: 'kozmetik', section: 'Biyohacking & Ölçüm' },
+  { value: 'mikrobiyom',   label: 'Mikrobiyom Kiti',        cat: 'kozmetik', section: 'Biyohacking & Ölçüm' },
+  { value: 'cgm',          label: 'CGM / Glukoz Monitör',   cat: 'kozmetik', section: 'Biyohacking & Ölçüm' },
+  { value: 'wearable',     label: 'Wearable / Sensör',      cat: 'kozmetik', section: 'Biyohacking & Ölçüm' },
+  { value: 'biyohacking',  label: 'Biyohacking (genel)',    cat: 'kozmetik', section: 'Biyohacking & Ölçüm' },
+  { value: 'olcum',        label: 'Ölçüm / Kit (diğer)',    cat: 'kozmetik', section: 'Biyohacking & Ölçüm' },
+
+  // ─── Kozmetik → bölüm dışı (sadece /estestore/kategori/kozmetik) ───
+  { value: 'krem',        label: 'Krem',           cat: 'kozmetik', section: 'Kozmetik (genel)' },
+  { value: 'maske',       label: 'Maske',          cat: 'kozmetik', section: 'Kozmetik (genel)' },
+  { value: 'temizleyici', label: 'Temizleyici',    cat: 'kozmetik', section: 'Kozmetik (genel)' },
+  { value: 'gunes',       label: 'Güneş Koruyucu', cat: 'kozmetik', section: 'Kozmetik (genel)' },
+
+  // ─── Sarf & Medikal (hep klinik tarafı) ───
+  { value: 'dolgu',       label: 'Dolgu (HA / Cross-linked)', cat: 'sarf_medikal', section: 'Sarf & Medikal' },
+  { value: 'botoks',      label: 'Botoks / Botulinum',        cat: 'sarf_medikal', section: 'Sarf & Medikal' },
+  { value: 'altin-igne',  label: 'Altın İğne / RF Kartuş',    cat: 'sarf_medikal', section: 'Sarf & Medikal' },
+  { value: 'mikroigne',   label: 'Mikroiğne / Derma Roller',  cat: 'sarf_medikal', section: 'Sarf & Medikal' },
+  { value: 'mezoterapi',  label: 'Mezoterapi',                cat: 'sarf_medikal', section: 'Sarf & Medikal' },
+  { value: 'peeling',     label: 'Peeling',                   cat: 'sarf_medikal', section: 'Sarf & Medikal' },
+  { value: 'lazer',       label: 'Lazer Sarfı',               cat: 'sarf_medikal', section: 'Sarf & Medikal' },
+  { value: 'cihaz',       label: 'Cihaz / Ekipman',           cat: 'sarf_medikal', section: 'Sarf & Medikal' },
+
+  { value: 'other',       label: 'Diğer',                     cat: 'both',         section: '—' },
 ]
 
 export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
@@ -35,7 +72,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
   const [name,          setName]          = useState('')
   const [category,      setCategory]      = useState<EsteStoreCategory>('kozmetik')
-  const [subcategory,   setSubcategory]   = useState('serum')
+  const [subcategory,   setSubcategory]   = useState('post-treatment')
   const [treatmentType, setTreatmentType] = useState<'product' | 'treatment'>('product')
   const [description,   setDescription]   = useState('')
   const [price,         setPrice]         = useState('')
@@ -46,6 +83,14 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+
+  // Kategori değişince alt-kategori uyumsuz kaldıysa ilk uygun olana düşür.
+  useEffect(() => {
+    const available = ALT_KATEGORILER.filter(c => c.cat === category || c.cat === 'both')
+    if (!available.some(c => c.value === subcategory)) {
+      setSubcategory(available[0]?.value ?? 'other')
+    }
+  }, [category, subcategory])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -86,7 +131,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full py-4 border border-dashed border-slate-600 hover:border-violet-500 rounded-2xl text-slate-400 hover:text-violet-400 transition-all text-sm font-medium">
+        className="w-full py-4 border border-dashed border-slate-600 hover:border-[#C9A961] rounded-2xl text-slate-400 hover:text-[#C9A961] transition-all text-sm font-medium">
         + Yeni Ürün / İşlem Ekle
       </button>
     )
@@ -95,7 +140,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
   const numericPrice = price ? Number(price) : 0
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 bg-slate-800/50 border border-violet-500/30 rounded-2xl space-y-4">
+    <form onSubmit={handleSubmit} className="p-6 bg-slate-800/50 border border-[#C9A961]/30 rounded-2xl space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-white font-bold">Yeni Ürün / İşlem</h3>
         <button type="button" onClick={() => setOpen(false)} className="text-slate-500 hover:text-white text-sm">İptal</button>
@@ -116,7 +161,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
             onClick={() => setTreatmentType(t)}
             className={`py-2.5 rounded-xl text-sm font-medium border transition-all ${
               treatmentType === t
-                ? 'bg-violet-600 border-violet-600 text-white'
+                ? 'bg-[#C9A961] border-[#C9A961] text-white'
                 : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
             }`}>
             {t === 'product' ? '📦 Ürün' : '💉 Klinik İşlem'}
@@ -130,14 +175,14 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
         <input
           type="text" required value={name} onChange={e => setName(e.target.value)}
           placeholder="ör. Hyaluronik Asit Serum"
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-[#C9A961] transition-colors"
         />
       </div>
 
       {/* Ana kategori (EsteStore) */}
       {treatmentType === 'product' && (
         <div>
-          <label className="block text-slate-400 text-sm mb-2">EsteStore EsteStore</label>
+          <label className="block text-slate-400 text-sm mb-2">EsteStore Ana Kategori</label>
           <div className="grid grid-cols-2 gap-2">
             {ANA_KATEGORI.map(c => (
               <button
@@ -146,7 +191,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
                 onClick={() => setCategory(c.value)}
                 className={`p-3 rounded-xl text-left border transition-all ${
                   category === c.value
-                    ? 'bg-violet-500/15 border-violet-500/50 text-white'
+                    ? 'bg-[#C9A961]/15 border-[#C9A961]/50 text-white'
                     : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
                 }`}
               >
@@ -158,15 +203,38 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
         </div>
       )}
 
-      {/* Alt kategori */}
-      <div>
-        <label className="block text-slate-400 text-sm mb-1">Alt Kategori</label>
-        <select
-          value={subcategory} onChange={e => setSubcategory(e.target.value)}
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500">
-          {ALT_KATEGORILER.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-        </select>
-      </div>
+      {/* Alt kategori — kategoriye göre filtrelenir + storefront section ipucu */}
+      {(() => {
+        const available = ALT_KATEGORILER.filter(c => c.cat === category || c.cat === 'both')
+        const currentSection = available.find(c => c.value === subcategory)?.section
+
+        // Section'a göre grupla (optgroup için)
+        const grouped = available.reduce<Record<string, AltKategori[]>>((acc, c) => {
+          (acc[c.section] = acc[c.section] || []).push(c)
+          return acc
+        }, {})
+
+        return (
+          <div>
+            <label className="block text-slate-400 text-sm mb-1">Alt Kategori</label>
+            <select
+              value={subcategory}
+              onChange={e => setSubcategory(e.target.value)}
+              className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-[#C9A961]">
+              {Object.entries(grouped).map(([section, items]) => (
+                <optgroup key={section} label={section}>
+                  {items.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </optgroup>
+              ))}
+            </select>
+            {currentSection && currentSection !== '—' && (
+              <p className="text-slate-500 text-sm mt-1.5">
+                Mağazada <span className="text-[#C9A961] font-semibold">{currentSection}</span> bölümünde görünür.
+              </p>
+            )}
+          </div>
+        )
+      })()}
 
       {/* Fiyat */}
       <div>
@@ -174,7 +242,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
         <input
           type="number" min={0} step={0.01} value={price} onChange={e => setPrice(e.target.value)}
           placeholder="ör. 450"
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-[#C9A961] transition-colors"
         />
       </div>
 
@@ -197,7 +265,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
           value={description} onChange={e => setDescription(e.target.value)}
           placeholder="Ürün veya işlem hakkında kısa bilgi..."
           rows={3} maxLength={500}
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500 transition-colors resize-none"
+          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-[#C9A961] transition-colors resize-none"
         />
       </div>
 
@@ -208,7 +276,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
           <input
             type="text" value={ingredients} onChange={e => setIngredients(e.target.value)}
             placeholder="ör. Hyaluronik Asit, Retinol, Niasinamid"
-            className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-[#C9A961] transition-colors"
           />
         </div>
       )}
@@ -227,7 +295,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       <button
         type="submit" disabled={loading}
-        className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
+        className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
         {loading ? 'Ekleniyor...' : 'Ürünü Gönder'}
       </button>
     </form>

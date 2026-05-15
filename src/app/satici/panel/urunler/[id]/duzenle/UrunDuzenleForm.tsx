@@ -126,7 +126,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
     ? { label: 'Onaylı', cls: 'bg-emerald-500/20 text-emerald-400' }
     : product.approval_status === 'rejected'
     ? { label: 'Reddedildi', cls: 'bg-red-500/20 text-red-400' }
-    : { label: 'Admin İncelemesinde', cls: 'bg-amber-500/20 text-amber-400' }
+    : { label: 'Admin İncelemesinde', cls: 'bg-[#C9A961]/20 text-[#C9A961]' }
 
   const numericPrice = price ? Number(price) : 0
 
@@ -140,7 +140,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
         <label className="flex items-center gap-2 cursor-pointer ml-auto">
           <input type="checkbox" checked={isActive} onChange={e => setIsActive(e.target.checked)}
             disabled={product.approval_status !== 'approved'}
-            className="w-4 h-4 accent-violet-600" />
+            className="w-4 h-4 accent-[#C9A961]" />
           <span className="text-sm text-slate-300">EsteStore’da aktif</span>
         </label>
       </div>
@@ -155,7 +155,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
       <div>
         <label className="block text-slate-400 text-sm mb-1">Ürün Adı <span className="text-red-400">*</span></label>
         <input type="text" required value={name} onChange={e => setName(e.target.value)}
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
+          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-[#C9A961]" />
       </div>
 
       {/* Ana kategori */}
@@ -169,7 +169,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
               onClick={() => setCategory(c.value)}
               className={`py-2.5 rounded-xl text-sm font-semibold border transition-all ${
                 category === c.value
-                  ? 'bg-violet-500/15 border-violet-500/50 text-white'
+                  ? 'bg-[#C9A961]/15 border-[#C9A961]/50 text-white'
                   : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
               }`}
             >
@@ -183,7 +183,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
       <div>
         <label className="block text-slate-400 text-sm mb-1">Alt Kategori</label>
         <select value={subcategory} onChange={e => setSubcategory(e.target.value)}
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500">
+          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-[#C9A961]">
           {ALT_KATEGORILER.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select>
       </div>
@@ -193,13 +193,13 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
         <div>
           <label className="block text-slate-400 text-sm mb-1">Fiyat (₺)</label>
           <input type="number" min={0} step="0.01" value={price} onChange={e => setPrice(e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
+            className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-[#C9A961]" />
         </div>
         <div>
           <label className="block text-slate-400 text-sm mb-1">Stok (adet)</label>
           <input type="number" min={0} value={stock} onChange={e => setStock(e.target.value)}
             placeholder="Boş = sınırsız"
-            className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
+            className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-[#C9A961]" />
         </div>
       </div>
 
@@ -220,14 +220,14 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
         <label className="block text-slate-400 text-sm mb-1">Açıklama</label>
         <textarea value={description} onChange={e => setDescription(e.target.value)}
           rows={4} maxLength={500}
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500 resize-none" />
+          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-[#C9A961] resize-none" />
       </div>
 
       {/* İçerikler */}
       <div>
         <label className="block text-slate-400 text-sm mb-1">İçerikler (virgülle ayır)</label>
         <input type="text" value={ingredients} onChange={e => setIngredients(e.target.value)}
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500" />
+          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-[#C9A961]" />
       </div>
 
       {/* Görseller */}
@@ -243,7 +243,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
       {/* Aksiyon butonları */}
       <div className="flex gap-3 pt-4 border-t border-slate-800">
         <button type="submit" disabled={isPending}
-          className="flex-1 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
+          className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
           {isPending ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
         </button>
         <button type="button" onClick={handleDelete} disabled={isPending}

@@ -102,13 +102,13 @@ export default async function KazancPage() {
         {/* Stripe uyarı */}
         {!vendor.stripe_payouts_enabled && (
           <Link href="/satici/panel/odeme-hesabi"
-            className="flex items-center gap-3 mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl hover:border-amber-500/50 transition-all">
+            className="flex items-center gap-3 mb-6 p-4 bg-[#C9A961]/10 border border-[#C9A961]/30 rounded-2xl hover:border-[#C9A961]/50 transition-all">
             <span className="text-2xl shrink-0">⚠</span>
             <div className="flex-1">
-              <p className="text-amber-300 font-bold text-sm">Banka çekimi henüz aktif değil</p>
+              <p className="text-[#D4B872] font-bold text-sm">Banka çekimi henüz aktif değil</p>
               <p className="text-slate-400 text-sm mt-0.5">Kazançlarının banka hesabına çekilebilmesi için ödeme hesabını tamamla</p>
             </div>
-            <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-[#C9A961]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
@@ -169,12 +169,12 @@ export default async function KazancPage() {
                             day: 'numeric', month: 'short', year: 'numeric',
                           })}
                         </td>
-                        <td className="px-4 py-3 text-violet-400 font-mono text-sm">{o?.order_number}</td>
+                        <td className="px-4 py-3 text-[#C9A961] font-mono text-sm">{o?.order_number}</td>
                         <td className="px-4 py-3 text-slate-400 text-sm">
                           {FULFILLMENT_LABEL[l.fulfillment_status] ?? l.fulfillment_status}
                         </td>
                         <td className="px-4 py-3 text-right text-slate-300">₺{Number(l.line_total).toLocaleString('tr-TR')}</td>
-                        <td className="px-4 py-3 text-right text-amber-400">−₺{Number(l.commission_amount).toLocaleString('tr-TR')}</td>
+                        <td className="px-4 py-3 text-right text-[#C9A961]">−₺{Number(l.commission_amount).toLocaleString('tr-TR')}</td>
                         <td className="px-4 py-3 text-right text-emerald-400 font-bold">₺{Number(l.vendor_payout).toLocaleString('tr-TR')}</td>
                       </tr>
                     )
@@ -198,9 +198,9 @@ export default async function KazancPage() {
 function StatCard({ label, value, color, note }: { label: string; value: number; color: string; note?: string }) {
   const colorMap: Record<string, string> = {
     slate: 'text-slate-200',
-    amber: 'text-amber-400',
+    amber: 'text-[#C9A961]',
     emerald: 'text-emerald-400',
-    violet: 'text-violet-400',
+    violet: 'text-[#C9A961]',
   }
   return (
     <div className="p-5 bg-slate-800/50 border border-slate-700 rounded-2xl">

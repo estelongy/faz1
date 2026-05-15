@@ -140,36 +140,36 @@ export default function KycForm({ vendorId, initial }: Props) {
             <label className="block text-sm text-slate-400 mb-1.5">Vergi/T.C. Numarası *</label>
             <input type="text" required value={taxNumber} onChange={e => setTaxNumber(e.target.value.replace(/\D/g, '').slice(0, 11))}
               placeholder="10 veya 11 haneli" maxLength={11}
-              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 font-mono text-sm" />
+              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#C9A961] font-mono text-sm" />
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1.5">Ticaret Sicil No</label>
             <input type="text" value={tradeRegistryNo} onChange={e => setTradeRegistryNo(e.target.value)}
               placeholder="Opsiyonel"
-              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm" />
+              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#C9A961] text-sm" />
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1.5">MERSIS No</label>
             <input type="text" value={mersisNo} onChange={e => setMersisNo(e.target.value.replace(/\D/g, '').slice(0, 16))}
               placeholder="Opsiyonel — 16 hane"
-              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 font-mono text-sm" />
+              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#C9A961] font-mono text-sm" />
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1.5">KEP Adresi *</label>
             <input type="email" required value={kepAddress} onChange={e => setKepAddress(e.target.value)}
               placeholder="ornek@kep.tr"
-              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm" />
+              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#C9A961] text-sm" />
           </div>
         </div>
         <div>
           <label className="block text-sm text-slate-400 mb-1.5">Şirket Adresi *</label>
           <textarea required value={companyAddress} onChange={e => setCompanyAddress(e.target.value)}
             rows={2} placeholder="Vergi levhasındaki adres"
-            className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm resize-none" />
+            className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#C9A961] text-sm resize-none" />
         </div>
         <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
           <input type="checkbox" checked={sellsMedicalProducts} onChange={e => setSellsMedicalProducts(e.target.checked)}
-            className="w-4 h-4 rounded bg-slate-900 border-slate-600 text-violet-600 focus:ring-violet-500" />
+            className="w-4 h-4 rounded bg-slate-900 border-slate-600 text-[#C9A961] focus:ring-[#C9A961]" />
           <span>Tıbbi ürün/cihaz satıyorum (ITS belgesi zorunlu olur)</span>
         </label>
       </section>
@@ -184,20 +184,20 @@ export default function KycForm({ vendorId, initial }: Props) {
           <label className="block text-sm text-slate-400 mb-1.5">IBAN *</label>
           <input type="text" required value={formatIban(iban)} onChange={e => setIban(e.target.value)}
             placeholder="TR00 0000 0000 0000 0000 0000 00" maxLength={32}
-            className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 font-mono text-sm" />
+            className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#C9A961] font-mono text-sm" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-sm text-slate-400 mb-1.5">Hesap Sahibi *</label>
             <input type="text" required value={ibanHolderName} onChange={e => setIbanHolderName(e.target.value)}
               placeholder="Şirket veya kişi adı"
-              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm" />
+              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#C9A961] text-sm" />
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1.5">Banka *</label>
             <input type="text" required value={bankName} onChange={e => setBankName(e.target.value)}
               placeholder="Garanti BBVA, Akbank, ..."
-              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 text-sm" />
+              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#C9A961] text-sm" />
           </div>
         </div>
       </section>
@@ -256,7 +256,7 @@ export default function KycForm({ vendorId, initial }: Props) {
         </div>
         <label className="flex items-start gap-2 text-sm text-slate-300 cursor-pointer">
           <input type="checkbox" required checked={contractAccepted} onChange={e => setContractAccepted(e.target.checked)}
-            className="w-4 h-4 mt-0.5 rounded bg-slate-900 border-slate-600 text-violet-600 focus:ring-violet-500" />
+            className="w-4 h-4 mt-0.5 rounded bg-slate-900 border-slate-600 text-[#C9A961] focus:ring-[#C9A961]" />
           <span>Yukarıdaki sözleşmenin tüm maddelerini okudum, anladım ve kabul ediyorum.</span>
         </label>
       </section>
@@ -313,11 +313,11 @@ function DocSlot({
         </div>
       ) : (
         <label className={`block p-4 rounded-lg border-2 border-dashed text-center cursor-pointer transition-colors ${
-          uploading ? 'border-violet-500 bg-violet-500/10 text-violet-300' : 'border-slate-600 hover:border-slate-500 text-slate-400 hover:text-slate-300'
+          uploading ? 'border-[#C9A961] bg-[#C9A961]/10 text-[#C9A961]' : 'border-slate-600 hover:border-slate-500 text-slate-400 hover:text-slate-300'
         }`}>
           {uploading ? (
             <div className="flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-[#C9A961] border-t-transparent rounded-full animate-spin" />
               Yükleniyor…
             </div>
           ) : (

@@ -40,7 +40,7 @@ export default async function VendorKycPage({
           <h1 className="text-white font-bold text-xl mb-2">İş Ortağı Hesabı Yok</h1>
           <p className="text-slate-400 text-sm mb-6">KYC için önce iş ortağı başvurusu yapmalısınız.</p>
           <Link href="/satici/basvur"
-            className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl text-sm">
+            className="px-6 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl text-sm">
             İş Ortağı Başvurusu Yap →
           </Link>
         </div>
@@ -67,7 +67,7 @@ export default async function VendorKycPage({
               Bilgileriniz {vendor.kyc_reviewed_at ? new Date(vendor.kyc_reviewed_at).toLocaleDateString('tr-TR') : ''} tarihinde onaylandı.
             </p>
             <p className="text-slate-400 text-sm mt-4">
-              KYC bilgilerini güncellemek için <a href="mailto:destek@estelongy.com" className="text-violet-400 hover:underline">destek@estelongy.com</a> adresinden iletişime geçin.
+              KYC bilgilerini güncellemek için <a href="mailto:destek@estelongy.com" className="text-[#C9A961] hover:underline">destek@estelongy.com</a> adresinden iletişime geçin.
             </p>
           </div>
         </div>
@@ -84,10 +84,10 @@ export default async function VendorKycPage({
             className="inline-flex items-center gap-1.5 mb-6 text-slate-400 hover:text-white text-sm">
             ← İş Ortağı Paneli
           </Link>
-          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-8 text-center">
+          <div className="rounded-2xl border border-[#C9A961]/30 bg-[#C9A961]/10 p-8 text-center">
             <div className="text-5xl mb-4">⏳</div>
             <h1 className="text-white font-bold text-2xl mb-2">KYC İncelemede</h1>
-            <p className="text-amber-300 text-sm">
+            <p className="text-[#D4B872] text-sm">
               Bilgileriniz {vendor.kyc_submitted_at ? new Date(vendor.kyc_submitted_at).toLocaleDateString('tr-TR') : ''} tarihinde admin onayına gönderildi.
             </p>
             <p className="text-slate-400 text-sm mt-4">

@@ -88,11 +88,11 @@ export default async function SaticiBasvurPage({
           <div className="w-full max-w-md text-center">
             <div className={`w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4 ${
               existing.approval_status === 'approved' ? 'bg-emerald-500/20' :
-              existing.approval_status === 'rejected' ? 'bg-red-500/20' : 'bg-amber-500/20'
+              existing.approval_status === 'rejected' ? 'bg-red-500/20' : 'bg-[#C9A961]/20'
             }`}>
               <svg className={`w-8 h-8 ${
                 existing.approval_status === 'approved' ? 'text-emerald-400' :
-                existing.approval_status === 'rejected' ? 'text-red-400' : 'text-amber-400'
+                existing.approval_status === 'rejected' ? 'text-red-400' : 'text-[#C9A961]'
               }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
@@ -107,7 +107,7 @@ export default async function SaticiBasvurPage({
                'Başvurunuz admin onayı bekliyor. En kısa sürede değerlendirilecek.'}
             </p>
             <Link href={existing.approval_status === 'approved' ? '/satici/panel' : '/panel'}
-              className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
+              className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl">
               {existing.approval_status === 'approved' ? 'İş Ortağı Paneline Git' : 'Panele Dön'}
             </Link>
           </div>
@@ -133,7 +133,7 @@ export default async function SaticiBasvurPage({
             Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-400">giriş yaparak</strong> iş ortağı panelinize erişebilirsiniz.
           </p>
           <Link href="/giris"
-            className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
+            className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl">
             Giriş Yap
           </Link>
         </div>
@@ -156,7 +156,7 @@ export default async function SaticiBasvurPage({
 
       <div className="max-w-2xl mx-auto px-4 pt-24 pb-16">
         <div className="mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white mb-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#C9A961] to-[#B8964F] flex items-center justify-center text-white mb-4">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
           </div>
           <h1 className="text-2xl font-bold text-white">İş Ortağı Olarak Katıl</h1>

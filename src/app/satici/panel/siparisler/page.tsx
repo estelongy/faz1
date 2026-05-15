@@ -79,7 +79,7 @@ export default async function SaticiSiparislerPage({
         {/* Durum filtreleri */}
         <div className="flex flex-wrap gap-2 mb-6">
           <Link href="/satici/panel/siparisler"
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${!durum ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700'}`}>
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${!durum ? 'bg-[#C9A961] text-white' : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700'}`}>
             Tümü
           </Link>
           {[
@@ -89,7 +89,7 @@ export default async function SaticiSiparislerPage({
             { key: 'delivered', label: 'Teslim',      count: statusCounts.delivered, color: 'emerald' },
           ].map(f => (
             <Link key={f.key} href={`/satici/panel/siparisler?durum=${f.key}`}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${durum === f.key ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700'}`}>
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${durum === f.key ? 'bg-[#C9A961] text-white' : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700'}`}>
               {f.label} {f.count > 0 && <span className="ml-1 opacity-70">({f.count})</span>}
             </Link>
           ))}
