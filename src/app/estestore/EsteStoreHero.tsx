@@ -127,21 +127,25 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
             <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center h-full">
               {/* Sol: metin */}
               <div className="space-y-4 lg:space-y-5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C9A961]">
+                {/* Eyebrow — 14px bold */}
+                <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#C9A961]">
                   {slide.eyebrow}
                 </p>
-                <h1 className="text-[26px] sm:text-[34px] lg:text-[40px] leading-[1.08] font-medium text-slate-50 tracking-[-0.02em]">
+                {/* Display H1 — 30/36/48 */}
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl leading-[1.08] font-bold text-white tracking-[-0.02em]">
                   {slide.title}
                 </h1>
-                <p className="text-base lg:text-lg text-slate-300 leading-relaxed max-w-lg">
+                {/* Body lead — 16/18 */}
+                <p className="text-base lg:text-lg text-slate-200 leading-relaxed max-w-lg">
                   {slide.subtitle}
                 </p>
 
                 {slide.kind === 'product-showcase' && (
                   <div className="flex flex-wrap items-center gap-3 pt-1">
+                    {/* CTA — 16px semibold */}
                     <Link
                       href={slide.ctaHref}
-                      className="inline-flex items-center gap-2 bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] font-semibold px-6 py-3 rounded-full transition-all hover:shadow-[0_8px_30px_rgba(201,169,97,0.35)]"
+                      className="inline-flex items-center gap-2 bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] font-semibold text-base px-6 py-3 rounded-full transition-all hover:shadow-[0_8px_30px_rgba(201,169,97,0.35)]"
                     >
                       {slide.ctaText}
                       <ArrowRight size={16} />
@@ -149,12 +153,12 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
                     {slide.secondaryText && (
                       <Link
                         href={slide.secondaryHref ?? '#'}
-                        className="inline-flex items-center gap-2 text-slate-300 hover:text-slate-50 px-2 py-3 transition-colors group text-sm"
+                        className="inline-flex items-center gap-2 text-base font-semibold text-white hover:text-[#C9A961] px-2 py-3 transition-colors group"
                       >
                         {slide.secondaryText}
                         <ArrowRight
-                          size={14}
-                          className="opacity-60 group-hover:translate-x-1 transition-transform"
+                          size={16}
+                          className="opacity-70 group-hover:translate-x-1 transition-transform"
                         />
                       </Link>
                     )}
@@ -255,10 +259,12 @@ function RolePickerComposition() {
               >
                 <Icon size={20} />
               </span>
-              <span className="text-[13px] font-semibold text-slate-50">
+              {/* Role label — 16px semibold (kart tıklanabilir) */}
+              <span className="text-base font-semibold text-white">
                 {role.label}
               </span>
-              <span className="text-[10px] text-slate-400 text-center leading-tight line-clamp-2">
+              {/* Sub — 14px bold (kural: 14 → bold) */}
+              <span className="text-sm font-semibold text-slate-300 text-center leading-tight">
                 {role.sub}
               </span>
             </Link>

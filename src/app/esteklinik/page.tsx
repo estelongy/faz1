@@ -60,21 +60,25 @@ export default async function KliniklerPage() {
             />
 
             <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-10 sm:pt-12 sm:pb-12">
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                {/* Eyebrow — 14px bold */}
+                <p className="text-sm font-bold uppercase tracking-[0.22em] text-emerald-300">
                   EsteKlinik
                 </p>
+                {/* Pill link — 16px (tıklanabilir min) */}
                 <Link
                   href="/esteklinik/basvur"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-[12px] font-semibold bg-white/10 hover:bg-white/20 border border-emerald-300/40 text-emerald-100 backdrop-blur-sm transition-colors shrink-0"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-base font-semibold bg-white/10 hover:bg-white/20 border border-emerald-300/40 text-white backdrop-blur-sm transition-colors shrink-0"
                 >
-                  <Building2 size={13} />
+                  <Building2 size={16} />
                   Klinik misin? Başvur
-                  <ArrowRight size={12} />
+                  <ArrowRight size={16} />
                 </Link>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">Randevu Ara</h1>
-              <p className="text-emerald-100/80 text-sm mt-1 mb-6">
+              {/* Hero H1 — 36/48 */}
+              <h1 className="text-4xl sm:text-5xl font-bold text-white leading-[1.05]">Randevu Ara</h1>
+              {/* Body lead — 16/18 */}
+              <p className="text-emerald-100 text-base sm:text-lg mt-3 mb-7">
                 Bilimi Güzelliğe Dönüştüren Klinikleri Keşfet
               </p>
 
@@ -92,15 +96,18 @@ export default async function KliniklerPage() {
           {/* ============================================================
               EGP açıklama
               ============================================================ */}
-          <section className="bg-[#FAFAF7] border-t border-slate-200 py-10">
+          <section className="bg-[#FAFAF7] border-t border-slate-200 py-12">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#10876B] mb-2">
+              {/* Eyebrow — 14px bold */}
+              <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#10876B] mb-3">
                 Estelongy Güven Puanı
               </p>
-              <h3 className="text-slate-900 font-bold text-xl sm:text-2xl mb-2">
+              {/* H1 section — 24/30 */}
+              <h2 className="text-slate-900 font-bold text-2xl sm:text-3xl mb-3">
                 Reklam değil, sonuç konuşur
-              </h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
+              </h2>
+              {/* Body — 16 */}
+              <p className="text-slate-700 text-base leading-relaxed">
                 EGP, hasta sonuç değişimi, tavsiye eğilimi ve klinik akreditasyonunun ağırlıklı
                 bileşkesidir. Kliniklerin reklam bütçesi sıralamayı etkilemez.
               </p>

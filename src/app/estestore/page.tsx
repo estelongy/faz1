@@ -209,10 +209,12 @@ export default async function EsteStorePage() {
 
             <section className="py-8 lg:py-12 bg-[#FAFAF7] -mx-6 lg:-mx-10 px-6 lg:px-10 rounded-3xl">
               <div className="text-center mb-12 max-w-2xl mx-auto">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8B7339] mb-3">
+                {/* Eyebrow — 14px bold */}
+                <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#8B7339] mb-3">
                   Neden EsteStore?
                 </p>
-                <h2 className="text-[28px] lg:text-[36px] font-medium text-slate-900 tracking-[-0.02em]">
+                {/* H1 section — 30/36 */}
+                <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 tracking-[-0.02em]">
                   Diğer mağazalardan farkımız
                 </h2>
               </div>
@@ -302,14 +304,14 @@ function TopNav({ user }: { user: boolean }) {
           </button>
           <Link
             href="/rehber"
-            className="hidden sm:inline-flex px-3 h-10 items-center text-sm text-slate-300 hover:text-slate-100 transition-colors rounded-full hover:bg-slate-800/40"
+            className="hidden sm:inline-flex px-3 h-10 items-center text-base font-semibold text-slate-200 hover:text-white transition-colors rounded-full hover:bg-slate-800/40"
           >
             Rehber
           </Link>
           {user ? (
             <Link
               href="/panel"
-              className="px-4 h-10 inline-flex items-center text-sm text-slate-300 hover:text-slate-100 transition-colors rounded-full hover:bg-slate-800/40"
+              className="px-4 h-10 inline-flex items-center text-base font-semibold text-slate-200 hover:text-white transition-colors rounded-full hover:bg-slate-800/40"
             >
               Hesabım
             </Link>
@@ -317,13 +319,13 @@ function TopNav({ user }: { user: boolean }) {
             <>
               <Link
                 href="/giris?g=estestore"
-                className="px-3 h-10 inline-flex items-center text-sm text-slate-300 hover:text-slate-100 transition-colors rounded-full hover:bg-slate-800/40"
+                className="px-3 h-10 inline-flex items-center text-base font-semibold text-slate-200 hover:text-white transition-colors rounded-full hover:bg-slate-800/40"
               >
                 Giriş
               </Link>
               <Link
                 href="/kayit?g=estestore"
-                className="hidden sm:inline-flex px-4 h-10 items-center text-sm font-medium text-[#0F172A] bg-slate-100 hover:bg-white transition-colors rounded-full"
+                className="hidden sm:inline-flex px-4 h-10 items-center text-base font-semibold text-[#0F172A] bg-slate-100 hover:bg-white transition-colors rounded-full"
               >
                 Kayıt Ol
               </Link>
@@ -361,23 +363,27 @@ function SectionHeader({
   return (
     <div className="flex items-end justify-between gap-6 flex-wrap">
       <div className="space-y-2 min-w-0">
+        {/* Eyebrow — 14px bold */}
         <p
-          className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+          className="text-sm font-bold uppercase tracking-[0.18em]"
           style={{ color: accent }}
         >
           {eyebrow}
         </p>
-        <h2 className="text-[26px] lg:text-[32px] font-medium text-slate-900 tracking-[-0.02em]">
+        {/* H1 section — 24/30 */}
+        <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-[-0.02em]">
           {title}
         </h2>
-        <p className="text-base text-slate-600 max-w-2xl">{subtitle}</p>
+        {/* Body — 16 */}
+        <p className="text-base text-slate-700 max-w-2xl">{subtitle}</p>
       </div>
+      {/* Link — 16px semibold (tıklanabilir) */}
       <Link
         href={href}
-        className="inline-flex items-center gap-2 text-sm text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap font-medium"
+        className="inline-flex items-center gap-2 text-base font-semibold text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap"
       >
         Tümünü gör
-        <ArrowRight size={14} />
+        <ArrowRight size={16} />
       </Link>
     </div>
   )
@@ -416,8 +422,8 @@ function ValueProp({
       <div className="inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-[#C9A961]/15 mb-4">
         <Icon size={22} className="text-[#8B7339]" />
       </div>
-      <h3 className="text-lg font-medium text-slate-900 mb-2">{title}</h3>
-      <p className="text-base text-slate-600 leading-relaxed">{body}</p>
+      <h3 className="text-lg font-bold text-slate-900 mb-2">{title}</h3>
+      <p className="text-base text-slate-700 leading-relaxed">{body}</p>
     </div>
   )
 }
@@ -425,8 +431,9 @@ function ValueProp({
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="text-center py-14 px-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50">
-      <ShieldCheck size={28} className="text-slate-400 mx-auto mb-3" />
-      <p className="text-sm text-slate-500">{message}</p>
+      <ShieldCheck size={28} className="text-slate-500 mx-auto mb-3" />
+      {/* 14 → bold */}
+      <p className="text-sm font-bold text-slate-700">{message}</p>
     </div>
   )
 }
@@ -460,14 +467,14 @@ function AkademiCard({
         )}
         {!isPro && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center">
-            <div className="px-3 py-1.5 rounded-full bg-[#C9A961]/15 border border-[#C9A961]/40 text-[#8B7339] text-xs font-semibold">
+            <div className="px-3 py-1.5 rounded-full bg-[#C9A961]/15 border border-[#C9A961]/40 text-[#8B7339] text-sm font-bold">
               Profesyonel
             </div>
           </div>
         )}
       </div>
       <div className="p-5 flex-1 flex flex-col">
-        <h3 className="text-slate-900 text-[15px] font-medium leading-snug line-clamp-2 mb-3">
+        <h3 className="text-slate-900 text-base font-bold leading-snug line-clamp-2 mb-3">
           {pkg.title}
         </h3>
         <div className="mt-auto">
