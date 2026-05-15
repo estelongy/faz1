@@ -197,7 +197,7 @@ export default async function BiyoAGEPage() {
             </h2>
             <p className="text-violet-100/70 text-sm sm:text-base leading-relaxed">
               BiyoAGE, biyolojik yaşlanmanı ölçülebilir kılar. Skor bir hedef değil, bir başlangıç çizgisi.
-              Aksiyon EsteKlinik'te, süreklilik EsteStore'da — ama hepsi bu rakamla başlar.
+              Aksiyon EsteKlinik&apos;te, süreklilik EsteStore&apos;da — ama hepsi bu rakamla başlar.
             </p>
           </div>
         </section>
