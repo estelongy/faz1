@@ -1,11 +1,11 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
+import Link from 'next/link'
 import { Calendar } from 'lucide-react'
-import { egpBadgeColor, egpLabel, egpDisplayPublic, MIN_REVIEWS_THRESHOLD } from '@/lib/clinic-review'
+import { egpBadgeColor, egpDisplayPublic, MIN_REVIEWS_THRESHOLD } from '@/lib/clinic-review'
 import MeasuringBadge from '@/components/MeasuringBadge'
 import ClinicPreviewModal, { type ClinicPreview } from '@/components/ClinicPreviewModal'
-import KlinikSlotPopover from './KlinikSlotPopover'
 
 export interface ClinicRow {
   id: string
@@ -33,10 +33,6 @@ const CLINIC_TYPE_LABEL: Record<string, string> = {
 
 export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
   const [previewOpen, setPreviewOpen] = useState(false)
-  const [slotOpen, setSlotOpen] = useState(false)
-  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null)
-  const anchorRef = useRef<HTMLDivElement | null>(null)
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const egp = clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null
   const reviewCount = clinic.review_count ?? 0
@@ -58,18 +54,6 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
     avg_nps: clinic.avg_nps,
     logo_url: clinic.logo_url,
     cover_image_url: clinic.cover_image_url,
-  }
-
-  function handleRandevuEnter() {
-    if (closeTimer.current) {
-      clearTimeout(closeTimer.current)
-      closeTimer.current = null
-    }
-    if (anchorRef.current) setAnchorRect(anchorRef.current.getBoundingClientRect())
-    setSlotOpen(true)
-  }
-  function handleRandevuLeave() {
-    closeTimer.current = setTimeout(() => setSlotOpen(false), 200)
   }
 
   return (
@@ -154,44 +138,21 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
             {bioPreview ?? <span className="text-slate-300 italic">Henüz açıklama eklenmedi.</span>}
           </p>
 
-          {/* EGP açıklama — sabit slot (EGP varsa label, yoksa boş) */}
-          <div className="min-h-[14px]">
-            {!showMeasuring && egp != null && (
-              <p className="text-[10px] text-slate-400">{egpLabel(egp)}</p>
-            )}
-          </div>
-
-          {/* Footer: deneyim sayısı + Randevu Al butonu (hover ile popover) */}
+          {/* Footer: deneyim sayısı + Randevu Al */}
           <footer className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto gap-3">
             <p className="text-[11px] text-slate-500">
               💬 <strong className="text-slate-700">{reviewCount}</strong> deneyim · son 12 ay
             </p>
 
-            <div
-              ref={anchorRef}
-              className="relative"
-              onMouseEnter={handleRandevuEnter}
-              onMouseLeave={handleRandevuLeave}
+            <Link
+              href={`/esteklinik/randevu?k=${clinic.id}`}
               onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold transition-colors shadow-md shadow-[#10876B]/30"
+              aria-label={`${clinic.name} için randevu al`}
             >
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); handleRandevuEnter() }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold transition-colors shadow-md shadow-[#10876B]/30"
-                aria-label={`${clinic.name} için randevu al`}
-              >
-                <Calendar size={13} />
-                Randevu Al
-              </button>
-
-              {slotOpen && (
-                <KlinikSlotPopover
-                  clinicId={clinic.id}
-                  onClose={() => setSlotOpen(false)}
-                  anchorRect={anchorRect}
-                />
-              )}
-            </div>
+              <Calendar size={13} />
+              Randevu Al
+            </Link>
           </footer>
         </div>
       </div>
