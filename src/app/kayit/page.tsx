@@ -118,7 +118,8 @@ function KayitInner() {
     const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
     if (signInErr) { setStep('verify'); return }
-    router.push('/panel')
+    // Galaksi context'i varsa kullanıcı o galaksiye dönsün (kayıt olduğu evren)
+    router.push(galaxy !== 'default' ? `/${galaxy}` : '/panel')
     router.refresh()
   }
 

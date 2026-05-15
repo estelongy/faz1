@@ -31,7 +31,19 @@ function GirisInner() {
     }
   }, [searchParams])
 
-  // Zaten girişli kullanıcı: next varsa oraya, yoksa rolüne göre
+  // Giriş sonrası rota: next > rol paneli > galaksi landing (regular user)
+  function resolveDest(role: string | null | undefined): string {
+    const next = searchParams.get('next')
+    if (next && next.startsWith('/')) return next
+    // Pro roller (admin/klinik/satıcı/HP) galaksi-agnostik kendi panellerine
+    const proRoles = ['admin', 'clinic', 'vendor', 'health_professional']
+    if (role && proRoles.includes(role)) return pathForRole(role)
+    // Regular user: galaksi context'i varsa ona dön, yoksa çatı panel
+    if (galaxy !== 'default') return `/${galaxy}`
+    return pathForRole(role)
+  }
+
+  // Zaten girişli kullanıcı
   useEffect(() => {
     let cancelled = false
     async function checkAuth() {
@@ -39,13 +51,12 @@ function GirisInner() {
       const { data: { user } } = await supabase.auth.getUser()
       if (cancelled || !user) return
       const role = (user.app_metadata as Record<string, string>)?.role
-      const next = searchParams.get('next')
-      const dest = (next && next.startsWith('/')) ? next : pathForRole(role)
-      router.replace(dest)
+      router.replace(resolveDest(role))
     }
     checkAuth()
     return () => { cancelled = true }
-  }, [router, searchParams])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, searchParams, galaxy])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -64,9 +75,7 @@ function GirisInner() {
         return
       }
       const role = json.role as string | null
-      const next = searchParams.get('next')
-      const dest = (next && next.startsWith('/')) ? next : pathForRole(role ?? undefined)
-      router.push(dest)
+      router.push(resolveDest(role))
       router.refresh()
     } catch {
       setError('Ağ hatası. Lütfen tekrar deneyin.')
