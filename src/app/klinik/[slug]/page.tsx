@@ -87,33 +87,44 @@ export default async function PublicClinicPage({ params }: Props) {
       <EsteKlinikNav />
 
       <main className="bg-white min-h-screen">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs text-slate-500 mb-4">
-            <Link href="/klinikler" className="hover:text-[#10876B] transition-colors font-semibold text-[#10876B]">EsteKlinik</Link>
-            <span>›</span>
-            <span className="text-slate-900 truncate font-medium">{clinic.name}</span>
-          </nav>
-
-          {/* Kapak — overlay YOK, görsel net görünür */}
-          <div className="relative aspect-[3/1] rounded-2xl overflow-hidden mb-5 border border-slate-200">
-            {clinic.cover_image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={clinic.cover_image_url} alt={clinic.name} className="w-full h-full object-cover" />
-            ) : (
-              <>
-                <div className="absolute inset-0 bg-gradient-to-br from-[#10876B] via-[#0A6347] to-[#064E3B]" />
-                <div className="absolute inset-0 opacity-40" style={{
-                  backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(110,231,183,0.5), transparent 50%), radial-gradient(circle at 70% 70%, rgba(16,135,107,0.45), transparent 50%)'
-                }} />
-              </>
+        {/* Hero şerit — dünya kimliği */}
+        <section className="relative bg-gradient-to-br from-[#064E3B] via-[#0A6347] to-[#053527] overflow-hidden">
+          <div
+            aria-hidden
+            className="absolute -top-32 -right-32 w-[420px] h-[420px] rounded-full opacity-25 blur-3xl"
+            style={{ background: 'radial-gradient(circle, #10876B 0%, transparent 70%)' }}
+          />
+          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-6">
+            <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-3">
+              <Link href="/klinikler" className="hover:text-white transition-colors">EsteKlinik</Link>
+              <span>›</span>
+              <span className="text-white font-semibold truncate">{clinic.name}</span>
+            </nav>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-1">
+              EsteKlinik · Onaylı Merkez
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">{clinic.name}</h1>
+            {clinic.location && (
+              <p className="text-emerald-100/80 text-sm mt-1 flex items-center gap-1.5">
+                <MapPin size={13} /> {clinic.location}
+              </p>
             )}
           </div>
+        </section>
 
-          {/* Üst kart: klinik kimlik + EGP rozet */}
-          <header className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-            <div className="lg:col-span-2 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-              <div className="flex items-start gap-3 mb-2">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+          {/* Kapak görseli (varsa) */}
+          {clinic.cover_image_url && (
+            <div className="relative aspect-[16/6] rounded-2xl overflow-hidden mb-6 border border-slate-200 shadow-sm">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={clinic.cover_image_url} alt={clinic.name} className="w-full h-full object-cover" />
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Sol: klinik bilgisi */}
+            <div className="lg:col-span-2 space-y-5">
+              <div className="flex items-start gap-3">
                 {clinic.logo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={clinic.logo_url} alt={clinic.name} className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shrink-0" />
@@ -123,17 +134,19 @@ export default async function PublicClinicPage({ params }: Props) {
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">{clinic.name}</h1>
+                  <h2 className="text-slate-900 font-bold text-lg">{clinic.name}</h2>
+                  {clinic.location && (
+                    <p className="text-slate-500 text-xs mt-0.5 flex items-center gap-1">
+                      <MapPin size={11} className="text-[#10876B]" /> {clinic.location}
+                    </p>
+                  )}
                 </div>
               </div>
-              {clinic.location && (
-                <p className="text-slate-500 text-sm mb-3 flex items-center gap-1.5">
-                  <MapPin size={13} className="text-[#10876B]" /> {clinic.location}
-                </p>
-              )}
+
               {clinic.bio && (
-                <p className="text-slate-700 text-sm leading-relaxed mb-4 whitespace-pre-wrap">{clinic.bio}</p>
+                <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{clinic.bio}</p>
               )}
+
               {Array.isArray(clinic.specialties) && clinic.specialties.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {clinic.specialties.map((s: string, i: number) => (
@@ -145,22 +158,37 @@ export default async function PublicClinicPage({ params }: Props) {
               )}
             </div>
 
-            {showMeasuringBadge ? (
-              <MeasuringBadge reviewCount={reviewCount} variant="badge" />
-            ) : (
-              <div className={`p-6 rounded-2xl border-2 bg-white ${egpBadgeColor(egp)}`}>
-                <p className="text-[10px] uppercase tracking-widest opacity-70 font-semibold mb-1">Klinik EGP</p>
-                <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-5xl font-black">{egpPublic ?? '—'}</span>
-                  {egpPublic && egpPublic !== '<7' && <span className="text-xs opacity-70">/10</span>}
+            {/* Sağ rail: EGP + Randevu CTA (sticky) */}
+            <aside className="lg:sticky lg:top-24 lg:self-start space-y-3">
+              {showMeasuringBadge ? (
+                <MeasuringBadge reviewCount={reviewCount} variant="badge" />
+              ) : (
+                <div className={`p-5 rounded-2xl border-2 bg-white ${egpBadgeColor(egp)}`}>
+                  <p className="text-[10px] uppercase tracking-widest opacity-70 font-semibold mb-1">Klinik EGP</p>
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-5xl font-black leading-none">{egpPublic ?? '—'}</span>
+                    {egpPublic && egpPublic !== '<7' && <span className="text-xs opacity-70">/10</span>}
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-wider mt-2">{egpLabel(egp)}</p>
+                  <p className="text-[11px] opacity-80 mt-2"><strong>{reviewCount}</strong> deneyim · son 12 ay</p>
                 </div>
-                <p className="text-xs font-bold uppercase tracking-wider mb-3">{egpLabel(egp)}</p>
-                <p className="text-[11px] opacity-80 leading-relaxed">
-                  <strong>{reviewCount}</strong> deneyim · son 12 ay
-                </p>
-              </div>
-            )}
-          </header>
+              )}
+
+              <Link
+                href={`/randevu?k=${clinic.id}`}
+                className="hidden lg:flex items-center justify-center gap-1.5 w-full px-5 py-3 bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-[#10876B]/30"
+              >
+                <Calendar size={14} />
+                Randevu Al
+              </Link>
+              <Link
+                href="/analiz"
+                className="hidden lg:flex items-center justify-center w-full px-4 py-2.5 border border-slate-300 hover:border-[#10876B] text-slate-700 hover:text-[#0E7559] text-sm font-medium rounded-xl transition-colors"
+              >
+                Ön Analiz
+              </Link>
+            </aside>
+          </div>
 
           {/* Felsefe notu */}
           <div className="p-4 rounded-xl bg-[#FAFAF7] border border-slate-200 text-xs text-slate-600 leading-relaxed mb-6">

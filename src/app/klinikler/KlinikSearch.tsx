@@ -155,6 +155,37 @@ export function KlinikSearchInputs() {
   )
 }
 
+/** Branş sidebar — sol kolonda render edilir */
+export function KlinikBranchSidebar() {
+  const s = useSearch()
+  const items: Array<{ label: string; key: string }> = [
+    { label: 'Tüm Branşlar', key: '' },
+    ...BRANCHES.map(b => ({ label: b, key: b })),
+  ]
+  return (
+    <nav className="space-y-1">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#10876B] mb-2 px-2">Branşlar</p>
+      {items.map(it => {
+        const active = s.branch === it.key
+        return (
+          <button
+            key={it.key || 'all'}
+            type="button"
+            onClick={() => s.setBranch(it.key)}
+            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+              active
+                ? 'bg-[#10876B]/10 text-[#0E7559] border border-[#10876B]/30 font-semibold'
+                : 'text-slate-700 hover:bg-slate-100 border border-transparent'
+            }`}
+          >
+            {it.label}
+          </button>
+        )
+      })}
+    </nav>
+  )
+}
+
 /** Sonuç grid — beyaz zemin section'ında render edilir */
 export function KlinikSearchResults() {
   const s = useSearch()

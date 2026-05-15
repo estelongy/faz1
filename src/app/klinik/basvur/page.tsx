@@ -6,6 +6,8 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import KlinikBasvurForm from '@/components/KlinikBasvurForm'
+import EsteKlinikNav from '@/app/klinikler/EsteKlinikNav'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Klinik Başvurusu',
@@ -104,34 +106,38 @@ export default async function KlinikBasvurPage({
 
     if (existing) {
       return (
-        <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
-          <div className="w-full max-w-md text-center">
-            <div className={`w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4 ${
-              existing.approval_status === 'approved' ? 'bg-emerald-500/20' :
-              existing.approval_status === 'rejected' ? 'bg-red-500/20' : 'bg-amber-500/20'
-            }`}>
-              <svg className={`w-8 h-8 ${
-                existing.approval_status === 'approved' ? 'text-emerald-400' :
-                existing.approval_status === 'rejected' ? 'text-red-400' : 'text-amber-400'
-              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+        <>
+          <EsteKlinikNav />
+          <main className="min-h-screen bg-white flex items-center justify-center p-4">
+            <div className="w-full max-w-md text-center p-8 rounded-2xl bg-white border border-slate-200 shadow-sm">
+              <div className={`w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4 ${
+                existing.approval_status === 'approved' ? 'bg-[#10876B]/15' :
+                existing.approval_status === 'rejected' ? 'bg-red-100' : 'bg-amber-100'
+              }`}>
+                <svg className={`w-8 h-8 ${
+                  existing.approval_status === 'approved' ? 'text-[#10876B]' :
+                  existing.approval_status === 'rejected' ? 'text-red-500' : 'text-amber-500'
+                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-slate-900 mb-2">
+                {existing.approval_status === 'approved' ? 'Klinik Hesabınız Aktif' :
+                 existing.approval_status === 'rejected' ? 'Başvurunuz Reddedildi' : 'Başvurunuz İnceleniyor'}
+              </h2>
+              <p className="text-slate-600 text-sm mb-6">
+                {existing.approval_status === 'approved' ? 'Klinik panelinize erişebilirsiniz.' :
+                 existing.approval_status === 'rejected' ? 'Başvurunuz onaylanmadı. Destek ekibiyle iletişime geçin.' :
+                 'Başvurunuz admin onayı bekliyor. En kısa sürede değerlendirilecek.'}
+              </p>
+              <Link href={existing.approval_status === 'approved' ? '/klinik/panel' : '/panel'}
+                className="inline-flex items-center justify-center w-full py-3 bg-[#10876B] hover:bg-[#0E7559] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#10876B]/30">
+                {existing.approval_status === 'approved' ? 'Klinik Paneline Git' : 'Panele Dön'}
+              </Link>
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">
-              {existing.approval_status === 'approved' ? 'Klinik Hesabınız Aktif' :
-               existing.approval_status === 'rejected' ? 'Başvurunuz Reddedildi' : 'Başvurunuz İnceleniyor'}
-            </h2>
-            <p className="text-slate-400 text-sm mb-6">
-              {existing.approval_status === 'approved' ? 'Klinik panelinize erişebilirsiniz.' :
-               existing.approval_status === 'rejected' ? 'Başvurunuz onaylanmadı. Destek ekibiyle iletişime geçin.' :
-               'Başvurunuz admin onayı bekliyor. En kısa sürede değerlendirilecek.'}
-            </p>
-            <Link href={existing.approval_status === 'approved' ? '/klinik/panel' : '/panel'}
-              className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl">
-              {existing.approval_status === 'approved' ? 'Klinik Paneline Git' : 'Panele Dön'}
-            </Link>
-          </div>
-        </main>
+          </main>
+          <Footer />
+        </>
       )
     }
   }
@@ -139,53 +145,63 @@ export default async function KlinikBasvurPage({
   // Başarılı başvuru ekranı (yeni kayıt)
   if (isSuccess) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
-        <div className="w-full max-w-md text-center">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/20 flex items-center justify-center mb-4">
-            <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+      <>
+        <EsteKlinikNav />
+        <main className="min-h-screen bg-white flex items-center justify-center p-4">
+          <div className="w-full max-w-md text-center p-8 rounded-2xl bg-white border border-slate-200 shadow-sm">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-[#10876B]/15 flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-[#10876B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">Başvurunuz Alındı</h2>
+            <p className="text-slate-600 text-sm mb-2">
+              Başvurunuz incelemeye alındı. En kısa sürede değerlendirilecek.
+            </p>
+            <p className="text-slate-500 text-xs mb-6">
+              Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-700">giriş yaparak</strong> klinik panelinize erişebilirsiniz.
+            </p>
+            <Link href="/giris"
+              className="inline-flex items-center justify-center w-full py-3 bg-[#10876B] hover:bg-[#0E7559] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#10876B]/30">
+              Giriş Yap
+            </Link>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Başvurunuz Alındı</h2>
-          <p className="text-slate-400 text-sm mb-2">
-            Başvurunuz incelemeye alındı. En kısa sürede değerlendirilecek.
-          </p>
-          <p className="text-slate-500 text-xs mb-6">
-            Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-400">giriş yaparak</strong> klinik panelinize erişebilirsiniz.
-          </p>
-          <Link href="/giris"
-            className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl">
-            Giriş Yap
-          </Link>
-        </div>
-      </main>
+        </main>
+        <Footer />
+      </>
     )
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/klinikler" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#10876B]/40 hover:border-emerald-300/60 hover:bg-[#0A6347]/30 text-emerald-200 hover:text-white text-sm font-medium transition-colors">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-            EsteKlinik
-          </Link>
-          <span className="text-white font-bold">Klinik Başvurusu</span>
-          <div className="w-16" />
-        </div>
-      </header>
-
-      <div className="max-w-2xl mx-auto px-4 pt-24 pb-16">
-        <div className="mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white mb-4">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+    <>
+      <EsteKlinikNav />
+      <main className="min-h-screen bg-white">
+        {/* Hero şerit */}
+        <section className="relative bg-gradient-to-br from-[#064E3B] via-[#0A6347] to-[#053527] overflow-hidden">
+          <div
+            aria-hidden
+            className="absolute -top-32 -right-32 w-[420px] h-[420px] rounded-full opacity-25 blur-3xl"
+            style={{ background: 'radial-gradient(circle, #10876B 0%, transparent 70%)' }}
+          />
+          <div className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-8">
+            <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-3">
+              <Link href="/klinikler" className="hover:text-white transition-colors">EsteKlinik</Link>
+              <span>·</span>
+              <span className="text-white font-semibold">Başvuru</span>
+            </nav>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-2">
+              EsteKlinik · Klinik Katılım
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Klinik Olarak Katıl</h1>
+            <p className="text-emerald-100/80 text-sm mt-1">Başvurunuz admin onayından sonra aktive edilir</p>
           </div>
-          <h1 className="text-2xl font-bold text-white">Klinik Olarak Katıl</h1>
-          <p className="text-slate-400 text-sm mt-1">Başvurunuz admin onayından sonra aktive edilir</p>
-        </div>
+        </section>
 
-        <KlinikBasvurForm action={submitApplication} hasError={hasError} errorType={errorType} isLoggedIn={!!user} />
-      </div>
-    </main>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+          <KlinikBasvurForm action={submitApplication} hasError={hasError} errorType={errorType} isLoggedIn={!!user} />
+        </div>
+      </main>
+      <Footer />
+    </>
   )
 }

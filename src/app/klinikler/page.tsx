@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Footer from '@/components/Footer'
 import EsteKlinikNav from './EsteKlinikNav'
-import { KlinikSearchProvider, KlinikSearchInputs, KlinikSearchResults } from './KlinikSearch'
+import { KlinikSearchProvider, KlinikSearchInputs, KlinikSearchResults, KlinikBranchSidebar } from './KlinikSearch'
 import type { ClinicRow } from './ClinicCard'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com'
@@ -77,10 +77,17 @@ export default async function KliniklerPage() {
           </section>
 
           {/* ============================================================
-              SONUÇ GRID — beyaz zemin
+              SONUÇ — sol branş sidebar + sağ grid
               ============================================================ */}
           <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-            <KlinikSearchResults />
+            <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6">
+              <aside className="lg:sticky lg:top-24 lg:self-start">
+                <KlinikBranchSidebar />
+              </aside>
+              <div>
+                <KlinikSearchResults />
+              </div>
+            </div>
           </section>
 
           {/* ============================================================
