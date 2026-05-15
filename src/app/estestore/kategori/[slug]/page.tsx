@@ -8,6 +8,7 @@ import {
   type UserRole,
 } from '@/lib/estestore'
 import ProductCard, { type ProductCardData } from '../../ProductCard'
+import CartButton from '@/components/CartButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,7 +65,20 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
   }))
 
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6 bg-white min-h-screen">
+    <main className="min-h-screen bg-white">
+      {/* Dark navbar — EsteStore signature (landing + detail + vendor profile ile aynı) */}
+      <header className="sticky top-0 z-50 bg-[#0F172A] border-b border-slate-800">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/estestore" className="text-base font-semibold text-slate-300 hover:text-white transition-colors shrink-0">← EsteStore</Link>
+            <span className="text-slate-700">|</span>
+            <span className="text-white text-base font-bold truncate">{section.label}</span>
+          </div>
+          <CartButton />
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       {/* Breadcrumb — 14 bold */}
       <nav className="flex items-center gap-2 text-sm font-bold text-slate-500">
         <Link href="/estestore" className="hover:text-slate-900 transition-colors text-[#8B7339]">EsteStore</Link>
@@ -97,7 +111,7 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
 
       {/* Liste */}
       {items.length === 0 ? (
-        <p className="text-base text-slate-500 text-center py-16">Bu kategoride henüz ürün yok.</p>
+        <p className="text-base font-semibold text-slate-500 text-center py-16">Bu kategoride henüz ürün yok.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {items.map(p => (
@@ -110,6 +124,7 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
           ))}
         </div>
       )}
+      </div>
     </main>
   )
 }
