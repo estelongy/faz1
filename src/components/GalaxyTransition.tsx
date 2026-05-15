@@ -58,7 +58,7 @@ export function useGalaxyTransition() {
   return ctx
 }
 
-const DURATION_MS = 1400  // sinematik akış için uzatıldı
+const DURATION_MS = 9000  // tam sinematik açılış — kullanıcı sloganı okuyup hissetsin
 
 export function GalaxyTransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
@@ -126,7 +126,7 @@ function GalaxyOverlay({ meta, galaxy }: { meta: GalaxyMeta; galaxy: Galaxy }) {
           style={{
             color: meta.color,
             opacity: 0,
-            animation: 'galaxy-text-in 700ms 350ms ease-out forwards',
+            animation: 'galaxy-text-in 900ms 800ms ease-out forwards, galaxy-text-out 600ms 7900ms ease-in forwards',
             textShadow: `0 0 20px ${meta.color}80`,
           }}
         >
@@ -136,23 +136,37 @@ function GalaxyOverlay({ meta, galaxy }: { meta: GalaxyMeta; galaxy: Galaxy }) {
         {/* Altın ince divider'lar — logo subtitle stili */}
         <div
           className="flex items-center justify-center gap-3 mb-4"
-          style={{ opacity: 0, animation: 'galaxy-text-in 700ms 500ms ease-out forwards' }}
+          style={{
+            opacity: 0,
+            animation: 'galaxy-divider-grow 900ms 1500ms ease-out forwards, galaxy-text-out 600ms 7900ms ease-in forwards',
+          }}
         >
-          <span className="h-px w-12 bg-gradient-to-r from-transparent to-[#C9A961]" />
+          <span className="h-px w-16 bg-gradient-to-r from-transparent to-[#C9A961]" />
           <span className="w-1 h-1 rounded-full bg-[#C9A961]" style={{ boxShadow: '0 0 6px #C9A961' }} />
-          <span className="h-px w-12 bg-gradient-to-l from-transparent to-[#C9A961]" />
+          <span className="h-px w-16 bg-gradient-to-l from-transparent to-[#C9A961]" />
         </div>
 
-        {/* Slogan */}
+        {/* Slogan — uzun süre okunabilir */}
         <p
           className="text-xl font-semibold text-white/95 leading-snug"
           style={{
             opacity: 0,
-            animation: 'galaxy-text-in 700ms 650ms ease-out forwards',
+            animation: 'galaxy-text-in 1000ms 2400ms ease-out forwards, galaxy-text-out 700ms 7800ms ease-in forwards',
           }}
         >
           {meta.slogan}
         </p>
+
+        {/* İlerleme şeridi — kullanıcı geçişin uzunluğunu hissetsin */}
+        <div className="mt-10 mx-auto w-48 h-px bg-white/10 rounded-full overflow-hidden">
+          <div
+            className="h-full"
+            style={{
+              background: `linear-gradient(to right, transparent, ${meta.color}, #C9A961)`,
+              animation: 'galaxy-progress 8500ms linear forwards',
+            }}
+          />
+        </div>
       </div>
 
       <style jsx global>{`
@@ -166,6 +180,18 @@ function GalaxyOverlay({ meta, galaxy }: { meta: GalaxyMeta; galaxy: Galaxy }) {
         @keyframes galaxy-text-in {
           from { opacity: 0; transform: translateY(8px) scale(0.96); letter-spacing: 0.5em; }
           to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes galaxy-text-out {
+          from { opacity: 1; transform: translateY(0); }
+          to   { opacity: 0; transform: translateY(-6px); }
+        }
+        @keyframes galaxy-divider-grow {
+          from { opacity: 0; transform: scaleX(0); }
+          to   { opacity: 1; transform: scaleX(1); }
+        }
+        @keyframes galaxy-progress {
+          from { width: 0%; }
+          to   { width: 100%; }
         }
         @keyframes galaxy-helix-spin {
           from { transform: rotateY(0deg); }
@@ -250,16 +276,21 @@ function UniversalDnaSpine() {
    Parçacık burst — logo'daki toz efekti, galaksi rengi + altın
    ============================================================ */
 function ParticleBurst({ color, warm }: { color: string; warm: string }) {
-  // 24 parçacık, rastgele yönlerde dağılır
-  const particles = Array.from({ length: 24 }).map((_, i) => {
-    const angle = (i / 24) * Math.PI * 2 + (Math.random() - 0.5) * 0.4
-    const dist = 220 + Math.random() * 180
+  // 3 dalga × 16 parçacık — 9 sn boyunca sürekli akan toz
+  const WAVE_COUNT = 3
+  const PER_WAVE = 16
+  const WAVE_GAP = 2700  // 3 dalga sırayla: 0ms, 2700ms, 5400ms
+  const particles = Array.from({ length: WAVE_COUNT * PER_WAVE }).map((_, i) => {
+    const wave = Math.floor(i / PER_WAVE)
+    const idxInWave = i % PER_WAVE
+    const angle = (idxInWave / PER_WAVE) * Math.PI * 2 + (Math.random() - 0.5) * 0.5
+    const dist = 240 + Math.random() * 220
     const dx = Math.cos(angle) * dist
     const dy = Math.sin(angle) * dist
-    const size = 1.5 + Math.random() * 2.5
-    const delay = Math.random() * 300
-    const dur = 900 + Math.random() * 400
-    const isWarm = i % 3 === 0  // ~1/3 altın, geri kalan galaksi rengi
+    const size = 1.5 + Math.random() * 3
+    const delay = wave * WAVE_GAP + Math.random() * 600
+    const dur = 1800 + Math.random() * 700
+    const isWarm = i % 3 === 0
     return { dx, dy, size, delay, dur, color: isWarm ? warm : color, key: i }
   })
 
