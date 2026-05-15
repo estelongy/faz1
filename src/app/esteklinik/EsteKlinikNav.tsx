@@ -1,10 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 import BrandMorphButton from '@/app/estestore/BrandMorphButton'
 import { User, ShieldCheck, LayoutDashboard } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { useAuthStatus } from '@/components/AuthStatusProvider'
 
 /**
  * EsteKlinik top nav — EsteStore'un AYNASI:
@@ -15,19 +14,7 @@ import { createClient } from '@/lib/supabase/client'
  * Niyet: kullanıcı buranın AYRI bir dünya olduğunu hissetsin.
  */
 export default function EsteKlinikNav() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!cancelled) setIsLoggedIn(!!user)
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (!cancelled) setIsLoggedIn(!!session?.user)
-    })
-    return () => { cancelled = true; subscription.unsubscribe() }
-  }, [])
+  const { isLoggedIn } = useAuthStatus()
 
   return (
     <header className="sticky top-0 z-50 bg-[#064E3B] border-b border-[#0A6347]/60 backdrop-blur-md">

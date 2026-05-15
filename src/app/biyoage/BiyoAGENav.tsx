@@ -1,29 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 import BrandMorphButton from '@/app/estestore/BrandMorphButton'
 import { User, ShieldCheck, LayoutDashboard } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { useAuthStatus } from '@/components/AuthStatusProvider'
 
 /**
  * BiyoAGE top nav — EsteKlinik/EsteStore aynası, mor (analiz/ölçüm) galaksi.
  * Niyet: kullanıcı buranın ayrı bir dünya olduğunu hissetsin.
  */
 export default function BiyoAGENav() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!cancelled) setIsLoggedIn(!!user)
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (!cancelled) setIsLoggedIn(!!session?.user)
-    })
-    return () => { cancelled = true; subscription.unsubscribe() }
-  }, [])
+  const { isLoggedIn } = useAuthStatus()
   return (
     <header className="sticky top-0 z-50 bg-[#1B1330] border-b border-[#3D2C66]/60 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">

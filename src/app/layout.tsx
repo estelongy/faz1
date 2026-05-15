@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import AuthHashHandler from '@/components/AuthHashHandler'
+import AuthStatusProvider from '@/components/AuthStatusProvider'
 import { GalaxyTransitionProvider } from '@/components/GalaxyTransition'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -138,9 +139,11 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased`}>
         <AuthHashHandler />
-        <GalaxyTransitionProvider>
-          {children}
-        </GalaxyTransitionProvider>
+        <AuthStatusProvider>
+          <GalaxyTransitionProvider>
+            {children}
+          </GalaxyTransitionProvider>
+        </AuthStatusProvider>
       </body>
     </html>
   )
