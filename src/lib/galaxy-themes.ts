@@ -90,24 +90,24 @@ export const GALAXY_THEMES: Record<Galaxy, GalaxyTheme> = {
     ringPulse: 'bg-[#10876B]',
     subline: 'Onaylı klinik ekosistemine katıl.',
   },
-  // EsteStore — altın (ürün/süreklilik)
+  // EsteStore — şampanya bej + bordo + altın (ürün/süreklilik, lüks)
   estestore: {
     name: 'EsteStore',
-    bgFrom: 'from-[#1A1612]',
-    bgVia: 'via-[#28201A]',
-    bgTo: 'to-[#0F0C0A]',
-    cardBg: 'bg-[#28201A]/60',
-    cardBorder: 'border-[#C9A961]/30',
-    inputBg: 'bg-[#0F0C0A]',
-    inputBorder: 'border-[#C9A961]/30',
-    inputFocus: 'focus:border-[#C9A961]',
-    buttonGradient: 'from-[#C9A961] to-[#A88840]',
-    buttonHover: 'hover:from-[#D4B570] hover:to-[#B89548]',
-    iconGradient: 'from-[#C9A961] to-[#A88840]',
+    bgFrom: 'from-[#2A1F1A]',       // sıcak koyu kahve
+    bgVia: 'via-[#3A2820]',         // şampanya kahve mid
+    bgTo: 'to-[#1F1612]',           // derin kahve
+    cardBg: 'bg-[#3A2820]/60',      // kart sıcak ton, koyu siyah değil
+    cardBorder: 'border-[#D4B570]/25',
+    inputBg: 'bg-[#1F1612]',        // siyah değil, kahve-siyah
+    inputBorder: 'border-[#D4B570]/30',
+    inputFocus: 'focus:border-[#D4B570]',
+    buttonGradient: 'from-[#D4B570] to-[#8B3A3A]',  // altın → bordo
+    buttonHover: 'hover:from-[#E0C485] hover:to-[#A04848]',
+    iconGradient: 'from-[#D4B570] to-[#6B2A2A]',    // altın → derin bordo
     accent: 'text-[#E8D49E]',
     accentHover: 'hover:text-[#F2E2BA]',
-    checkboxBg: 'bg-[#C9A961] border-[#C9A961]',
-    ringPulse: 'bg-[#C9A961]',
+    checkboxBg: 'bg-[#D4B570] border-[#D4B570]',
+    ringPulse: 'bg-[#D4B570]',
     subline: 'Hekim puanlı ürünleri keşfet.',
   },
 }
