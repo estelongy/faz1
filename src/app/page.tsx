@@ -323,9 +323,9 @@ export default async function Home({
           </div>
 
           <div className="mt-10 text-center">
-            <Link href="#nasil-calisir" className="text-slate-500 hover:text-slate-300 text-sm transition-colors inline-flex items-center gap-2">
+            <Link href="#nasil-calisir" className="text-slate-300 hover:text-white text-base font-semibold transition-colors inline-flex items-center gap-2">
               Nasıl çalışır?
-              <svg className="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </Link>
