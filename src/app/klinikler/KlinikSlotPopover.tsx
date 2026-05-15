@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/client'
 
 interface Availability {
@@ -15,6 +16,8 @@ interface Props {
   clinicId: string
   /** Popover'ı kapatmak için (parent state'i temizler) */
   onClose: () => void
+  /** Butonun ekrana göre rect'i — portal popover'ı buraya hizalar */
+  anchorRect: DOMRect | null
 }
 
 function timeToMinutes(t: string): number { const [h, m] = t.split(':').map(Number); return h * 60 + m }
@@ -39,7 +42,7 @@ function dateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-export default function KlinikSlotPopover({ clinicId, onClose }: Props) {
+export default function KlinikSlotPopover({ clinicId, onClose, anchorRect }: Props) {
   const [availability, setAvailability] = useState<Availability[]>([])
   const [busySlots, setBusySlots] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
@@ -118,9 +121,21 @@ export default function KlinikSlotPopover({ clinicId, onClose }: Props) {
     window.location.href = `/randevu?k=${clinicId}&d=${d}&t=${encodeURIComponent(time)}`
   }
 
-  return (
+  if (typeof window === 'undefined' || !anchorRect) return null
+
+  const POPOVER_WIDTH = 420
+  const MARGIN = 8
+  // Sağ kenar referansı + viewport içine sıkıştır
+  let left = anchorRect.right - POPOVER_WIDTH
+  if (left < MARGIN) left = MARGIN
+  if (left + POPOVER_WIDTH > window.innerWidth - MARGIN) left = window.innerWidth - POPOVER_WIDTH - MARGIN
+  const top = anchorRect.bottom + 8
+
+  return createPortal(
     <div
-      className="absolute z-50 right-0 top-full mt-2 w-[420px] max-w-[calc(100vw-2rem)] rounded-2xl bg-[#0F1B2C] border border-[#10876B]/40 shadow-2xl shadow-[#064E3B]/40 p-4 animate-in fade-in slide-in-from-top-2 duration-150"
+      style={{ position: 'fixed', top, left, width: POPOVER_WIDTH, maxWidth: 'calc(100vw - 16px)' }}
+      className="z-[100] rounded-2xl bg-[#0F1B2C] border border-[#10876B]/40 shadow-2xl shadow-[#064E3B]/40 p-4 animate-in fade-in slide-in-from-top-2 duration-150"
+      onMouseEnter={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
       {/* 5-6 günlük strip */}
@@ -199,6 +214,7 @@ export default function KlinikSlotPopover({ clinicId, onClose }: Props) {
           </p>
         </>
       )}
-    </div>
+    </div>,
+    document.body
   )
 }
