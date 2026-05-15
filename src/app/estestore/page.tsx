@@ -316,7 +316,7 @@ function TopNav({ user }: { user: boolean }) {
           ) : (
             <>
               <Link
-                href="/giris"
+                href="/giris?g=estestore"
                 className="px-3 h-10 inline-flex items-center text-sm text-slate-300 hover:text-slate-100 transition-colors rounded-full hover:bg-slate-800/40"
               >
                 Giriş

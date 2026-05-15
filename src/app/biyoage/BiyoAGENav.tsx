@@ -22,7 +22,7 @@ export default function BiyoAGENav() {
             Rehber
           </Link>
           <Link
-            href="/giris"
+            href="/giris?g=biyoage"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium text-violet-100 hover:bg-white/10 transition-colors"
           >
             <User size={13} />

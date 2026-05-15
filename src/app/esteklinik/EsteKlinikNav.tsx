@@ -26,7 +26,7 @@ export default function EsteKlinikNav() {
             Rehber
           </Link>
           <Link
-            href="/giris"
+            href="/giris?g=esteklinik"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium text-emerald-100 hover:bg-white/10 transition-colors"
           >
             <User size={13} />

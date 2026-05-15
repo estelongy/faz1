@@ -5,10 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { pathForRole } from '@/lib/auth-redirect'
+import { GALAXY_THEMES, resolveGalaxy, type Galaxy } from '@/lib/galaxy-themes'
 
 function GirisInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const galaxy: Galaxy = resolveGalaxy(searchParams.get('g'))
+  const t = GALAXY_THEMES[galaxy]
 
   const [email, setEmail]         = useState('')
   const [password, setPassword]   = useState('')
@@ -20,6 +23,7 @@ function GirisInner() {
   const [resetEmail, setResetEmail]   = useState('')
   const [resetSent, setResetSent]     = useState(false)
   const [resetLoading, setResetLoading] = useState(false)
+
   // URL'den hata parametresi
   useEffect(() => {
     if (searchParams.get('error') === 'auth') {
@@ -82,28 +86,37 @@ function GirisInner() {
     setResetLoading(false)
   }
 
+  // Geri-link: galaksi context'inde galaksi ana sayfasına, çatıda anasayfaya
+  const homeHref = galaxy === 'default' ? '/' : `/${galaxy}`
+  const homeLabel = galaxy === 'default' ? 'Anasayfa' : t.name
+  const inputCls = `w-full px-4 py-3 ${t.inputBg} border ${t.inputBorder} rounded-xl text-white placeholder-slate-500 focus:outline-none ${t.inputFocus} transition-colors`
+  const kayitHref = `/kayit${galaxy !== 'default' ? `?g=${galaxy}` : ''}`
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+    <main className={`min-h-screen bg-gradient-to-b ${t.bgFrom} ${t.bgVia} ${t.bgTo} flex items-center justify-center p-4`}>
       <div className="w-full max-w-md">
-        <Link href="/" className="inline-flex items-center gap-1.5 px-3 py-1.5 mb-8 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
+        <Link href={homeHref} className={`inline-flex items-center gap-1.5 px-3 py-1.5 mb-8 rounded-lg border ${t.cardBorder} hover:bg-white/5 text-slate-300 hover:text-white text-sm font-medium transition-colors`}>
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7m-9 2v8a1 1 0 001 1h3m4 0h3a1 1 0 001-1v-8m-9 2h4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Anasayfa
+          {homeLabel}
         </Link>
 
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-slate-700">
+        <div className={`${t.cardBg} backdrop-blur-sm rounded-2xl p-6 sm:p-8 border ${t.cardBorder}`}>
           <div className="text-center mb-6 sm:mb-8">
-            <div className="w-16 h-16 mx-auto bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <div className={`w-16 h-16 mx-auto bg-gradient-to-br ${t.iconGradient} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
+              {/* DNA helix ikonu — yıldız metaforu yasak */}
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
+                <path strokeLinecap="round" d="M6 3c4 4 8 6 12 9-4 3-8 5-12 9" />
+                <path strokeLinecap="round" d="M18 3c-4 4-8 6-12 9 4 3 8 5 12 9" />
+                <path strokeLinecap="round" d="M8 7h8M7 12h10M8 17h8" />
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-white">
               {resetMode ? 'Şifre Sıfırla' : 'Giriş Yap'}
             </h1>
             <p className="text-slate-400 text-sm mt-1">
-              {resetMode ? 'E-postanıza sıfırlama bağlantısı göndereceğiz' : 'Hesabınıza erişin'}
+              {resetMode ? 'E-postanıza sıfırlama bağlantısı göndereceğiz' : t.subline}
             </p>
           </div>
 
@@ -131,10 +144,10 @@ function GirisInner() {
                   <label className="block text-sm text-slate-400 mb-2">E-posta adresiniz</label>
                   <input type="email" required value={resetEmail} onChange={e => setResetEmail(e.target.value)}
                     placeholder="ornek@email.com"
-                    className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                    className={inputCls} />
                 </div>
                 <button type="submit" disabled={resetLoading}
-                  className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all">
+                  className={`w-full py-3 bg-gradient-to-r ${t.buttonGradient} ${t.buttonHover} disabled:opacity-50 text-white font-semibold rounded-xl transition-all`}>
                   {resetLoading ? 'Gönderiliyor...' : 'Sıfırlama Bağlantısı Gönder'}
                 </button>
                 <button type="button" onClick={() => setResetMode(false)}
@@ -151,37 +164,37 @@ function GirisInner() {
                   <label className="block text-sm text-slate-400 mb-2">E-posta</label>
                   <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
                     placeholder="ornek@email.com"
-                    className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                    className={inputCls} />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-sm text-slate-400">Şifre</label>
                     <button type="button" onClick={() => setResetMode(true)}
-                      className="text-xs text-violet-400 hover:text-violet-300 transition-colors">
+                      className={`text-xs ${t.accent} ${t.accentHover} transition-colors`}>
                       Şifremi unuttum
                     </button>
                   </div>
                   <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                    className={inputCls} />
                 </div>
                 {error && (
                   <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{error}</div>
                 )}
                 <button type="submit" disabled={loading}
-                  className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all">
+                  className={`w-full py-3 bg-gradient-to-r ${t.buttonGradient} ${t.buttonHover} disabled:opacity-50 text-white font-semibold rounded-xl transition-all`}>
                   {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
                 </button>
               </form>
 
               <p className="mt-6 text-center text-slate-400 text-sm">
                 Hesabınız yok mu?{' '}
-                <Link href="/kayit" className="text-violet-400 hover:text-violet-300 font-medium">Kaydolun</Link>
+                <Link href={kayitHref} className={`${t.accent} ${t.accentHover} font-medium`}>Kaydolun</Link>
               </p>
 
-              <div className="mt-4 pt-4 border-t border-slate-700">
+              <div className="mt-4 pt-4 border-t border-slate-700/60">
                 <Link href="/kurumsal/giris"
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-slate-500 rounded-xl text-slate-300 hover:text-white text-sm font-medium transition-all">
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-slate-800/40 hover:bg-slate-700/50 border border-slate-600/60 hover:border-slate-500 rounded-xl text-slate-300 hover:text-white text-sm font-medium transition-all">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
