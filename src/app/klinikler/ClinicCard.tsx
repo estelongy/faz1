@@ -81,12 +81,15 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
         {/* Kapak banner — yeşil/teal kalır */}
         <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-[#10876B] via-[#0A6347] to-[#064E3B]">
           {clinic.cover_image_url ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={clinic.cover_image_url}
-              alt={clinic.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={clinic.cover_image_url}
+                alt={clinic.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#064E3B]/70 via-[#064E3B]/10 to-transparent" />
+            </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-white/40 text-7xl font-black">
               {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
