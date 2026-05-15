@@ -3,6 +3,8 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Footer from '@/components/Footer'
+import Link from 'next/link'
+import { Building2, ArrowRight } from 'lucide-react'
 import EsteKlinikNav from './EsteKlinikNav'
 import { KlinikSearchProvider, KlinikSearchInputs, KlinikSearchResults } from './KlinikSearch'
 import type { ClinicRow } from './ClinicCard'
@@ -58,9 +60,19 @@ export default async function KliniklerPage() {
             />
 
             <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-10 sm:pt-12 sm:pb-12">
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300 mb-2">
-                EsteKlinik
-              </p>
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-300">
+                  EsteKlinik
+                </p>
+                <Link
+                  href="/esteklinik/basvur"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-[12px] font-semibold bg-white/10 hover:bg-white/20 border border-emerald-300/40 text-emerald-100 backdrop-blur-sm transition-colors shrink-0"
+                >
+                  <Building2 size={13} />
+                  Klinik misin? Başvur
+                  <ArrowRight size={12} />
+                </Link>
+              </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">Randevu Ara</h1>
               <p className="text-emerald-100/80 text-sm mt-1 mb-6">
                 Bilimi Güzelliğe Dönüştüren Klinikleri Keşfet
