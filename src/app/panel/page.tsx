@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+﻿export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
@@ -118,7 +118,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
         emoji: '🏥',
         title: 'Klinik randevusu alın',
         desc: 'Hekim muayenesiyle skorunuzu kesinleştirin',
-        href: '/esteklinik/randevu',
+        href: '/esteklinik',
         cta: 'Randevu Al →',
         gradient: 'from-blue-600 to-cyan-600',
       }
@@ -229,7 +229,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
             </Link>
 
             {/* Kapı 2 — Randevu Al */}
-            <Link href="/esteklinik/randevu"
+            <Link href="/esteklinik"
               className="group relative overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-600/15 via-cyan-600/8 to-teal-500/5 p-5 transition-all hover:border-blue-400 hover:scale-[1.02]">
               <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-blue-500/10 blur-3xl group-hover:bg-blue-500/20 transition-all" />
               <div className="relative">

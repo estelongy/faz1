@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -251,7 +251,7 @@ export default function EstetikUygulamalarPage() {
                 Ücretsiz Ön Analiz →
               </Link>
               <Link
-                href="/esteklinik/randevu"
+                href="/esteklinik"
                 className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors"
               >
                 Klinik Randevusu Al

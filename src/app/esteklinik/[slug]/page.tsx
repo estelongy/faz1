@@ -175,7 +175,7 @@ export default async function PublicClinicPage({ params }: Props) {
               )}
 
               <Link
-                href={`/esteklinik/randevu?k=${clinic.id}`}
+                href={`/esteklinik/randevu/${clinic.slug ?? clinic.id}`}
                 className="hidden lg:flex items-center justify-center gap-1.5 w-full px-5 py-3 bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-[#10876B]/30"
               >
                 <Calendar size={14} />
@@ -231,7 +231,7 @@ export default async function PublicClinicPage({ params }: Props) {
               Klinik müsaitliğini gör, doğrudan saat seç.
             </p>
             <Link
-              href={`/esteklinik/randevu?k=${clinic.id}`}
+              href={`/esteklinik/randevu/${clinic.slug ?? clinic.id}`}
               className="inline-flex items-center gap-1.5 px-5 py-3 bg-white hover:bg-emerald-50 text-[#064E3B] text-sm font-bold rounded-xl transition-colors shadow-lg"
             >
               <Calendar size={14} />
@@ -244,7 +244,7 @@ export default async function PublicClinicPage({ params }: Props) {
       {/* Mobil sticky CTA */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#064E3B]/95 backdrop-blur-md border-t border-[#10876B]/40">
         <Link
-          href={`/esteklinik/randevu?k=${clinic.id}`}
+          href={`/esteklinik/randevu/${clinic.slug ?? clinic.id}`}
           className="flex items-center justify-center gap-1.5 w-full text-center px-5 py-3 bg-white text-[#064E3B] text-sm font-bold rounded-xl transition-colors shadow-lg"
         >
           <Calendar size={14} />

@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
@@ -135,6 +135,6 @@ export async function updateClinicProfileAction(formData: FormData): Promise<Upd
   revalidatePath('/klinik/panel/profil/duzenle')
   revalidatePath(`/esteklinik/${clinic.id}`)
   revalidatePath('/esteklinik')
-  revalidatePath('/esteklinik/randevu')
+  revalidatePath('/esteklinik')
   return { ok: true }
 }

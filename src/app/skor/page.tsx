@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -454,7 +454,7 @@ function SkorMerkeziInner() {
                   ))}
                 </div>
                 <Link
-                  href="/esteklinik/randevu"
+                  href="/esteklinik"
                   className="group flex items-center gap-4 w-full mt-6 p-4 rounded-2xl bg-slate-900/50 border border-slate-700 hover:border-violet-500/50 hover:bg-slate-900 transition-all"
                 >
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">

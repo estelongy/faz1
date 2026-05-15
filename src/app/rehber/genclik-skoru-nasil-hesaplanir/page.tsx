@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
@@ -276,7 +276,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
               <Link href="/kayit?next=/analiz" className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
                 Analizi Başlat →
               </Link>
-              <Link href="/esteklinik/randevu" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">
+              <Link href="/esteklinik" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">
                 Klinik Onayına Ulaş
               </Link>
             </div>

@@ -1,4 +1,4 @@
-import type { MetadataRoute } from 'next'
+﻿import type { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
 const BASE_URL = 'https://estelongy.com'
@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/rehber/cihaz-tedavileri`,          lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
 
     // Platform
-    { url: `${BASE_URL}/esteklinik/randevu`,                          lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE_URL}/esteklinik`,                          lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE_URL}/estestore`,                           lastModified: now, changeFrequency: 'daily',   priority: 0.8 },
 
     // İş ortakları

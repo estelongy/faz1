@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -24,7 +24,7 @@ const HASTA_NAV: NavGroup[] = [
     items: [
       { href: '/panel',                icon: '🏠', label: 'Panel', exact: true },
       { href: '/analiz',               icon: '📸', label: 'Yeni Analiz' },
-      { href: '/esteklinik/randevu',              icon: '📅', label: 'Randevu Al' },
+      { href: '/esteklinik',              icon: '📅', label: 'Randevu Al' },
       { href: '/panel/analizlerim',    icon: '🎯', label: 'Geçmişim' },
     ],
   },

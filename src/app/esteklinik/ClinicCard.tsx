@@ -145,7 +145,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
             </p>
 
             <Link
-              href={`/esteklinik/randevu?k=${clinic.id}`}
+              href={`/esteklinik/randevu/${clinic.slug ?? clinic.id}`}
               onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold transition-colors shadow-md shadow-[#10876B]/30"
               aria-label={`${clinic.name} için randevu al`}
@@ -163,7 +163,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
           onClose={() => setPreviewOpen(false)}
           onSelect={() => {
             setPreviewOpen(false)
-            window.location.href = `/esteklinik/randevu?k=${clinic.id}`
+            window.location.href = `/esteklinik/randevu/${clinic.slug ?? clinic.id}`
           }}
         />
       )}

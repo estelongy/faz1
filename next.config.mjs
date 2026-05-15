@@ -21,7 +21,8 @@ const nextConfig = {
       { source: '/magaza/:path*',               destination: '/estestore/:path*', permanent: true },
       // EsteKlinik dünya birleştirme: eski public rotalar /klinikler/* altına
       // EsteKlinik dünya umbrellası /esteklinik/* — eski rotalar
-      { source: '/randevu',                     destination: '/esteklinik/randevu', permanent: true },
+      { source: '/randevu',                     destination: '/esteklinik', permanent: true },
+      { source: '/esteklinik/randevu',          destination: '/esteklinik', permanent: true },
       { source: '/klinik/basvur',               destination: '/esteklinik/basvur', permanent: true },
       { source: '/klinikler',                   destination: '/esteklinik', permanent: true },
       { source: '/klinikler/:path*',            destination: '/esteklinik/:path*', permanent: true },

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import Footer from '@/components/Footer'
 import ScoreBar from '@/components/ScoreBar'
@@ -111,7 +111,7 @@ export default async function Home({
   const isLoggedIn = !!user
   // 3 kapı linkleri — login varsa direkt, yoksa /giris?next=
   const dest1 = isLoggedIn ? '/analiz' : '/giris?next=/analiz'
-  const dest2 = '/esteklinik/randevu'
+  const dest2 = '/esteklinik'
   // (kapı 3 zaten /estestore, login gerektirmez)
 
   return (
@@ -145,7 +145,7 @@ export default async function Home({
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Hesabım
                   </Link>
-                  <Link href="/esteklinik/randevu"
+                  <Link href="/esteklinik"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
                   </Link>
@@ -163,7 +163,7 @@ export default async function Home({
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Ücretsiz Başla
                   </Link>
-                  <Link href="/esteklinik/randevu"
+                  <Link href="/esteklinik"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
                   </Link>
@@ -483,7 +483,7 @@ export default async function Home({
               ].map(alan => (
                 <Link
                   key={alan}
-                  href={`/esteklinik/randevu?tip=${encodeURIComponent(alan)}`}
+                  href={`/esteklinik?tip=${encodeURIComponent(alan)}`}
                   className="px-3.5 py-1.5 rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300 text-xs font-medium tracking-wide hover:border-blue-400/60 hover:bg-blue-500/20 hover:text-white transition-all">
                   {alan}
                 </Link>

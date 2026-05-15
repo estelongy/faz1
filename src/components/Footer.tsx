@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -11,7 +11,7 @@ function detectWorld(path: string | null): World {
   if (
     path.startsWith('/esteklinik') ||
     path.startsWith('/klinik/') ||
-    path.startsWith('/esteklinik/randevu')
+    path.startsWith('/esteklinik')
   ) return 'klinik'
   return 'root'
 }
@@ -52,7 +52,7 @@ function RootFooter() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/analiz" className="text-slate-400 hover:text-white transition-colors">Ön Analiz</Link></li>
               <li><Link href="/esteklinik" className="text-slate-400 hover:text-white transition-colors">Klinikler</Link></li>
-              <li><Link href="/esteklinik/randevu" className="text-slate-400 hover:text-white transition-colors">Klinik Randevu</Link></li>
+              <li><Link href="/esteklinik" className="text-slate-400 hover:text-white transition-colors">Klinik Randevu</Link></li>
               <li><Link href="/estestore" className="text-slate-400 hover:text-white transition-colors">EsteStore</Link></li>
               <li><Link href="/panel" className="text-slate-400 hover:text-white transition-colors">Panelim</Link></li>
               <li><Link href="/rehber" className="text-slate-400 hover:text-white transition-colors">Estelongy Rehberi</Link></li>
@@ -166,7 +166,7 @@ function EsteKlinikFooter() {
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">Klinik</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/esteklinik" className="text-emerald-200/80 hover:text-white transition-colors">Tüm Klinikler</Link></li>
-              <li><Link href="/esteklinik/randevu" className="text-emerald-200/80 hover:text-white transition-colors">Randevu Al</Link></li>
+              <li><Link href="/esteklinik" className="text-emerald-200/80 hover:text-white transition-colors">Randevu Al</Link></li>
               <li><Link href="/rehber" className="text-emerald-200/80 hover:text-white transition-colors">Rehber</Link></li>
             </ul>
           </div>
