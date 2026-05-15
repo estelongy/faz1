@@ -124,17 +124,23 @@ export default function KlinikSlotPopover({ clinicId, onClose, anchorRect }: Pro
   if (typeof window === 'undefined' || !anchorRect) return null
 
   const POPOVER_WIDTH = 420
+  const POPOVER_EST_HEIGHT = 360
   const MARGIN = 8
   // Sağ kenar referansı + viewport içine sıkıştır
   let left = anchorRect.right - POPOVER_WIDTH
   if (left < MARGIN) left = MARGIN
   if (left + POPOVER_WIDTH > window.innerWidth - MARGIN) left = window.innerWidth - POPOVER_WIDTH - MARGIN
-  const top = anchorRect.bottom + 8
+  // Üstte aç; üstte yer yoksa altta fallback
+  const spaceAbove = anchorRect.top
+  const openAbove = spaceAbove >= POPOVER_EST_HEIGHT + 8
+  const style: React.CSSProperties = openAbove
+    ? { position: 'fixed', bottom: window.innerHeight - anchorRect.top + 8, left, width: POPOVER_WIDTH, maxWidth: 'calc(100vw - 16px)' }
+    : { position: 'fixed', top: anchorRect.bottom + 8, left, width: POPOVER_WIDTH, maxWidth: 'calc(100vw - 16px)' }
 
   return createPortal(
     <div
-      style={{ position: 'fixed', top, left, width: POPOVER_WIDTH, maxWidth: 'calc(100vw - 16px)' }}
-      className="z-[100] rounded-2xl bg-[#0F1B2C] border border-[#10876B]/40 shadow-2xl shadow-[#064E3B]/40 p-4 animate-in fade-in slide-in-from-top-2 duration-150"
+      style={style}
+      className={`z-[100] rounded-2xl bg-[#0F1B2C] border border-[#10876B]/40 shadow-2xl shadow-[#064E3B]/40 p-4 animate-in fade-in duration-150 ${openAbove ? 'slide-in-from-bottom-2' : 'slide-in-from-top-2'}`}
       onMouseEnter={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
