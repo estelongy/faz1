@@ -109,8 +109,8 @@ export default async function Home({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const isLoggedIn = !!user
-  // 3 kapı linkleri — login varsa direkt, yoksa /giris?next=
-  const dest1 = isLoggedIn ? '/analiz' : '/giris?next=/analiz'
+  // 3 kapı linkleri — login varsa direkt, yoksa /giris (BiyoAGE galaksi temasıyla)
+  const dest1 = isLoggedIn ? '/analiz' : '/giris?g=biyoage&next=/analiz'
   const dest2 = '/esteklinik'
   // (kapı 3 zaten /estestore, login gerektirmez)
 

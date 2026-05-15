@@ -122,7 +122,7 @@ export default async function BiyoAGEPage() {
 
             <div className="flex flex-wrap items-center gap-3 mt-7">
               <Link
-                href={isLoggedIn ? '/analiz' : '/giris?next=/analiz'}
+                href={isLoggedIn ? '/analiz' : '/giris?g=biyoage&next=/analiz'}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9F8CE0] hover:bg-[#8B76D4] text-[#1B1330] font-bold text-sm transition-colors shadow-lg shadow-[#9F8CE0]/30"
               >
                 Ön Analizi Başlat
