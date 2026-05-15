@@ -44,7 +44,7 @@ export async function submitKycAction(payload: KycPayload): Promise<KycSubmitRes
     .select('id, kyc_status, tax_number')
     .eq('user_id', user.id)
     .single()
-  if (!vendor) return { ok: false, error: 'Satıcı kaydı bulunamadı. Önce başvuru yapın.' }
+  if (!vendor) return { ok: false, error: 'İş Ortağı kaydı bulunamadı. Önce başvuru yapın.' }
   if (vendor.kyc_status === 'approved') return { ok: false, error: 'KYC zaten onaylı.' }
 
   // ── Validasyon ──
@@ -78,7 +78,7 @@ export async function submitKycAction(payload: KycPayload): Promise<KycSubmitRes
 
   if (payload.sellsMedicalProducts) {
     if (!payload.itsCertificatePath || !payload.itsCertificatePath.startsWith(`${vendor.id}/`)) {
-      return { ok: false, error: 'Tıbbi ürün satıcıları için ITS belgesi zorunludur.' }
+      return { ok: false, error: 'Tıbbi ürün iş ortakları için ITS belgesi zorunludur.' }
     }
   }
 

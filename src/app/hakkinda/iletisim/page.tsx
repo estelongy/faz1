@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'İletişim',
-  description: 'Estelongy destek, klinik başvuru, satıcı ve basın iletişim bilgileri.',
+  description: 'Estelongy destek, klinik başvuru, iş ortağı ve basın iletişim bilgileri.',
 }
 
 const CHANNELS = [
@@ -25,7 +25,7 @@ const CHANNELS = [
   },
   {
     icon: '🛍️',
-    title: 'Satıcı Desteği',
+    title: 'İş Ortağı Desteği',
     desc: 'Ürün listeleme, komisyon, kargo ve iade süreçleriyle ilgili sorularınız için.',
     email: 'satici@estelongy.com',
     response: '2 iş günü içinde geri dönüş',

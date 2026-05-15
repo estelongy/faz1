@@ -15,7 +15,7 @@ export async function GET() {
       .select('id, stripe_account_id, stripe_charges_enabled, stripe_payouts_enabled, stripe_details_submitted')
       .eq('user_id', user.id)
       .single()
-    if (!vendor) return NextResponse.json({ error: 'Satıcı yok' }, { status: 404 })
+    if (!vendor) return NextResponse.json({ error: 'İş Ortağı yok' }, { status: 404 })
 
     if (!vendor.stripe_account_id) {
       return NextResponse.json({

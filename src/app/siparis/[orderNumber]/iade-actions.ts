@@ -93,7 +93,7 @@ export async function iadeIptalAction(returnId: string): Promise<{ ok: boolean; 
   return { ok: true }
 }
 
-// Satıcı: iade onayla / reddet
+// İş Ortağı: iade onayla / reddet
 export async function iadeKararAction(
   returnId: string,
   decision: 'approved' | 'rejected',
@@ -149,7 +149,7 @@ export async function iadeKararAction(
         const refund = await stripe.refunds.create({
           payment_intent: pi,
           amount: Math.round(amount * 100),
-          // Destination charge ise komisyonu da geri al (satıcı = aldığı kadar öder)
+          // Destination charge ise komisyonu da geri al (iş ortağı = aldığı kadar öder)
           refund_application_fee: true,
           reverse_transfer: true,
           metadata: { return_id: returnId, order_item_id: ret.order_item_id ?? '' },

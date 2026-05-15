@@ -66,7 +66,7 @@ async function sendOrderConfirmationEmail(
       </div>
       <div style="padding:24px">
         <p>Merhaba,</p>
-        <p>Siparişiniz başarıyla alındı. Satıcılarımız hazırlığa başladı; kargo bilgileri yakında e-posta ile iletilecek.</p>
+        <p>Siparişiniz başarıyla alındı. İş Ortaklarımız hazırlığa başladı; kargo bilgileri yakında e-posta ile iletilecek.</p>
 
         <h3 style="margin-top:24px;margin-bottom:8px;color:#7c3aed">Sipariş Özeti</h3>
         <table style="width:100%;border-collapse:collapse;font-size:14px">
@@ -128,7 +128,7 @@ async function checkLowStock(admin: ReturnType<typeof createServiceClient>, prod
   const stock = product.stock ?? 0
   if (stock > LOW_STOCK_THRESHOLD) return
 
-  // Satıcı e-postasını auth.users'dan al
+  // İş Ortağı e-postasını auth.users'dan al
   const vendorInfo = product.vendors as { user_id?: string; company_name?: string } | null
   if (!vendorInfo?.user_id) return
 
@@ -143,7 +143,7 @@ async function checkLowStock(admin: ReturnType<typeof createServiceClient>, prod
   const html = `
     <div style="font-family:sans-serif;max-width:500px;margin:0 auto">
       <h2 style="color:#7c3aed">${subject}</h2>
-      <p>Merhaba ${vendorInfo.company_name ?? 'Satıcı'},</p>
+      <p>Merhaba ${vendorInfo.company_name ?? 'İş Ortağı'},</p>
       <p>
         <strong>${product.name}</strong> ürününün stoğu
         <strong style="color:${stock === 0 ? '#ef4444' : '#f59e0b'}">${stock} adet</strong>
@@ -154,7 +154,7 @@ async function checkLowStock(admin: ReturnType<typeof createServiceClient>, prod
         : '<p>Müşteri kaybı yaşamamak için stoku güncellemenizi öneririz.</p>'}
       <a href="https://estelongy.com/satici/panel"
          style="display:inline-block;margin-top:16px;padding:12px 24px;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none">
-        Satıcı Paneline Git
+        İş Ortağı Paneline Git
       </a>
     </div>
   `
@@ -324,10 +324,10 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // ── Çoklu satıcı transferleri ────────────────────────────
-        // Destination charge kullanılmadıysa (çoklu satıcı / Connect aktif değil)
-        // platform hesabından her satıcıya manual transfer.
-        // Destination charge varsa (tek satıcı) Stripe bunu otomatik yapar.
+        // ── Çoklu iş ortağı transferleri ────────────────────────────
+        // Destination charge kullanılmadıysa (çoklu iş ortağı / Connect aktif değil)
+        // platform hesabından her iş ortağına manual transfer.
+        // Destination charge varsa (tek iş ortağı) Stripe bunu otomatik yapar.
         const hasDestinationCharge = !!pi.transfer_data?.destination
 
         if (!hasDestinationCharge) {

@@ -74,7 +74,7 @@ export function cartSubtotal(items?: CartItem[]): number {
   return list.reduce((s, i) => s + i.price * i.quantity, 0)
 }
 
-// Satıcı bazlı gruplama (checkout + fulfillment için kritik)
+// İş Ortağı bazlı gruplama (checkout + fulfillment için kritik)
 export function groupByVendor(items: CartItem[]): Record<string, CartItem[]> {
   const out: Record<string, CartItem[]> = {}
   for (const it of items) {

@@ -33,7 +33,7 @@ const ROLE_LABEL: Record<UserRole, string> = {
   user: 'Kullanıcı',
   clinic: 'Klinik',
   health_professional: 'Sağlık Prof.',
-  vendor: 'Satıcı',
+  vendor: 'İş Ortağı',
   admin: 'Admin',
 }
 
@@ -193,7 +193,7 @@ export default async function KullanicilarPage() {
                         <option value="user">Kullanıcı</option>
                         <option value="clinic">Klinik</option>
                         <option value="health_professional">Sağlık Prof.</option>
-                        <option value="vendor">Satıcı</option>
+                        <option value="vendor">İş Ortağı</option>
                         <option value="admin">Admin</option>
                       </select>
                       <button

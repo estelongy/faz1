@@ -243,16 +243,16 @@ export default function KycForm({ vendorId, initial }: Props) {
           <p className="text-slate-400 text-xs">E-onay yeterli — ancak ıslak imzalı versiyon yüklerseniz onay süreci hızlanır</p>
         </div>
         <div className="max-h-72 overflow-y-auto p-4 rounded-xl bg-slate-950 border border-slate-700 text-slate-300 text-xs leading-relaxed space-y-3">
-          <p><strong className="text-white">1. Taraflar.</strong> İşbu sözleşme Estelongy platformunu işleten Vestoriq OÜ (Estonya) ile satıcı arasında akdedilir.</p>
-          <p><strong className="text-white">2. Konu.</strong> Satıcı, Estelongy platformu üzerinden ürünlerini Türkiye&apos;deki tüketicilere satmayı, platform da satışın gerçekleşmesi için altyapı sağlamayı kabul eder.</p>
+          <p><strong className="text-white">1. Taraflar.</strong> İşbu sözleşme Estelongy platformunu işleten Vestoriq OÜ (Estonya) ile iş ortağı arasında akdedilir.</p>
+          <p><strong className="text-white">2. Konu.</strong> İş Ortağı, Estelongy platformu üzerinden ürünlerini Türkiye&apos;deki tüketicilere satmayı, platform da satışın gerçekleşmesi için altyapı sağlamayı kabul eder.</p>
           <p><strong className="text-white">3. Komisyon.</strong> Platform, her satıştan KDV hariç tutar üzerinden varsayılan %12 komisyon alır. Komisyon oranı kategoriye göre ürün listelemesinde belirtilir.</p>
-          <p><strong className="text-white">4. Ödeme.</strong> Satıcı kazançları, sipariş teslimat onayından sonra 7 iş günü içinde IBAN&apos;a yatırılır.</p>
-          <p><strong className="text-white">5. Belge yükümlülüğü.</strong> Satıcı her satış için yasal fatura kesmek ve müşteriye ulaştırmakla yükümlüdür. Estelongy bu yükümlülükten doğan vergi sorumluluğunu üstlenmez.</p>
+          <p><strong className="text-white">4. Ödeme.</strong> İş Ortağı kazançları, sipariş teslimat onayından sonra 7 iş günü içinde IBAN&apos;a yatırılır.</p>
+          <p><strong className="text-white">5. Belge yükümlülüğü.</strong> İş Ortağı her satış için yasal fatura kesmek ve müşteriye ulaştırmakla yükümlüdür. Estelongy bu yükümlülükten doğan vergi sorumluluğunu üstlenmez.</p>
           <p><strong className="text-white">6. İade ve iptal.</strong> 6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, tüketici 14 gün içinde cayma hakkını kullanabilir. İade kargo bedeli platform politikasına göre paylaşılır.</p>
           <p><strong className="text-white">7. Yasaklı ürünler.</strong> Reçeteli ilaç, kozmetik mevzuatına aykırı ürün, sahte/taklit, lisanssız tıbbi cihaz satışı yasaktır. İhlal halinde hesap askıya alınır ve mevzuata uygun makamlara bildirilir.</p>
-          <p><strong className="text-white">8. KVKK.</strong> Satıcı, müşteri verilerini yalnızca sipariş teslimatı için kullanır. Pazarlama veya 3. tarafla paylaşım yasaktır. KVKK ihlali halinde Estelongy hesabı sonlandırma hakkını saklı tutar.</p>
+          <p><strong className="text-white">8. KVKK.</strong> İş Ortağı, müşteri verilerini yalnızca sipariş teslimatı için kullanır. Pazarlama veya 3. tarafla paylaşım yasaktır. KVKK ihlali halinde Estelongy hesabı sonlandırma hakkını saklı tutar.</p>
           <p><strong className="text-white">9. Fesih.</strong> Taraflar 30 gün önceden bildirimle sözleşmeyi feshedebilir. Açık siparişler tamamlanır, bekleyen kazançlar IBAN&apos;a aktarılır.</p>
-          <p><strong className="text-white">10. Uyuşmazlık.</strong> İhtilaflarda Tallinn (Estonya) mahkemeleri yetkilidir. Satıcı Türkiye&apos;de mukim ise Tüketici Hakem Heyeti / Tüketici Mahkemeleri istinaen.</p>
+          <p><strong className="text-white">10. Uyuşmazlık.</strong> İhtilaflarda Tallinn (Estonya) mahkemeleri yetkilidir. İş Ortağı Türkiye&apos;de mukim ise Tüketici Hakem Heyeti / Tüketici Mahkemeleri istinaen.</p>
         </div>
         <label className="flex items-start gap-2 text-sm text-slate-300 cursor-pointer">
           <input type="checkbox" required checked={contractAccepted} onChange={e => setContractAccepted(e.target.checked)}

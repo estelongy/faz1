@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ vendorId:
     .eq('id', vendorId)
     .single()
   return {
-    title: vendor?.company_name ? `${vendor.company_name} — EsteStore` : 'Satıcı',
+    title: vendor?.company_name ? `${vendor.company_name} — EsteStore` : 'İş Ortağı',
   }
 }
 
@@ -61,7 +61,7 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-16">
-        {/* Satıcı banner */}
+        {/* İş Ortağı banner */}
         <div className="mb-10 p-8 rounded-3xl bg-gradient-to-br from-[#C9A961]/15 via-[#C9A961]/5 to-transparent border border-[#C9A961]/30">
           <div className="flex items-start gap-5">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C9A961] to-[#8B7339] flex items-center justify-center shrink-0">
@@ -71,7 +71,7 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
             </div>
             <div className="flex-1">
               <h1 className="text-3xl font-black text-slate-900 mb-1">{vendor.company_name}</h1>
-              <p className="text-[#8B7339] text-sm font-semibold mb-4">Estelongy Onaylı Satıcı</p>
+              <p className="text-[#8B7339] text-sm font-semibold mb-4">Estelongy Onaylı İş Ortağı</p>
 
               <div className="flex flex-wrap gap-6 text-sm">
                 <div>

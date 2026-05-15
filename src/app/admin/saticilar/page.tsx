@@ -8,7 +8,7 @@ import { ensureAdminOtpFresh } from '@/lib/admin-otp'
 import { writeAuditLog } from '@/lib/audit'
 
 export const metadata: Metadata = {
-  title: 'Satıcılar',
+  title: 'İş Ortakları',
 }
 
 type ApprovalStatus = 'pending' | 'approved' | 'rejected'
@@ -104,7 +104,7 @@ async function updateVendor(formData: FormData) {
       const { data: userRes } = await admin.auth.admin.getUserById(prev.user_id)
       const email = userRes?.user?.email
       const { data: profile } = await admin.from('profiles').select('full_name').eq('id', prev.user_id).single()
-      const firstName = profile?.full_name?.split(' ')[0] ?? 'Değerli satıcımız'
+      const firstName = profile?.full_name?.split(' ')[0] ?? 'Değerli iş ortağımız'
       if (email) {
         await sendWelcomeEmail({ to: email, firstName, role: 'vendor' })
       }
@@ -262,8 +262,8 @@ export default async function SaticilarPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Satıcılar</h1>
-        <p className="text-slate-400 text-sm mt-1">Satıcı başvurularını yönetin</p>
+        <h1 className="text-2xl font-bold text-white">İş Ortakları</h1>
+        <p className="text-slate-400 text-sm mt-1">İş Ortağı başvurularını yönetin</p>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
@@ -390,7 +390,7 @@ export default async function SaticilarPage() {
 
       {/* Tablo — özet */}
       <div>
-        <h2 className="text-white font-bold mb-4">Tüm Satıcılar ({all.length})</h2>
+        <h2 className="text-white font-bold mb-4">Tüm İş Ortakları ({all.length})</h2>
         <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
@@ -453,7 +453,7 @@ export default async function SaticilarPage() {
               })}
             </tbody>
           </table>
-          {all.length === 0 && <div className="text-center py-12 text-slate-500">Henüz satıcı başvurusu yok</div>}
+          {all.length === 0 && <div className="text-center py-12 text-slate-500">Henüz iş ortağı başvurusu yok</div>}
         </div>
       </div>
     </div>
@@ -536,7 +536,7 @@ function KycBlock({
 
       {status === 'not_submitted' && (
         <p className="text-slate-500 text-xs italic">
-          Satıcı KYC bilgilerini henüz göndermedi. Onay süreci için önce satıcının KYC formunu doldurması bekleniyor.
+          İş Ortağı KYC bilgilerini henüz göndermedi. Onay süreci için önce iş ortağının KYC formunu doldurması bekleniyor.
         </p>
       )}
 
@@ -556,7 +556,7 @@ function KycBlock({
             {vendor.sells_medical_products && (
               <div className="sm:col-span-2">
                 <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">
-                  ⚕ Tıbbi ürün satıcısı
+                  ⚕ Tıbbi ürün iş ortağı
                 </span>
               </div>
             )}

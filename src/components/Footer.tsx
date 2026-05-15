@@ -63,7 +63,7 @@ function RootFooter() {
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">İş Ortakları</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/esteklinik/basvur" className="text-slate-400 hover:text-white transition-colors">Klinik Başvuru</Link></li>
-              <li><Link href="/satici/basvur" className="text-slate-400 hover:text-white transition-colors">Satıcı Başvuru</Link></li>
+              <li><Link href="/satici/basvur" className="text-slate-400 hover:text-white transition-colors">İş Ortağı Başvuru</Link></li>
               <li><Link href="/kurumsal/giris" className="text-slate-400 hover:text-white transition-colors">Kurumsal Giriş</Link></li>
             </ul>
           </div>
@@ -122,7 +122,7 @@ function EsteStoreFooter() {
               <li><Link href="/kayit" className="text-slate-600 hover:text-[#8B7339] transition-colors">Kayıt Ol</Link></li>
               <li><Link href="/sepet" className="text-slate-600 hover:text-[#8B7339] transition-colors">Sepetim</Link></li>
               <li><Link href="/panel/siparislerim" className="text-slate-600 hover:text-[#8B7339] transition-colors">Siparişlerim</Link></li>
-              <li><Link href="/satici/basvur" className="text-slate-600 hover:text-[#8B7339] transition-colors">Satıcı Ol</Link></li>
+              <li><Link href="/satici/basvur" className="text-slate-600 hover:text-[#8B7339] transition-colors">İş Ortağı Ol</Link></li>
             </ul>
           </div>
 

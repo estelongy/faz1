@@ -175,7 +175,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
             </svg>
             <div>
               <p className="text-emerald-300 font-medium text-sm">
-                {basvuruSuccess === 'klinik' ? 'Klinik başvurunuz alındı!' : 'Satıcı başvurunuz alındı!'}
+                {basvuruSuccess === 'klinik' ? 'Klinik başvurunuz alındı!' : 'İş Ortağı başvurunuz alındı!'}
               </p>
               <p className="text-emerald-400/70 text-xs mt-0.5">
                 Başvurunuz en kısa sürede incelenecek, onaylandığında bilgilendirileceksiniz.

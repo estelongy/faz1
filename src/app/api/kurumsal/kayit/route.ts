@@ -3,7 +3,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { validateEmail, validatePassword, checkSignupRateLimit } from '@/lib/signup-policy'
 
 /**
- * Kurumsal kayıt — Klinik & Satıcı için ortak endpoint.
+ * Kurumsal kayıt — Klinik & İş Ortağı için ortak endpoint.
  *
  * Akış: Form → SMS OTP → bu endpoint → user (role=user) → /klinik/basvur veya /satici/basvur
  * Rol asıl olarak başvuru onayında set edilir (admin tarafından).

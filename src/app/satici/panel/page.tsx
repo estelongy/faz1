@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import UrunEkleForm from './UrunEkleForm'
 
-export const metadata: Metadata = { title: 'Satıcı Paneli — Estelongy' }
+export const metadata: Metadata = { title: 'İş Ortağı Paneli — Estelongy' }
 
 const CATEGORY_LABELS: Record<string, string> = {
   // EsteStore ana kategoriler
@@ -44,7 +44,7 @@ export default async function SaticiPanelPage() {
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role === 'admin' || role === 'clinic') redirect(pathForRole(role))
 
-  // Satıcı kaydını bul
+  // İş Ortağı kaydını bul
   const { data: vendor } = await supabase
     .from('vendors')
     .select('id, company_name, approval_status, kyc_status, kyc_review_note, stripe_account_id, stripe_charges_enabled')
@@ -56,11 +56,11 @@ export default async function SaticiPanelPage() {
       <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">🏪</div>
-          <h1 className="text-white font-bold text-xl mb-2">Satıcı Hesabı Bulunamadı</h1>
-          <p className="text-slate-400 text-sm mb-6">Ürün eklemek için önce satıcı başvurusu yapmanız gerekiyor.</p>
+          <h1 className="text-white font-bold text-xl mb-2">İş Ortağı Hesabı Bulunamadı</h1>
+          <p className="text-slate-400 text-sm mb-6">Ürün eklemek için önce iş ortağı başvurusu yapmanız gerekiyor.</p>
           <Link href="/satici/basvur"
             className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl text-sm">
-            Satıcı Başvurusu Yap →
+            İş Ortağı Başvurusu Yap →
           </Link>
         </div>
       </main>
@@ -140,7 +140,7 @@ export default async function SaticiPanelPage() {
           <div className="flex items-center gap-3">
             <Link href="/" className="text-white font-black text-lg tracking-tight">ESTELONGY</Link>
             <span className="text-slate-700">|</span>
-            <span className="text-slate-400 text-sm">Satıcı Paneli</span>
+            <span className="text-slate-400 text-sm">İş Ortağı Paneli</span>
           </div>
           <div className="flex items-center gap-4">
             <form action={handleSignOut}>

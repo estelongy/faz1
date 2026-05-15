@@ -48,15 +48,15 @@ export async function urunEkleAction(input: UrunEkleInput): Promise<{ ok: boolea
   if (!user) redirect('/giris')
 
   const role = (user.app_metadata as Record<string, string>)?.role
-  if (role !== 'vendor') return { ok: false, error: 'Satıcı yetkisi gerekli.' }
+  if (role !== 'vendor') return { ok: false, error: 'İş Ortağı yetkisi gerekli.' }
 
   const { data: vendor } = await supabase
     .from('vendors')
     .select('id, approval_status')
     .eq('user_id', user.id)
     .single()
-  if (!vendor) return { ok: false, error: 'Satıcı kaydı bulunamadı.' }
-  if (vendor.approval_status !== 'approved') return { ok: false, error: 'Satıcı hesabınız onaylı değil.' }
+  if (!vendor) return { ok: false, error: 'İş Ortağı kaydı bulunamadı.' }
+  if (vendor.approval_status !== 'approved') return { ok: false, error: 'İş Ortağı hesabınız onaylı değil.' }
 
   if (!input.name?.trim()) return { ok: false, error: 'Ürün adı zorunludur.' }
   if (input.category !== 'kozmetik' && input.category !== 'sarf_medikal') {

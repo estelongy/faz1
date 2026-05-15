@@ -92,7 +92,7 @@ export function IadeTalepForm({
   if (success) {
     return (
       <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-400">
-        İade talebin alındı. Satıcı 2 iş günü içinde yanıtlayacak.
+        İade talebin alındı. İş Ortağı 2 iş günü içinde yanıtlayacak.
       </div>
     )
   }

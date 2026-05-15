@@ -1,6 +1,6 @@
 /**
  * Rol bazlı "hoş geldiniz" maili.
- * Kullanıcıya panel linki, klinik'e klinik panel linki, vendor'a satıcı panel linki.
+ * Kullanıcıya panel linki, klinik'e klinik panel linki, vendor'a iş ortağı panel linki.
  */
 import { sendEmail } from './notifications'
 
@@ -30,10 +30,10 @@ const ROLE_META: Record<WelcomeRole, { subject: string; heading: string; body: s
     ctaPath: '/klinik/panel',
   },
   vendor: {
-    subject: 'Satıcı Başvurunuz Onaylandı — Estelongy\'ye Hoş Geldiniz 🎉',
-    heading: 'Satıcı hesabınız aktif',
-    body: 'Satıcı başvurunuz Estelongy ekibi tarafından onaylandı. Artık satıcı panelinize erişebilir, ürünlerinizi yükleyebilir ve siparişleri yönetmeye başlayabilirsiniz. Hoş geldiniz!',
-    ctaLabel: 'Satıcı Panelime Git',
+    subject: 'İş Ortağı Başvurunuz Onaylandı — Estelongy\'ye Hoş Geldiniz 🎉',
+    heading: 'İş Ortağı hesabınız aktif',
+    body: 'İş Ortağı başvurunuz Estelongy ekibi tarafından onaylandı. Artık iş ortağı panelinize erişebilir, ürünlerinizi yükleyebilir ve siparişleri yönetmeye başlayabilirsiniz. Hoş geldiniz!',
+    ctaLabel: 'İş Ortağı Panelime Git',
     ctaPath: '/satici/panel',
   },
   health_professional: {

@@ -78,7 +78,7 @@ export default function KurumsalGirisPage() {
       return
     }
 
-    // Klinik / Satıcı — form validation, sonra SMS OTP'ye geç
+    // Klinik / İş Ortağı — form validation, sonra SMS OTP'ye geç
     if (!fullName.trim()) { setError('Ad Soyad zorunludur.'); setLoading(false); return }
     if (phone.replace(/\D/g, '').length < 10) { setError('Geçerli bir telefon numarası girin.'); setLoading(false); return }
     if (password.length < 8) { setError('Şifre en az 8 karakter olmalıdır.'); setLoading(false); return }
@@ -162,7 +162,7 @@ export default function KurumsalGirisPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white">Kurumsal Giriş</h1>
-          <p className="text-slate-400 text-sm mt-1">Klinik, satıcı veya sağlık profesyoneli hesabınızla devam edin</p>
+          <p className="text-slate-400 text-sm mt-1">Klinik, iş ortağı veya sağlık profesyoneli hesabınızla devam edin</p>
         </div>
 
         {/* Hesap tipi seçimi */}
@@ -195,7 +195,7 @@ export default function KurumsalGirisPage() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <div className="text-white font-bold text-lg">Satıcı</div>
+                  <div className="text-white font-bold text-lg">İş Ortağı</div>
                   <div className="text-slate-400 text-sm">Cilt bakım ürünleri ve kozmetik markası</div>
                 </div>
                 <svg className="w-5 h-5 text-slate-500 group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,7 +250,7 @@ export default function KurumsalGirisPage() {
               <span className={`font-medium text-sm ${
                 accountType === 'klinik' ? 'text-blue-300' : accountType === 'satici' ? 'text-amber-300' : 'text-emerald-300'
               }`}>
-                {accountType === 'klinik' ? 'Klinik Hesabı' : accountType === 'satici' ? 'Satıcı Hesabı' : 'Sağlık Profesyoneli'}
+                {accountType === 'klinik' ? 'Klinik Hesabı' : accountType === 'satici' ? 'İş Ortağı Hesabı' : 'Sağlık Profesyoneli'}
               </span>
               <button onClick={() => { setAccountType(null); setError(null) }} className="ml-auto text-slate-500 hover:text-white transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>

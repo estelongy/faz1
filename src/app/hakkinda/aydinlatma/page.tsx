@@ -129,7 +129,7 @@ export default function AydinlatmaPage() {
                 kapsamında açık rızanıza dayanılarak gerçekleştirilir.
               </p>
               <p className="mt-2">
-                Ayrıca <strong>seçtiğiniz klinik/satıcı</strong>, randevu/sipariş süreci için ad,
+                Ayrıca <strong>seçtiğiniz klinik/iş ortağı</strong>, randevu/sipariş süreci için ad,
                 telefon ve gerekli sağlık bilgilerinize erişir; başka amaçla kullanmaları yasaktır.
                 Yetkili kamu kurumlarına yalnızca yasal zorunluluk halinde aktarım yapılır.
               </p>

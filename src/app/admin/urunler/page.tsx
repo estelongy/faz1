@@ -114,7 +114,7 @@ export default async function AdminUrunlerPage() {
                         )}
                       </div>
                       {(p.vendors as VendorInfo)?.[0]?.company_name && (
-                        <p className="text-slate-500 text-xs mb-1">Satıcı: {(p.vendors as VendorInfo)?.[0]?.company_name}</p>
+                        <p className="text-slate-500 text-xs mb-1">İş Ortağı: {(p.vendors as VendorInfo)?.[0]?.company_name}</p>
                       )}
                       {p.description && <p className="text-slate-400 text-sm mb-2">{p.description}</p>}
                       {p.price && <p className="text-slate-300 text-sm">₺{Number(p.price).toLocaleString('tr-TR')}</p>}

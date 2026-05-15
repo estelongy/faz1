@@ -62,7 +62,7 @@ export default async function AdminPage() {
           <span className="text-amber-300 text-sm">
             {(pendingClinics ?? 0) > 0 && <><strong>{pendingClinics}</strong> klinik</>}
             {(pendingClinics ?? 0) > 0 && (pendingVendors ?? 0) > 0 && ' ve '}
-            {(pendingVendors ?? 0) > 0 && <><strong>{pendingVendors}</strong> satıcı</>}
+            {(pendingVendors ?? 0) > 0 && <><strong>{pendingVendors}</strong> iş ortağı</>}
             {' '}onay bekliyor.
           </span>
           <div className="ml-auto flex gap-2">
@@ -70,7 +70,7 @@ export default async function AdminPage() {
               <Link href="/admin/klinikler" className="text-xs px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">Kliniklere git →</Link>
             )}
             {(pendingVendors ?? 0) > 0 && (
-              <Link href="/admin/saticilar" className="text-xs px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">Satıcılara git →</Link>
+              <Link href="/admin/saticilar" className="text-xs px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">İş Ortaklarına git →</Link>
             )}
           </div>
         </div>
@@ -85,7 +85,7 @@ export default async function AdminPage() {
           { label: 'Klinikler', value: totalClinics ?? 0, color: 'from-blue-500 to-cyan-600', link: '/admin/klinikler', badge: pendingClinics ?? 0, icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
           )},
-          { label: 'Satıcılar', value: totalVendors ?? 0, color: 'from-amber-500 to-orange-500', link: '/admin/saticilar', badge: pendingVendors ?? 0, icon: (
+          { label: 'İş Ortakları', value: totalVendors ?? 0, color: 'from-amber-500 to-orange-500', link: '/admin/saticilar', badge: pendingVendors ?? 0, icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
           )},
           { label: 'Analizler', value: totalAnalyses ?? 0, color: 'from-emerald-500 to-teal-600', link: null, icon: (

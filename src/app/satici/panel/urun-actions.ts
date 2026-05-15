@@ -28,14 +28,14 @@ async function assertOwnership(productId: string) {
   if (!user) redirect('/giris')
 
   const role = (user.app_metadata as Record<string, string>)?.role
-  if (role !== 'vendor') return { ok: false as const, error: 'Satıcı yetkisi gerekli.' }
+  if (role !== 'vendor') return { ok: false as const, error: 'İş Ortağı yetkisi gerekli.' }
 
   const { data: vendor } = await supabase
     .from('vendors')
     .select('id, approval_status')
     .eq('user_id', user.id)
     .single()
-  if (!vendor) return { ok: false as const, error: 'Satıcı kaydı bulunamadı.' }
+  if (!vendor) return { ok: false as const, error: 'İş Ortağı kaydı bulunamadı.' }
   if (vendor.approval_status !== 'approved') return { ok: false as const, error: 'Hesabınız onaylı değil.' }
 
   const { data: product } = await supabase
@@ -127,7 +127,7 @@ export async function urunGuncelleAction(input: UrunGuncelleInput): Promise<{ ok
 
   if (Object.keys(patch).length === 0) return { ok: true }
 
-  // Satıcı değiştirince yeniden onaya düşsün (kritik alanlar değiştiyse)
+  // İş Ortağı değiştirince yeniden onaya düşsün (kritik alanlar değiştiyse)
   const contentChanged = ['name','category','subcategory','description','images','ingredients'].some(k => k in patch)
   if (contentChanged) {
     patch.approval_status = 'pending'

@@ -80,7 +80,7 @@ export default function SiparisSuccessOverlay({ orderNumber, total }: Props) {
           </svg>
         </div>
         <h2 className="text-3xl font-black text-white mb-2">Siparişin Alındı! 🎉</h2>
-        <p className="text-emerald-300 text-sm mb-4">Satıcılarımız hazırlığa başlıyor</p>
+        <p className="text-emerald-300 text-sm mb-4">İş Ortaklarımız hazırlığa başlıyor</p>
         <div className="flex items-center justify-between pt-4 border-t border-emerald-500/20">
           <div className="text-left">
             <p className="text-slate-400 text-xs">Sipariş No</p>

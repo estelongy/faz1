@@ -18,7 +18,7 @@ const STATUS_BADGE: Record<string, { label: string; color: string }> = {
 }
 
 const RESOLVER_BADGE: Record<string, { label: string; color: string }> = {
-  vendor: { label: 'Satıcı',    color: 'bg-violet-500/20 text-violet-400' },
+  vendor: { label: 'İş Ortağı',    color: 'bg-violet-500/20 text-violet-400' },
   admin:  { label: 'Admin',     color: 'bg-red-500/20 text-red-400' },
 }
 
@@ -100,7 +100,7 @@ export default async function AdminIadelerPage({
             )}
           </div>
           <p className="text-slate-400 text-sm mt-1">
-            Satıcı-müşteri anlaşmazlıklarında devreye gir · {STALE_DAYS_THRESHOLD}+ gün bekleyen talepler işaretlenir
+            İş Ortağı-müşteri anlaşmazlıklarında devreye gir · {STALE_DAYS_THRESHOLD}+ gün bekleyen talepler işaretlenir
           </p>
         </div>
 
@@ -181,7 +181,7 @@ export default async function AdminIadelerPage({
                       <p className="text-white font-bold truncate">{item?.product_snapshot?.name ?? 'Ürün'}</p>
                       <div className="text-slate-500 text-xs mt-1 space-y-0.5">
                         {item?.orders?.order_number && <p>Sipariş: <span className="font-mono">#{item.orders.order_number}</span></p>}
-                        <p>Satıcı: <span className="text-slate-400">{item?.vendors?.company_name ?? '—'}</span></p>
+                        <p>İş Ortağı: <span className="text-slate-400">{item?.vendors?.company_name ?? '—'}</span></p>
                         <p>Müşteri: <span className="text-slate-400">{customerName}</span></p>
                         <p>
                           {new Date(ret.created_at).toLocaleDateString('tr-TR', {
@@ -229,7 +229,7 @@ export default async function AdminIadelerPage({
                   {ret.status === 'pending' && (
                     <div className="border-t border-slate-700 pt-3">
                       <p className="text-red-400 text-xs font-bold mb-2">
-                        🛡 Admin Müdahale — Satıcı henüz karar vermedi
+                        🛡 Admin Müdahale — İş Ortağı henüz karar vermedi
                       </p>
                       <IadeKararForm returnId={ret.id} />
                     </div>

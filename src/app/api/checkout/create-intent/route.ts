@@ -198,8 +198,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Sipariş kalemleri kaydedilemedi' }, { status: 500 })
     }
 
-    // Tek satıcı + Connect hesabı aktif → destination charge
-    // Çoklu satıcı veya Connect aktif değil → platform hesabı toplar, payout sonra manuel/cron
+    // Tek iş ortağı + Connect hesabı aktif → destination charge
+    // Çoklu iş ortağı veya Connect aktif değil → platform hesabı toplar, payout sonra manuel/cron
     const useDestinationCharge = vendorStripeAccounts.size === 1
     let destinationAccount: string | undefined
     let applicationFee: number | undefined

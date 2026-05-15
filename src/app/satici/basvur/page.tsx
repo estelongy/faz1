@@ -8,7 +8,7 @@ import Link from 'next/link'
 import SaticiBasvurForm from '@/components/SaticiBasvurForm'
 
 export const metadata: Metadata = {
-  title: 'Satıcı Başvurusu',
+  title: 'İş Ortağı Başvurusu',
   description: 'Cilt bakım ürünlerinizi Estelongy platformunda satışa sunun.',
 }
 
@@ -98,7 +98,7 @@ export default async function SaticiBasvurPage({
               </svg>
             </div>
             <h2 className="text-xl font-bold text-white mb-2">
-              {existing.approval_status === 'approved' ? 'Satıcı Hesabınız Aktif' :
+              {existing.approval_status === 'approved' ? 'İş Ortağı Hesabınız Aktif' :
                existing.approval_status === 'rejected' ? 'Başvurunuz Reddedildi' : 'Başvurunuz İnceleniyor'}
             </h2>
             <p className="text-slate-400 text-sm mb-6">
@@ -108,7 +108,7 @@ export default async function SaticiBasvurPage({
             </p>
             <Link href={existing.approval_status === 'approved' ? '/satici/panel' : '/panel'}
               className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
-              {existing.approval_status === 'approved' ? 'Satıcı Paneline Git' : 'Panele Dön'}
+              {existing.approval_status === 'approved' ? 'İş Ortağı Paneline Git' : 'Panele Dön'}
             </Link>
           </div>
         </main>
@@ -130,7 +130,7 @@ export default async function SaticiBasvurPage({
             Başvurunuz incelemeye alındı. En kısa sürede değerlendirilecek.
           </p>
           <p className="text-slate-500 text-xs mb-6">
-            Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-400">giriş yaparak</strong> satıcı panelinize erişebilirsiniz.
+            Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-400">giriş yaparak</strong> iş ortağı panelinize erişebilirsiniz.
           </p>
           <Link href="/giris"
             className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
@@ -149,7 +149,7 @@ export default async function SaticiBasvurPage({
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7m-9 2v8a1 1 0 001 1h3m4 0h3a1 1 0 001-1v-8m-9 2h4" /></svg>
             Anasayfa
           </Link>
-          <span className="text-white font-bold">Satıcı Başvurusu</span>
+          <span className="text-white font-bold">İş Ortağı Başvurusu</span>
           <div className="w-16" />
         </div>
       </header>
@@ -159,7 +159,7 @@ export default async function SaticiBasvurPage({
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white mb-4">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
           </div>
-          <h1 className="text-2xl font-bold text-white">Satıcı Olarak Katıl</h1>
+          <h1 className="text-2xl font-bold text-white">İş Ortağı Olarak Katıl</h1>
           <p className="text-slate-400 text-sm mt-1">Başvurunuz admin onayından sonra aktive edilir</p>
         </div>
 

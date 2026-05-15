@@ -23,8 +23,8 @@ interface LogRow {
 const ACTION_LABEL: Record<string, string> = {
   role_change: 'Rol değişimi',
   user_active_toggle: 'Hesap aktif/pasif',
-  vendor_approval: 'Satıcı onay',
-  vendor_update: 'Satıcı güncelleme',
+  vendor_approval: 'İş Ortağı onay',
+  vendor_update: 'İş Ortağı güncelleme',
   clinic_approval: 'Klinik onay',
   clinic_update: 'Klinik güncelleme',
   clinic_credit_grant: 'Kredi yükleme',

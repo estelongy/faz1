@@ -45,7 +45,7 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
         </>
       ),
       subtitle:
-        'Hasta, hekim ya da satıcı — yolculuğun seninle başlasın. Zamansız Güzellik Mimarlığı.',
+        'Hasta, hekim ya da iş ortağı — yolculuğun seninle başlasın. Zamansız Güzellik Mimarlığı.',
     },
     {
       kind: 'product-showcase',
@@ -219,7 +219,7 @@ function RolePickerComposition() {
       color: '#10876B',
     },
     {
-      label: 'Satıcı',
+      label: 'İş Ortağı',
       sub: 'Hekim onaylı ürünlerini sat',
       icon: Store,
       href: '/satici/basvur',

@@ -79,7 +79,7 @@ export default async function IadelerimPage() {
                     )}
                     {ret.resolver_note && (
                       <p className="mt-2 p-2 bg-slate-900/50 rounded-lg">
-                        <span className="text-slate-400">Satıcı Notu:</span> {ret.resolver_note}
+                        <span className="text-slate-400">İş Ortağı Notu:</span> {ret.resolver_note}
                       </p>
                     )}
                   </div>

@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Sık Sorulan Sorular',
-  description: 'Estelongy Gençlik Skoru, klinik akışı, kredi sistemi ve satıcı süreçleri hakkında sık sorulan sorular.',
+  description: 'Estelongy Gençlik Skoru, klinik akışı, kredi sistemi ve iş ortağı süreçleri hakkında sık sorulan sorular.',
 }
 
 interface FAQ {
@@ -93,16 +93,16 @@ const GROUPS: FAQGroup[] = [
     ],
   },
   {
-    title: 'Satıcılar',
+    title: 'İş Ortakları',
     icon: '🛍️',
     items: [
       {
-        q: 'Satıcı olarak nasıl başvururum?',
-        a: '"Satıcı Ol" ekranından mağaza bilgilerinizi (firma adı, vergi no, kategori) girin. Admin onayından sonra ürünlerinizi eklemeye başlayabilirsiniz.',
+        q: 'İş Ortağı olarak nasıl başvururum?',
+        a: '"İş Ortağı Ol" ekranından mağaza bilgilerinizi (firma adı, vergi no, kategori) girin. Admin onayından sonra ürünlerinizi eklemeye başlayabilirsiniz.',
       },
       {
         q: 'Komisyon oranı nedir?',
-        a: 'Platform komisyonu her satıştan %15\'tir. Bu oran ileride kategori ve satıcı tecrübesine göre değişebilir. Komisyonunuz otomatik hesaplanır, net kazancınız satış anında görünür.',
+        a: 'Platform komisyonu her satıştan %15\'tir. Bu oran ileride kategori ve iş ortağı tecrübesine göre değişebilir. Komisyonunuz otomatik hesaplanır, net kazancınız satış anında görünür.',
       },
       {
         q: 'Ürünlerim nasıl öne çıkar?',

@@ -78,7 +78,7 @@ export default async function SiparisPage({
 
   const itemsByVendor: Record<string, OrderItem[]> = {}
   for (const item of (order.order_items ?? []) as OrderItem[]) {
-    const vname = item.vendors?.company_name ?? 'Satıcı'
+    const vname = item.vendors?.company_name ?? 'İş Ortağı'
     if (!itemsByVendor[vname]) itemsByVendor[vname] = []
     itemsByVendor[vname].push(item)
   }
@@ -106,7 +106,7 @@ export default async function SiparisPage({
               <span className="text-3xl">🎉</span>
               <div>
                 <p className="text-white font-bold">Siparişin alındı!</p>
-                <p className="text-emerald-300 text-sm mt-0.5">Satıcılarımız hazırlığa başladı. E-posta ile takip bilgilendirmesi alacaksın.</p>
+                <p className="text-emerald-300 text-sm mt-0.5">İş Ortaklarımız hazırlığa başladı. E-posta ile takip bilgilendirmesi alacaksın.</p>
               </div>
             </div>
           </div>
@@ -157,7 +157,7 @@ export default async function SiparisPage({
           </div>
         )}
 
-        {/* Satıcı bazlı kalemler */}
+        {/* İş Ortağı bazlı kalemler */}
         <div className="space-y-4 mb-6">
           {Object.entries(itemsByVendor).map(([vendorName, items]) => (
             <div key={vendorName} className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden">

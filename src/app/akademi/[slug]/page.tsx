@@ -117,7 +117,7 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
 
               <div className="space-y-1 text-sm">
                 <p className="text-slate-400">
-                  Satıcı: <span className="text-white font-medium">Estelongy EsteStore</span>
+                  İş Ortağı: <span className="text-white font-medium">Estelongy EsteStore</span>
                 </p>
                 {clinic && (
                   <p className="text-slate-400">

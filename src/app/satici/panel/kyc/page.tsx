@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import KycForm from './KycForm'
 
-export const metadata: Metadata = { title: 'KYC Onay — Satıcı' }
+export const metadata: Metadata = { title: 'KYC Onay — İş Ortağı' }
 
 export default async function VendorKycPage({
   searchParams,
@@ -37,11 +37,11 @@ export default async function VendorKycPage({
       <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">🏪</div>
-          <h1 className="text-white font-bold text-xl mb-2">Satıcı Hesabı Yok</h1>
-          <p className="text-slate-400 text-sm mb-6">KYC için önce satıcı başvurusu yapmalısınız.</p>
+          <h1 className="text-white font-bold text-xl mb-2">İş Ortağı Hesabı Yok</h1>
+          <p className="text-slate-400 text-sm mb-6">KYC için önce iş ortağı başvurusu yapmalısınız.</p>
           <Link href="/satici/basvur"
             className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl text-sm">
-            Satıcı Başvurusu Yap →
+            İş Ortağı Başvurusu Yap →
           </Link>
         </div>
       </main>
@@ -58,7 +58,7 @@ export default async function VendorKycPage({
         <div className="max-w-2xl mx-auto py-12">
           <Link href="/satici/panel"
             className="inline-flex items-center gap-1.5 mb-6 text-slate-400 hover:text-white text-sm">
-            ← Satıcı Paneli
+            ← İş Ortağı Paneli
           </Link>
           <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8 text-center">
             <div className="text-5xl mb-4">✓</div>
@@ -82,7 +82,7 @@ export default async function VendorKycPage({
         <div className="max-w-2xl mx-auto py-12">
           <Link href="/satici/panel"
             className="inline-flex items-center gap-1.5 mb-6 text-slate-400 hover:text-white text-sm">
-            ← Satıcı Paneli
+            ← İş Ortağı Paneli
           </Link>
           <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-8 text-center">
             <div className="text-5xl mb-4">⏳</div>
@@ -106,9 +106,9 @@ export default async function VendorKycPage({
         <div>
           <Link href="/satici/panel"
             className="inline-flex items-center gap-1.5 mb-4 text-slate-400 hover:text-white text-sm">
-            ← Satıcı Paneli
+            ← İş Ortağı Paneli
           </Link>
-          <h1 className="text-white font-bold text-2xl">Satıcı KYC Bilgileri</h1>
+          <h1 className="text-white font-bold text-2xl">İş Ortağı KYC Bilgileri</h1>
           <p className="text-slate-400 text-sm mt-1">
             Vergi mükellefi, banka ve sözleşme bilgilerinizi tamamlayın. Onay sonrası ürün satışına başlayabilirsiniz.
           </p>

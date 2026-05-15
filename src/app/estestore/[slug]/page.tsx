@@ -291,7 +291,7 @@ export default async function UrunDetayPage({
 
             {product.vendors?.company_name && (
               <p className="text-slate-500 text-sm mb-4">
-                Satıcı:{' '}
+                İş Ortağı:{' '}
                 <Link href={`/estestore/satici/${product.vendor_id}`}
                   className="text-[#8B7339] hover:text-[#C9A961] transition-colors font-medium">
                   {product.vendors.company_name}

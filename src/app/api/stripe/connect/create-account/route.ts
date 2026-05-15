@@ -10,13 +10,13 @@ export async function POST() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Oturum yok' }, { status: 401 })
 
-    // Satıcı kaydı
+    // İş Ortağı kaydı
     const { data: vendor } = await supabase
       .from('vendors')
       .select('id, company_name, approval_status, stripe_account_id')
       .eq('user_id', user.id)
       .single()
-    if (!vendor) return NextResponse.json({ error: 'Satıcı bulunamadı' }, { status: 404 })
+    if (!vendor) return NextResponse.json({ error: 'İş Ortağı bulunamadı' }, { status: 404 })
     if (vendor.approval_status !== 'approved') {
       return NextResponse.json({ error: 'Önce admin onayını bekleyin' }, { status: 403 })
     }
@@ -26,7 +26,7 @@ export async function POST() {
       return NextResponse.json({ accountId: vendor.stripe_account_id, existing: true })
     }
 
-    // Express hesap oluştur (Türkiye satıcısı)
+    // Express hesap oluştur (Türkiye iş ortağı)
     const account = await stripe.accounts.create({
       type: 'express',
       country: 'TR',
