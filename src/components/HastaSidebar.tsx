@@ -24,7 +24,7 @@ const HASTA_NAV: NavGroup[] = [
     items: [
       { href: '/panel',                icon: '🏠', label: 'Panel', exact: true },
       { href: '/analiz',               icon: '📸', label: 'Yeni Analiz' },
-      { href: '/klinikler/randevu',              icon: '📅', label: 'Randevu Al' },
+      { href: '/esteklinik/randevu',              icon: '📅', label: 'Randevu Al' },
       { href: '/panel/analizlerim',    icon: '🎯', label: 'Geçmişim' },
     ],
   },

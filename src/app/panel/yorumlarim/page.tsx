@@ -220,7 +220,7 @@ function RandevuYorumKarti({
           )}
           {clinicSlug && (
             <Link
-              href={`/klinikler/${clinicSlug}`}
+              href={`/esteklinik/${clinicSlug}`}
               className="text-[10px] text-slate-500 hover:text-emerald-400"
             >
               Klinik sayfası →

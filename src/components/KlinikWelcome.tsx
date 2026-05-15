@@ -17,7 +17,7 @@ export default function KlinikWelcome({ clinicName, clinicId, creditBalance, fre
   const baseUrl = typeof window !== 'undefined'
     ? `${window.location.protocol}//${window.location.host}`
     : 'https://estelongy-faz1.vercel.app'
-  const shareUrl = `${baseUrl}/klinikler/randevu?k=${clinicId}`
+  const shareUrl = `${baseUrl}/esteklinik/randevu?k=${clinicId}`
 
   async function handleCopy() {
     try {

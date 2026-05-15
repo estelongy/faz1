@@ -13,11 +13,11 @@ export const metadata: Metadata = {
   title: 'EsteKlinik — Onaylı Estetik Merkezleri',
   description:
     'EsteKlinik ekosisteminde KYC onayı tamamlanmış, hekim değerlendirmeli klinikleri keşfet. Uzman, branş, tedavi veya konuma göre ara — direkt randevu al.',
-  alternates: { canonical: '/klinikler' },
+  alternates: { canonical: '/esteklinik' },
   openGraph: {
     title: 'EsteKlinik — Onaylı Klinikler',
     description: 'Uzman, branş, tedavi veya konuma göre onaylı klinik ara.',
-    url: `${SITE_URL}/klinikler`,
+    url: `${SITE_URL}/esteklinik`,
     type: 'website',
   },
 }

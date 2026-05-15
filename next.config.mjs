@@ -20,10 +20,13 @@ const nextConfig = {
       { source: '/magaza',                      destination: '/estestore', permanent: true },
       { source: '/magaza/:path*',               destination: '/estestore/:path*', permanent: true },
       // EsteKlinik dünya birleştirme: eski public rotalar /klinikler/* altına
-      { source: '/randevu',                     destination: '/klinikler/randevu', permanent: true },
-      { source: '/klinik/basvur',               destination: '/klinikler/basvur', permanent: true },
-      // /klinik/<slug> → /klinikler/<slug> (admin path'lerini hariç tut)
-      { source: '/klinik/:slug((?!panel$|panel/|muhasebe-ozet$|muhasebe-ozet/|basvur$).+)', destination: '/klinikler/:slug', permanent: true },
+      // EsteKlinik dünya umbrellası /esteklinik/* — eski rotalar
+      { source: '/randevu',                     destination: '/esteklinik/randevu', permanent: true },
+      { source: '/klinik/basvur',               destination: '/esteklinik/basvur', permanent: true },
+      { source: '/klinikler',                   destination: '/esteklinik', permanent: true },
+      { source: '/klinikler/:path*',            destination: '/esteklinik/:path*', permanent: true },
+      // /klinik/<slug> → /esteklinik/<slug> (admin path'lerini hariç tut)
+      { source: '/klinik/:slug((?!panel$|panel/|muhasebe-ozet$|muhasebe-ozet/|basvur$).+)', destination: '/esteklinik/:slug', permanent: true },
     ]
   },
 

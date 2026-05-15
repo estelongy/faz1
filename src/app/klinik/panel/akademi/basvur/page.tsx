@@ -25,7 +25,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
     .limit(1)
     .maybeSingle()
 
-  if (!clinic) redirect('/klinikler/basvur')
+  if (!clinic) redirect('/esteklinik/basvur')
   if (clinic.approval_status !== 'approved') redirect('/klinik/panel')
 
   // Zaten eğitmen

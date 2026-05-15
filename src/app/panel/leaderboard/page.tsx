@@ -133,7 +133,7 @@ export default async function LeaderboardPage() {
         ) : (
           <div className="mb-6 p-5 rounded-2xl bg-slate-800/50 border border-slate-700 text-center">
             <p className="text-slate-400 text-sm">Henüz klinik onaylı bir skorun yok</p>
-            <Link href="/klinikler/randevu" className="inline-block mt-3 text-violet-400 hover:text-violet-300 text-sm font-medium">
+            <Link href="/esteklinik/randevu" className="inline-block mt-3 text-violet-400 hover:text-violet-300 text-sm font-medium">
               Randevu al → skoru onayla →
             </Link>
           </div>
@@ -211,7 +211,7 @@ export default async function LeaderboardPage() {
               <span>Tetkik + hekim onayı ile Klinik Onaylı Gençlik Skoru&apos;na ulaş</span>
             </li>
           </ul>
-          <Link href="/klinikler/randevu"
+          <Link href="/esteklinik/randevu"
             className="inline-block mt-4 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold rounded-lg transition-colors">
             Skorunu Yükselt →
           </Link>

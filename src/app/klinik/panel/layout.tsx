@@ -29,7 +29,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
     .maybeSingle()
 
   // Klinik kaydı yok → başvuruya yönlendir
-  if (!clinic) redirect('/klinikler/basvur')
+  if (!clinic) redirect('/esteklinik/basvur')
 
   // Onay bekliyor / reddedildi → bilgilendirme ekranı (sidebar'sız)
   if (clinic.approval_status !== 'approved') {

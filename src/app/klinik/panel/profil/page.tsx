@@ -19,7 +19,7 @@ export default async function KlinikProfilPage() {
     .select('id, name, location, bio, specialties, clinic_type, created_at')
     .eq('user_id', user.id)
     .single()
-  if (!clinic) redirect('/klinikler/basvur')
+  if (!clinic) redirect('/esteklinik/basvur')
 
   return (
     <div className="max-w-4xl mx-auto">

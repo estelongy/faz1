@@ -16,7 +16,7 @@ export default function PazarlamaPage() {
         {
           icon: '🔗',
           title: 'Klinik linkim',
-          description: 'estelongy.com/klinikler/randevu?k=KLINIK-ID — sosyal medyaya, web sitenize, biyo linkinize ekleyin. Hastalar direkt randevu alır.',
+          description: 'estelongy.com/esteklinik/randevu?k=KLINIK-ID — sosyal medyaya, web sitenize, biyo linkinize ekleyin. Hastalar direkt randevu alır.',
           badge: 'Hazır',
         },
         {

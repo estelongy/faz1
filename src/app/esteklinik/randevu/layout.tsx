@@ -3,11 +3,11 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Randevu Al — Onaylı Estetik Klinikleri',
   description: 'Estelongy\'deki onaylı estetik kliniklerinden kolayca randevu al. Hekim onayıyla Klinik Onaylı Estelongy Gençlik Skoru kazan.',
-  alternates: { canonical: '/klinikler/randevu' },
+  alternates: { canonical: '/esteklinik/randevu' },
   openGraph: {
     title: 'Randevu Al — Estelongy',
     description: 'Onaylı estetik kliniklerinden anlık müsaitlik ile randevu al.',
-    url: '/klinikler/randevu',
+    url: '/esteklinik/randevu',
     type: 'website',
   },
 }

@@ -10,7 +10,7 @@ import { useGalaxyTransition, type Galaxy } from '@/components/GalaxyTransition'
 const SUB_BRANDS = [
   { name: 'BiyoAGE',    href: '/',          color: '#9F8CE0', tag: 'Analiz', galaxy: 'biyoage' as Galaxy },
   { name: 'EsteStore',  href: '/estestore', color: '#C9A961', tag: 'Mağaza', galaxy: 'estestore' as Galaxy },
-  { name: 'EsteKlinik', href: '/klinikler', color: '#10876B', tag: 'Klinik', galaxy: 'esteklinik' as Galaxy },
+  { name: 'EsteKlinik', href: '/esteklinik', color: '#10876B', tag: 'Klinik', galaxy: 'esteklinik' as Galaxy },
 ] as const
 
 const MASTER_COLOR = '#F8F7F4'

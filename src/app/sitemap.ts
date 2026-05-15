@@ -21,11 +21,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/rehber/cihaz-tedavileri`,          lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
 
     // Platform
-    { url: `${BASE_URL}/klinikler/randevu`,                          lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE_URL}/esteklinik/randevu`,                          lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE_URL}/estestore`,                           lastModified: now, changeFrequency: 'daily',   priority: 0.8 },
 
     // İş ortakları
-    { url: `${BASE_URL}/klinikler/basvur`,                    lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/esteklinik/basvur`,                    lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/satici/basvur`,                    lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
 
     // Yasal / Kurumsal

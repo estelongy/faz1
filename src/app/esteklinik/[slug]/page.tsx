@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Footer from '@/components/Footer'
-import EsteKlinikNav from '@/app/klinikler/EsteKlinikNav'
+import EsteKlinikNav from '@/app/esteklinik/EsteKlinikNav'
 import {
   NPS_LABELS,
   egpBadgeColor,
@@ -96,7 +96,7 @@ export default async function PublicClinicPage({ params }: Props) {
           />
           <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-6">
             <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-3">
-              <Link href="/klinikler" className="hover:text-white transition-colors">EsteKlinik</Link>
+              <Link href="/esteklinik" className="hover:text-white transition-colors">EsteKlinik</Link>
               <span>›</span>
               <span className="text-white font-semibold truncate">{clinic.name}</span>
             </nav>
@@ -175,7 +175,7 @@ export default async function PublicClinicPage({ params }: Props) {
               )}
 
               <Link
-                href={`/klinikler/randevu?k=${clinic.id}`}
+                href={`/esteklinik/randevu?k=${clinic.id}`}
                 className="hidden lg:flex items-center justify-center gap-1.5 w-full px-5 py-3 bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-[#10876B]/30"
               >
                 <Calendar size={14} />
@@ -242,7 +242,7 @@ export default async function PublicClinicPage({ params }: Props) {
               </div>
               <div className="flex flex-wrap gap-2 shrink-0">
                 <Link
-                  href={`/klinikler/randevu?k=${clinic.id}`}
+                  href={`/esteklinik/randevu?k=${clinic.id}`}
                   className="inline-flex items-center gap-1.5 px-5 py-3 bg-white hover:bg-emerald-50 text-[#064E3B] text-sm font-bold rounded-xl transition-colors shadow-lg"
                 >
                   <Calendar size={14} />
@@ -263,7 +263,7 @@ export default async function PublicClinicPage({ params }: Props) {
       {/* Mobil sticky CTA */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#064E3B]/95 backdrop-blur-md border-t border-[#10876B]/40">
         <Link
-          href={`/klinikler/randevu?k=${clinic.id}`}
+          href={`/esteklinik/randevu?k=${clinic.id}`}
           className="flex items-center justify-center gap-1.5 w-full text-center px-5 py-3 bg-white text-[#064E3B] text-sm font-bold rounded-xl transition-colors shadow-lg"
         >
           <Calendar size={14} />

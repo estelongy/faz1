@@ -59,7 +59,7 @@ export default function KurumsalGirisPage() {
         }
 
         // Rol yok (user) → seçilen hesap tipine göre başvuru akışı
-        if (accountType === 'klinik') router.push('/klinikler/basvur')
+        if (accountType === 'klinik') router.push('/esteklinik/basvur')
         else if (accountType === 'satici') router.push('/satici/basvur')
         else router.push('/panel')
         router.refresh()
@@ -123,7 +123,7 @@ export default function KurumsalGirisPage() {
       setMode('giris')
       return
     }
-    router.push(accountType === 'klinik' ? '/klinikler/basvur' : '/satici/basvur')
+    router.push(accountType === 'klinik' ? '/esteklinik/basvur' : '/satici/basvur')
     router.refresh()
   }
 

@@ -29,7 +29,7 @@ export default function RandevuPage() {
         <section className="border-b border-emerald-300/10">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-6">
             <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-3">
-              <Link href="/klinikler" className="hover:text-white transition-colors">EsteKlinik</Link>
+              <Link href="/esteklinik" className="hover:text-white transition-colors">EsteKlinik</Link>
               <span>·</span>
               <span className="text-white font-semibold">Randevu</span>
             </nav>

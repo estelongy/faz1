@@ -47,7 +47,7 @@ export default function EsteKlinikNav() {
 
         {/* SAĞ: EsteKlinik başrol yeşil pill */}
         <Link
-          href="/klinikler"
+          href="/esteklinik"
           aria-label="EsteKlinik anasayfa"
           className="order-3 group inline-flex items-center gap-2 px-4 sm:px-5 h-10 rounded-full bg-[#10876B] hover:bg-[#0E7559] text-white font-bold text-sm tracking-tight transition-colors shadow-lg shadow-[#10876B]/30"
         >

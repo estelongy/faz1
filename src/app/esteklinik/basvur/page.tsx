@@ -6,7 +6,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import KlinikBasvurForm from '@/components/KlinikBasvurForm'
-import EsteKlinikNav from '@/app/klinikler/EsteKlinikNav'
+import EsteKlinikNav from '@/app/esteklinik/EsteKlinikNav'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ async function submitApplication(formData: FormData) {
     const phoneInput = (formData.get('phone') as string)?.trim()
     const phoneE164  = phoneInput ? (phoneInput.startsWith('+') ? phoneInput : (phoneInput.startsWith('0') ? '+9' + phoneInput.replace(/\D/g, '') : '+90' + phoneInput.replace(/\D/g, ''))) : undefined
 
-    if (!firstName || !email || !password) redirect('/klinikler/basvur?error=eksik')
+    if (!firstName || !email || !password) redirect('/esteklinik/basvur?error=eksik')
 
     const admin = createServiceClient()
     const { data: created, error: createErr } = await admin.auth.admin.createUser({
@@ -44,9 +44,9 @@ async function submitApplication(formData: FormData) {
       // Email zaten kayıtlıysa kullanıcıyı giriş ekranına yönlendir
       const msg = (createErr?.message ?? '').toLowerCase()
       if (msg.includes('already') || msg.includes('registered') || msg.includes('exists')) {
-        redirect('/klinikler/basvur?error=email_var')
+        redirect('/esteklinik/basvur?error=email_var')
       }
-      redirect('/klinikler/basvur?error=hesap')
+      redirect('/esteklinik/basvur?error=hesap')
     }
 
     // Profil güncelle
@@ -78,8 +78,8 @@ async function submitApplication(formData: FormData) {
     is_active:       false,
   })
 
-  if (error) redirect('/klinikler/basvur?error=1')
-  redirect('/klinikler/basvur?success=1')
+  if (error) redirect('/esteklinik/basvur?error=1')
+  redirect('/esteklinik/basvur?success=1')
 }
 
 export default async function KlinikBasvurPage({
@@ -185,7 +185,7 @@ export default async function KlinikBasvurPage({
           />
           <div className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-8">
             <nav className="flex items-center gap-2 text-xs text-emerald-200/70 mb-3">
-              <Link href="/klinikler" className="hover:text-white transition-colors">EsteKlinik</Link>
+              <Link href="/esteklinik" className="hover:text-white transition-colors">EsteKlinik</Link>
               <span>·</span>
               <span className="text-white font-semibold">Başvuru</span>
             </nav>

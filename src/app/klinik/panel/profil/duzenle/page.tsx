@@ -20,7 +20,7 @@ export default async function ProfilDuzenlePage() {
     .select('id, name, location, bio, specialties, clinic_type, phone, logo_url, cover_image_url')
     .eq('user_id', user.id)
     .single()
-  if (!clinic) redirect('/klinikler/basvur')
+  if (!clinic) redirect('/esteklinik/basvur')
 
   return (
     <div className="max-w-3xl mx-auto">
