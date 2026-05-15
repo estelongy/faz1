@@ -180,15 +180,15 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
       {/* OTP Ekranı — overlay */}
       {otpStep && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm bg-slate-800 rounded-2xl border border-slate-700 p-6">
+          <div className="w-full max-w-sm bg-slate-100 rounded-2xl border border-slate-300 p-6">
             <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4">
               <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="text-white font-bold text-lg mb-1">Telefon Doğrulama</h3>
-            <p className="text-slate-400 text-sm mb-5">
-              <span className="text-white font-medium">{otpPhone}</span> numarasına 6 haneli kod gönderdik.
+            <h3 className="text-slate-900 font-bold text-lg mb-1">Telefon Doğrulama</h3>
+            <p className="text-slate-500 text-sm mb-5">
+              <span className="text-slate-900 font-medium">{otpPhone}</span> numarasına 6 haneli kod gönderdik.
             </p>
 
             <input
@@ -198,7 +198,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
               value={otpCode}
               onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
               placeholder="_ _ _ _ _ _"
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-center text-2xl tracking-widest placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors mb-3"
+              className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 text-center text-2xl tracking-widest placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors mb-3"
               autoFocus
             />
 
@@ -213,18 +213,18 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
               type="button"
               onClick={handleVerify}
               disabled={otpCode.length !== 6 || otpLoading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all mb-3"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 text-slate-900 font-semibold rounded-xl transition-all mb-3"
             >
               {otpLoading ? 'Doğrulanıyor...' : 'Doğrula'}
             </button>
 
             <div className="flex gap-2">
               <button type="button" onClick={handleResend} disabled={otpLoading}
-                className="flex-1 py-2 text-slate-400 hover:text-white text-sm transition-colors">
+                className="flex-1 py-2 text-slate-500 hover:text-slate-900 text-sm transition-colors">
                 Tekrar Gönder
               </button>
               <button type="button" onClick={() => setOtpStep(false)}
-                className="flex-1 py-2 text-slate-400 hover:text-white text-sm transition-colors">
+                className="flex-1 py-2 text-slate-500 hover:text-slate-900 text-sm transition-colors">
                 İptal
               </button>
             </div>
@@ -235,48 +235,48 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         {/* Hesap Bilgileri — sadece giriş yapılmamışsa */}
         {!isLoggedIn && (
-          <div className="space-y-4 p-5 rounded-xl bg-slate-800/60 border border-slate-700">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Hesap Bilgileri</h3>
+          <div className="space-y-4 p-5 rounded-xl bg-white border border-slate-300">
+            <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Hesap Bilgileri</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Ad <span className="text-red-400">*</span></label>
+                <label className="block text-sm text-slate-500 mb-2">Ad <span className="text-red-400">*</span></label>
                 <input type="text" name="first_name" required placeholder="Ahmet"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                  className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
               </div>
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Soyad</label>
+                <label className="block text-sm text-slate-500 mb-2">Soyad</label>
                 <input type="text" name="last_name" placeholder="Yılmaz"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                  className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
               </div>
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">E-posta <span className="text-red-400">*</span></label>
+              <label className="block text-sm text-slate-500 mb-2">E-posta <span className="text-red-400">*</span></label>
               <input type="email" name="email" required placeholder="ornek@email.com"
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Şifre <span className="text-red-400">*</span></label>
+              <label className="block text-sm text-slate-500 mb-2">Şifre <span className="text-red-400">*</span></label>
               <input type="password" name="password" required placeholder="En az 8 karakter" minLength={8}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Doğum Yılı</label>
+              <label className="block text-sm text-slate-500 mb-2">Doğum Yılı</label>
               <input type="number" name="birth_year" placeholder="1985" min={1920} max={new Date().getFullYear() - 18}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
             </div>
           </div>
         )}
 
         {/* Klinik Adı */}
         <div>
-          <label className="block text-sm text-slate-400 mb-2">Klinik Adı <span className="text-red-400">*</span></label>
+          <label className="block text-sm text-slate-500 mb-2">Klinik Adı <span className="text-red-400">*</span></label>
           <input type="text" name="name" required placeholder="Dr. Ahmet Yılmaz Dermatoloji Kliniği"
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
         </div>
 
         {/* Telefon */}
         <div>
-          <label className="block text-sm text-slate-400 mb-2">
+          <label className="block text-sm text-slate-500 mb-2">
             Telefon <span className="text-red-400">*</span>
             {otpVerified && (
               <span className="ml-2 text-emerald-400 text-xs font-normal">✓ Doğrulandı</span>
@@ -284,30 +284,30 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
           </label>
           <input type="tel" name="phone" required placeholder="05XX XXX XX XX"
             disabled={otpVerified}
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors disabled:opacity-60" />
+            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors disabled:opacity-60" />
         </div>
 
         {/* Konum */}
         <div>
-          <label className="block text-sm text-slate-400 mb-2">Konum</label>
+          <label className="block text-sm text-slate-500 mb-2">Konum</label>
           <input type="hidden" name="location" value={locValue} />
           <div ref={locRef} className="relative">
             {locValue ? (
-              <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border border-violet-500/40 rounded-xl">
+              <div className="flex items-center gap-2 px-4 py-3 bg-white border border-violet-500/40 rounded-xl">
                 <svg className="w-4 h-4 text-violet-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="text-white text-sm flex-1">{locValue}</span>
+                <span className="text-slate-900 text-sm flex-1">{locValue}</span>
                 <button type="button" onClick={() => { setLocValue(''); setLocQuery('') }}
-                  className="text-slate-500 hover:text-white transition-colors">
+                  className="text-slate-500 hover:text-slate-900 transition-colors">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus-within:border-violet-500/60 transition-colors">
+              <div className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-300 rounded-xl focus-within:border-violet-500/60 transition-colors">
                 <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -318,11 +318,11 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                   onChange={e => { setLocQuery(e.target.value); setLocOpen(true) }}
                   onFocus={() => { if (locQuery.trim().length >= 1) setLocOpen(true) }}
                   placeholder="İstanbul, Kadıköy"
-                  className="flex-1 bg-transparent text-white placeholder-slate-500 text-sm focus:outline-none"
+                  className="flex-1 bg-transparent text-slate-900 placeholder-slate-500 text-sm focus:outline-none"
                 />
                 {locQuery && (
                   <button type="button" onClick={() => { setLocQuery(''); setLocOpen(false) }}
-                    className="text-slate-500 hover:text-white transition-colors">
+                    className="text-slate-500 hover:text-slate-900 transition-colors">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -331,11 +331,11 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
               </div>
             )}
             {locOpen && locSuggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden max-h-52 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-100 border border-slate-300 rounded-xl shadow-2xl z-50 overflow-hidden max-h-52 overflow-y-auto">
                 {locSuggestions.map(s => (
                   <button key={s} type="button"
                     onMouseDown={() => { setLocValue(s); setLocQuery(''); setLocOpen(false) }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors border-b border-slate-700/50 last:border-0">
+                    className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-200 hover:text-slate-900 transition-colors border-b border-slate-300 last:border-0">
                     {s}
                   </button>
                 ))}
@@ -346,7 +346,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
 
         {/* Klinik Tipi */}
         <div>
-          <label className="block text-sm text-slate-400 mb-2">
+          <label className="block text-sm text-slate-500 mb-2">
             Klinik Tipi <span className="text-red-400">*</span>
           </label>
           <select
@@ -354,7 +354,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
             required
             value={clinicType}
             onChange={e => setClinicType(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer"
+            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer"
           >
             <option value="" disabled>Branşınızı seçin...</option>
             {CLINIC_TYPES.map(t => (
@@ -365,15 +365,15 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
 
         {/* Klinik Hakkında */}
         <div>
-          <label className="block text-sm text-slate-400 mb-2">Klinik Hakkında</label>
+          <label className="block text-sm text-slate-500 mb-2">Klinik Hakkında</label>
           <textarea name="bio" rows={4} placeholder="Kliniğiniz hakkında kısa bir tanıtım yazısı..."
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors resize-none" />
+            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors resize-none" />
         </div>
 
         {/* Tedavi / Hizmetler — branş checkbox grid + Tümünü Seç + Ayrıca Ekle */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm text-slate-400">
+            <label className="block text-sm text-slate-500">
               Hizmetleriniz
               {clinicType && <span className="ml-2 text-xs text-slate-500">— {treatments.length} seçenek</span>}
               {selectedSpecialties.length > 0 && <span className="ml-2 text-xs text-violet-400">· {selectedSpecialties.length} seçili</span>}
@@ -395,7 +395,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
           ))}
 
           {!clinicType ? (
-            <div className="p-4 rounded-xl border border-slate-700/50 border-dashed text-center text-slate-500 text-sm">
+            <div className="p-4 rounded-xl border border-slate-300 border-dashed text-center text-slate-500 text-sm">
               Önce Klinik Tipi seçin
             </div>
           ) : (
@@ -406,7 +406,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                   <label
                     key={t}
                     className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors group ${
-                      checked ? 'border-violet-500/50 bg-violet-500/10' : 'border-slate-700 hover:border-slate-600'
+                      checked ? 'border-violet-500/50 bg-violet-500/10' : 'border-slate-300 hover:border-[#10876B]'
                     }`}
                   >
                     <input
@@ -415,7 +415,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                       onChange={() => toggleSpecialty(t)}
                       className="accent-violet-500 w-4 h-4 shrink-0"
                     />
-                    <span className={`text-sm leading-snug transition-colors ${checked ? 'text-white' : 'text-slate-400 group-hover:text-white'}`}>
+                    <span className={`text-sm leading-snug transition-colors ${checked ? 'text-slate-900' : 'text-slate-500 group-hover:text-slate-900'}`}>
                       {t}
                     </span>
                   </label>
@@ -440,7 +440,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                 </button>
               ) : (
                 <div ref={extraRef} className="relative">
-                  <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus-within:border-violet-500 transition-colors">
+                  <div className="flex items-center gap-2 px-3 py-2.5 bg-white border border-slate-300 rounded-xl focus-within:border-violet-500 transition-colors">
                     <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                     </svg>
@@ -461,12 +461,12 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                       maxLength={80}
                       autoFocus
                       placeholder="Tedavi ara… (ör: Meme dikleştirme)"
-                      className="flex-1 bg-transparent text-white placeholder-slate-500 text-sm focus:outline-none min-w-0"
+                      className="flex-1 bg-transparent text-slate-900 placeholder-slate-500 text-sm focus:outline-none min-w-0"
                     />
                     <button
                       type="button"
                       onClick={() => { setExtraQuery(''); setExtraDropdownOpen(false); setExtraOpen(false) }}
-                      className="text-slate-500 hover:text-white transition-colors shrink-0"
+                      className="text-slate-500 hover:text-slate-900 transition-colors shrink-0"
                       aria-label="Kapat"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -475,13 +475,13 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                     </button>
                   </div>
                   {extraDropdownOpen && extraSuggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden max-h-56 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-slate-100 border border-slate-300 rounded-xl shadow-2xl z-50 overflow-hidden max-h-56 overflow-y-auto">
                       {extraSuggestions.map(s => (
                         <button
                           key={s}
                           type="button"
                           onMouseDown={e => { e.preventDefault(); addExtra(s) }}
-                          className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors border-b border-slate-700/50 last:border-0"
+                          className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-200 hover:text-slate-900 transition-colors border-b border-slate-300 last:border-0"
                         >
                           {s}
                         </button>
@@ -508,7 +508,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
                     <button
                       type="button"
                       onClick={() => toggleSpecialty(s)}
-                      className="text-violet-400 hover:text-white transition-colors"
+                      className="text-violet-400 hover:text-slate-900 transition-colors"
                       aria-label={`${s} kaldır`}
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -535,7 +535,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
         )}
 
         <button type="submit" disabled={otpLoading}
-          className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all text-lg">
+          className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 text-slate-900 font-semibold rounded-xl transition-all text-lg">
           {otpLoading ? 'SMS Gönderiliyor...' : 'Başvuruyu Gönder'}
         </button>
 

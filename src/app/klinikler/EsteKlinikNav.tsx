@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import BrandMorphButton from '@/app/estestore/BrandMorphButton'
-import { Calendar, User, ShieldCheck } from 'lucide-react'
+import { User, ShieldCheck } from 'lucide-react'
 
 /**
  * EsteKlinik top nav — EsteStore'un AYNASI:
@@ -18,13 +18,6 @@ export default function EsteKlinikNav() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* SOL: Aksiyon butonları (mirror konum) */}
         <nav className="flex items-center gap-1 sm:gap-2 order-1">
-          <Link
-            href="/randevu"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium text-emerald-100 hover:bg-white/10 transition-colors"
-          >
-            <Calendar size={13} />
-            Randevu
-          </Link>
           <Link
             href="/rehber"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium text-emerald-100 hover:bg-white/10 transition-colors"

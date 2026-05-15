@@ -171,6 +171,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
             >
               <button
                 type="button"
+                onClick={(e) => { e.stopPropagation(); handleRandevuEnter() }}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold transition-colors shadow-md shadow-[#10876B]/30"
                 aria-label={`${clinic.name} için randevu al`}
               >

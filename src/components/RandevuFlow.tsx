@@ -628,28 +628,6 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
     </>
   )
 
-  // ─── Layout: gömülü vs tam sayfa ─────────────────────────────────────────
-  if (embedded) return content
-
-  return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            Panel
-          </Link>
-          <span className="text-white font-bold">Randevu Al</span>
-          <div className="flex gap-2">
-            {[1, 2, 3].map(n => (
-              <div key={n} className={`w-2 h-2 rounded-full transition-all ${step >= n ? 'bg-emerald-500' : 'bg-slate-700'}`} />
-            ))}
-          </div>
-        </div>
-      </header>
-      <div className="max-w-4xl mx-auto px-4 pt-24 pb-16">
-        {content}
-      </div>
-    </main>
-  )
+  // Tüm tüketiciler embedded modda çağırıyor — non-embedded path kaldırıldı
+  return content
 }
