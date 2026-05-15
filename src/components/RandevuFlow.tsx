@@ -205,6 +205,12 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedClinic, preselectedDate, preselectedTime, availability, loadingAvail])
 
+  // Adım 2'de ilk müsait gün varsayılan seçili olsun (slot'lar hemen görünsün)
+  useEffect(() => {
+    if (step !== 2 || loadingAvail || selectedDay) return
+    if (days.length > 0) setSelectedDay(days[0])
+  }, [step, days, loadingAvail, selectedDay])
+
   async function handleConfirm() {
     if (!selectedClinic || !selectedDay || !selectedTime) return
     setSaving(true)
