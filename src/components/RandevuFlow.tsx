@@ -40,6 +40,10 @@ interface Props {
   preselectedClinicId?: string | null
   /** Önceden seçilmiş tedavi türü (filtre) */
   preselectedTip?: string | null
+  /** Önceden seçilmiş gün (YYYY-MM-DD) — kart slot popover'dan gelir */
+  preselectedDate?: string | null
+  /** Önceden seçilmiş saat (HH:MM) — kart slot popover'dan gelir */
+  preselectedTime?: string | null
   /** Başarı callback'i (gömülü kullanım için) */
   onSuccess?: () => void
 }
@@ -68,7 +72,7 @@ function generateSlots(avail: Availability | undefined): string[] {
   return slots
 }
 
-export default function RandevuFlow({ embedded = false, preselectedClinicId, preselectedTip, onSuccess }: Props) {
+export default function RandevuFlow({ embedded = false, preselectedClinicId, preselectedTip, preselectedDate, preselectedTime, onSuccess }: Props) {
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [clinics, setClinics] = useState<Clinic[]>([])
   const [loading, setLoading] = useState(true)
@@ -188,6 +192,18 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
       setLoadingAvail(false)
     })
   }, [selectedClinic])
+
+  // Kart slot popover'dan gelen preselected d + t — Adım 3'e atla
+  useEffect(() => {
+    if (!selectedClinic || !preselectedDate || !preselectedTime) return
+    if (availability.length === 0 || loadingAvail) return
+    const d = new Date(preselectedDate + 'T00:00:00')
+    if (isNaN(d.getTime())) return
+    setSelectedDay(d)
+    setSelectedTime(preselectedTime)
+    setStep(3)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedClinic, preselectedDate, preselectedTime, availability, loadingAvail])
 
   async function handleConfirm() {
     if (!selectedClinic || !selectedDay || !selectedTime) return

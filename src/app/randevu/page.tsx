@@ -10,6 +10,8 @@ function RandevuInner() {
     <RandevuFlow
       preselectedClinicId={searchParams.get('k')}
       preselectedTip={searchParams.get('tip')}
+      preselectedDate={searchParams.get('d')}
+      preselectedTime={searchParams.get('t')}
     />
   )
 }
