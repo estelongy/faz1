@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import RandevuFlow from '@/components/RandevuFlow'
-import EsteKlinikNav from '../klinikler/EsteKlinikNav'
+import EsteKlinikNav from '../EsteKlinikNav'
 import Footer from '@/components/Footer'
 
 function RandevuInner() {
