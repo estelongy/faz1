@@ -205,11 +205,23 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedClinic, preselectedDate, preselectedTime, availability, loadingAvail])
 
-  // Adım 2'de ilk müsait gün varsayılan seçili olsun (slot'lar hemen görünsün)
+  // Adım 2'de ilk MÜSAİT SLOT'U OLAN günü varsayılan seç (slot'lar hemen görünsün).
+  // Sadece klinik açık olan ilk günü seçmek yetmez — o günün tüm saatleri rezerve olmuş olabilir.
+  // Boş slot'u olan ilk günü bul; hepsi doluysa fallback olarak ilk günü seç.
   useEffect(() => {
     if (step !== 2 || loadingAvail || selectedDay) return
-    if (days.length > 0) setSelectedDay(days[0])
-  }, [step, days, loadingAvail, selectedDay])
+    if (days.length === 0) return
+
+    const firstWithFreeSlot = days.find(d => {
+      const dow = d.getDay()
+      const avail = availability.find(a => a.day_of_week === dow)
+      const slots = generateSlots(avail)
+      const dateKey = d.toISOString().split('T')[0]
+      return slots.some(s => !busySlots.has(`${dateKey} ${s}`))
+    })
+
+    setSelectedDay(firstWithFreeSlot ?? days[0])
+  }, [step, days, loadingAvail, selectedDay, availability, busySlots])
 
   async function handleConfirm() {
     if (!selectedClinic || !selectedDay || !selectedTime) return
