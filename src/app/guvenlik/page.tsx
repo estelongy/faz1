@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Güvenlik & Sorumlu Açıklama',
   description: 'Estelongy güvenlik politikası, açık bildirim kanalı ve KVKK/GDPR iletişim bilgileri.',
@@ -116,7 +117,7 @@ export default function GuvenlikPage() {
             </div>
             <div className="text-sm text-slate-500 pt-2">
               KVKK 11. madde kapsamındaki haklarınızı (silme/unutulma, erişim, düzeltme) hesap panelinizden
-              doğrudan kullanabilirsiniz: <Link href="/panel/hesabim" className="text-violet-400 hover:underline">/panel/hesabim</Link>
+              doğrudan kullanabilirsiniz: <SafeLink href="/panel/hesabim" className="text-violet-400 hover:underline">/panel/hesabim</SafeLink>
             </div>
           </div>
         </section>

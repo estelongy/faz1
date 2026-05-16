@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatDuration } from '@/lib/akademi'
 import VideoPlayer from './VideoPlayer'
 
+import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
 
 interface Props {
@@ -74,9 +75,9 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
     <main className="min-h-screen">
       <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5 h-14 flex items-center justify-between px-4 lg:px-8">
         <div className="lg:hidden w-10" />
-        <Link href="/panel/kurslarim" className="text-slate-400 hover:text-white text-base font-semibold">
+        <SafeLink href="/panel/kurslarim" className="text-slate-400 hover:text-white text-base font-semibold">
           ← Kurslarım
-        </Link>
+        </SafeLink>
         <div className="text-emerald-400 text-sm font-medium">
           {completedCount}/{totalVideos} tamamlandı
         </div>
@@ -134,7 +135,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
                 const isActive = v.id === activeVideo?.id
                 const isCompleted = progressMap.get(v.id)?.completed
                 return (
-                  <Link
+                  <SafeLink
                     key={v.id}
                     href={`/panel/kurslarim/${pkg.slug}?video=${v.id}`}
                     className={`block p-3 border-b border-slate-800/60 last:border-0 transition-colors ${
@@ -158,7 +159,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
                         <p className="text-slate-500 text-sm mt-0.5">{formatDuration(v.duration_seconds)}</p>
                       </div>
                     </div>
-                  </Link>
+                  </SafeLink>
                 )
               })}
             </div>

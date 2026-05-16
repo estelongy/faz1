@@ -2,6 +2,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 
+import SafeLink from '@/components/SafeLink'
 /**
  * Public site header — Akademi, EsteStore, Rehber gibi marketplace sayfalarında kullanılır.
  * Login state'e göre "Hesabım" ya da "Giriş Yap / Kayıt Ol" gösterir.
@@ -54,15 +55,15 @@ export default async function SiteHeader() {
               </>
             ) : (
               <>
-                <Link href="/giris" className="text-slate-400 hover:text-white transition-colors">
+                <SafeLink href="/giris" className="text-slate-400 hover:text-white transition-colors">
                   Giriş
-                </Link>
-                <Link
+                </SafeLink>
+                <SafeLink
                   href="/kayit"
                   className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all"
                 >
                   Kayıt Ol
-                </Link>
+                </SafeLink>
                 <Link
                   href="/esteklinik"
                   className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all"

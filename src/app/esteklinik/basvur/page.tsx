@@ -9,6 +9,7 @@ import KlinikBasvurForm from '@/components/KlinikBasvurForm'
 import EsteKlinikNav from '@/app/esteklinik/EsteKlinikNav'
 import Footer from '@/components/Footer'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Klinik Başvurusu',
   description: 'Kliniğinizi Estelongy platformuna kaydedin. Hastaları kolayca yönetin.',
@@ -161,10 +162,10 @@ export default async function KlinikBasvurPage({
             <p className="text-slate-500 text-sm mb-6">
               Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-700">giriş yaparak</strong> klinik panelinize erişebilirsiniz.
             </p>
-            <Link href="/giris?g=esteklinik"
+            <SafeLink href="/giris?g=esteklinik"
               className="inline-flex items-center justify-center w-full py-3 bg-[#10876B] hover:bg-[#0E7559] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#10876B]/30">
               Giriş Yap
-            </Link>
+            </SafeLink>
           </div>
         </main>
         <Footer />

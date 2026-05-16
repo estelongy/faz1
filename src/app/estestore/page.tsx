@@ -6,6 +6,7 @@ import ProfessionalToggle from './ProfessionalToggle'
 import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
 import BrandMorphButton from './BrandMorphButton'
+import SafeLink from '@/components/SafeLink'
 import {
   ArrowRight,
   Search,
@@ -325,26 +326,26 @@ function TopNav({ user }: { user: boolean }) {
             Rehber
           </Link>
           {user ? (
-            <Link
+            <SafeLink
               href="/panel"
               className="px-4 h-10 inline-flex items-center text-base font-semibold text-slate-200 hover:text-white transition-colors rounded-full hover:bg-slate-800/40"
             >
               Hesabım
-            </Link>
+            </SafeLink>
           ) : (
             <>
-              <Link
+              <SafeLink
                 href="/giris?g=estestore"
                 className="px-3 h-10 inline-flex items-center text-base font-semibold text-slate-200 hover:text-white transition-colors rounded-full hover:bg-slate-800/40"
               >
                 Giriş
-              </Link>
-              <Link
+              </SafeLink>
+              <SafeLink
                 href="/kayit?g=estestore"
                 className="hidden sm:inline-flex px-4 h-10 items-center text-base font-semibold text-[#0F172A] bg-slate-100 hover:bg-white transition-colors rounded-full"
               >
                 Kayıt Ol
-              </Link>
+              </SafeLink>
             </>
           )}
           <Link

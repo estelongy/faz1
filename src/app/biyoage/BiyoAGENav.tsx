@@ -5,6 +5,7 @@ import BrandMorphButton from '@/app/estestore/BrandMorphButton'
 import { User, ShieldCheck, LayoutDashboard } from 'lucide-react'
 import { useAuthStatus } from '@/components/AuthStatusProvider'
 
+import SafeLink from '@/components/SafeLink'
 /**
  * BiyoAGE top nav — EsteKlinik/EsteStore aynası, mor (analiz/ölçüm) galaksi.
  * Niyet: kullanıcı buranın ayrı bir dünya olduğunu hissetsin.
@@ -24,28 +25,28 @@ export default function BiyoAGENav() {
             Rehber
           </Link>
           {isLoggedIn ? (
-            <Link
+            <SafeLink
               href="/panel"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-base font-semibold bg-white text-[#1B1330] hover:bg-violet-50 transition-colors"
             >
               <LayoutDashboard size={13} />
               Panel
-            </Link>
+            </SafeLink>
           ) : (
             <>
-              <Link
+              <SafeLink
                 href="/giris?g=biyoage"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-base font-medium text-violet-100 hover:bg-white/10 transition-colors"
               >
                 <User size={13} />
                 Giriş
-              </Link>
-              <Link
+              </SafeLink>
+              <SafeLink
                 href="/kayit?g=biyoage"
                 className="inline-flex items-center px-3 py-1.5 rounded-full text-base font-semibold bg-white text-[#1B1330] hover:bg-violet-50 transition-colors"
               >
                 Kayıt Ol
-              </Link>
+              </SafeLink>
             </>
           )}
         </nav>

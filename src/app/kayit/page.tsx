@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import PhoneOtpStep from '@/components/PhoneOtpStep'
 import { GALAXY_THEMES, resolveGalaxy, type Galaxy } from '@/lib/galaxy-themes'
 
+import SafeLink from '@/components/SafeLink'
 type Step = 'form' | 'otp' | 'verify'
 
 function KayitInner() {
@@ -181,10 +182,10 @@ function KayitInner() {
             className={`w-full py-3 ${t.inputBg} border ${t.inputBorder} hover:opacity-80 disabled:opacity-50 ${t.headingText} font-medium rounded-xl text-sm transition-colors mb-3`}>
             {loading ? 'Gönderiliyor...' : 'Tekrar gönder'}
           </button>
-          <Link href={`/giris${galaxy !== 'default' ? `?g=${galaxy}` : ''}`}
+          <SafeLink href={`/giris${galaxy !== 'default' ? `?g=${galaxy}` : ''}`}
             className={`inline-flex items-center justify-center w-full py-3 bg-gradient-to-r ${t.buttonGradient} ${t.buttonHover} ${t.buttonText} font-semibold rounded-xl shadow-lg`}>
             Giriş sayfasına dön
-          </Link>
+          </SafeLink>
         </div>
       </div>
     </main>
@@ -329,7 +330,7 @@ function KayitInner() {
 
           <p className={`mt-6 text-center ${t.mutedText} text-sm`}>
             Zaten hesabınız var mı?{' '}
-            <Link href={`/giris${galaxy !== 'default' ? `?g=${galaxy}` : ''}`} className={`${t.accent} ${t.accentHover} font-medium`}>Giriş yapın</Link>
+            <SafeLink href={`/giris${galaxy !== 'default' ? `?g=${galaxy}` : ''}`} className={`${t.accent} ${t.accentHover} font-medium`}>Giriş yapın</SafeLink>
           </p>
         </div>
       </div>

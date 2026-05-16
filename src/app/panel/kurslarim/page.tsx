@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatDuration } from '@/lib/akademi'
 
+import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
 
 export default async function KurslarimPage() {
@@ -79,7 +80,7 @@ export default async function KurslarimPage() {
               const progressPct = totalVideos > 0 ? Math.round((completedCount / totalVideos) * 100) : 0
 
               return (
-                <Link
+                <SafeLink
                   key={purchase.id}
                   href={`/panel/kurslarim/${pkg.slug}`}
                   className="group bg-slate-900 rounded-2xl border border-slate-800 hover:border-emerald-500/40 overflow-hidden transition-all"
@@ -122,7 +123,7 @@ export default async function KurslarimPage() {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </SafeLink>
               )
             })}
           </div>

@@ -1,6 +1,7 @@
 ﻿import Link from 'next/link'
 import type { Metadata } from 'next'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Sayfa Bulunamadı',
 }
@@ -42,10 +43,10 @@ export default function NotFound() {
             className="py-3 px-5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-violet-500/20">
             Anasayfa
           </Link>
-          <Link href="/panel"
+          <SafeLink href="/panel"
             className="py-3 px-5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold rounded-xl transition-all">
             Panelim
-          </Link>
+          </SafeLink>
         </div>
 
         <div className="pt-6 border-t border-slate-800 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-slate-600">

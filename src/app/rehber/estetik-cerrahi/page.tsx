@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Estetik Cerrahi İşlemleri Rehberi | Estelongy',
   description: 'Rinoplasti, yüz germe, blefaroplasti, liposuction ve vücut şekillendirme operasyonları hakkında kapsamlı rehber. Kimler için uygun, süreç nasıl işler, nelere dikkat edilmeli?',
@@ -202,12 +203,12 @@ export default function EstetikCerrahiPage() {
             skor değişimini klinik olarak belgeleyin.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
+            <SafeLink
               href="/kayit?next=/analiz"
               className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-rose-500/20"
             >
               Ücretsiz Ön Analiz →
-            </Link>
+            </SafeLink>
             <Link
               href="/esteklinik"
               className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors"

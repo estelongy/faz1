@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import SaticiBasvurForm from '@/components/SaticiBasvurForm'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'İş Ortağı Başvurusu',
   description: 'Cilt bakım ürünlerinizi Estelongy platformunda satışa sunun.',
@@ -132,10 +133,10 @@ export default async function SaticiBasvurPage({
           <p className="text-slate-500 text-sm mb-6">
             Hesabınız oluşturuldu. Onay sonrası <strong className="text-slate-400">giriş yaparak</strong> iş ortağı panelinize erişebilirsiniz.
           </p>
-          <Link href="/giris"
+          <SafeLink href="/giris"
             className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl">
             Giriş Yap
-          </Link>
+          </SafeLink>
         </div>
       </main>
     )

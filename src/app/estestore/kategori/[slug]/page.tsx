@@ -10,6 +10,7 @@ import {
 import ProductCard, { type ProductCardData } from '../../ProductCard'
 import CartButton from '@/components/CartButton'
 
+import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
 
 interface Props {
@@ -103,7 +104,7 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
             <span>🔒</span>
             <span>
               Bu kategori klinik ve sağlık profesyonelleri içindir. Fiyat görmek ve satın almak için{' '}
-              <Link href={`/giris?g=estestore&next=/estestore/kategori/${urlSlug}`} className="underline">giriş yapın</Link>.
+              <SafeLink href={`/giris?g=estestore&next=/estestore/kategori/${urlSlug}`} className="underline">giriş yapın</SafeLink>.
             </span>
           </div>
         )}

@@ -8,6 +8,7 @@ import { pathForRole } from '@/lib/auth-redirect'
 import { NPS_LABELS } from '@/lib/clinic-review'
 import GecmisTabs from '@/components/GecmisTabs'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Deneyim — Estelongy',
 }
@@ -78,10 +79,10 @@ export default async function YorumlarimPage() {
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
+          <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
-          </Link>
+          </SafeLink>
           <span className="text-white font-bold text-sm">Deneyim</span>
           <span className="w-[68px]" />
         </div>
@@ -172,12 +173,12 @@ function RandevuYorumKarti({
             Bu ziyareti henüz değerlendirmedin. Deneyimini paylaşmak ister misin?
           </p>
         </div>
-        <Link
+        <SafeLink
           href={`/panel/degerlendir/${appt.id}`}
           className="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-colors"
         >
           Yorum Yaz
-        </Link>
+        </SafeLink>
       </article>
     )
   }
@@ -211,12 +212,12 @@ function RandevuYorumKarti({
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           {!editLocked && (
-            <Link
+            <SafeLink
               href={`/panel/degerlendir/${appt.id}`}
               className="px-3 py-1 text-base uppercase tracking-wider rounded-md border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-white transition-colors font-semibold"
             >
               Düzenle
-            </Link>
+            </SafeLink>
           )}
           {clinicSlug && (
             <Link

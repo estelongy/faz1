@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import AdminNavLink from '@/components/AdminNavLink'
 
+import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
@@ -102,13 +103,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           {NAV.map(({ href, label, icon, exact }) => (
             <AdminNavLink key={href} href={href} label={label} icon={icon} exact={exact} mobile />
           ))}
-          <Link href="/panel"
+          <SafeLink href="/panel"
             className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-base font-medium text-slate-500 hover:text-slate-300 transition-all shrink-0">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Panel
-          </Link>
+          </SafeLink>
           <form action={handleSignOut} className="shrink-0">
             <button type="submit"
               className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-base font-medium text-slate-500 hover:text-red-400 transition-all w-full">
@@ -144,7 +145,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </nav>
 
         <div className="p-3 border-t border-slate-800 space-y-2">
-          <Link
+          <SafeLink
             href="/panel"
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-all text-base font-semibold"
           >
@@ -152,7 +153,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Kullanıcı Paneline Dön
-          </Link>
+          </SafeLink>
           <form action={handleSignOut}>
             <button type="submit" className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-all text-base text-left font-semibold">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

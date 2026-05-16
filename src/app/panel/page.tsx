@@ -16,6 +16,7 @@ import PaylasModal from '@/components/PaylasModal'
 import PaylasimRizaBanner from '@/components/PaylasimRizaBanner'
 import { fetchPendingRequestsForUser } from '@/lib/shared-cases'
 
+import SafeLink from '@/components/SafeLink'
 export default async function PanelPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const params = await searchParams
   const basvuruSuccess = params.basvuru
@@ -312,12 +313,12 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Link
+                  <SafeLink
                     href={`/skor?analysisId=${latestAnalysis.id}`}
                     className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-base font-semibold transition-colors"
                   >
                     Skor Detayı →
-                  </Link>
+                  </SafeLink>
                   <PaylasModal
                     analysisId={latestAnalysis.id}
                     score={latestScore}

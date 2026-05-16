@@ -8,6 +8,7 @@ import ScoreBar from '@/components/ScoreBar'
 import { HASTA_ANKET_SORULARI, hastaAnketPuani } from '@/lib/anket-sorular'
 import RandevuFlow from '@/components/RandevuFlow'
 
+import SafeLink from '@/components/SafeLink'
 // ─── Tipler ──────────────────────────────────────────────────────────────────
 type ExpandedCard = 'anket' | 'randevu' | 'urun' | null
 
@@ -252,12 +253,12 @@ function SkorMerkeziInner() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
+            <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Panel
-            </Link>
+            </SafeLink>
             <div className="flex items-center gap-2">
               <span className="text-sm text-slate-500">Skor Merkezi</span>
               <div className="w-7 h-7 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+import SafeLink from '@/components/SafeLink'
 interface NavItem {
   href: string
   icon: string
@@ -237,14 +238,14 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
             </span>
           </button>
 
-          <Link
+          <SafeLink
             href="/panel"
             className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors ${expanded ? '' : 'justify-center'}`}
             title={!expanded ? 'Hasta paneline geç' : undefined}
           >
             <span className="shrink-0">←</span>
             <span className={`transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0 hidden'}`}>Hasta Paneline Geç</span>
-          </Link>
+          </SafeLink>
           <Link
             href="/"
             className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors ${expanded ? '' : 'justify-center'}`}

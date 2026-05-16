@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import ScoreBar from '@/components/ScoreBar'
 
+import SafeLink from '@/components/SafeLink'
 export interface OncekiAnaliz {
   id: string
   created_at: string
@@ -143,7 +144,7 @@ export default function OncekiAnalizler({ analyses }: Props) {
                 )}
 
                 {/* Skor Merkezi butonu */}
-                <Link
+                <SafeLink
                   href={`/skor?analysisId=${a.id}`}
                   className="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all"
                 >
@@ -151,7 +152,7 @@ export default function OncekiAnalizler({ analyses }: Props) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                   Bu Analizin Skor Merkezi
-                </Link>
+                </SafeLink>
               </div>
             )}
           </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import SafeLink from '@/components/SafeLink'
 import { Camera, Activity, BookOpen, LayoutDashboard, ArrowRight } from 'lucide-react'
 import Footer from '@/components/Footer'
 import BiyoAGENav from './BiyoAGENav'
@@ -154,15 +155,11 @@ export default async function BiyoAGEPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {DOORS.map(d => {
               const Icon = d.icon
-              // Auth-required kapılar: /skor + /panel → login yoksa galaxy-aware giriş
-              const authRequired = d.href === '/skor' || d.href === '/panel'
-              const href = authRequired && !isLoggedIn
-                ? `/giris?g=biyoage&next=${d.href}`
-                : d.href
+              // SafeLink auth-gate'i otomatik yapar; isLoggedIn bilgisine ihtiyaç yok.
               return (
-                <Link
+                <SafeLink
                   key={d.href}
-                  href={href}
+                  href={d.href}
                   className="group relative overflow-hidden rounded-2xl bg-white border border-slate-200 hover:border-[#7C3AED]/60 hover:shadow-lg hover:shadow-[#7C3AED]/10 transition-all p-6 sm:p-7"
                 >
                   <div
@@ -192,7 +189,7 @@ export default async function BiyoAGEPage() {
                       <ArrowRight size={16} />
                     </div>
                   </div>
-                </Link>
+                </SafeLink>
               )
             })}
           </div>

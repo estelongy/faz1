@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import ShareScoreBar from '@/components/ShareScoreBar'
 
+import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
 
 interface ScoreCard {
@@ -139,7 +140,7 @@ export default async function SharePage(
             : <>Selfie yükle, <strong>30 saniyede</strong> AI analizinle Gençlik Skorunu öğren. Ücretsiz.</>
           }
         </p>
-        <Link
+        <SafeLink
           href="/kayit?next=/analiz"
           className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50"
         >
@@ -148,7 +149,7 @@ export default async function SharePage(
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           Ücretsiz Analiz Başlat
-        </Link>
+        </SafeLink>
         <p className="text-slate-600 text-sm mt-4">30 saniye · Selfie yeterli</p>
       </div>
 

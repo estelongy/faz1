@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { LEVEL_LABELS, formatPrice, formatDuration, AKADEMI_KATEGORILER } from '@/lib/akademi'
 import BuyButton from './BuyButton'
 
+import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
 
 interface Props {
@@ -187,19 +188,19 @@ export default async function AkademiPaketDetayPage({ params }: Props) {
               </div>
 
               {alreadyOwned ? (
-                <Link
+                <SafeLink
                   href={`/panel/kurslarim/${pkg.slug}`}
                   className="block w-full text-center py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors"
                 >
                   Kursumu İzle →
-                </Link>
+                </SafeLink>
               ) : !user ? (
-                <Link
+                <SafeLink
                   href={`/giris?next=${encodeURIComponent(`/akademi/${pkg.slug}`)}`}
                   className="block w-full text-center py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors"
                 >
                   Satın Almak için Giriş Yap
-                </Link>
+                </SafeLink>
               ) : canBuy ? (
                 <BuyButton packageId={pkg.id} />
               ) : (

@@ -7,6 +7,7 @@ import ScoreBar from '@/components/ScoreBar'
 import type { AnalizResult } from '@/app/api/analiz/route'
 import { createClient } from '@/lib/supabase/client'
 
+import SafeLink from '@/components/SafeLink'
 type Step = 'upload' | 'processing' | 'result'
 
 type ProcessingStage =
@@ -184,12 +185,12 @@ export default function AnalizPage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
+            <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Panel
-            </Link>
+            </SafeLink>
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -518,7 +519,7 @@ export default function AnalizPage() {
 
             {/* Aksiyon butonları */}
             <div className="space-y-3">
-              <Link
+              <SafeLink
                 href="/skor"
                 className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all text-lg shadow-lg shadow-violet-500/20"
               >
@@ -526,7 +527,7 @@ export default function AnalizPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 Skor Merkezini Aç →
-              </Link>
+              </SafeLink>
               <button
                 onClick={saveAndGoPanel}
                 disabled={saving}

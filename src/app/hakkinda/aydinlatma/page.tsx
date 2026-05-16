@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Aydınlatma Metni & Gizlilik Politikası — Estelongy',
   description: 'KVKK ve GDPR kapsamında kişisel verilerinizin nasıl işlendiğine dair açıklama.',
@@ -156,9 +157,9 @@ export default function AydinlatmaPage() {
                 <li><strong className="text-slate-300">Düzeltme:</strong> Eksik / yanlış verilerin güncellenmesini isteme.</li>
                 <li>
                   <strong className="text-slate-300">Silme (unutulma hakkı):</strong>{' '}
-                  <Link href="/panel/hesabim" className="text-violet-400 hover:text-violet-300 underline">
+                  <SafeLink href="/panel/hesabim" className="text-violet-400 hover:text-violet-300 underline">
                     panelden anında
-                  </Link>{' '}
+                  </SafeLink>{' '}
                   kullanabilir veya kvkk@estelongy.com adresine yazılı talep gönderebilirsiniz.
                 </li>
                 <li><strong className="text-slate-300">İşlemeyi sınırlama:</strong> Belirli amaçlar için işlemeyi geçici durdurma.</li>

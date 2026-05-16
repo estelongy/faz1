@@ -8,6 +8,7 @@ import ReviewForm from './ReviewForm'
 import AddToCartButton from '@/components/AddToCartButton'
 import CartButton from '@/components/CartButton'
 
+import SafeLink from '@/components/SafeLink'
 const SITE_URL = 'https://estelongy.com'
 
 // products.category enum eşlemesi. Legacy değerler fallback olarak kalır.
@@ -389,7 +390,7 @@ export default async function UrunDetayPage({
             <div className="p-5 bg-[#FAFAF7] border border-slate-200 rounded-2xl mb-6 text-center">
               <p className="text-slate-600 text-sm">
                 Deneyimini paylaşmak için{' '}
-                <Link href={`/giris?g=estestore&next=/estestore/${product.slug ?? product.id}`} className="text-[#8B7339] hover:text-[#C9A961] font-semibold">giriş yap</Link>
+                <SafeLink href={`/giris?g=estestore&next=/estestore/${product.slug ?? product.id}`} className="text-[#8B7339] hover:text-[#C9A961] font-semibold">giriş yap</SafeLink>
               </p>
             </div>
           )}

@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import BackButton from '@/components/BackButton'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = { title: 'Siparişlerim — Estelongy' }
 
 const STATUS: Record<string, { label: string; color: string }> = {
@@ -56,7 +57,7 @@ export default async function SiparislerimPage() {
               const firstNames = items.slice(0, 2).map(x => x.product_snapshot?.name ?? 'Ürün').join(', ')
               const more = items.length > 2 ? ` +${items.length - 2}` : ''
               return (
-                <Link key={o.id} href={`/siparis/${o.order_number}`}
+                <SafeLink key={o.id} href={`/siparis/${o.order_number}`}
                   className="block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-[#C9A961]/50 rounded-2xl p-5 transition-all">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
@@ -73,7 +74,7 @@ export default async function SiparislerimPage() {
                       <p className="text-white font-black mt-2">₺{Number(o.total ?? 0).toLocaleString('tr-TR')}</p>
                     </div>
                   </div>
-                </Link>
+                </SafeLink>
               )
             })}
           </div>

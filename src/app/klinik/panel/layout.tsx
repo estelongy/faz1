@@ -5,6 +5,7 @@ import KlinikSidebar from '@/components/KlinikSidebar'
 import Link from 'next/link'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
 
+import SafeLink from '@/components/SafeLink'
 async function handleSignOut() {
   'use server'
   const supabase = await createClient()
@@ -50,9 +51,9 @@ export default async function KlinikPanelLayout({ children }: { children: React.
               ? 'Klinik başvurunuz admin onayı bekliyor. En kısa sürede değerlendirilecek.'
               : 'Başvurunuz onaylanmadı. Destek ekibiyle iletişime geçin.'}
           </p>
-          <Link href="/panel" className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
+          <SafeLink href="/panel" className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-xl">
             Kullanıcı Paneline Dön
-          </Link>
+          </SafeLink>
         </div>
       </main>
     )

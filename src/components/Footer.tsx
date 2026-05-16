@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import SafeLink from '@/components/SafeLink'
 type World = 'estestore' | 'klinik' | 'root'
 
 function detectWorld(path: string | null): World {
@@ -54,7 +55,7 @@ function RootFooter() {
               <li><Link href="/esteklinik" className="text-slate-200 hover:text-white transition-colors">Klinikler</Link></li>
               <li><Link href="/esteklinik" className="text-slate-200 hover:text-white transition-colors">Klinik Randevu</Link></li>
               <li><Link href="/estestore" className="text-slate-200 hover:text-white transition-colors">EsteStore</Link></li>
-              <li><Link href="/panel" className="text-slate-200 hover:text-white transition-colors">Panelim</Link></li>
+              <li><SafeLink href="/panel" className="text-slate-200 hover:text-white transition-colors">Panelim</SafeLink></li>
               <li><Link href="/rehber" className="text-slate-200 hover:text-white transition-colors">Estelongy Rehberi</Link></li>
             </ul>
           </div>
@@ -118,10 +119,10 @@ function EsteStoreFooter() {
           <div>
             <h4 className="text-slate-900 font-bold text-sm uppercase tracking-wider mb-3">Hesabım</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/giris" className="text-slate-600 hover:text-[#8B7339] transition-colors">Giriş</Link></li>
-              <li><Link href="/kayit" className="text-slate-600 hover:text-[#8B7339] transition-colors">Kayıt Ol</Link></li>
+              <li><SafeLink href="/giris" className="text-slate-600 hover:text-[#8B7339] transition-colors">Giriş</SafeLink></li>
+              <li><SafeLink href="/kayit" className="text-slate-600 hover:text-[#8B7339] transition-colors">Kayıt Ol</SafeLink></li>
               <li><Link href="/sepet" className="text-slate-600 hover:text-[#8B7339] transition-colors">Sepetim</Link></li>
-              <li><Link href="/panel/siparislerim" className="text-slate-600 hover:text-[#8B7339] transition-colors">Siparişlerim</Link></li>
+              <li><SafeLink href="/panel/siparislerim" className="text-slate-600 hover:text-[#8B7339] transition-colors">Siparişlerim</SafeLink></li>
               <li><Link href="/satici/basvur" className="text-slate-600 hover:text-[#8B7339] transition-colors">İş Ortağı Ol</Link></li>
             </ul>
           </div>
@@ -174,9 +175,9 @@ function EsteKlinikFooter() {
           <div>
             <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">Hesabım</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/giris" className="text-emerald-100 hover:text-white transition-colors">Giriş</Link></li>
-              <li><Link href="/kayit" className="text-emerald-100 hover:text-white transition-colors">Kayıt Ol</Link></li>
-              <li><Link href="/panel" className="text-emerald-100 hover:text-white transition-colors">Panelim</Link></li>
+              <li><SafeLink href="/giris" className="text-emerald-100 hover:text-white transition-colors">Giriş</SafeLink></li>
+              <li><SafeLink href="/kayit" className="text-emerald-100 hover:text-white transition-colors">Kayıt Ol</SafeLink></li>
+              <li><SafeLink href="/panel" className="text-emerald-100 hover:text-white transition-colors">Panelim</SafeLink></li>
               <li><Link href="/esteklinik/basvur" className="text-emerald-100 hover:text-white transition-colors">Klinik Başvuru</Link></li>
             </ul>
           </div>

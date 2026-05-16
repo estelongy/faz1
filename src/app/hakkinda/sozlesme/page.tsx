@@ -1,15 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = { title: 'Üyelik Sözleşmesi — Estelongy' }
 
 export default function SozlesmePage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 py-16 px-4">
       <div className="max-w-3xl mx-auto">
-        <Link href="/kayit" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-base font-semibold">
+        <SafeLink href="/kayit" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-base font-semibold">
           ← Kayıt sayfasına dön
-        </Link>
+        </SafeLink>
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">
           <h1 className="text-2xl font-bold text-white mb-2">Üyelik Sözleşmesi</h1>
           <p className="text-slate-500 text-sm mb-8">Son güncelleme: Nisan 2026</p>

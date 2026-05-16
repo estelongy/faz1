@@ -11,6 +11,7 @@ import { formatClinicName, formatClinicTypeEyebrow, formatLocation } from '@/lib
 import { egpBadgeColor, egpDisplayPublic, MIN_REVIEWS_THRESHOLD } from '@/lib/clinic-review'
 import MeasuringBadge from '@/components/MeasuringBadge'
 
+import SafeLink from '@/components/SafeLink'
 interface Clinic {
   id: string
   name: string
@@ -269,9 +270,9 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
           {selectedDay?.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })} · {selectedTime}
         </p>
         {!embedded && (
-          <Link href="/panel" className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl">
+          <SafeLink href="/panel" className="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl">
             Panele Dön
-          </Link>
+          </SafeLink>
         )}
       </div>
     )

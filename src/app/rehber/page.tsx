@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Estelongy Rehberi — Estetik, Longevity ve Gençlik Skoru | Estelongy',
   description: 'Estetik uygulamalar, cihaz tedavileri, longevity bilimine dair kapsamlı rehberler. Estelongy Gençlik Skoru\'nu ve klinik süreçleri derinlemesine öğrenin.',
@@ -185,12 +186,12 @@ export default function RehberPage() {
             Ücretsiz Ön Analiz ile başlayın, hekim onaylı sertifikaya ulaşın.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
+            <SafeLink
               href="/kayit?next=/analiz"
               className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-violet-500/20"
             >
               Ücretsiz Ön Analiz →
-            </Link>
+            </SafeLink>
             <Link
               href="/esteklinik"
               className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors"

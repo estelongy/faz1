@@ -5,6 +5,7 @@ import ScoreBar from '@/components/ScoreBar'
 import HeroSkorReveal from '@/components/HeroSkorReveal'
 import { createClient } from '@/lib/supabase/server'
 
+import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
 
 const SCORE_ZONES = [
@@ -141,10 +142,10 @@ export default async function Home({
               </Link>
               {isLoggedIn ? (
                 <>
-                  <Link href="/panel"
+                  <SafeLink href="/panel"
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Hesabım
-                  </Link>
+                  </SafeLink>
                   <Link href="/esteklinik"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
@@ -156,13 +157,13 @@ export default async function Home({
                 </>
               ) : (
                 <>
-                  <Link href="/giris" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">
+                  <SafeLink href="/giris" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">
                     Giriş Yap
-                  </Link>
-                  <Link href="/kayit"
+                  </SafeLink>
+                  <SafeLink href="/kayit"
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Ücretsiz Başla
-                  </Link>
+                  </SafeLink>
                   <Link href="/esteklinik"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
@@ -575,20 +576,20 @@ export default async function Home({
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {isLoggedIn ? (
-                <Link href="/panel"
+                <SafeLink href="/panel"
                   className="px-8 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-violet-500/25 text-lg">
                   Panele Git →
-                </Link>
+                </SafeLink>
               ) : (
                 <>
-                  <Link href="/kayit"
+                  <SafeLink href="/kayit"
                     className="px-8 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-violet-500/25 text-lg">
                     Ücretsiz Kaydol
-                  </Link>
-                  <Link href="/giris"
+                  </SafeLink>
+                  <SafeLink href="/giris"
                     className="px-8 py-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold rounded-xl transition-all text-lg">
                     Giriş Yap
-                  </Link>
+                  </SafeLink>
                 </>
               )}
             </div>

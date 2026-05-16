@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import DegerlendirForm from './DegerlendirForm'
 import type { ClinicReviewRow } from '@/lib/clinic-review'
 
+import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
 
 interface Props {
@@ -41,9 +42,9 @@ export default async function DegerlendirPage({ params }: Props) {
           <p className="text-slate-400 text-sm leading-relaxed">
             Bu randevu henüz tamamlanmadı. Klinik akışı bittikten sonra burada deneyimini paylaşabilirsin.
           </p>
-          <Link href="/panel/analizlerim" className="inline-block px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-base font-medium transition-colors">
+          <SafeLink href="/panel/analizlerim" className="inline-block px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-base font-medium transition-colors">
             Geçmişe Dön
-          </Link>
+          </SafeLink>
         </div>
       </div>
     )

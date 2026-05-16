@@ -5,6 +5,7 @@ import BrandMorphButton from '@/app/estestore/BrandMorphButton'
 import { User, ShieldCheck, LayoutDashboard } from 'lucide-react'
 import { useAuthStatus } from '@/components/AuthStatusProvider'
 
+import SafeLink from '@/components/SafeLink'
 /**
  * EsteKlinik top nav — EsteStore'un AYNASI:
  * - EsteKlinik başrol YEŞİL pill SAĞDA (EsteStore sarı pill soldaydı)
@@ -29,28 +30,28 @@ export default function EsteKlinikNav() {
             Rehber
           </Link>
           {isLoggedIn ? (
-            <Link
+            <SafeLink
               href="/panel"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-base font-semibold bg-white text-[#064E3B] hover:bg-emerald-50 transition-colors"
             >
               <LayoutDashboard size={13} />
               Panel
-            </Link>
+            </SafeLink>
           ) : (
             <>
-              <Link
+              <SafeLink
                 href="/giris?g=esteklinik"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-base font-medium text-emerald-100 hover:bg-white/10 transition-colors"
               >
                 <User size={13} />
                 Giriş
-              </Link>
-              <Link
+              </SafeLink>
+              <SafeLink
                 href="/kayit?g=esteklinik"
                 className="inline-flex items-center px-3 py-1.5 rounded-full text-base font-semibold bg-white text-[#064E3B] hover:bg-emerald-50 transition-colors"
               >
                 Kayıt Ol
-              </Link>
+              </SafeLink>
             </>
           )}
         </nav>

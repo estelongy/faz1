@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Longevity Nedir? Biyolojik Yaşlanmanın Bilimi ve Anti-Aging Protokolleri | Estelongy',
   description: 'Longevity bilimi, biyolojik yaş ile takvim yaşı farkı, telomer kısalması, serbest radikaller ve günümüzde kanıtlanmış yaşlanma karşıtı protokoller. Gerçek longevity neden sadece görünümden ibaret değil?',
@@ -264,12 +265,12 @@ export default function LongevityNedirPage() {
               Gençlik Skoru&apos;na doğrudan katkı sağlayan longevity faktörleri ücretsiz değerlendirilsin.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/kayit?next=/anket" className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
+              <SafeLink href="/kayit?next=/anket" className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
                 Longevity Anketini Doldur →
-              </Link>
-              <Link href="/kayit?next=/analiz" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">
+              </SafeLink>
+              <SafeLink href="/kayit?next=/analiz" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">
                 Önce Ön Analiz Yap
-              </Link>
+              </SafeLink>
             </div>
           </div>
 

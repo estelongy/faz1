@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = {
   title: 'Estetik Uygulamalar Rehberi: Botoks, Dolgu, PRP ve Daha Fazlası | Estelongy',
   description: 'Botoks, hyalüronik asit dolgu, PRP, mezoterapi ve kimyasal peeling uygulamalarını karşılaştırın. Hangi tedavi size uygun? Uzmanlara danışmadan önce bilmeniz gerekenler.',
@@ -244,12 +245,12 @@ export default function EstetikUygulamalarPage() {
               Klinik hekim değerlendirmesiyle birleşince doğru protokol oluşur.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
+              <SafeLink
                 href="/kayit?next=/analiz"
                 className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
               >
                 Ücretsiz Ön Analiz →
-              </Link>
+              </SafeLink>
               <Link
                 href="/esteklinik"
                 className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors"

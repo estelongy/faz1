@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { TETKIK_PARAMS } from '@/lib/tetkik-params'
 
+import SafeLink from '@/components/SafeLink'
 export interface YolculukAnalysis {
   id: string
   web_overall: number | null
@@ -194,7 +195,7 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
       {/* Klinik deneyim değerlendirme CTA */}
       {y.appointment?.status === 'completed' && y.reviewState === 'none' && (
         <div className="px-5 pb-4">
-          <Link
+          <SafeLink
             href={`/panel/degerlendir/${y.appointment.id}`}
             className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 hover:border-amber-400/60 transition-colors"
           >
@@ -206,12 +207,12 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
             <svg className="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
+          </SafeLink>
         </div>
       )}
       {y.appointment?.status === 'completed' && y.reviewState === 'editable' && (
         <div className="px-5 pb-4">
-          <Link
+          <SafeLink
             href={`/panel/degerlendir/${y.appointment.id}`}
             className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700 hover:border-slate-600 transition-colors"
           >
@@ -223,7 +224,7 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
             <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
+          </SafeLink>
         </div>
       )}
 
