@@ -57,9 +57,10 @@ export default function AdminOtpForm({ next }: Props) {
     setSending(false)
   }
 
-  async function verify(e: React.FormEvent) {
-    e.preventDefault()
-    if (code.length !== 6) {
+  async function verify(e?: React.FormEvent, submittedCode?: string) {
+    e?.preventDefault()
+    const c = submittedCode ?? code
+    if (c.length !== 6) {
       setError('6 haneli kodu girin.')
       return
     }
@@ -70,7 +71,7 @@ export default function AdminOtpForm({ next }: Props) {
       const res = await fetch('/api/admin-otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code: c }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -85,6 +86,14 @@ export default function AdminOtpForm({ next }: Props) {
     }
     setVerifying(false)
   }
+
+  // 6 hane girilince otomatik doğrula
+  useEffect(() => {
+    if (code.length === 6 && !verifying) {
+      verify(undefined, code)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code])
 
   return (
     <div className="space-y-4">
@@ -104,10 +113,17 @@ export default function AdminOtpForm({ next }: Props) {
             pattern="\d{6}"
             maxLength={6}
             value={code}
-            onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
+            onChange={e => {
+              setCode(e.target.value.replace(/\D/g, ''))
+              if (error) setError(null)
+            }}
             placeholder="123456"
             autoFocus
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-2xl font-mono text-center tracking-[0.5em] focus:outline-none focus:border-amber-500 transition-colors"
+            className={`w-full px-4 py-3 bg-slate-900 border-2 rounded-xl text-white text-2xl font-mono text-center tracking-[0.5em] focus:outline-none transition-colors ${
+              error
+                ? 'border-red-500 focus:border-red-500 shake'
+                : 'border-slate-700 focus:border-amber-500'
+            }`}
           />
         </div>
 
@@ -143,6 +159,15 @@ export default function AdminOtpForm({ next }: Props) {
             : 'Yeni kod iste'}
         </button>
       </form>
+
+      <style jsx>{`
+        @keyframes otp-shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-6px); }
+          40%, 80% { transform: translateX(6px); }
+        }
+        .shake { animation: otp-shake 0.4s ease-in-out; }
+      `}</style>
     </div>
   )
 }

@@ -56,15 +56,16 @@ export default function PhoneOtpStep({ phone, onVerified, onBack, autoSend = tru
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function verifyCode() {
-    if (code.length !== 6) return
+  async function verifyCode(submittedCode?: string) {
+    const c = submittedCode ?? code
+    if (c.length !== 6) return
     setPhase('verifying')
     setError(null)
     try {
       const res = await fetch('/api/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code }),
+        body: JSON.stringify({ phone, code: c }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -79,6 +80,14 @@ export default function PhoneOtpStep({ phone, onVerified, onBack, autoSend = tru
       setError('Bağlantı hatası, tekrar deneyin.')
     }
   }
+
+  // 6 hane girilince otomatik doğrula (kullanıcı butona basmadan)
+  useEffect(() => {
+    if (code.length === 6 && phase === 'entering') {
+      verifyCode(code)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code, phase])
 
   return (
     <div className="space-y-4">
@@ -112,16 +121,32 @@ export default function PhoneOtpStep({ phone, onVerified, onBack, autoSend = tru
             inputMode="numeric"
             maxLength={6}
             value={code}
-            onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
+            onChange={e => {
+              setCode(e.target.value.replace(/\D/g, ''))
+              if (error) setError(null)  // yeniden yazmaya başlayınca kırmızıyı temizle
+            }}
             placeholder="_ _ _ _ _ _"
             autoFocus
             onKeyDown={e => e.key === 'Enter' && verifyCode()}
-            className="w-full px-4 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white text-center text-3xl tracking-widest placeholder-slate-600 focus:outline-none focus:border-violet-500"
+            className={`w-full px-4 py-4 bg-slate-800 border-2 rounded-xl text-white text-center text-3xl tracking-widest placeholder-slate-600 focus:outline-none transition-colors ${
+              error
+                ? 'border-red-500 focus:border-red-500 shake'
+                : 'border-slate-700 focus:border-violet-500'
+            }`}
           />
 
           {error && (
-            <p className="text-red-400 text-sm text-center">{error}</p>
+            <p className="text-red-400 text-sm text-center font-semibold">{error}</p>
           )}
+
+          <style jsx>{`
+            @keyframes otp-shake {
+              0%, 100% { transform: translateX(0); }
+              20%, 60% { transform: translateX(-6px); }
+              40%, 80% { transform: translateX(6px); }
+            }
+            .shake { animation: otp-shake 0.4s ease-in-out; }
+          `}</style>
 
           <button
             onClick={verifyCode}
