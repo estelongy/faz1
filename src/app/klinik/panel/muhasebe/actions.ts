@@ -554,6 +554,49 @@ export async function updateAppointment(formData: FormData): Promise<Result> {
   return { ok: true }
 }
 
+// ─── Müsaitlik (haftalık şablon) ──────────────────────────────────────────
+// 7 günlük tam set olarak gelir, üzerine upsert eder. day_of_week 0-6 (Date.getDay).
+export async function saveAvailability(formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const rows: { owner_id: string; day_of_week: number; open_time: string; close_time: string; is_closed: boolean; updated_at: string }[] = []
+  for (let dow = 0; dow < 7; dow++) {
+    const isClosed = formData.get(`closed_${dow}`) === 'on' || formData.get(`closed_${dow}`) === 'true'
+    const open = ((formData.get(`open_${dow}`) as string | null) ?? '09:00').trim()
+    const close = ((formData.get(`close_${dow}`) as string | null) ?? '19:00').trim()
+    if (!/^\d{2}:\d{2}$/.test(open) || !/^\d{2}:\d{2}$/.test(close)) {
+      return { ok: false, error: `Gün ${dow}: saat formatı geçersiz.` }
+    }
+    if (!isClosed) {
+      const [oh, om] = open.split(':').map(Number)
+      const [ch, cm] = close.split(':').map(Number)
+      if ((ch * 60 + cm) <= (oh * 60 + om)) {
+        return { ok: false, error: `Gün ${dow}: kapanış açılıştan sonra olmalı.` }
+      }
+    }
+    rows.push({
+      owner_id: ctx.user.id,
+      day_of_week: dow,
+      open_time: open,
+      close_time: close,
+      is_closed: isClosed,
+      updated_at: new Date().toISOString(),
+    })
+  }
+
+  const { error } = await ctx.supabase
+    .from('internal_availability')
+    .upsert(rows, { onConflict: 'owner_id,day_of_week' })
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
+  revalidatePath('/klinik/panel/muhasebe/randevu/yeni')
+  revalidatePath('/klinik/panel/muhasebe/randevu/musaitlik')
+  return { ok: true }
+}
+
 // ─── Seri yönetimi: toplu iptal ───────────────────────────────────────────
 // scope: 'all' = serinin tüm scheduled randevuları, 'future' = pivot tarihinden sonraki scheduled randevular
 export async function cancelRecurrenceSeries(params: {

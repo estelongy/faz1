@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createAppointment } from '../../actions'
 import TimeSlotPicker from '../TimeSlotPicker'
+import type { AvailabilityWeek } from '../slot-utils'
 
 const DURATIONS = [
   { value: 10, label: '10 dakika' },
@@ -35,9 +36,10 @@ const MONTH_OPTIONS = [1, 2, 3, 4, 5, 6]
 interface Props {
   initialDate?: string
   initialTime?: string
+  week: AvailabilityWeek
 }
 
-export default function YeniRandevuForm({ initialDate, initialTime }: Props) {
+export default function YeniRandevuForm({ initialDate, initialTime, week }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -50,6 +52,9 @@ export default function YeniRandevuForm({ initialDate, initialTime }: Props) {
   const dd = String(today.getDate()).padStart(2, '0')
   const defaultDate = initialDate ?? `${yyyy}-${mm}-${dd}`
   const defaultTime = initialTime ?? '09:00'
+
+  // Date state — picker bunun availability'sini kullanır
+  const [date, setDate] = useState(defaultDate)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -130,7 +135,7 @@ export default function YeniRandevuForm({ initialDate, initialTime }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelCls}>Başlangıç Tarihi <span className="text-rose-400">*</span></label>
-            <input name="date" type="date" required defaultValue={defaultDate} className={inputCls} />
+            <input name="date" type="date" required value={date} onChange={e => setDate(e.target.value)} className={inputCls} />
           </div>
           <div>
             <label className={labelCls}>Randevu Süresi <span className="text-rose-400">*</span></label>
@@ -141,7 +146,7 @@ export default function YeniRandevuForm({ initialDate, initialTime }: Props) {
         </div>
         <div>
           <label className={labelCls}>Randevu Saati <span className="text-rose-400">*</span></label>
-          <TimeSlotPicker name="time" defaultValue={defaultTime} />
+          <TimeSlotPicker name="time" defaultValue={defaultTime} isoDate={date} week={week} />
         </div>
       </div>
 

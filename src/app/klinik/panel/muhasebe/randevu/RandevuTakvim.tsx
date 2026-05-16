@@ -3,9 +3,17 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import type { AppointmentRow } from './RandevuListClient'
+import {
+  unionRange,
+  generateSlotsForRange,
+  availabilityForDate,
+  slotInDay,
+  type AvailabilityWeek,
+} from './slot-utils'
 
 interface Props {
   rows: AppointmentRow[]
+  week: AvailabilityWeek
 }
 
 const DAY_LABELS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
@@ -15,12 +23,6 @@ const STATUS_BADGE: Record<string, string> = {
   completed: 'bg-emerald-500/30 border-emerald-400 text-emerald-100 hover:bg-emerald-500/50',
   no_show: 'bg-amber-500/30 border-amber-400 text-amber-100 hover:bg-amber-500/50',
   cancelled: 'bg-slate-700/40 border-slate-600 text-slate-400 hover:bg-slate-700/60',
-}
-
-function fmt(minutes: number): string {
-  const hh = Math.floor(minutes / 60)
-  const mm = minutes % 60
-  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
 }
 
 function startOfWeek(d: Date): Date {
@@ -42,25 +44,14 @@ function isoDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-// Pattern: G-R-R döngüsü. Her slot 10 dk. Yeşil her 30 dk'da bir başlar.
-function generateSlots(startHour = 9, endHour = 19) {
-  const out: { time: string; type: 'green' | 'red' }[] = []
-  let m = startHour * 60
-  const end = endHour * 60
-  let cycle = 0
-  while (m + 10 <= end) {
-    out.push({ time: fmt(m), type: cycle === 0 ? 'green' : 'red' })
-    m += 10
-    cycle = (cycle + 1) % 3
-  }
-  return out
-}
-
-export default function RandevuTakvim({ rows: appointments }: Props) {
+export default function RandevuTakvim({ rows: appointments, week }: Props) {
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()))
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const today = isoDate(new Date())
-  const slots = useMemo(() => generateSlots(), [])
+
+  // Haftanın union aralığında G-R-R pattern üret
+  const range = useMemo(() => unionRange(week), [week])
+  const slots = useMemo(() => range ? generateSlotsForRange(range.open, range.close) : [], [range])
   const slotTimes = useMemo(() => new Set(slots.map(s => s.time)), [slots])
 
   // Randevuları gün+saat anahtarıyla indeksle
@@ -144,6 +135,19 @@ export default function RandevuTakvim({ rows: appointments }: Props) {
                 const key = `${dateStr}|${slot.time}`
                 const appt = byKey.get(key)
                 const isRed = slot.type === 'red'
+                const dayAvail = availabilityForDate(week, d)
+                const inDay = slotInDay(slot.time, dayAvail)
+
+                // Saat o günün aralığında değilse (kapalı veya saat dışı) — sade gri hücre
+                if (!inDay && !appt) {
+                  return (
+                    <div
+                      key={i}
+                      className={`border-l border-slate-800 bg-slate-950/50 ${isRed ? 'h-3' : ''}`}
+                      title={dayAvail?.is_closed ? 'Kapalı gün' : 'Çalışma saatleri dışında'}
+                    />
+                  )
+                }
 
                 if (appt) {
                   const colorCls = STATUS_BADGE[appt.status] ?? STATUS_BADGE.scheduled

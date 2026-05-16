@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
+import { normalizeWeek, type DayAvailability } from '../../slot-utils'
 import RandevuEditForm from './RandevuEditForm'
 
 export const metadata: Metadata = {
@@ -27,11 +28,12 @@ export default async function RandevuEditPage({ params }: { params: { id: string
 
   if (!appt) notFound()
 
-  const { data: patient } = await supabase
-    .from('internal_patient')
-    .select('name, phone')
-    .eq('id', appt.patient_id)
-    .maybeSingle()
+  const [patientRes, availabilityRes] = await Promise.all([
+    supabase.from('internal_patient').select('name, phone').eq('id', appt.patient_id).maybeSingle(),
+    supabase.from('internal_availability').select('day_of_week, open_time, close_time, is_closed').eq('owner_id', user.id),
+  ])
+  const patient = patientRes.data
+  const week = normalizeWeek((availabilityRes.data ?? []) as Partial<DayAvailability>[])
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -55,7 +57,7 @@ export default async function RandevuEditPage({ params }: { params: { id: string
         </p>
       </div>
 
-      <RandevuEditForm appointment={appt} />
+      <RandevuEditForm appointment={appt} week={week} />
     </div>
   )
 }

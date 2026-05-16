@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateAppointment } from '../../../actions'
 import TimeSlotPicker from '../../TimeSlotPicker'
+import type { AvailabilityWeek } from '../../slot-utils'
 
 const DURATIONS = [10, 15, 20, 30, 45, 60, 90, 120]
 const APPOINTMENT_TYPES = ['İlk Muayene', 'Kontrol', 'İşlem', 'Konsültasyon']
@@ -18,7 +19,7 @@ interface AppointmentLite {
   detail: string | null
 }
 
-export default function RandevuEditForm({ appointment }: { appointment: AppointmentLite }) {
+export default function RandevuEditForm({ appointment, week }: { appointment: AppointmentLite; week: AvailabilityWeek }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -29,6 +30,8 @@ export default function RandevuEditForm({ appointment }: { appointment: Appointm
   const dd = String(start.getDate()).padStart(2, '0')
   const hh = String(start.getHours()).padStart(2, '0')
   const mi = String(start.getMinutes()).padStart(2, '0')
+
+  const [date, setDate] = useState(`${yyyy}-${mm}-${dd}`)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -79,7 +82,7 @@ export default function RandevuEditForm({ appointment }: { appointment: Appointm
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelCls}>Başlangıç Tarihi <span className="text-rose-400">*</span></label>
-            <input name="date" type="date" required defaultValue={`${yyyy}-${mm}-${dd}`} className={inputCls} />
+            <input name="date" type="date" required value={date} onChange={e => setDate(e.target.value)} className={inputCls} />
           </div>
           <div>
             <label className={labelCls}>Süre (dk) <span className="text-rose-400">*</span></label>
@@ -90,7 +93,7 @@ export default function RandevuEditForm({ appointment }: { appointment: Appointm
         </div>
         <div>
           <label className={labelCls}>Saat <span className="text-rose-400">*</span></label>
-          <TimeSlotPicker name="time" defaultValue={`${hh}:${mi}`} />
+          <TimeSlotPicker name="time" defaultValue={`${hh}:${mi}`} isoDate={date} week={week} />
         </div>
       </div>
 

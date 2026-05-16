@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import RandevuListClient, { type AppointmentRow } from './RandevuListClient'
 import RandevuTakvim from './RandevuTakvim'
+import type { AvailabilityWeek } from './slot-utils'
 
-export default function RandevuTabsClient({ rows }: { rows: AppointmentRow[] }) {
+export default function RandevuTabsClient({ rows, week }: { rows: AppointmentRow[]; week: AvailabilityWeek }) {
   const [tab, setTab] = useState<'takvim' | 'liste'>('takvim')
 
   return (
@@ -31,7 +32,7 @@ export default function RandevuTabsClient({ rows }: { rows: AppointmentRow[] }) 
       </div>
 
       {tab === 'takvim' ? (
-        <RandevuTakvim rows={rows} />
+        <RandevuTakvim rows={rows} week={week} />
       ) : (
         <RandevuListClient rows={rows} variant="full" />
       )}
