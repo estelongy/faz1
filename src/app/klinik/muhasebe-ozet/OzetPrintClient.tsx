@@ -24,6 +24,8 @@ interface UnmatchedRow {
 }
 
 interface Props {
+  ownerDisplayName: string
+  ownerBrandLine: string
   rangeLabel: string
   generatedAt: string
   totalBilled: string
@@ -35,6 +37,7 @@ interface Props {
 }
 
 export default function OzetPrintClient({
+  ownerDisplayName, ownerBrandLine,
   rangeLabel, generatedAt,
   totalBilled, totalCollected, totalRemaining, remainingIsPositive,
   treatmentRows, unmatchedRows,
@@ -71,7 +74,7 @@ export default function OzetPrintClient({
               try { localStorage.setItem(STORAGE_KEY, phone) } catch {}
             }
             const lines = [
-              `*Dr. İzzet GÖK — Klinik Muhasebe*`,
+              `*${ownerBrandLine}*`,
               `Aylık Özet: ${rangeLabel}`,
               ``,
               `• Toplam Fatura: ${totalBilled}`,
@@ -124,7 +127,7 @@ export default function OzetPrintClient({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '3px solid #1e1b4b', paddingBottom: 12, marginBottom: 20 }}>
           <div>
             <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', fontWeight: 700, marginBottom: 4 }}>
-              Dr. İzzet GÖK — Klinik Muhasebe
+              {ownerBrandLine}
             </p>
             <h1 style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>Aylık Özet</h1>
             <p style={{ fontSize: 14, color: '#475569', marginTop: 4 }}>{rangeLabel}</p>

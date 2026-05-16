@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
+import { isMuhasebeOwner, getMuhasebeOwnerProfile } from '@/lib/muhasebe-owner'
 import OzetPrintClient from './OzetPrintClient'
 
 function fmt(n: number) {
@@ -17,6 +17,7 @@ export default async function OzetPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
+  const ownerProfile = getMuhasebeOwnerProfile(user.id)
 
   const now = new Date()
   const todayStr = now.toISOString().slice(0, 10)
@@ -98,6 +99,8 @@ export default async function OzetPage() {
 
   return (
     <OzetPrintClient
+      ownerDisplayName={ownerProfile.displayName}
+      ownerBrandLine={ownerProfile.brandLine ?? `${ownerProfile.displayName} — Klinik Muhasebe`}
       rangeLabel={`${startLabel} — ${todayLabel}`}
       generatedAt={now.toLocaleString('tr-TR')}
       totalBilled={fmt(totalBilled)}

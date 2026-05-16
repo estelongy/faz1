@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
+import { isMuhasebeOwner, getMuhasebeOwnerProfile } from '@/lib/muhasebe-owner'
 import { normalizeWeek, type DayAvailability } from '../slot-utils'
 import YeniRandevuForm from './YeniRandevuForm'
 
@@ -20,6 +20,7 @@ export default async function YeniRandevuPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
+  const ownerProfile = getMuhasebeOwnerProfile(user.id)
 
   const initialDate = typeof searchParams.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(searchParams.date) ? searchParams.date : undefined
   const initialTime = typeof searchParams.time === 'string' && /^\d{2}:\d{2}$/.test(searchParams.time) ? searchParams.time : undefined
@@ -46,7 +47,7 @@ export default async function YeniRandevuPage({
         </p>
       </div>
 
-      <YeniRandevuForm initialDate={initialDate} initialTime={initialTime} week={week} />
+      <YeniRandevuForm initialDate={initialDate} initialTime={initialTime} week={week} doctorName={ownerProfile.displayName} />
     </div>
   )
 }

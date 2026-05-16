@@ -37,9 +37,10 @@ interface Props {
   initialDate?: string
   initialTime?: string
   week: AvailabilityWeek
+  doctorName: string
 }
 
-export default function YeniRandevuForm({ initialDate, initialTime, week }: Props) {
+export default function YeniRandevuForm({ initialDate, initialTime, week, doctorName }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -117,7 +118,7 @@ export default function YeniRandevuForm({ initialDate, initialTime, week }: Prop
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
             <label className={labelCls}>Doktor</label>
-            <input value="Dr. İzzet GÖK" disabled className={inputCls + ' opacity-70 cursor-not-allowed'} />
+            <input value={doctorName} disabled className={inputCls + ' opacity-70 cursor-not-allowed'} />
           </div>
           <div>
             <label className={labelCls}>Randevu Tipi</label>
