@@ -55,6 +55,28 @@ export default function OzetPrintClient({
           🖨️ Tekrar Yazdır / PDF
         </button>
         <button
+          onClick={() => {
+            const lines = [
+              `*Dr. İzzet GÖK — Klinik Muhasebe*`,
+              `Aylık Özet: ${rangeLabel}`,
+              ``,
+              `• Toplam Fatura: ${totalBilled}`,
+              `• Tahsil Edilen: ${totalCollected}`,
+              `• Kalan Borç: ${totalRemaining}`,
+              `• İşlem Sayısı: ${treatmentRows.length}`,
+              ...(unmatchedRows.length > 0 ? [`• Bağımsız Tahsilat: ${unmatchedRows.length} kayıt`] : []),
+              ``,
+              `Oluşturulma: ${generatedAt}`,
+              typeof window !== 'undefined' ? window.location.href : '',
+            ].filter(Boolean)
+            const text = encodeURIComponent(lines.join('\n'))
+            window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
+          }}
+          style={{ padding: '8px 16px', background: '#25D366', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
+        >
+          📱 WhatsApp'ta Paylaş
+        </button>
+        <button
           onClick={() => window.close()}
           style={{ padding: '8px 16px', background: '#475569', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
         >
