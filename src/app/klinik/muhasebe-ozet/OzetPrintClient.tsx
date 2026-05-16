@@ -55,7 +55,21 @@ export default function OzetPrintClient({
           🖨️ Tekrar Yazdır / PDF
         </button>
         <button
-          onClick={() => {
+          onClick={(e) => {
+            const STORAGE_KEY = 'muhasebe_ozet_wa_number'
+            let saved = ''
+            try { saved = localStorage.getItem(STORAGE_KEY) || '' } catch {}
+            const forceAsk = e.shiftKey || !saved
+            let phone = saved
+            if (forceAsk) {
+              const input = window.prompt(
+                'WhatsApp numarası (ülke kodlu, sadece rakam — örn. 905551234567).\nBoş bırakıp Tamam derseniz kişi seçim ekranı açılır.',
+                saved,
+              )
+              if (input === null) return
+              phone = input.replace(/[^\d]/g, '')
+              try { localStorage.setItem(STORAGE_KEY, phone) } catch {}
+            }
             const lines = [
               `*Dr. İzzet GÖK — Klinik Muhasebe*`,
               `Aylık Özet: ${rangeLabel}`,
@@ -70,8 +84,10 @@ export default function OzetPrintClient({
               typeof window !== 'undefined' ? window.location.href : '',
             ].filter(Boolean)
             const text = encodeURIComponent(lines.join('\n'))
-            window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
+            const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
+            window.open(url, '_blank', 'noopener,noreferrer')
           }}
+          title="Tıkla: kayıtlı numaraya gönder · Shift+Tık: numarayı değiştir"
           style={{ padding: '8px 16px', background: '#25D366', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
         >
           📱 WhatsApp'ta Paylaş
