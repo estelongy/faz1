@@ -59,7 +59,7 @@ export default async function KlinikYorumlarPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       <header>
-        <Link href="/klinik/panel" className="text-slate-500 hover:text-white text-sm inline-flex items-center gap-1 mb-2">
+        <Link href="/klinik/panel" className="text-slate-500 hover:text-white text-base inline-flex items-center gap-1 mb-2 font-semibold">
           ← Klinik Panel
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold text-white">Yorumlar</h1>
@@ -169,7 +169,7 @@ function ReviewCard({ review, userName }: { review: ClinicReviewRow; userName: s
           </p>
           <Link
             href="/klinik/panel/mesajlar"
-            className="text-sm uppercase tracking-wider px-2 py-1 rounded border border-violet-500/40 text-violet-300 hover:bg-violet-500/10"
+            className="text-base uppercase tracking-wider px-2 py-1 rounded border border-violet-500/40 text-violet-300 hover:bg-violet-500/10 font-semibold"
           >
             Mesajlara git →
           </Link>

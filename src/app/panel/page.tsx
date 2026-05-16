@@ -159,7 +159,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
         <div className="lg:hidden w-10" />
         <span className="text-slate-400 text-sm hidden sm:block truncate">{profile?.full_name ?? user.email}</span>
         <form action={handleSignOut}>
-          <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
+          <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
             Çıkış
           </button>
         </form>
@@ -314,7 +314,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
                 <div className="flex gap-2">
                   <Link
                     href={`/skor?analysisId=${latestAnalysis.id}`}
-                    className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors"
+                    className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-base font-semibold transition-colors"
                   >
                     Skor Detayı →
                   </Link>

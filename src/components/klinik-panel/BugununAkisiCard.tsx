@@ -73,7 +73,7 @@ export default function BugununAkisiCard({
         </div>
         <Link
           href="/klinik/panel/takvim"
-          className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-600 hover:border-violet-500/50 hover:bg-violet-500/10 text-slate-300 hover:text-violet-300 transition-colors"
+          className="text-base font-semibold px-3 py-1.5 rounded-lg border border-slate-600 hover:border-violet-500/50 hover:bg-violet-500/10 text-slate-300 hover:text-violet-300 transition-colors"
         >
           Takvim →
         </Link>
@@ -119,7 +119,7 @@ export default function BugununAkisiCard({
                 {pendingAppts.length > 5 && (
                   <Link
                     href="/klinik/panel/randevular?status=pending"
-                    className="block text-center text-sm text-slate-500 hover:text-amber-300 py-1.5 transition-colors"
+                    className="block text-center text-base text-slate-500 hover:text-amber-300 py-1.5 transition-colors font-semibold"
                   >
                     +{pendingAppts.length - 5} bekleyen daha →
                   </Link>
@@ -287,7 +287,7 @@ function PendingSatir({
           </button>
           <Link
             href={`/klinik/panel/randevu/${apt.id}`}
-            className="px-2 py-1.5 rounded-lg text-slate-500 hover:text-slate-300 text-sm transition-colors"
+            className="px-2 py-1.5 rounded-lg text-slate-500 hover:text-slate-300 text-base transition-colors font-semibold"
             title="Detay"
           >
             ⋯

@@ -40,7 +40,7 @@ export default async function VendorKycPage({
           <h1 className="text-white font-bold text-xl mb-2">İş Ortağı Hesabı Yok</h1>
           <p className="text-slate-400 text-sm mb-6">KYC için önce iş ortağı başvurusu yapmalısınız.</p>
           <Link href="/satici/basvur"
-            className="px-6 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl text-sm">
+            className="px-6 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl text-base">
             İş Ortağı Başvurusu Yap →
           </Link>
         </div>
@@ -57,7 +57,7 @@ export default async function VendorKycPage({
       <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-slate-200 p-4">
         <div className="max-w-2xl mx-auto py-12">
           <Link href="/satici/panel"
-            className="inline-flex items-center gap-1.5 mb-6 text-slate-400 hover:text-white text-sm">
+            className="inline-flex items-center gap-1.5 mb-6 text-slate-400 hover:text-white text-base font-semibold">
             ← İş Ortağı Paneli
           </Link>
           <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8 text-center">
@@ -81,7 +81,7 @@ export default async function VendorKycPage({
       <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-slate-200 p-4">
         <div className="max-w-2xl mx-auto py-12">
           <Link href="/satici/panel"
-            className="inline-flex items-center gap-1.5 mb-6 text-slate-400 hover:text-white text-sm">
+            className="inline-flex items-center gap-1.5 mb-6 text-slate-400 hover:text-white text-base font-semibold">
             ← İş Ortağı Paneli
           </Link>
           <div className="rounded-2xl border border-[#C9A961]/30 bg-[#C9A961]/10 p-8 text-center">
@@ -105,7 +105,7 @@ export default async function VendorKycPage({
       <div className="max-w-2xl mx-auto py-8 space-y-6">
         <div>
           <Link href="/satici/panel"
-            className="inline-flex items-center gap-1.5 mb-4 text-slate-400 hover:text-white text-sm">
+            className="inline-flex items-center gap-1.5 mb-4 text-slate-400 hover:text-white text-base font-semibold">
             ← İş Ortağı Paneli
           </Link>
           <h1 className="text-white font-bold text-2xl">İş Ortağı KYC Bilgileri</h1>

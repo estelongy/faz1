@@ -80,7 +80,7 @@ export function IadeTalepForm({
           </div>
           {existingReturn.status === 'pending' && (
             <button onClick={handleCancel} disabled={cancelLoading}
-              className="shrink-0 text-sm text-red-400 hover:text-red-300 disabled:opacity-40 transition-colors">
+              className="shrink-0 text-base text-red-400 hover:text-red-300 disabled:opacity-40 transition-colors font-semibold">
               {cancelLoading ? '...' : 'İptal Et'}
             </button>
           )}
@@ -112,7 +112,7 @@ export function IadeTalepForm({
           <div>
             <label className="text-slate-400 text-sm block mb-1">Sebep</label>
             <select value={reason} onChange={e => setReason(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500">
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#C9A961]">
               {REASONS.map(r => <option key={r}>{r}</option>)}
             </select>
           </div>
@@ -120,12 +120,12 @@ export function IadeTalepForm({
             <label className="text-slate-400 text-sm block mb-1">Açıklama (opsiyonel)</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)}
               rows={2} maxLength={500} placeholder="Detay eklemek istersen..."
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-violet-500 placeholder-slate-600" />
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-[#C9A961] placeholder-slate-600" />
           </div>
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <div className="flex gap-2">
             <button type="submit" disabled={loading}
-              className="flex-1 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm font-bold rounded-lg transition-colors">
+              className="flex-1 py-2 bg-[#C9A961] hover:bg-[#D4B872] disabled:opacity-40 text-white text-base font-bold rounded-lg transition-colors">
               {loading ? 'Gönderiliyor...' : 'Talep Gönder'}
             </button>
             <button type="button" onClick={() => setOpen(false)}

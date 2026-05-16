@@ -358,7 +358,7 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
                 <svg className="w-7 h-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </div>
               <p className="text-slate-400">Arama kriterlerinize uygun klinik bulunamadı.</p>
-              <button onClick={clearAllFilters} className="mt-3 text-emerald-400 hover:text-emerald-300 text-sm transition-colors">
+              <button onClick={clearAllFilters} className="mt-3 text-emerald-400 hover:text-emerald-300 text-base transition-colors font-semibold">
                 Filtreleri temizle
               </button>
             </div>

@@ -40,7 +40,7 @@ interface ReviewRow {
 export default async function YorumlarimPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris')
+  if (!user) redirect('/giris?g=estestore')
 
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role && role !== 'user') redirect(pathForRole(role))
@@ -78,7 +78,7 @@ export default async function YorumlarimPage() {
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
+          <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
           </Link>
@@ -104,7 +104,7 @@ export default async function YorumlarimPage() {
             Tamamlanmış randevuların burada listelenir. Her birine{' '}
             <strong className="text-white">7 gün</strong> içinde yorum yazabilirsin —
             sonrasında yorumun kalıcılaşır. Klinikten gelen{' '}
-            <strong className="text-violet-300">özel yanıtlar</strong> da burada görünür.
+            <strong className="text-[#C9A961]">özel yanıtlar</strong> da burada görünür.
           </p>
         </div>
 
@@ -174,7 +174,7 @@ function RandevuYorumKarti({
         </div>
         <Link
           href={`/panel/degerlendir/${appt.id}`}
-          className="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-colors"
+          className="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-colors"
         >
           Yorum Yaz
         </Link>
@@ -213,7 +213,7 @@ function RandevuYorumKarti({
           {!editLocked && (
             <Link
               href={`/panel/degerlendir/${appt.id}`}
-              className="px-3 py-1 text-sm uppercase tracking-wider rounded-md border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-white transition-colors"
+              className="px-3 py-1 text-base uppercase tracking-wider rounded-md border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-white transition-colors font-semibold"
             >
               Düzenle
             </Link>
@@ -221,7 +221,7 @@ function RandevuYorumKarti({
           {clinicSlug && (
             <Link
               href={`/esteklinik/${clinicSlug}`}
-              className="text-sm text-slate-500 hover:text-emerald-400"
+              className="text-base text-slate-500 hover:text-emerald-400 font-semibold"
             >
               Klinik sayfası →
             </Link>
@@ -258,9 +258,9 @@ function RandevuYorumKarti({
 
       {/* Private mesaj */}
       {hasPrivateMessage && (
-        <div className="p-3 rounded-lg bg-violet-500/5 border border-violet-500/20">
+        <div className="p-3 rounded-lg bg-[#D4B872]/5 border border-[#C9A961]/20">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-violet-300 text-sm uppercase tracking-wider font-bold">
+            <p className="text-[#C9A961] text-sm uppercase tracking-wider font-bold">
               🔒 Özel Mesajın
             </p>
           </div>
@@ -273,9 +273,9 @@ function RandevuYorumKarti({
 
       {/* Private yanıt */}
       {hasPrivateResponse && (
-        <div className="p-3 rounded-lg bg-violet-500/10 border border-violet-500/30 ml-4">
+        <div className="p-3 rounded-lg bg-[#C9A961]/10 border border-[#C9A961]/30 ml-4">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-violet-300 text-sm uppercase tracking-wider font-bold">
+            <p className="text-[#C9A961] text-sm uppercase tracking-wider font-bold">
               ↳ {clinicName} özel yanıt verdi
             </p>
             {review.private_responded_at && (

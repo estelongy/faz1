@@ -59,7 +59,7 @@ export default async function SaticiPanelPage() {
           <h1 className="text-white font-bold text-xl mb-2">İş Ortağı Hesabı Bulunamadı</h1>
           <p className="text-slate-400 text-sm mb-6">Ürün eklemek için önce iş ortağı başvurusu yapmanız gerekiyor.</p>
           <Link href="/satici/basvur"
-            className="px-6 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl text-sm">
+            className="px-6 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl text-base">
             İş Ortağı Başvurusu Yap →
           </Link>
         </div>
@@ -80,7 +80,7 @@ export default async function SaticiPanelPage() {
             Satışa başlamak için vergi levhası, banka bilgisi ve sözleşme onayı gerekiyor.
           </p>
           <Link href="/satici/panel/kyc"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:opacity-90 text-white font-semibold rounded-xl text-sm">
+            className="inline-block px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:opacity-90 text-white font-semibold rounded-xl text-base">
             KYC Formuna Git →
           </Link>
         </div>
@@ -97,7 +97,7 @@ export default async function SaticiPanelPage() {
           <p className="text-slate-400 text-sm mb-4">
             KYC bilgileriniz admin onayında. Onay sonrası satışa başlayabilirsiniz (1-2 iş günü).
           </p>
-          <Link href="/satici/panel/kyc" className="text-[#C9A961] hover:underline text-sm">
+          <Link href="/satici/panel/kyc" className="text-[#C9A961] hover:underline text-base font-semibold">
             Gönderilen bilgileri gör →
           </Link>
         </div>
@@ -144,7 +144,7 @@ export default async function SaticiPanelPage() {
           </div>
           <div className="flex items-center gap-4">
             <form action={handleSignOut}>
-              <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-red-400/50 hover:bg-red-500/10 text-slate-300 hover:text-red-400 text-sm font-medium transition-colors">Çıkış Yap</button>
+              <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-red-400/50 hover:bg-red-500/10 text-slate-300 hover:text-red-400 text-base font-medium transition-colors">Çıkış Yap</button>
             </form>
           </div>
         </div>

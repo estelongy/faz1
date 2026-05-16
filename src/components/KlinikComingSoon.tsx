@@ -90,7 +90,7 @@ export default function KlinikComingSoon({
               <p className="text-slate-400 text-sm">Burada en çok ne görmek istersin? Önerilerini paylaş.</p>
             </div>
             <Link href={feedbackCta.href}
-              className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap">
+              className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-base font-semibold rounded-lg transition-colors whitespace-nowrap">
               {feedbackCta.text} →
             </Link>
           </div>

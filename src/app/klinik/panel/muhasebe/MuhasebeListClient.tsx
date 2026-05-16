@@ -128,7 +128,7 @@ export default function MuhasebeListClient({ initialRows }: { initialRows: Row[]
             <button type="button" onClick={() => { setShowAdd(false); setError(null) }} className="px-4 py-2 text-slate-400 hover:text-white text-sm transition-colors">
               Vazgeç
             </button>
-            <button type="submit" disabled={pending} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors">
+            <button type="submit" disabled={pending} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-base font-semibold rounded-lg transition-colors">
               {pending ? 'Ekleniyor…' : 'Hasta Ekle'}
             </button>
           </div>

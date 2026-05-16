@@ -360,7 +360,7 @@ export default async function SaticilarPage() {
                         <input type="hidden" name="status" value="approved" />
                         <button
                           type="submit"
-                          className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl transition-colors"
+                          className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-xl transition-colors"
                         >
                           ✓ Onayla
                         </button>
@@ -443,7 +443,7 @@ export default async function SaticilarPage() {
                           <option value="approved">Onayla</option>
                           <option value="rejected">Reddet</option>
                         </select>
-                        <button type="submit" className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-sm rounded-lg transition-colors">
+                        <button type="submit" className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-base rounded-lg transition-colors font-semibold">
                           Kaydet
                         </button>
                       </form>
@@ -603,7 +603,7 @@ function KycBlock({
                 <input type="hidden" name="vendorId" value={vendor.id} />
                 <input type="hidden" name="decision" value="approved" />
                 <button type="submit"
-                  className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-colors">
+                  className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-colors">
                   ✓ KYC Onayla
                 </button>
               </form>
@@ -617,7 +617,7 @@ function KycBlock({
                   <textarea name="note" required rows={2} placeholder="Ret nedeni — vendor görecek"
                     className="w-full px-3 py-2 bg-slate-900 border border-red-500/30 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-red-500 resize-none" />
                   <button type="submit"
-                    className="w-full py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg transition-colors">
+                    className="w-full py-2 bg-red-600 hover:bg-red-500 text-white text-base font-semibold rounded-lg transition-colors">
                     Reddi Gönder
                   </button>
                 </form>

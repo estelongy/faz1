@@ -50,7 +50,7 @@ export default function OnboardingBanner({ onboarding }: Props) {
           <button
             type="button"
             onClick={markCelebrated}
-            className="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-sm font-bold transition-colors"
+            className="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-base font-bold transition-colors"
           >
             Anladım
           </button>
@@ -147,7 +147,7 @@ function StepRow({ step }: { step: { id: string; number: number; title: string; 
           {!step.completed && (
             <Link
               href={step.ctaHref}
-              className="text-violet-300 hover:text-violet-200 text-sm font-bold transition-colors shrink-0"
+              className="text-violet-300 hover:text-violet-200 text-base font-bold transition-colors shrink-0"
             >
               {step.ctaLabel} →
             </Link>

@@ -73,7 +73,7 @@ export default function AdminHesapClient() {
       <button
         type="submit"
         disabled={saving}
-        className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl text-sm transition-all"
+        className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl text-base transition-all"
       >
         {saving ? 'Güncelleniyor…' : 'Şifreyi Güncelle'}
       </button>

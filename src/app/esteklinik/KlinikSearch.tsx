@@ -166,7 +166,7 @@ export function KlinikSearchResults() {
         <p className="text-slate-900 font-semibold">Arama kriterlerine uygun klinik bulunamadı</p>
         <button
           onClick={s.clearAll}
-          className="mt-4 inline-flex items-center px-4 py-2 rounded-full bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-semibold transition-colors"
+          className="mt-4 inline-flex items-center px-4 py-2 rounded-full bg-[#10876B] hover:bg-[#0E7559] text-white text-base font-semibold transition-colors"
         >
           Filtreleri temizle
         </button>

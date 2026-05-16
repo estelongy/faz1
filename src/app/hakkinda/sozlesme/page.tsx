@@ -7,7 +7,7 @@ export default function SozlesmePage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 py-16 px-4">
       <div className="max-w-3xl mx-auto">
-        <Link href="/kayit" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-sm">
+        <Link href="/kayit" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-base font-semibold">
           ← Kayıt sayfasına dön
         </Link>
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">

@@ -68,7 +68,7 @@ export default function DestekPage() {
             { q: 'Klinik genel SSS', href: '/hakkinda/sss' },
           ].map(item => (
             <Link key={item.href} href={item.href}
-              className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800 text-sm text-slate-300 hover:text-white transition-colors">
+              className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800 text-base text-slate-300 hover:text-white transition-colors font-semibold">
               <span>{item.q}</span>
               <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

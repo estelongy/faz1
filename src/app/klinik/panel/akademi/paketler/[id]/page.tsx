@@ -71,7 +71,7 @@ export default async function PaketDetayPage({ params }: Props) {
     <div className="max-w-5xl mx-auto">
       <Link
         href="/klinik/panel/akademi/paketler"
-        className="inline-flex items-center text-slate-400 hover:text-white text-sm mb-6 transition-colors"
+        className="inline-flex items-center text-slate-400 hover:text-white text-base mb-6 transition-colors font-semibold"
       >
         ← Paketlere Dön
       </Link>
@@ -107,7 +107,7 @@ export default async function PaketDetayPage({ params }: Props) {
               <input type="hidden" name="publish" value="false" />
               <button
                 type="submit"
-                className="px-4 py-2 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 text-sm font-medium rounded-xl border border-amber-500/30 transition-colors"
+                className="px-4 py-2 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 text-base font-medium rounded-xl border border-amber-500/30 transition-colors"
               >
                 Yayından Kaldır
               </button>
@@ -119,7 +119,7 @@ export default async function PaketDetayPage({ params }: Props) {
               <button
                 type="submit"
                 disabled={videos.length === 0}
-                className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-base font-semibold rounded-xl transition-colors"
                 title={videos.length === 0 ? 'Yayına almak için en az 1 video ekleyin' : ''}
               >
                 Yayına Al
@@ -226,7 +226,7 @@ export default async function PaketDetayPage({ params }: Props) {
           <div className="pt-2 flex justify-end">
             <button
               type="submit"
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl"
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-xl"
             >
               Kaydet
             </button>
@@ -347,7 +347,7 @@ export default async function PaketDetayPage({ params }: Props) {
             <div className="flex justify-end pt-2">
               <button
                 type="submit"
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg"
               >
                 Video Ekle
               </button>
@@ -368,7 +368,7 @@ export default async function PaketDetayPage({ params }: Props) {
           </p>
           <button
             type="submit"
-            className="px-4 py-2 bg-red-900/40 hover:bg-red-900/60 text-red-400 text-sm font-medium rounded-xl border border-red-800/50 transition-colors"
+            className="px-4 py-2 bg-red-900/40 hover:bg-red-900/60 text-red-400 text-base font-medium rounded-xl border border-red-800/50 transition-colors"
           >
             Paketi Kalıcı Olarak Sil
           </button>

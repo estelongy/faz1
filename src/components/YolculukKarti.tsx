@@ -185,7 +185,7 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
       {nextStep && nextStep.href && (
         <div className="px-5 pb-4">
           <Link href={nextStep.href}
-            className="block w-full text-center py-2.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-sm font-bold transition-colors">
+            className="block w-full text-center py-2.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-base font-bold transition-colors">
             {nextStep.label} →
           </Link>
         </div>

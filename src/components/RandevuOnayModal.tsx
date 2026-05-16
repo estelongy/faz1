@@ -274,7 +274,7 @@ export default function RandevuOnayModal({ taslak, onClose, onSuccess }: Props) 
             </button>
             <div className="flex gap-2">
               <button onClick={resendOtp} disabled={loading}
-                className="flex-1 py-2 text-slate-400 hover:text-white text-sm">
+                className="flex-1 py-2 text-slate-400 hover:text-white text-base font-semibold">
                 Kodu tekrar gönder
               </button>
               <button onClick={() => setStep(userExists ? 'email' : 'signup')}

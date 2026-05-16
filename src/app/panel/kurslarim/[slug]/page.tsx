@@ -17,7 +17,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect(`/giris?next=/panel/kurslarim/${slug}`)
+  if (!user) redirect(`/giris?g=esteklinik&next=/panel/kurslarim/${slug}`)
 
   // Paket
   const { data: pkg } = await supabase
@@ -74,7 +74,7 @@ export default async function KursIzlePage({ params, searchParams }: Props) {
     <main className="min-h-screen">
       <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5 h-14 flex items-center justify-between px-4 lg:px-8">
         <div className="lg:hidden w-10" />
-        <Link href="/panel/kurslarim" className="text-slate-400 hover:text-white text-sm">
+        <Link href="/panel/kurslarim" className="text-slate-400 hover:text-white text-base font-semibold">
           ← Kurslarım
         </Link>
         <div className="text-emerald-400 text-sm font-medium">

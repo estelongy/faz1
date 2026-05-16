@@ -34,7 +34,7 @@ export default async function EgitmenPaketlerPage() {
         <p className="text-slate-500 text-sm">
           Eğitmen onayı sonrası video paketlerinizi yükleyip diğer hekimlere satabilir, %70 gelir payı alabilirsiniz.
         </p>
-        <Link href="/klinik/panel" className="inline-flex items-center mt-6 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm">
+        <Link href="/klinik/panel" className="inline-flex items-center mt-6 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-base font-semibold">
           ← Panele Dön
         </Link>
       </div>
@@ -77,7 +77,7 @@ export default async function EgitmenPaketlerPage() {
         </div>
         <Link
           href="/klinik/panel/akademi/paketler/yeni"
-          className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-emerald-500/20"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-base font-semibold rounded-xl shadow-lg shadow-emerald-500/20"
         >
           + Yeni Paket
         </Link>
@@ -111,7 +111,7 @@ export default async function EgitmenPaketlerPage() {
           </p>
           <Link
             href="/klinik/panel/akademi/paketler/yeni"
-            className="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl"
+            className="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-xl"
           >
             İlk Paketinizi Oluşturun
           </Link>

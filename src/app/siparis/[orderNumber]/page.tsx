@@ -20,7 +20,7 @@ const PAYMENT_STATUS_LABEL: Record<string, { label: string; color: string }> = {
 const FULFILLMENT_STATUS_LABEL: Record<string, { label: string; color: string; icon: string }> = {
   pending:    { label: 'Hazırlanacak',  color: 'text-amber-400',   icon: '⏳' },
   preparing:  { label: 'Hazırlanıyor',  color: 'text-blue-400',    icon: '📦' },
-  shipped:    { label: 'Kargoya Verildi', color: 'text-violet-400', icon: '🚚' },
+  shipped:    { label: 'Kargoya Verildi', color: 'text-[#C9A961]', icon: '🚚' },
   delivered:  { label: 'Teslim Edildi', color: 'text-emerald-400', icon: '✓' },
   cancelled:  { label: 'İptal Edildi',  color: 'text-red-400',     icon: '✕' },
   returned:   { label: 'İade',          color: 'text-slate-400',   icon: '↩' },
@@ -234,7 +234,7 @@ export default async function SiparisPage({
               {items[0]?.tracking_number && (
                 <div className="px-5 py-3 bg-slate-900/50 border-t border-slate-700 text-sm">
                   <span className="text-slate-500">Takip No: </span>
-                  <span className="text-violet-400 font-mono">{items[0].tracking_number}</span>
+                  <span className="text-[#C9A961] font-mono">{items[0].tracking_number}</span>
                   {items[0].tracking_carrier && (
                     <span className="text-slate-500 ml-2">({items[0].tracking_carrier})</span>
                   )}
@@ -267,7 +267,7 @@ export default async function SiparisPage({
         </div>
 
         <div className="mt-6 text-center">
-          <Link href="/estestore" className="text-violet-400 hover:text-violet-300 text-sm transition-colors">
+          <Link href="/estestore" className="text-[#C9A961] hover:text-[#C9A961] text-base transition-colors font-semibold">
             Alışverişe Devam Et →
           </Link>
         </div>

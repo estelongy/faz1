@@ -10,7 +10,7 @@ export default function GuvenlikPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-slate-200">
       <div className="max-w-3xl mx-auto px-4 py-16">
-        <Link href="/" className="inline-flex items-center gap-1.5 mb-8 text-slate-400 hover:text-white text-sm">
+        <Link href="/" className="inline-flex items-center gap-1.5 mb-8 text-slate-400 hover:text-white text-base font-semibold">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>

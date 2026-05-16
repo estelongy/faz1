@@ -145,7 +145,7 @@ export default function SaticiBasvurForm({ action, hasError, isLoggedIn }: Props
 
             <div className="flex gap-2">
               <button type="button" onClick={handleResend} disabled={otpLoading}
-                className="flex-1 py-2 text-slate-400 hover:text-white text-sm transition-colors">
+                className="flex-1 py-2 text-slate-400 hover:text-white text-base transition-colors font-semibold">
                 Tekrar Gönder
               </button>
               <button type="button" onClick={() => setOtpStep(false)}

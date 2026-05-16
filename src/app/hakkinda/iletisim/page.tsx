@@ -45,7 +45,7 @@ export default function IletisimPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 py-16 px-4">
       <div className="max-w-3xl mx-auto">
-        <Link href="/" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-sm">
+        <Link href="/" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-base font-semibold">
           ← Anasayfa
         </Link>
 
@@ -92,11 +92,11 @@ export default function IletisimPage() {
 
         <div className="mt-10 grid grid-cols-2 gap-3">
           <Link href="/hakkinda/sss"
-            className="text-center py-3 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-slate-600 transition-all text-slate-300 text-sm font-medium">
+            className="text-center py-3 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-slate-600 transition-all text-slate-300 text-base font-medium">
             Sık Sorulan Sorular
           </Link>
           <Link href="/hakkinda/cerez"
-            className="text-center py-3 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-slate-600 transition-all text-slate-300 text-sm font-medium">
+            className="text-center py-3 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-slate-600 transition-all text-slate-300 text-base font-medium">
             Çerez Politikası
           </Link>
         </div>

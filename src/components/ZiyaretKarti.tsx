@@ -353,7 +353,7 @@ export default function ZiyaretKarti({ item, editable, klinikAkisLink, defaultOp
                 <button
                   onClick={onSave}
                   disabled={isPending}
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold disabled:opacity-50">
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 text-white text-base font-semibold disabled:opacity-50">
                   {isPending ? 'Kaydediliyor…' : 'Kaydet'}
                 </button>
                 <button

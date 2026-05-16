@@ -18,7 +18,7 @@ export default async function DegerlendirPage({ params }: Props) {
   const { appointmentId } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect(`/giris?next=${encodeURIComponent(`/panel/degerlendir/${appointmentId}`)}`)
+  if (!user) redirect(`/giris?g=esteklinik&next=${encodeURIComponent(`/panel/degerlendir/${appointmentId}`)}`)
 
   // Randevu — clinics join ile
   const { data: appt } = await supabase
@@ -41,7 +41,7 @@ export default async function DegerlendirPage({ params }: Props) {
           <p className="text-slate-400 text-sm leading-relaxed">
             Bu randevu henüz tamamlanmadı. Klinik akışı bittikten sonra burada deneyimini paylaşabilirsin.
           </p>
-          <Link href="/panel/analizlerim" className="inline-block px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors">
+          <Link href="/panel/analizlerim" className="inline-block px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-base font-medium transition-colors">
             Geçmişe Dön
           </Link>
         </div>

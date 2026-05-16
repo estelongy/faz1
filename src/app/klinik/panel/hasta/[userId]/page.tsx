@@ -201,7 +201,7 @@ export default async function HastaDetayPage({
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex items-center gap-3">
-        <Link href="/klinik/panel/hastalarim" className="text-slate-400 hover:text-white transition-colors text-sm">
+        <Link href="/klinik/panel/hastalarim" className="text-slate-400 hover:text-white transition-colors text-base font-semibold">
           ← Hastalarım
         </Link>
         <span className="text-slate-700">|</span>
@@ -231,7 +231,7 @@ export default async function HastaDetayPage({
           {activeAppt && (
             <Link
               href={`/klinik/panel/randevu/${activeAppt.id}`}
-              className="shrink-0 px-5 py-2.5 rounded-xl font-bold text-sm text-white transition-opacity hover:opacity-90
+              className="shrink-0 px-5 py-2.5 rounded-xl font-bold text-base text-white transition-opacity hover:opacity-90
                 bg-gradient-to-r from-violet-600 to-purple-600">
               {activeAppt.status === 'in_progress'
                 ? '↗ Klinik Akışına Devam Et'

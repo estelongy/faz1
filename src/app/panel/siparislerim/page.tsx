@@ -44,7 +44,7 @@ export default async function SiparislerimPage() {
           <div className="text-center py-20">
             <div className="text-5xl mb-4">🛒</div>
             <p className="text-slate-400">Henüz sipariş vermedin</p>
-            <Link href="/estestore" className="mt-4 inline-block text-violet-400 hover:text-violet-300 text-sm transition-colors">
+            <Link href="/estestore" className="mt-4 inline-block text-[#C9A961] hover:text-[#C9A961] text-base transition-colors font-semibold">
               EsteStore’a Git →
             </Link>
           </div>
@@ -57,7 +57,7 @@ export default async function SiparislerimPage() {
               const more = items.length > 2 ? ` +${items.length - 2}` : ''
               return (
                 <Link key={o.id} href={`/siparis/${o.order_number}`}
-                  className="block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-violet-500/50 rounded-2xl p-5 transition-all">
+                  className="block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-[#C9A961]/50 rounded-2xl p-5 transition-all">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-bold font-mono text-sm">{o.order_number}</p>

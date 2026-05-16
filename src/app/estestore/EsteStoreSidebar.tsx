@@ -88,7 +88,7 @@ export default function EsteStoreSidebar() {
             </p>
             <Link
               href="/estestore/kategori/tum-kategoriler"
-              className="block text-sm text-slate-300 hover:text-white transition-colors py-1.5 font-medium"
+              className="block text-base text-slate-300 hover:text-white transition-colors py-1.5 font-medium"
             >
               Tüm Kategoriler →
             </Link>

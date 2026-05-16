@@ -21,7 +21,7 @@ export default async function AdminKuponlarPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <Link href="/admin" className="text-slate-400 hover:text-white text-sm transition-colors">← Admin</Link>
+          <Link href="/admin" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">← Admin</Link>
           <h1 className="text-2xl font-bold text-white mt-1">Kupon Yönetimi</h1>
           <p className="text-slate-400 text-sm">{coupons?.length ?? 0} kupon</p>
         </div>

@@ -243,7 +243,7 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
       {/* Aksiyon butonları */}
       <div className="flex gap-3 pt-4 border-t border-slate-800">
         <button type="submit" disabled={isPending}
-          className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
+          className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-base">
           {isPending ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
         </button>
         <button type="button" onClick={handleDelete} disabled={isPending}

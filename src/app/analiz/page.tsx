@@ -184,7 +184,7 @@ export default function AnalizPage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
+            <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
@@ -249,7 +249,7 @@ export default function AnalizPage() {
                   <button
                     onClick={saveBirthYear}
                     disabled={bySaving || !byInput}
-                    className="px-4 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-900 text-sm font-semibold rounded-xl transition-colors"
+                    className="px-4 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-900 text-base font-semibold rounded-xl transition-colors"
                   >
                     {bySaving ? '…' : 'Kaydet'}
                   </button>
@@ -530,7 +530,7 @@ export default function AnalizPage() {
               <button
                 onClick={saveAndGoPanel}
                 disabled={saving}
-                className="w-full py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 text-slate-400 font-medium rounded-xl transition-all disabled:opacity-50 text-sm"
+                className="w-full py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 text-slate-400 font-medium rounded-xl transition-all disabled:opacity-50 text-base"
               >
                 {saving ? 'Yükleniyor...' : 'Panele Dön'}
               </button>

@@ -35,19 +35,19 @@ export default async function SiteHeader() {
               <>
                 <Link
                   href={panelHref}
-                  className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all"
+                  className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all"
                 >
                   Hesabım
                 </Link>
                 <Link
                   href="/esteklinik"
-                  className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all"
+                  className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all"
                 >
                   Randevu Al
                 </Link>
                 <Link
                   href="/estestore"
-                  className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all"
+                  className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all"
                 >
                   EsteStore
                 </Link>
@@ -59,19 +59,19 @@ export default async function SiteHeader() {
                 </Link>
                 <Link
                   href="/kayit"
-                  className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all"
+                  className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all"
                 >
                   Kayıt Ol
                 </Link>
                 <Link
                   href="/esteklinik"
-                  className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all"
+                  className="hidden sm:block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all"
                 >
                   Randevu Al
                 </Link>
                 <Link
                   href="/estestore"
-                  className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all"
+                  className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all"
                 >
                   EsteStore
                 </Link>

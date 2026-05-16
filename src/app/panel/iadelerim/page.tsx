@@ -44,7 +44,7 @@ export default async function IadelerimPage() {
           <div className="text-center py-20">
             <div className="text-5xl mb-4">↩</div>
             <p className="text-slate-400">Henüz iade talebinde bulunmadın</p>
-            <Link href="/panel" className="mt-4 inline-block text-violet-400 hover:text-violet-300 text-sm transition-colors">
+            <Link href="/panel" className="mt-4 inline-block text-[#C9A961] hover:text-[#C9A961] text-base transition-colors font-semibold">
               Panelime Dön
             </Link>
           </div>
@@ -60,7 +60,7 @@ export default async function IadelerimPage() {
                       <p className="text-white font-bold text-sm">{item?.product_snapshot?.name ?? 'Ürün'}</p>
                       {item?.orders?.order_number && (
                         <Link href={`/siparis/${item.orders.order_number}`}
-                          className="text-violet-400 hover:text-violet-300 text-sm transition-colors">
+                          className="text-[#C9A961] hover:text-[#C9A961] text-base transition-colors font-semibold">
                           Sipariş #{item.orders.order_number}
                         </Link>
                       )}

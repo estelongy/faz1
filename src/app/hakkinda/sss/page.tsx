@@ -130,7 +130,7 @@ export default function SSSPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 py-16 px-4">
       <div className="max-w-3xl mx-auto">
-        <Link href="/" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-sm">
+        <Link href="/" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-base font-semibold">
           ← Anasayfa
         </Link>
 
@@ -169,7 +169,7 @@ export default function SSSPage() {
           <p className="text-white font-semibold mb-1">Sorunuza cevap bulamadınız mı?</p>
           <p className="text-slate-400 text-sm mb-4">Destek ekibimiz size yardımcı olmaktan memnuniyet duyar.</p>
           <Link href="/hakkinda/iletisim"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl transition-all">
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-semibold rounded-xl transition-all">
             İletişime Geç →
           </Link>
         </div>

@@ -217,7 +217,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
               <button
                 type="button"
                 onClick={clearCover}
-                className="px-3 py-1.5 text-slate-500 hover:text-red-400 text-sm font-medium transition-colors"
+                className="px-3 py-1.5 text-slate-500 hover:text-red-400 text-base font-medium transition-colors"
               >
                 Kaldır
               </button>
@@ -259,7 +259,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
                   <button
                     type="button"
                     onClick={clearLogo}
-                    className="px-3 py-1.5 text-slate-500 hover:text-red-400 text-sm font-medium transition-colors"
+                    className="px-3 py-1.5 text-slate-500 hover:text-red-400 text-base font-medium transition-colors"
                   >
                     Kaldır
                   </button>
@@ -364,7 +364,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
             <button
               type="button"
               onClick={toggleSelectAllBranch}
-              className="text-sm text-violet-400 hover:text-violet-300 transition-colors font-medium"
+              className="text-base text-violet-400 hover:text-violet-300 transition-colors font-medium"
             >
               {allBranchSelected ? 'Tümünü Kaldır' : 'Tümünü Seç'}
             </button>
@@ -534,7 +534,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
         </button>
         <Link
           href="/klinik/panel/profil"
-          className="px-5 py-2.5 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-sm font-medium rounded-xl transition-colors"
+          className="px-5 py-2.5 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-base font-medium rounded-xl transition-colors"
         >
           Vazgeç
         </Link>

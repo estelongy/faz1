@@ -189,7 +189,7 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
                     Vazgeç
                   </button>
                   <button type="button" onClick={handleEmailChange} disabled={emailSaving}
-                    className="flex-1 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-all">
+                    className="flex-1 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 text-white text-base font-semibold rounded-lg transition-all">
                     {emailSaving ? 'Gönderiliyor…' : 'Onay maili gönder'}
                   </button>
                 </div>
@@ -229,7 +229,7 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
               <p className="text-white font-mono">{phone ?? '—'}</p>
             </div>
             <button onClick={startPhoneChange}
-              className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors">
+              className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-base font-semibold transition-colors">
               Değiştir
             </button>
           </div>

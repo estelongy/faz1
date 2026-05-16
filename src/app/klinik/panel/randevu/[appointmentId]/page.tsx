@@ -398,7 +398,7 @@ export default async function RandevuAkisPage({
     <div className="max-w-4xl mx-auto">
       <div className="mb-4 flex items-center gap-3">
         <Link href={`/klinik/panel/hasta/${appointment.user_id}`}
-          className="text-slate-400 hover:text-white transition-colors text-sm">
+          className="text-slate-400 hover:text-white transition-colors text-base font-semibold">
           ← Hasta Detay
         </Link>
       </div>

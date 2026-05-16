@@ -17,7 +17,7 @@ export type IadeInput = {
 export async function iadeTalebiOlusturAction(input: IadeInput): Promise<{ ok: boolean; error?: string; id?: string }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris')
+  if (!user) redirect('/giris?g=estestore')
 
   if (!input.reason?.trim()) return { ok: false, error: 'İade sebebi zorunlu' }
 
@@ -79,7 +79,7 @@ export async function iadeTalebiOlusturAction(input: IadeInput): Promise<{ ok: b
 export async function iadeIptalAction(returnId: string): Promise<{ ok: boolean; error?: string }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris')
+  if (!user) redirect('/giris?g=estestore')
 
   const { error } = await supabase
     .from('returns')
@@ -101,7 +101,7 @@ export async function iadeKararAction(
 ): Promise<{ ok: boolean; error?: string }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris')
+  if (!user) redirect('/giris?g=estestore')
 
   const role = (user.app_metadata as Record<string, string>)?.role
   const isAdmin = role === 'admin'

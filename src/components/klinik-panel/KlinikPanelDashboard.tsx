@@ -63,7 +63,7 @@ export default function KlinikPanelDashboard({
             {accreditation.phase === 0 ? 'Yeni Klinik' : `Faz ${accreditation.phase} — ${accreditation.phaseLabel}`}
           </div>
           <Link href="/klinik/panel/kredi"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-bold hover:opacity-80 transition-opacity">
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-base font-bold hover:opacity-80 transition-opacity">
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
               <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -71,7 +71,7 @@ export default function KlinikPanelDashboard({
             {totalCredit} Kredi
           </Link>
           <Link href="/estestore"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-sm font-bold hover:bg-violet-500/20 transition-colors">
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-base font-bold hover:bg-violet-500/20 transition-colors">
             <span>🛒</span>
             EsteStore
           </Link>

@@ -102,7 +102,7 @@ export default function RehberPage() {
       {/* Header */}
       <header className="bg-slate-900/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center gap-3">
-          <Link href="/" className="text-slate-400 hover:text-white text-sm transition-colors">
+          <Link href="/" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">
             ← Estelongy
           </Link>
           <span className="text-slate-700">|</span>

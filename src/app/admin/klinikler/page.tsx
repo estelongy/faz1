@@ -311,7 +311,7 @@ export default async function KliniklerPage() {
                       type="submit"
                       name="decision"
                       value="approve"
-                      className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl transition-colors"
+                      className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-xl transition-colors"
                     >
                       ✓ Onayla — Eğitmen Yap
                     </button>
@@ -319,7 +319,7 @@ export default async function KliniklerPage() {
                       type="submit"
                       name="decision"
                       value="reject"
-                      className="flex-1 py-2.5 bg-red-900/40 hover:bg-red-900/60 text-red-400 text-sm font-medium rounded-xl border border-red-800/50 transition-colors"
+                      className="flex-1 py-2.5 bg-red-900/40 hover:bg-red-900/60 text-red-400 text-base font-medium rounded-xl border border-red-800/50 transition-colors"
                     >
                       ✕ Reddet
                     </button>
@@ -382,7 +382,7 @@ export default async function KliniklerPage() {
                         <input type="number" name="amount" defaultValue={10} min={1} max={1000}
                           className="w-14 bg-slate-800 border border-slate-700 text-slate-300 text-sm rounded px-1.5 py-0.5 focus:outline-none focus:border-violet-500"
                           aria-label="Eklenecek kredi miktarı" />
-                        <button type="submit" className="px-1.5 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white text-sm rounded transition-colors" title="Klinike kredi ekle">+</button>
+                        <button type="submit" className="px-1.5 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white text-base rounded transition-colors font-semibold" title="Klinike kredi ekle">+</button>
                       </form>
                     </div>
                   </td>
@@ -421,7 +421,7 @@ export default async function KliniklerPage() {
                         <option value="approved">Onayla</option>
                         <option value="rejected">Reddet</option>
                       </select>
-                      <button type="submit" className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-sm rounded-lg transition-colors">
+                      <button type="submit" className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-base rounded-lg transition-colors font-semibold">
                         Kaydet
                       </button>
                     </form>
@@ -466,14 +466,14 @@ function ClinicCard({ clinic, action, showActions }: {
           <form action={action} className="flex-1">
             <input type="hidden" name="clinicId" value={clinic.id} />
             <input type="hidden" name="status" value="approved" />
-            <button type="submit" className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-xl transition-colors">
+            <button type="submit" className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-medium rounded-xl transition-colors">
               ✓ Onayla
             </button>
           </form>
           <form action={action} className="flex-1">
             <input type="hidden" name="clinicId" value={clinic.id} />
             <input type="hidden" name="status" value="rejected" />
-            <button type="submit" className="w-full py-2 bg-red-900/50 hover:bg-red-800/50 text-red-400 text-sm font-medium rounded-xl transition-colors border border-red-800/50">
+            <button type="submit" className="w-full py-2 bg-red-900/50 hover:bg-red-800/50 text-red-400 text-base font-medium rounded-xl transition-colors border border-red-800/50">
               ✕ Reddet
             </button>
           </form>

@@ -79,7 +79,7 @@ export default function AdresForm({ initial, onClose, onSaved }: Props) {
       <div className="flex items-center justify-between">
         <h3 className="text-white font-bold text-sm">{initial?.id ? 'Adresi Düzenle' : 'Yeni Adres'}</h3>
         {onClose && (
-          <button type="button" onClick={onClose} className="text-slate-500 hover:text-white text-sm">İptal</button>
+          <button type="button" onClick={onClose} className="text-slate-500 hover:text-white text-base font-semibold">İptal</button>
         )}
       </div>
 
@@ -149,7 +149,7 @@ export default function AdresForm({ initial, onClose, onSaved }: Props) {
       )}
 
       <button type="submit" disabled={isPending}
-        className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
+        className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-base">
         {isPending ? 'Kaydediliyor...' : 'Adresi Kaydet'}
       </button>
     </form>

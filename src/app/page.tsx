@@ -132,43 +132,43 @@ export default async function Home({
             </Link>
             <div className="flex items-center gap-3">
               <Link href="/rehber"
-                className="hidden md:block text-slate-400 hover:text-white text-sm transition-colors">
+                className="hidden md:block text-slate-400 hover:text-white text-base transition-colors font-semibold">
                 Estelongy Rehberi
               </Link>
               <Link href="/esteklinik/basvur"
-                className="hidden lg:block text-slate-400 hover:text-white text-sm transition-colors">
+                className="hidden lg:block text-slate-400 hover:text-white text-base transition-colors font-semibold">
                 Klinik Başvurusu
               </Link>
               {isLoggedIn ? (
                 <>
                   <Link href="/panel"
-                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
+                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Hesabım
                   </Link>
                   <Link href="/esteklinik"
-                    className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
+                    className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
                   </Link>
                   <Link href="/estestore"
-                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
                     EsteStore
                   </Link>
                 </>
               ) : (
                 <>
-                  <Link href="/giris" className="text-slate-400 hover:text-white text-sm transition-colors">
+                  <Link href="/giris" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">
                     Giriş Yap
                   </Link>
                   <Link href="/kayit"
-                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
+                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Ücretsiz Başla
                   </Link>
                   <Link href="/esteklinik"
-                    className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
+                    className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     Randevu Al
                   </Link>
                   <Link href="/estestore"
-                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-sm font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
                     EsteStore
                   </Link>
                 </>
@@ -484,7 +484,7 @@ export default async function Home({
                 <Link
                   key={alan}
                   href={`/esteklinik?tip=${encodeURIComponent(alan)}`}
-                  className="px-3.5 py-1.5 rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300 text-sm font-medium tracking-wide hover:border-blue-400/60 hover:bg-blue-500/20 hover:text-white transition-all">
+                  className="px-3.5 py-1.5 rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300 text-base font-medium tracking-wide hover:border-blue-400/60 hover:bg-blue-500/20 hover:text-white transition-all">
                   {alan}
                 </Link>
               ))}

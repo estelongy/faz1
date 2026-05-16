@@ -114,7 +114,7 @@ export default function KlinikNotlar({ userId, notes }: Props) {
               <button
                 onClick={handleAdd}
                 disabled={isPending || !newNote.trim()}
-                className="px-5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-40 text-white text-sm font-bold rounded-lg transition-opacity"
+                className="px-5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-40 text-white text-base font-bold rounded-lg transition-opacity"
               >
                 {isPending ? 'Kaydediliyor...' : 'Not Ekle'}
               </button>

@@ -92,7 +92,7 @@ export default function UpdatePasswordPage() {
               </div>
               <p className="text-white font-semibold">Bağlantı geçersiz</p>
               <p className="text-slate-400 text-sm">{error}</p>
-              <Link href="/giris" className="inline-block mt-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl transition-all">
+              <Link href="/giris" className="inline-block mt-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-semibold rounded-xl transition-all">
                 Giriş sayfasına dön
               </Link>
             </>
@@ -205,7 +205,7 @@ export default function UpdatePasswordPage() {
                 {loading ? 'Güncelleniyor…' : 'Şifreyi Güncelle'}
               </button>
 
-              <Link href="/giris" className="block text-center text-slate-400 hover:text-white text-sm transition-colors">
+              <Link href="/giris" className="block text-center text-slate-400 hover:text-white text-base transition-colors font-semibold">
                 ← Giriş sayfasına dön
               </Link>
             </form>

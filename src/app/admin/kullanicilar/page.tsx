@@ -198,7 +198,7 @@ export default async function KullanicilarPage() {
                       </select>
                       <button
                         type="submit"
-                        className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-sm rounded-lg transition-colors"
+                        className="px-2 py-1 bg-violet-600 hover:bg-violet-500 text-white text-base rounded-lg transition-colors font-semibold"
                       >
                         Kaydet
                       </button>

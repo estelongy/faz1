@@ -33,7 +33,7 @@ export default function EmailTestButton() {
         type="button"
         onClick={send}
         disabled={sending}
-        className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-semibold rounded-xl text-sm transition-all"
+        className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-semibold rounded-xl text-base transition-all"
       >
         {sending ? 'Gönderiliyor…' : 'Kendime Test Maili Gönder'}
       </button>

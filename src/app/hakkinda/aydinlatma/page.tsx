@@ -10,7 +10,7 @@ export default function AydinlatmaPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 py-16 px-4">
       <div className="max-w-3xl mx-auto">
-        <Link href="/" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-sm">
+        <Link href="/" className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors text-base font-semibold">
           ← Anasayfa
         </Link>
 

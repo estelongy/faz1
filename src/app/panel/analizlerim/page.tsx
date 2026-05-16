@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function GecmisimPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris')
+  if (!user) redirect('/giris?g=biyoage')
 
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role && role !== 'user') redirect(pathForRole(role))
@@ -174,12 +174,12 @@ export default async function GecmisimPage() {
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-sm font-medium transition-colors">
+          <Link href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
           </Link>
           <span className="text-white font-bold text-sm">Geçmişim</span>
-          <Link href="/analiz" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-violet-500/30 hover:border-violet-400 hover:bg-violet-500/10 text-violet-400 hover:text-violet-300 text-sm font-medium transition-colors">+ Yeni</Link>
+          <Link href="/analiz" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-violet-500/30 hover:border-violet-400 hover:bg-violet-500/10 text-violet-400 hover:text-violet-300 text-base font-medium transition-colors">+ Yeni</Link>
         </div>
       </header>
 
@@ -219,7 +219,7 @@ export default async function GecmisimPage() {
             <div className="w-20 h-20 mx-auto rounded-2xl bg-slate-800 flex items-center justify-center mb-4 text-4xl">🎯</div>
             <p className="text-white font-semibold mb-2">Henüz yolculuğun yok</p>
             <p className="text-slate-400 text-sm mb-5">Selfie ile ilk gençleşme yolculuğunu başlat</p>
-            <Link href="/analiz" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl">
+            <Link href="/analiz" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-base font-semibold rounded-xl">
               Analizi Başlat →
             </Link>
           </div>

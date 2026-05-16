@@ -66,7 +66,7 @@ export default function RespondToReviewForm({ reviewId }: { reviewId: string }) 
           <button
             type="submit"
             disabled={pending || text.trim().length < 3}
-            className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 text-white text-sm font-semibold rounded-lg transition-colors"
+            className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 text-white text-base font-semibold rounded-lg transition-colors"
           >
             {pending ? 'Kaydediliyor…' : 'Cevap Gönder'}
           </button>

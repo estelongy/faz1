@@ -220,7 +220,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
 
             <div className="flex gap-2">
               <button type="button" onClick={handleResend} disabled={otpLoading}
-                className="flex-1 py-2 text-slate-500 hover:text-slate-900 text-sm transition-colors">
+                className="flex-1 py-2 text-slate-500 hover:text-slate-900 text-base transition-colors font-semibold">
                 Tekrar Gönder
               </button>
               <button type="button" onClick={() => setOtpStep(false)}
@@ -382,7 +382,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
               <button
                 type="button"
                 onClick={selectAllBranch}
-                className="text-sm text-[#10876B] hover:text-[#10876B] transition-colors font-medium"
+                className="text-base text-[#10876B] hover:text-[#10876B] transition-colors font-medium"
               >
                 {allBranchSelected ? 'Tümünü Kaldır' : 'Tümünü Seç'}
               </button>

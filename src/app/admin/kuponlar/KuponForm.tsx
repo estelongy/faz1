@@ -55,7 +55,7 @@ export default function KuponForm() {
           <button
             type="button"
             onClick={generate}
-            className="px-3 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-xl transition-colors">
+            className="px-3 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-base rounded-xl transition-colors font-semibold">
             Üret
           </button>
         </div>

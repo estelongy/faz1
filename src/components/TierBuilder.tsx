@@ -185,7 +185,7 @@ export default function TierBuilder({
                   <button
                     type="button"
                     onClick={makeLastUnbounded}
-                    className="mt-2 text-sm text-violet-300 hover:text-violet-200 underline"
+                    className="mt-2 text-base text-violet-300 hover:text-violet-200 underline font-semibold"
                   >
                     Son baremi sınırsız (∞) yap
                   </button>
@@ -207,7 +207,7 @@ export default function TierBuilder({
           <button
             type="button"
             onClick={addRow}
-            className="flex-1 py-2 rounded-xl border border-dashed border-slate-600 hover:border-violet-500 text-slate-400 hover:text-violet-300 text-sm transition-all"
+            className="flex-1 py-2 rounded-xl border border-dashed border-slate-600 hover:border-violet-500 text-slate-400 hover:text-violet-300 text-base transition-all font-semibold"
           >
             + Barem ekle ({rows.length}/3)
           </button>

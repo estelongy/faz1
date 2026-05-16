@@ -59,7 +59,7 @@ export default function ErrorPage({
 
         <div className="pt-6 border-t border-slate-800">
           <Link href="/hakkinda/iletisim"
-            className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
+            className="text-base text-slate-500 hover:text-slate-300 transition-colors font-semibold">
             Sorun devam ediyor mu? <span className="text-violet-400">Bize yaz →</span>
           </Link>
         </div>

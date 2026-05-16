@@ -142,7 +142,7 @@ export default function PhoneOtpStep({ phone, onVerified, onBack, autoSend = tru
                 : 'Yeni kod gönder'}
             </button>
             {onBack && (
-              <button onClick={onBack} className="text-slate-400 hover:text-white text-sm">
+              <button onClick={onBack} className="text-slate-400 hover:text-white text-base font-semibold">
                 ← Numarayı değiştir
               </button>
             )}

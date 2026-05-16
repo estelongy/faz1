@@ -310,7 +310,7 @@ function RandevuListSatir({
       {/* Üst satır: hasta + saat + status */}
       <div className="flex items-center gap-2 mb-2">
         <Link href={`/klinik/panel/hasta/${appt.userId}`}
-          className="text-white text-sm font-bold hover:text-violet-400 transition-colors truncate flex-1 min-w-0">
+          className="text-white text-base font-bold hover:text-violet-400 transition-colors truncate flex-1 min-w-0">
           {appt.patientName}
         </Link>
         <span className={`text-sm px-2 py-0.5 rounded-full shrink-0 ${
@@ -346,7 +346,7 @@ function RandevuListSatir({
           <>
             <Link
               href={`/klinik/panel/randevu/${appt.id}`}
-              className="flex-1 min-w-[120px] text-center px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-sm font-bold transition-colors">
+              className="flex-1 min-w-[120px] text-center px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-base font-bold transition-colors">
               Hasta Geldi →
             </Link>
             <button
@@ -368,21 +368,21 @@ function RandevuListSatir({
         {appt.status === 'in_progress' && (
           <Link
             href={`/klinik/panel/randevu/${appt.id}`}
-            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold transition-colors">
+            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-base font-bold transition-colors">
             Akışı Sürdür →
           </Link>
         )}
         {appt.status === 'completed' && (
           <Link
             href={`/klinik/panel/randevu/${appt.id}`}
-            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-semibold transition-colors">
+            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-base font-semibold transition-colors">
             Detayı Gör →
           </Link>
         )}
         {(appt.status === 'cancelled' || appt.status === 'no_show') && (
           <Link
             href={`/klinik/panel/hasta/${appt.userId}`}
-            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-500 text-sm transition-colors">
+            className="flex-1 text-center px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-500 text-base transition-colors font-semibold">
             Hasta Detayı
           </Link>
         )}

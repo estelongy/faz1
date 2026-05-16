@@ -115,11 +115,11 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
               <option value="puan">En Yüksek Puan</option>
               <option value="yeni">En Yeni</option>
             </select>
-            <button type="submit" className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white text-sm font-medium transition-colors">
+            <button type="submit" className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white text-base font-medium transition-colors">
               Uygula
             </button>
             {(sp.kategori || sp.seviye || sp.sirala) && (
-              <Link href="/akademi" className="text-slate-400 hover:text-white text-sm px-2">
+              <Link href="/akademi" className="text-slate-400 hover:text-white text-base px-2 font-semibold">
                 Sıfırla
               </Link>
             )}
@@ -136,7 +136,7 @@ export default async function AkademiKesfetPage({ searchParams }: Props) {
           <div className="text-center py-20">
             <div className="text-5xl mb-4">📭</div>
             <p className="text-slate-400">Filtrelerinize uygun paket bulunamadı.</p>
-            <Link href="/akademi" className="inline-block mt-4 text-emerald-400 hover:text-emerald-300 text-sm">
+            <Link href="/akademi" className="inline-block mt-4 text-emerald-400 hover:text-emerald-300 text-base font-semibold">
               Filtreleri sıfırla
             </Link>
           </div>

@@ -26,7 +26,7 @@ export default async function MusaitlikPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6 flex items-center gap-3">
-        <Link href="/klinik/panel/takvim" className="text-slate-400 hover:text-white transition-colors text-sm">← Takvim</Link>
+        <Link href="/klinik/panel/takvim" className="text-slate-400 hover:text-white transition-colors text-base font-semibold">← Takvim</Link>
       </div>
       <div className="mb-6">
         <h1 className="text-2xl font-black text-white">Müsaitlik Takvimi</h1>

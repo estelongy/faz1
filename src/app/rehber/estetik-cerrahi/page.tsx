@@ -99,9 +99,9 @@ export default function EstetikCerrahiPage() {
       {/* Header */}
       <header className="bg-slate-900/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
-          <Link href="/" className="text-slate-400 hover:text-white text-sm transition-colors">← Estelongy</Link>
+          <Link href="/" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">← Estelongy</Link>
           <span className="text-slate-700">|</span>
-          <Link href="/rehber" className="text-slate-400 hover:text-white text-sm transition-colors">Estelongy Rehberi</Link>
+          <Link href="/rehber" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">Estelongy Rehberi</Link>
           <span className="text-slate-700">|</span>
           <span className="text-white font-bold text-sm">Estetik Cerrahi</span>
         </div>
@@ -219,7 +219,7 @@ export default function EstetikCerrahiPage() {
 
         {/* Geri */}
         <div className="text-center">
-          <Link href="/rehber" className="text-slate-500 hover:text-slate-300 text-sm transition-colors inline-flex items-center gap-2">
+          <Link href="/rehber" className="text-slate-500 hover:text-slate-300 text-base transition-colors inline-flex items-center gap-2 font-semibold">
             ← Estelongy Rehberi
           </Link>
         </div>

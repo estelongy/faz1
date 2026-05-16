@@ -191,7 +191,7 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
               </div>
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setShowTreatmentForm(false)} className="px-3 py-1.5 text-slate-400 hover:text-white text-sm transition-colors">Vazgeç</button>
-                <button type="submit" disabled={pending} className="px-4 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors">
+                <button type="submit" disabled={pending} className="px-4 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-base font-semibold rounded-lg transition-colors">
                   {pending ? 'Ekleniyor…' : 'Ekle'}
                 </button>
               </div>
@@ -258,7 +258,7 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
                               className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
                             <input name="notes" maxLength={200} placeholder="Not (ops.)"
                               className="col-span-3 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
-                            <button type="submit" disabled={pending} className="px-2 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold rounded transition-colors">
+                            <button type="submit" disabled={pending} className="px-2 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-base font-semibold rounded transition-colors">
                               Ekle
                             </button>
                           </form>
@@ -349,7 +349,7 @@ export default function PatientDetailClient({ patientId, treatments, payments }:
               </div>
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setShowPaymentForm(false)} className="px-3 py-1.5 text-slate-400 hover:text-white text-sm transition-colors">Vazgeç</button>
-                <button type="submit" disabled={pending} className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors">
+                <button type="submit" disabled={pending} className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-base font-semibold rounded-lg transition-colors">
                   {pending ? 'Ekleniyor…' : 'Tahsilat Ekle'}
                 </button>
               </div>

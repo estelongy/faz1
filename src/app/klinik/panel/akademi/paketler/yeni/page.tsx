@@ -27,7 +27,7 @@ export default async function YeniPaketPage() {
     <div className="max-w-2xl mx-auto">
       <Link
         href="/klinik/panel/akademi/paketler"
-        className="inline-flex items-center text-slate-400 hover:text-white text-sm mb-6 transition-colors"
+        className="inline-flex items-center text-slate-400 hover:text-white text-base mb-6 transition-colors font-semibold"
       >
         ← Paketlere Dön
       </Link>
@@ -137,7 +137,7 @@ export default async function YeniPaketPage() {
           <div className="pt-4 border-t border-slate-800 flex gap-3">
             <Link
               href="/klinik/panel/akademi/paketler"
-              className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-xl transition-colors"
+              className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-base font-medium rounded-xl transition-colors"
             >
               İptal
             </Link>

@@ -295,7 +295,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       <button
         type="submit" disabled={loading}
-        className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
+        className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-base">
         {loading ? 'Ekleniyor...' : 'Ürünü Gönder'}
       </button>
     </form>

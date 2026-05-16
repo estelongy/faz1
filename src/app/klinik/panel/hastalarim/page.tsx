@@ -161,7 +161,7 @@ export default async function HastalarimPage() {
                       <td className="px-4 py-3 text-center text-emerald-400 font-semibold">{h.completed}</td>
                       <td className="px-4 py-3 text-right">
                         <Link href={`/klinik/panel/hasta/${h.user_id}`}
-                          className="inline-flex items-center gap-1 text-violet-400 hover:text-violet-300 text-sm font-semibold opacity-60 group-hover:opacity-100 transition-opacity">
+                          className="inline-flex items-center gap-1 text-violet-400 hover:text-violet-300 text-base font-semibold opacity-60 group-hover:opacity-100 transition-opacity">
                           Aç
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

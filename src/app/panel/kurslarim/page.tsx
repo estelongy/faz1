@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 export default async function KurslarimPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris?next=/panel/kurslarim')
+  if (!user) redirect('/giris?g=esteklinik&next=/panel/kurslarim')
 
   // Satın alınan paketler
   const { data: purchases } = await supabase

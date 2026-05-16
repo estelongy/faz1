@@ -176,7 +176,7 @@ export default async function PublicClinicPage({ params }: Props) {
 
               <Link
                 href={`/esteklinik/randevu/${slug}`}
-                className="hidden lg:flex items-center justify-center gap-1.5 w-full px-5 py-3 bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-[#10876B]/30"
+                className="hidden lg:flex items-center justify-center gap-1.5 w-full px-5 py-3 bg-[#10876B] hover:bg-[#0E7559] text-white text-base font-bold rounded-xl transition-colors shadow-md shadow-[#10876B]/30"
               >
                 <Calendar size={14} />
                 Randevu Al
@@ -232,7 +232,7 @@ export default async function PublicClinicPage({ params }: Props) {
             </p>
             <Link
               href={`/esteklinik/randevu/${slug}`}
-              className="inline-flex items-center gap-1.5 px-5 py-3 bg-white hover:bg-emerald-50 text-[#064E3B] text-sm font-bold rounded-xl transition-colors shadow-lg"
+              className="inline-flex items-center gap-1.5 px-5 py-3 bg-white hover:bg-emerald-50 text-[#064E3B] text-base font-bold rounded-xl transition-colors shadow-lg"
             >
               <Calendar size={14} />
               Randevu Al
@@ -245,7 +245,7 @@ export default async function PublicClinicPage({ params }: Props) {
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#064E3B]/95 backdrop-blur-md border-t border-[#10876B]/40">
         <Link
           href={`/esteklinik/randevu/${slug}`}
-          className="flex items-center justify-center gap-1.5 w-full text-center px-5 py-3 bg-white text-[#064E3B] text-sm font-bold rounded-xl transition-colors shadow-lg"
+          className="flex items-center justify-center gap-1.5 w-full text-center px-5 py-3 bg-white text-[#064E3B] text-base font-bold rounded-xl transition-colors shadow-lg"
         >
           <Calendar size={14} />
           Bu Klinikten Randevu Al

@@ -53,7 +53,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link href="/klinik/panel" className="inline-flex items-center text-slate-400 hover:text-white text-sm mb-6 transition-colors">
+      <Link href="/klinik/panel" className="inline-flex items-center text-slate-400 hover:text-white text-base mb-6 transition-colors font-semibold">
         ← Panele Dön
       </Link>
 
@@ -119,7 +119,7 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
           <form action={withdrawApplication} className="mt-4">
             <button
               type="submit"
-              className="text-sm px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+              className="text-base px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors font-semibold"
             >
               Başvuruyu Geri Çek
             </button>

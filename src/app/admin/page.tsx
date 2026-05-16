@@ -67,10 +67,10 @@ export default async function AdminPage() {
           </span>
           <div className="ml-auto flex gap-2">
             {(pendingClinics ?? 0) > 0 && (
-              <Link href="/admin/klinikler" className="text-sm px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">Kliniklere git →</Link>
+              <Link href="/admin/klinikler" className="text-base px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors font-semibold">Kliniklere git →</Link>
             )}
             {(pendingVendors ?? 0) > 0 && (
-              <Link href="/admin/saticilar" className="text-sm px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors">İş Ortaklarına git →</Link>
+              <Link href="/admin/saticilar" className="text-base px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors font-semibold">İş Ortaklarına git →</Link>
             )}
           </div>
         </div>
@@ -126,7 +126,7 @@ export default async function AdminPage() {
       <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-white font-bold">Son Kayıt Olanlar</h2>
-          <Link href="/admin/kullanicilar" className="text-sm text-slate-400 hover:text-white transition-colors">
+          <Link href="/admin/kullanicilar" className="text-base text-slate-400 hover:text-white transition-colors font-semibold">
             Tümünü gör →
           </Link>
         </div>

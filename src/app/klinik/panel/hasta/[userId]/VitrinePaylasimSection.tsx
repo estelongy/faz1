@@ -128,7 +128,7 @@ function AnalysisShareRow({ userId, analysis }: { userId: string; analysis: Anal
               type="button"
               onClick={handleRequest}
               disabled={isPending}
-              className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 disabled:opacity-50 text-amber-300 text-sm font-bold transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 disabled:opacity-50 text-amber-300 text-base font-bold transition-colors"
             >
               {isPending ? 'Gönderiliyor…' : 'Paylaşım izni iste'}
             </button>
@@ -138,7 +138,7 @@ function AnalysisShareRow({ userId, analysis }: { userId: string; analysis: Anal
               type="button"
               onClick={handleRevoke}
               disabled={isPending}
-              className="px-3 py-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 text-base font-medium transition-colors"
             >
               Vitrinden kaldır
             </button>

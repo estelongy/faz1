@@ -90,7 +90,7 @@ export default async function AdminIadelerPage({
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <div className="max-w-5xl mx-auto px-4 py-8 lg:ml-56">
         <div className="mb-6">
-          <Link href="/admin" className="text-slate-400 hover:text-white text-sm transition-colors">← Admin</Link>
+          <Link href="/admin" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">← Admin</Link>
           <div className="flex items-center gap-3 mt-1">
             <h1 className="text-2xl font-bold text-white">İade Arabulucu</h1>
             {counts.stale > 0 && (

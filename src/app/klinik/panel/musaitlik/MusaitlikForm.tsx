@@ -118,7 +118,7 @@ export default function MusaitlikForm({
           <button
             type="button"
             onClick={applyToWeekdays}
-            className="text-sm px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors">
+            className="text-base px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors font-semibold">
             Pazartesi ayarlarını Sal-Cum&apos;a uygula
           </button>
         </div>

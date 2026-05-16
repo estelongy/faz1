@@ -136,17 +136,17 @@ export default function OdemeHesabiPanel({ initial }: { initial: Initial }) {
         <div className="mt-6 flex gap-3">
           {!status.hasAccount ? (
             <button onClick={createAccount} disabled={loading || isPending}
-              className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-bold rounded-xl text-sm transition-all">
+              className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-bold rounded-xl text-base transition-all">
               {loading ? 'Başlatılıyor...' : 'Stripe Hesabı Oluştur'}
             </button>
           ) : !fullyActive ? (
             <button onClick={startOnboarding} disabled={loading}
-              className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-bold rounded-xl text-sm transition-all">
+              className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-white font-bold rounded-xl text-base transition-all">
               {loading ? 'Yönlendiriliyor...' : 'Bilgileri Tamamla'}
             </button>
           ) : (
             <button onClick={startOnboarding} disabled={loading}
-              className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 disabled:opacity-40 text-slate-300 font-medium rounded-xl text-sm transition-all">
+              className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 disabled:opacity-40 text-slate-300 font-medium rounded-xl text-base transition-all">
               Stripe Ayarlarımı Düzenle
             </button>
           )}

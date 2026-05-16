@@ -161,7 +161,7 @@ function PostRow({ post, toggleAction, deleteAction }: {
             <input type="hidden" name="id" value={post.id} />
             <button
               type="submit"
-              className="text-sm px-2 py-1 rounded font-bold bg-red-500/15 hover:bg-red-500/25 text-red-400 transition-colors"
+              className="text-base px-2 py-1 rounded font-bold bg-red-500/15 hover:bg-red-500/25 text-red-400 transition-colors"
             >
               Sil
             </button>

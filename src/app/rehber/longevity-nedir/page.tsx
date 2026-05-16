@@ -281,7 +281,7 @@ export default function LongevityNedirPage() {
                 { href: '/rehber/cihaz-tedavileri', label: 'Cihaz Tedavileri', icon: '⚡' },
                 { href: '/rehber/genclik-skoru-nasil-hesaplanir', label: 'Gençlik Skoru Nasıl Hesaplanır?', icon: '📊' },
               ].map(l => (
-                <Link key={l.href} href={l.href} className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-sm transition-all">
+                <Link key={l.href} href={l.href} className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-base transition-all font-semibold">
                   <span>{l.icon}</span>
                   <span className="font-medium">{l.label}</span>
                 </Link>

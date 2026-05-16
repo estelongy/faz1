@@ -106,7 +106,7 @@ export default function ReviewForm({ productId }: { productId: string }) {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full py-3 bg-[#10876B] hover:bg-[#0d6f57] disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-sm">
+        className="w-full py-3 bg-[#10876B] hover:bg-[#0d6f57] disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-base">
         {isPending ? 'Gönderiliyor...' : 'Paylaş'}
       </button>
     </form>

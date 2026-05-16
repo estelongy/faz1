@@ -321,7 +321,7 @@ export default function MuhasebeShellClient({
                       )
                     })()}
                     <button type="button" onClick={clearCatalogPick}
-                      className="ml-auto text-slate-500 hover:text-white text-sm">Değiştir</button>
+                      className="ml-auto text-slate-500 hover:text-white text-base font-semibold">Değiştir</button>
                   </div>
                 ) : (
                   <>
@@ -406,7 +406,7 @@ export default function MuhasebeShellClient({
                 Kullanılan Ürünler <span className="text-slate-600">(opsiyonel)</span>
               </p>
               <button type="button" onClick={addProductRow}
-                className="text-sm text-violet-400 hover:text-violet-300 font-medium transition-colors">
+                className="text-base text-violet-400 hover:text-violet-300 font-medium transition-colors">
                 + Ürün Ekle
               </button>
             </div>
@@ -505,7 +505,7 @@ export default function MuhasebeShellClient({
               Vazgeç
             </button>
             <button type="submit" disabled={pending}
-              className="px-5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-all">
+              className="px-5 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 text-white text-base font-bold rounded-xl transition-all">
               {pending ? 'Kaydediliyor…' : '⚡ Kaydet'}
             </button>
           </div>
@@ -673,7 +673,7 @@ function DailyTimeline({ days }: { days: DayGroup[] }) {
                         <Link
                           key={t.id}
                           href={`/klinik/panel/muhasebe/${t.patient_id}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800/60 text-sm transition-colors"
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800/60 text-base transition-colors font-semibold"
                         >
                           <span className="text-violet-300 font-medium truncate">{t.patient_name}</span>
                           <span className="text-slate-500 truncate">— {t.name}</span>
@@ -691,7 +691,7 @@ function DailyTimeline({ days }: { days: DayGroup[] }) {
                         <Link
                           key={p.id}
                           href={`/klinik/panel/muhasebe/${p.patient_id}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800/60 text-sm transition-colors"
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800/60 text-base transition-colors font-semibold"
                         >
                           <span className="text-emerald-300 font-medium truncate">{p.patient_name}</span>
                           {p.method && <span className="text-slate-600 truncate">— {p.method}</span>}
