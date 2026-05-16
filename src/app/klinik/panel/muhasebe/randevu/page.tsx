@@ -32,7 +32,7 @@ export default async function RandevuListPage() {
       .eq('owner_id', user.id),
     supabase
       .from('internal_availability')
-      .select('day_of_week, open_time, close_time, is_closed')
+      .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
       .eq('owner_id', user.id),
   ])
   const week = normalizeWeek((availabilityRes.data ?? []) as Partial<DayAvailability>[])
