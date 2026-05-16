@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import ScoreBar from '@/components/ScoreBar'
 import type { AnalizResult } from '@/app/api/analiz/route'
 import { createClient } from '@/lib/supabase/client'

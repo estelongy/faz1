@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { FilterInput } from '@/components/FilterInput'
 import { BRANCHES, ALL_TREATMENTS, LOCATIONS, branchMatches, locationMatches } from '@/lib/randevu-filters'

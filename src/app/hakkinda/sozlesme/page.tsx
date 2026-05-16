@@ -1,6 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-
 import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = { title: 'Üyelik Sözleşmesi — Estelongy' }
 

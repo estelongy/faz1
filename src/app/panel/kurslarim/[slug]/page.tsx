@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatDuration } from '@/lib/akademi'

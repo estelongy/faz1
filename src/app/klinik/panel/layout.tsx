@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import KlinikSidebar from '@/components/KlinikSidebar'
-import Link from 'next/link'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
 
 import SafeLink from '@/components/SafeLink'
