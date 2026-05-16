@@ -207,19 +207,23 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
    eklendiğinde otomatik kullanılacak.
    ============================================================ */
 function RolePickerComposition() {
+  // Rol kartları hedef düzeltmeleri:
+  // - Kullanıcı: /kayit'a EsteStore galaksi stamp ile yolla (krem-altın signup ekranı), dead role=user kaldırıldı
+  // - Hekim: text "Kliniğini büyüt" diyor → /esteklinik/basvur (klinik başvuru), eskiden bireysel hekim kayıt formuna gidiyordu (mismatch)
+  // - İş Ortağı: /satici/basvur (doğru, dokunulmadı)
   const roles = [
     {
       label: 'Kullanıcı',
       sub: 'Gençlik skorunu öğren, ürün al',
       icon: User,
-      href: '/kayit?role=user',
+      href: '/kayit?g=estestore',
       color: '#C9A961',
     },
     {
       label: 'Hekim',
       sub: 'Kliniğini büyüt, EGP işletmesi kur',
       icon: Stethoscope,
-      href: '/kurumsal/saglik-profesyoneli/kayit',
+      href: '/esteklinik/basvur',
       color: '#10876B',
     },
     {
