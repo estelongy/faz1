@@ -149,7 +149,7 @@ export default function PhoneOtpStep({ phone, onVerified, onBack, autoSend = tru
           `}</style>
 
           <button
-            onClick={verifyCode}
+            onClick={() => verifyCode()}
             disabled={code.length !== 6 || phase === 'verifying'}
             className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl"
           >
