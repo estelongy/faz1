@@ -54,7 +54,7 @@ export default function OzetPrintClient({
     const node = contentRef.current
     if (!node) throw new Error('İçerik henüz hazır değil.')
     const [{ default: html2canvas }, jsPdfMod] = await Promise.all([
-      import('html2canvas'),
+      import('html2canvas-pro'),
       import('jspdf'),
     ])
     const jsPDF = jsPdfMod.default || jsPdfMod.jsPDF
