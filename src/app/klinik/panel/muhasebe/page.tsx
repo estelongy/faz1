@@ -112,14 +112,25 @@ export default async function MuhasebePage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-6">
-        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <Link href="/klinik/panel" className="hover:text-white transition-colors">Klinik Panel</Link>
-          <span>›</span>
-          <span className="text-slate-300">Muhasebe</span>
-        </nav>
-        <h1 className="text-2xl font-black text-white">Muhasebe</h1>
-        <p className="text-slate-400 mt-0.5 text-sm">Günlük hareket — hasta bazlı işlem ve tahsilat takibi.</p>
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+            <Link href="/klinik/panel" className="hover:text-white transition-colors">Klinik Panel</Link>
+            <span>›</span>
+            <span className="text-slate-300">Muhasebe</span>
+          </nav>
+          <h1 className="text-2xl font-black text-white">Muhasebe</h1>
+          <p className="text-slate-400 mt-0.5 text-sm">Günlük hareket — hasta bazlı işlem ve tahsilat takibi.</p>
+        </div>
+        <Link
+          href="/klinik/panel/muhasebe/randevu/yeni"
+          className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-bold rounded-xl transition-all shadow-lg shadow-violet-500/20"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 5v14M5 12h14" />
+          </svg>
+          Yeni Randevu
+        </Link>
       </div>
 
       <MuhasebeShellClient

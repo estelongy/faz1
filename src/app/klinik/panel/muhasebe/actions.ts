@@ -288,3 +288,141 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
   revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
   return { ok: true, patientId }
 }
+
+// ─── Randevu ──────────────────────────────────────────────────────────────
+// Manuel randevu (Dr. İzzet özel akışı). Tekrarlama: weekly / biweekly / triweekly / monthly
+// + 1..6 ay süre. Tüm tekrarlar tek seferde insert edilir, ortak recurrence_group_id ile bağlanır.
+type AppointmentResult = { ok: true; count: number; groupId: string | null } | { ok: false; error: string }
+
+const RECURRENCE_FREQ_DAYS: Record<string, number> = {
+  weekly: 7,
+  biweekly: 14,
+  triweekly: 21,
+}
+
+function addMonthsSafe(base: Date, months: number): Date {
+  const d = new Date(base)
+  const day = d.getDate()
+  d.setMonth(d.getMonth() + months)
+  // 31 Ocak + 1 ay = 28/29 Şubat (taşma kontrolü)
+  if (d.getDate() !== day) d.setDate(0)
+  return d
+}
+
+function buildOccurrences(start: Date, freq: string | null, months: number | null): Date[] {
+  if (!freq || !months) return [start]
+  const out: Date[] = [start]
+  const horizon = addMonthsSafe(start, months)
+  if (freq === 'monthly') {
+    for (let i = 1; i <= 6; i++) {
+      const next = addMonthsSafe(start, i)
+      if (next > horizon) break
+      out.push(next)
+    }
+  } else {
+    const stepDays = RECURRENCE_FREQ_DAYS[freq]
+    if (!stepDays) return [start]
+    let cursor = new Date(start)
+    while (true) {
+      cursor = new Date(cursor.getTime() + stepDays * 86_400_000)
+      if (cursor > horizon) break
+      out.push(cursor)
+    }
+  }
+  return out
+}
+
+export async function createAppointment(formData: FormData): Promise<AppointmentResult> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  // ─── Hasta bilgileri ─────
+  const phoneRaw = (formData.get('phone') as string | null)?.trim() ?? ''
+  const firstName = (formData.get('first_name') as string | null)?.trim() ?? ''
+  const lastName = (formData.get('last_name') as string | null)?.trim() ?? ''
+  const phone = phoneRaw.replace(/\s+/g, '').replace(/^\+?90/, '').replace(/\D/g, '')
+
+  if (firstName.length < 2) return { ok: false, error: 'Ad en az 2 karakter olmalı.' }
+  if (lastName.length < 2) return { ok: false, error: 'Soyad en az 2 karakter olmalı.' }
+  if (phone.length !== 10) return { ok: false, error: 'Telefon 10 haneli olmalı (+90 hariç).' }
+
+  // ─── Randevu detayları ─────
+  const dateStr = (formData.get('date') as string | null)?.trim() ?? ''         // YYYY-MM-DD
+  const timeStr = (formData.get('time') as string | null)?.trim() ?? ''         // HH:MM
+  const durationMin = Number(formData.get('duration_minutes') ?? 30)
+  const appointmentType = ((formData.get('appointment_type') as string | null)?.trim() || null)
+  const treatmentType = ((formData.get('treatment_type') as string | null)?.trim() || null)
+  const reason = ((formData.get('reason') as string | null)?.trim() || null)
+  const detail = ((formData.get('detail') as string | null)?.trim() || null)
+
+  if (!dateStr || !timeStr) return { ok: false, error: 'Tarih ve saat zorunlu.' }
+  if (!Number.isFinite(durationMin) || durationMin < 5 || durationMin > 480) {
+    return { ok: false, error: 'Geçersiz randevu süresi.' }
+  }
+
+  const startAt = new Date(`${dateStr}T${timeStr}:00`)
+  if (Number.isNaN(startAt.getTime())) return { ok: false, error: 'Geçersiz tarih/saat.' }
+
+  // ─── Tekrarlama ─────
+  const isRecurring = formData.get('is_recurring') === 'on' || formData.get('is_recurring') === 'true'
+  const recurrenceFreq = isRecurring ? ((formData.get('recurrence_freq') as string | null) || null) : null
+  const recurrenceMonths = isRecurring ? Number(formData.get('recurrence_months') ?? 0) : null
+
+  if (isRecurring) {
+    if (!recurrenceFreq || !['weekly', 'biweekly', 'triweekly', 'monthly'].includes(recurrenceFreq)) {
+      return { ok: false, error: 'Tekrar sıklığı geçersiz.' }
+    }
+    if (!recurrenceMonths || recurrenceMonths < 1 || recurrenceMonths > 6) {
+      return { ok: false, error: 'Tekrar süresi 1-6 ay arasında olmalı.' }
+    }
+  }
+
+  // ─── Hasta upsert (telefon eşleşmesi varsa kullan) ─────
+  const fullName = `${firstName} ${lastName}`.trim()
+  const { data: existing } = await ctx.supabase
+    .from('internal_patient')
+    .select('id, name')
+    .eq('owner_id', ctx.user.id)
+    .eq('phone', phone)
+    .maybeSingle()
+
+  let patientId: string
+  if (existing) {
+    patientId = existing.id
+  } else {
+    const { data: created, error: pErr } = await ctx.supabase
+      .from('internal_patient')
+      .insert({ owner_id: ctx.user.id, name: fullName, phone })
+      .select('id')
+      .single()
+    if (pErr || !created) return { ok: false, error: pErr?.message ?? 'Hasta kaydı oluşturulamadı.' }
+    patientId = created.id
+  }
+
+  // ─── Tekrarlama hesaplama ─────
+  const occurrences = buildOccurrences(startAt, recurrenceFreq, recurrenceMonths)
+  const groupId = occurrences.length > 1 ? crypto.randomUUID() : null
+
+  const rows = occurrences.map((occ, idx) => ({
+    owner_id: ctx.user.id,
+    patient_id: patientId,
+    start_at: occ.toISOString(),
+    duration_minutes: durationMin,
+    appointment_type: appointmentType,
+    treatment_type: treatmentType,
+    reason,
+    detail,
+    status: 'scheduled' as const,
+    recurrence_group_id: groupId,
+    recurrence_freq: groupId ? recurrenceFreq : null,
+    recurrence_months: groupId ? recurrenceMonths : null,
+    is_recurrence_root: groupId ? idx === 0 : false,
+  }))
+
+  const { error: insErr } = await ctx.supabase.from('internal_appointment').insert(rows)
+  if (insErr) return { ok: false, error: insErr.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
+  return { ok: true, count: rows.length, groupId }
+}
