@@ -170,14 +170,14 @@ export default async function Home({
           {/* Alt bar — sabit yardımcı linkler */}
           <div className="flex items-center gap-5 h-9 border-t border-white/5 text-sm">
             {!isLoggedIn && (
-              <SafeLink href="/giris" className="text-slate-400 hover:text-white transition-colors font-semibold">
+              <SafeLink href="/giris" className="text-white hover:text-violet-200 transition-colors font-semibold">
                 Giriş Yap
               </SafeLink>
             )}
-            <Link href="/esteklinik/basvur" className="text-slate-400 hover:text-white transition-colors font-semibold">
+            <Link href="/esteklinik/basvur" className="text-white hover:text-violet-200 transition-colors font-semibold">
               Klinik Başvurusu
             </Link>
-            <Link href="/rehber" className="text-slate-400 hover:text-white transition-colors font-semibold">
+            <Link href="/rehber" className="text-white hover:text-violet-200 transition-colors font-semibold">
               Estelongy Rehberi
             </Link>
           </div>
