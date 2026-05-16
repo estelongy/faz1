@@ -141,7 +141,7 @@ export default async function SharePage(
           }
         </p>
         <SafeLink
-          href="/kayit?next=/analiz"
+          href="/analiz"
           className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

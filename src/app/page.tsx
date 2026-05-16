@@ -111,7 +111,9 @@ export default async function Home({
   const { data: { user } } = await supabase.auth.getUser()
   const isLoggedIn = !!user
   // 3 kapı linkleri — login varsa direkt, yoksa /giris (BiyoAGE galaksi temasıyla)
-  const dest1 = isLoggedIn ? '/analiz' : '/giris?g=biyoage&next=/analiz'
+  // /analiz public — hero'da 'Kayıt gerekmez' vaadi ile uyumlu olsun diye
+  // login zorlaması kaldırıldı. Sertifika kaydetmek için sonradan kayıt CTA'sı /analiz içinde.
+  const dest1 = '/analiz'
   const dest2 = '/esteklinik'
   // (kapı 3 zaten /estestore, login gerektirmez)
 

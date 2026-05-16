@@ -274,7 +274,7 @@ export default async function GenclikSkoruNasilHesaplanirPage() {
               Ücretsiz Ön Analiz ile Estelongy Algoritması cildinizdeki yaşlanma göstergelerini anında puanlar.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <SafeLink href="/kayit?next=/analiz" className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
+              <SafeLink href="/analiz" className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
                 Analizi Başlat →
               </SafeLink>
               <Link href="/esteklinik" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">

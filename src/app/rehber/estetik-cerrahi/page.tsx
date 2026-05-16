@@ -204,7 +204,7 @@ export default function EstetikCerrahiPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <SafeLink
-              href="/kayit?next=/analiz"
+              href="/analiz"
               className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-rose-500/20"
             >
               Ücretsiz Ön Analiz →

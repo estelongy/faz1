@@ -246,7 +246,7 @@ export default function EstetikUygulamalarPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <SafeLink
-                href="/kayit?next=/analiz"
+                href="/analiz"
                 className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
               >
                 Ücretsiz Ön Analiz →

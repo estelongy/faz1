@@ -268,7 +268,7 @@ export default function LongevityNedirPage() {
               <SafeLink href="/kayit?next=/anket" className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
                 Longevity Anketini Doldur →
               </SafeLink>
-              <SafeLink href="/kayit?next=/analiz" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">
+              <SafeLink href="/analiz" className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-colors">
                 Önce Ön Analiz Yap
               </SafeLink>
             </div>

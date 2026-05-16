@@ -4,7 +4,6 @@ import SafeLink from '@/components/SafeLink'
 import { Camera, Activity, BookOpen, LayoutDashboard, ArrowRight } from 'lucide-react'
 import Footer from '@/components/Footer'
 import BiyoAGENav from './BiyoAGENav'
-import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -67,11 +66,7 @@ const DOORS = [
 ]
 
 export default async function BiyoAGEPage() {
-  // Login durumu — panel kapısı buna göre yönlenir
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const isLoggedIn = !!user
-
+  // Not: SafeLink auth-gate'leri otomatik yapıyor; sayfa içinde isLoggedIn'e ihtiyaç kalmadı.
   return (
     <>
       <BiyoAGENav />
@@ -127,7 +122,7 @@ export default async function BiyoAGEPage() {
             <div className="flex flex-wrap items-center gap-3 mt-7">
               {/* Button — 16px semibold (kural: tıklanma min 16) */}
               <Link
-                href={isLoggedIn ? '/analiz' : '/giris?g=biyoage&next=/analiz'}
+                href="/analiz"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9F8CE0] hover:bg-[#8B76D4] text-[#1B1330] font-bold text-base transition-colors shadow-lg shadow-[#9F8CE0]/30"
               >
                 Ön Analizi Başlat
