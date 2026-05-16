@@ -581,13 +581,13 @@ export async function cancelRecurrenceSeries(params: {
 
   let q = ctx.supabase
     .from('internal_appointment')
-    .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+    .update({ status: 'cancelled', updated_at: new Date().toISOString() }, { count: 'exact' })
     .eq('owner_id', ctx.user.id)
     .eq('recurrence_group_id', groupId)
     .eq('status', 'scheduled')
   if (pivot) q = q.gte('start_at', pivot)
 
-  const { error, count } = await q.select('id', { count: 'exact', head: true })
+  const { error, count } = await q
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/klinik/panel/muhasebe')
