@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface TreatmentRow {
   date: string
@@ -41,58 +41,173 @@ export default function OzetPrintClient({
   totalBilled, totalCollected, totalRemaining, remainingIsPositive,
   treatmentRows, unmatchedRows,
 }: Props) {
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [busy, setBusy] = useState<null | 'pdf' | 'share'>(null)
+
   useEffect(() => {
     document.body.style.background = 'white'
     document.body.style.color = '#0f172a'
     window.print()
   }, [])
 
+  async function buildPdfBlob(): Promise<Blob> {
+    const node = contentRef.current
+    if (!node) throw new Error('İçerik henüz hazır değil.')
+    const [{ default: html2canvas }, jsPdfMod] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf'),
+    ])
+    const jsPDF = jsPdfMod.default || jsPdfMod.jsPDF
+    const canvas = await html2canvas(node, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      logging: false,
+    })
+    const imgData = canvas.toDataURL('image/jpeg', 0.92)
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+    const pageW = pdf.internal.pageSize.getWidth()
+    const pageH = pdf.internal.pageSize.getHeight()
+    const margin = 8
+    const imgW = pageW - margin * 2
+    const imgH = (canvas.height * imgW) / canvas.width
+    if (imgH <= pageH - margin * 2) {
+      pdf.addImage(imgData, 'JPEG', margin, margin, imgW, imgH)
+    } else {
+      const pageContentH = pageH - margin * 2
+      const pageContentPxH = (pageContentH * canvas.width) / imgW
+      let drawnPx = 0
+      while (drawnPx < canvas.height) {
+        const sliceH = Math.min(pageContentPxH, canvas.height - drawnPx)
+        const slice = document.createElement('canvas')
+        slice.width = canvas.width
+        slice.height = sliceH
+        const ctx = slice.getContext('2d')!
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, slice.width, slice.height)
+        ctx.drawImage(canvas, 0, drawnPx, canvas.width, sliceH, 0, 0, canvas.width, sliceH)
+        if (drawnPx > 0) pdf.addPage('a4', 'landscape')
+        const drawnH = (sliceH * imgW) / canvas.width
+        pdf.addImage(slice.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, imgW, drawnH)
+        drawnPx += sliceH
+      }
+    }
+    return pdf.output('blob')
+  }
+
+  function buildPdfFilename(): string {
+    const safe = rangeLabel.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '')
+    return `muhasebe-ozet-${safe || 'donem'}.pdf`
+  }
+
+  function buildSummaryText(includeUrl: boolean): string {
+    const lines = [
+      `*${ownerBrandLine}*`,
+      `Aylık Özet: ${rangeLabel}`,
+      ``,
+      `• Toplam Fatura: ${totalBilled}`,
+      `• Tahsil Edilen: ${totalCollected}`,
+      `• Kalan Borç: ${totalRemaining}`,
+      `• İşlem Sayısı: ${treatmentRows.length}`,
+      ...(unmatchedRows.length > 0 ? [`• Bağımsız Tahsilat: ${unmatchedRows.length} kayıt`] : []),
+      ``,
+      `Oluşturulma: ${generatedAt}`,
+      includeUrl && typeof window !== 'undefined' ? window.location.href : '',
+    ].filter(Boolean) as string[]
+    return lines.join('\n')
+  }
+
+  function downloadBlob(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+  }
+
+  async function handleShareWhatsapp(e: React.MouseEvent<HTMLButtonElement>) {
+    if (busy) return
+    setBusy('share')
+    try {
+      const blob = await buildPdfBlob()
+      const filename = buildPdfFilename()
+      const file = new File([blob], filename, { type: 'application/pdf' })
+      const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean }
+      const summary = buildSummaryText(true)
+      if (typeof nav.share === 'function' && nav.canShare?.({ files: [file] })) {
+        await nav.share({
+          files: [file],
+          title: `${ownerBrandLine} — ${rangeLabel}`,
+          text: summary,
+        })
+        return
+      }
+      // Fallback: PDF'i indir + WhatsApp'ı metinle aç (kullanıcı indireni manuel ekler)
+      downloadBlob(blob, filename)
+      const STORAGE_KEY = 'muhasebe_ozet_wa_number'
+      let saved = ''
+      try { saved = localStorage.getItem(STORAGE_KEY) || '' } catch {}
+      const forceAsk = e.shiftKey || !saved
+      let phone = saved
+      if (forceAsk) {
+        const input = window.prompt(
+          'PDF indirildi. WhatsApp sohbetine eklemek için numara (ülke kodlu, sadece rakam — örn. 905551234567).\nBoş bırakırsan kişi seçim ekranı açılır.',
+          saved,
+        )
+        if (input === null) return
+        phone = input.replace(/[^\d]/g, '')
+        try { localStorage.setItem(STORAGE_KEY, phone) } catch {}
+      }
+      const text = encodeURIComponent(summary + '\n\n(PDF indirildi, sohbetten ataç ile ekleyin.)')
+      const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } catch (err) {
+      alert('PDF üretilemedi: ' + (err instanceof Error ? err.message : String(err)))
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  async function handleDownloadPdf() {
+    if (busy) return
+    setBusy('pdf')
+    try {
+      const blob = await buildPdfBlob()
+      downloadBlob(blob, buildPdfFilename())
+    } catch (err) {
+      alert('PDF üretilemedi: ' + (err instanceof Error ? err.message : String(err)))
+    } finally {
+      setBusy(null)
+    }
+  }
+
   return (
     <>
       <div id="no-print" style={{ position: 'fixed', top: 16, right: 16, display: 'flex', gap: 8, zIndex: 9999 }}>
         <button
           onClick={() => window.print()}
-          style={{ padding: '8px 16px', background: '#7c3aed', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
+          disabled={!!busy}
+          style={{ padding: '8px 16px', background: '#7c3aed', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: busy ? 'wait' : 'pointer', opacity: busy ? 0.6 : 1 }}
         >
-          🖨️ Tekrar Yazdır / PDF
+          🖨️ Tekrar Yazdır
         </button>
         <button
-          onClick={(e) => {
-            const STORAGE_KEY = 'muhasebe_ozet_wa_number'
-            let saved = ''
-            try { saved = localStorage.getItem(STORAGE_KEY) || '' } catch {}
-            const forceAsk = e.shiftKey || !saved
-            let phone = saved
-            if (forceAsk) {
-              const input = window.prompt(
-                'WhatsApp numarası (ülke kodlu, sadece rakam — örn. 905551234567).\nBoş bırakıp Tamam derseniz kişi seçim ekranı açılır.',
-                saved,
-              )
-              if (input === null) return
-              phone = input.replace(/[^\d]/g, '')
-              try { localStorage.setItem(STORAGE_KEY, phone) } catch {}
-            }
-            const lines = [
-              `*${ownerBrandLine}*`,
-              `Aylık Özet: ${rangeLabel}`,
-              ``,
-              `• Toplam Fatura: ${totalBilled}`,
-              `• Tahsil Edilen: ${totalCollected}`,
-              `• Kalan Borç: ${totalRemaining}`,
-              `• İşlem Sayısı: ${treatmentRows.length}`,
-              ...(unmatchedRows.length > 0 ? [`• Bağımsız Tahsilat: ${unmatchedRows.length} kayıt`] : []),
-              ``,
-              `Oluşturulma: ${generatedAt}`,
-              typeof window !== 'undefined' ? window.location.href : '',
-            ].filter(Boolean)
-            const text = encodeURIComponent(lines.join('\n'))
-            const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`
-            window.open(url, '_blank', 'noopener,noreferrer')
-          }}
-          title="Tıkla: kayıtlı numaraya gönder · Shift+Tık: numarayı değiştir"
-          style={{ padding: '8px 16px', background: '#25D366', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
+          onClick={handleDownloadPdf}
+          disabled={!!busy}
+          style={{ padding: '8px 16px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: busy ? 'wait' : 'pointer', opacity: busy ? 0.6 : 1 }}
         >
-          📱 WhatsApp ile Paylaş
+          {busy === 'pdf' ? 'Hazırlanıyor…' : '⬇️ PDF İndir'}
+        </button>
+        <button
+          onClick={handleShareWhatsapp}
+          disabled={!!busy}
+          title="PDF üretip WhatsApp'a paylaşır (mobilde direkt ek; masaüstünde PDF iner + WhatsApp metni açılır). Shift+Tık: numarayı değiştir."
+          style={{ padding: '8px 16px', background: '#25D366', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: busy ? 'wait' : 'pointer', opacity: busy ? 0.6 : 1 }}
+        >
+          {busy === 'share' ? 'Hazırlanıyor…' : '📱 WhatsApp\'a PDF Gönder'}
         </button>
         <button
           onClick={() => window.close()}
@@ -120,7 +235,7 @@ export default function OzetPrintClient({
         .tag { display: inline-block; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 8px; font-size: 12px; margin: 2px 3px 2px 0; color: #334155; }
       `}</style>
 
-      <div style={{ maxWidth: 1060, margin: '0 auto', padding: '28px 20px', background: 'white' }}>
+      <div ref={contentRef} style={{ maxWidth: 1060, margin: '0 auto', padding: '28px 20px', background: 'white' }}>
 
         {/* Başlık */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '3px solid #1e1b4b', paddingBottom: 12, marginBottom: 20 }}>
