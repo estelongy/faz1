@@ -111,12 +111,7 @@ export default async function Home({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const isLoggedIn = !!user
-  // 3 kapı linkleri — login varsa direkt, yoksa /giris (BiyoAGE galaksi temasıyla)
-  // /analiz public — hero'da 'Kayıt gerekmez' vaadi ile uyumlu olsun diye
-  // login zorlaması kaldırıldı. Sertifika kaydetmek için sonradan kayıt CTA'sı /analiz içinde.
-  const dest1 = '/analiz'
-  const dest2 = '/esteklinik'
-  // (kapı 3 zaten /estestore, login gerektirmez)
+  // 3 kapı + hero CTA artık GalaxyLink ile ışınlanıyor — dest1/dest2 değişkenlerine gerek kalmadı.
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 overflow-x-hidden">
