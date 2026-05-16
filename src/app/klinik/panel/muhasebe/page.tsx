@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
 import MuhasebeShellClient, { type DayGroup, type PatientRow, type CatalogItem } from './MuhasebeShellClient'
+import RandevuListClient, { type AppointmentRow } from './randevu/RandevuListClient'
 
 export const metadata: Metadata = {
   title: 'Muhasebe | Klinik Paneli',
@@ -18,7 +19,11 @@ export default async function MuhasebePage() {
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes] = await Promise.all([
+  // Yaklaşan randevular: bugünden itibaren 14 gün, planlı olanlar
+  const nowIso = new Date().toISOString()
+  const horizonIso = new Date(Date.now() + 14 * 86_400_000).toISOString()
+
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
@@ -28,6 +33,15 @@ export default async function MuhasebePage() {
       .eq('is_active', true)
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true }),
+    supabase
+      .from('internal_appointment')
+      .select('id, patient_id, start_at, duration_minutes, appointment_type, treatment_type, reason, detail, status, recurrence_group_id')
+      .eq('owner_id', user.id)
+      .eq('status', 'scheduled')
+      .gte('start_at', nowIso)
+      .lte('start_at', horizonIso)
+      .order('start_at', { ascending: true })
+      .limit(20),
   ])
 
   const patients = patientsRes.data ?? []
@@ -35,6 +49,22 @@ export default async function MuhasebePage() {
   const payments = paymentsRes.data ?? []
   const catalog = catalogRes.data ?? []
   const patientName = (id: string) => patients.find(p => p.id === id)?.name ?? '—'
+  const patientPhone = (id: string) => patients.find(p => p.id === id)?.phone ?? null
+
+  const upcomingAppts: AppointmentRow[] = (upcomingRes.data ?? []).map(a => ({
+    id: a.id,
+    patient_id: a.patient_id,
+    patient_name: patientName(a.patient_id),
+    patient_phone: patientPhone(a.patient_id),
+    start_at: a.start_at,
+    duration_minutes: a.duration_minutes,
+    appointment_type: a.appointment_type,
+    treatment_type: a.treatment_type,
+    reason: a.reason,
+    detail: a.detail,
+    status: a.status,
+    recurrence_group_id: a.recurrence_group_id,
+  }))
 
   // ─── Hasta satırları ────────────────────────────────────────
   const rows: PatientRow[] = patients.map(p => {
@@ -132,6 +162,24 @@ export default async function MuhasebePage() {
           Yeni Randevu
         </Link>
       </div>
+
+      {/* Yaklaşan randevular paneli */}
+      {upcomingAppts.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-white text-lg font-bold flex items-center gap-2">
+              <span>Yaklaşan Randevular</span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                {upcomingAppts.length}
+              </span>
+            </h2>
+            <Link href="/klinik/panel/muhasebe/randevu" className="text-sm font-semibold text-violet-300 hover:text-violet-200">
+              Tümünü gör →
+            </Link>
+          </div>
+          <RandevuListClient rows={upcomingAppts} variant="compact" showFilters={false} />
+        </div>
+      )}
 
       <MuhasebeShellClient
         rows={rows}

@@ -426,3 +426,171 @@ export async function createAppointment(formData: FormData): Promise<Appointment
   revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
   return { ok: true, count: rows.length, groupId }
 }
+
+// ─── İşleme Al ────────────────────────────────────────────────────────────
+// Randevuyu tamamla + tedavi (gelir) kaydı aç. Ödeme ayrı eklenir.
+export async function processAppointment(formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const id = (formData.get('id') as string | null) ?? ''
+  const amountRaw = (formData.get('amount') as string | null) ?? '0'
+  const nameOverride = ((formData.get('treatment_name') as string | null)?.trim() || null)
+  if (!id) return { ok: false, error: 'Randevu ID eksik.' }
+
+  const amount = Number(amountRaw)
+  if (!Number.isFinite(amount) || amount < 0) return { ok: false, error: 'Geçersiz tutar.' }
+
+  // Randevuyu çek
+  const { data: appt, error: aErr } = await ctx.supabase
+    .from('internal_appointment')
+    .select('id, patient_id, start_at, treatment_type, status')
+    .eq('id', id)
+    .eq('owner_id', ctx.user.id)
+    .single()
+  if (aErr || !appt) return { ok: false, error: 'Randevu bulunamadı.' }
+  if (appt.status === 'completed') return { ok: false, error: 'Randevu zaten tamamlanmış.' }
+
+  const treatmentName = nameOverride || appt.treatment_type || 'İşlem'
+  const treatmentDate = new Date(appt.start_at).toISOString().slice(0, 10)
+
+  const { error: tErr } = await ctx.supabase.from('internal_treatment').insert({
+    owner_id: ctx.user.id,
+    patient_id: appt.patient_id,
+    name: treatmentName,
+    treatment_date: treatmentDate,
+    amount,
+  })
+  if (tErr) return { ok: false, error: tErr.message }
+
+  const { error: uErr } = await ctx.supabase
+    .from('internal_appointment')
+    .update({ status: 'completed', updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('owner_id', ctx.user.id)
+  if (uErr) return { ok: false, error: uErr.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
+  revalidatePath(`/klinik/panel/muhasebe/${appt.patient_id}`)
+  return { ok: true }
+}
+
+// ─── Status değiştir (no_show / cancelled / scheduled) ────────────────────
+export async function setAppointmentStatus(id: string, status: 'scheduled' | 'no_show' | 'cancelled'): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+  if (!['scheduled', 'no_show', 'cancelled'].includes(status)) return { ok: false, error: 'Geçersiz durum.' }
+
+  const { error } = await ctx.supabase
+    .from('internal_appointment')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('owner_id', ctx.user.id)
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
+  return { ok: true }
+}
+
+// ─── Sil ───────────────────────────────────────────────────────────────────
+export async function deleteAppointment(id: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+  const { error } = await ctx.supabase
+    .from('internal_appointment')
+    .delete()
+    .eq('id', id)
+    .eq('owner_id', ctx.user.id)
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
+  return { ok: true }
+}
+
+// ─── Düzenle (tek randevu) ────────────────────────────────────────────────
+export async function updateAppointment(formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const id = (formData.get('id') as string | null) ?? ''
+  if (!id) return { ok: false, error: 'Randevu ID eksik.' }
+
+  const dateStr = (formData.get('date') as string | null)?.trim() ?? ''
+  const timeStr = (formData.get('time') as string | null)?.trim() ?? ''
+  const durationMin = Number(formData.get('duration_minutes') ?? 30)
+  const appointmentType = ((formData.get('appointment_type') as string | null)?.trim() || null)
+  const treatmentType = ((formData.get('treatment_type') as string | null)?.trim() || null)
+  const reason = ((formData.get('reason') as string | null)?.trim() || null)
+  const detail = ((formData.get('detail') as string | null)?.trim() || null)
+
+  if (!dateStr || !timeStr) return { ok: false, error: 'Tarih ve saat zorunlu.' }
+  if (!Number.isFinite(durationMin) || durationMin < 5 || durationMin > 480) {
+    return { ok: false, error: 'Geçersiz süre.' }
+  }
+  const startAt = new Date(`${dateStr}T${timeStr}:00`)
+  if (Number.isNaN(startAt.getTime())) return { ok: false, error: 'Geçersiz tarih/saat.' }
+
+  const { error } = await ctx.supabase
+    .from('internal_appointment')
+    .update({
+      start_at: startAt.toISOString(),
+      duration_minutes: durationMin,
+      appointment_type: appointmentType,
+      treatment_type: treatmentType,
+      reason,
+      detail,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('owner_id', ctx.user.id)
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
+  revalidatePath(`/klinik/panel/muhasebe/randevu/${id}/duzenle`)
+  return { ok: true }
+}
+
+// ─── Seri yönetimi: toplu iptal ───────────────────────────────────────────
+// scope: 'all' = serinin tüm scheduled randevuları, 'future' = pivot tarihinden sonraki scheduled randevular
+export async function cancelRecurrenceSeries(params: {
+  groupId: string
+  scope: 'all' | 'future'
+  fromAppointmentId?: string  // future modunda referans alınır
+}): Promise<{ ok: true; cancelled: number } | { ok: false; error: string }> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+  const { groupId, scope, fromAppointmentId } = params
+  if (!groupId) return { ok: false, error: 'Seri ID eksik.' }
+
+  let pivot: string | null = null
+  if (scope === 'future') {
+    if (!fromAppointmentId) return { ok: false, error: 'Referans randevu eksik.' }
+    const { data: ref } = await ctx.supabase
+      .from('internal_appointment')
+      .select('start_at')
+      .eq('id', fromAppointmentId)
+      .eq('owner_id', ctx.user.id)
+      .single()
+    if (!ref) return { ok: false, error: 'Referans randevu bulunamadı.' }
+    pivot = ref.start_at
+  }
+
+  let q = ctx.supabase
+    .from('internal_appointment')
+    .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+    .eq('owner_id', ctx.user.id)
+    .eq('recurrence_group_id', groupId)
+    .eq('status', 'scheduled')
+  if (pivot) q = q.gte('start_at', pivot)
+
+  const { error, count } = await q.select('id', { count: 'exact', head: true })
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
+  return { ok: true, cancelled: count ?? 0 }
+}
