@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 /* ============================================================
    Galaksi geçiş ritüeli — sade ve hızlı (v2)
    - Tek katman radial bg + ortada galaksi adı + slogan
-   - 5800 ms toplam: 600 fade-in / 4600 hold / 600 fade-out
+   - 3800 ms toplam: 600 fade-in / 2600 hold / 600 fade-out
    - SVG yok, parçacık yok, CSS only — bundle ~80 satır
    - Eski versiyon 411 satır + 9000ms idi; pazara çıkarken yormasın
    ============================================================ */
@@ -53,8 +53,8 @@ export function useGalaxyTransition() {
   return ctx
 }
 
-const DURATION_MS = 5800       // 0.6 in + 4.6 hold + 0.6 out
-const NAV_AT_MS   = 5200       // router.push fade-out başlamadan az önce
+const DURATION_MS = 3800       // 0.6 in + 2.6 hold + 0.6 out
+const NAV_AT_MS   = 3200       // router.push fade-out başlamadan az önce
 
 export function GalaxyTransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
@@ -122,22 +122,22 @@ function GalaxyOverlay({ meta }: { meta: GalaxyMeta }) {
 
       <style jsx>{`
         .gt-overlay {
-          animation: gt-fade 5800ms ease-in-out forwards;
+          animation: gt-fade 3800ms ease-in-out forwards;
         }
         .gt-glow {
-          animation: gt-glow-pulse 4600ms 400ms ease-in-out forwards;
+          animation: gt-glow-pulse 2600ms 400ms ease-in-out forwards;
         }
         .gt-eyebrow {
           opacity: 0;
-          animation: gt-up 600ms 400ms ease-out forwards, gt-out 500ms 5100ms ease-in forwards;
+          animation: gt-up 600ms 400ms ease-out forwards, gt-out 500ms 3100ms ease-in forwards;
         }
         .gt-divider {
           opacity: 0;
-          animation: gt-up 600ms 700ms ease-out forwards, gt-out 500ms 5100ms ease-in forwards;
+          animation: gt-up 600ms 700ms ease-out forwards, gt-out 500ms 3100ms ease-in forwards;
         }
         .gt-slogan {
           opacity: 0;
-          animation: gt-up 700ms 1000ms ease-out forwards, gt-out 500ms 5100ms ease-in forwards;
+          animation: gt-up 700ms 1000ms ease-out forwards, gt-out 500ms 3100ms ease-in forwards;
         }
         @keyframes gt-fade {
           0%   { opacity: 0; }
