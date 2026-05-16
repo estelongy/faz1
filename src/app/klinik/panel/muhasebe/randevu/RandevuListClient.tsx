@@ -4,7 +4,6 @@ import { useState, useTransition, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  processAppointment,
   setAppointmentStatus,
   deleteAppointment,
   cancelRecurrenceSeries,
@@ -57,7 +56,6 @@ interface Props {
 export default function RandevuListClient({ rows, variant = 'full', showFilters = true }: Props) {
   const router = useRouter()
   const [filter, setFilter] = useState<Filter>('upcoming')
-  const [processFor, setProcessFor] = useState<AppointmentRow | null>(null)
   const [seriesFor, setSeriesFor] = useState<AppointmentRow | null>(null)
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
@@ -189,14 +187,12 @@ export default function RandevuListClient({ rows, variant = 'full', showFilters 
                     <td className={tableCellCls + ' text-right relative'}>
                       <div className="inline-flex items-center gap-1">
                         {r.status === 'scheduled' && (
-                          <button
-                            type="button"
-                            disabled={isBusy}
-                            onClick={() => setProcessFor(r)}
-                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold rounded-md"
+                          <Link
+                            href={`/klinik/panel/muhasebe?from_appointment=${r.id}`}
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-md"
                           >
                             İşleme Al
-                          </button>
+                          </Link>
                         )}
                         <button
                           type="button"
@@ -276,14 +272,6 @@ export default function RandevuListClient({ rows, variant = 'full', showFilters 
         </div>
       )}
 
-      {processFor && (
-        <ProcessModal
-          appt={processFor}
-          onClose={() => setProcessFor(null)}
-          onDone={() => { setProcessFor(null); router.refresh() }}
-        />
-      )}
-
       {seriesFor && (
         <SeriesModal
           appt={seriesFor}
@@ -291,88 +279,6 @@ export default function RandevuListClient({ rows, variant = 'full', showFilters 
           onDone={() => { setSeriesFor(null); router.refresh() }}
         />
       )}
-    </div>
-  )
-}
-
-/* ─── İşleme Al modal ──────────────────────────────────────────────────── */
-function ProcessModal({ appt, onClose, onDone }: { appt: AppointmentRow; onClose: () => void; onDone: () => void }) {
-  const [pending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
-  const [amount, setAmount] = useState('')
-  const [name, setName] = useState(appt.treatment_type ?? '')
-
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError(null)
-    const fd = new FormData()
-    fd.set('id', appt.id)
-    fd.set('amount', amount || '0')
-    fd.set('treatment_name', name.trim())
-    startTransition(async () => {
-      const res = await processAppointment(fd)
-      if (!res.ok) setError(res.error)
-      else onDone()
-    })
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <form
-        onSubmit={onSubmit}
-        onClick={e => e.stopPropagation()}
-        className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md space-y-4"
-      >
-        <div>
-          <h3 className="text-white text-lg font-bold">İşleme Al</h3>
-          <p className="text-slate-400 text-sm mt-0.5">
-            <span className="text-white font-semibold">{appt.patient_name}</span> · {formatStart(appt.start_at).date} {formatStart(appt.start_at).time}
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Tedavi Adı</label>
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="örn. HA Dolgu"
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-base placeholder-slate-500 focus:border-violet-500 focus:outline-none"
-            required
-            maxLength={120}
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Tutar (TL)</label>
-          <input
-            type="number"
-            min={0}
-            step="any"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
-            placeholder="0"
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-base placeholder-slate-500 focus:border-violet-500 focus:outline-none"
-            required
-            autoFocus
-          />
-          <p className="text-slate-500 text-xs mt-1">Ödeme bilgisi sonra hasta sayfasından girilir.</p>
-        </div>
-
-        {error && (
-          <div className="bg-rose-500/10 border border-rose-500/30 rounded-lg px-3 py-2 text-rose-300 text-sm">{error}</div>
-        )}
-
-        <div className="flex items-center justify-end gap-2 pt-2">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-slate-300 hover:text-white text-sm font-semibold">İptal</button>
-          <button
-            type="submit"
-            disabled={pending}
-            className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-sm font-bold rounded-lg"
-          >
-            {pending ? 'Kaydediliyor…' : 'Kaydet'}
-          </button>
-        </div>
-      </form>
     </div>
   )
 }

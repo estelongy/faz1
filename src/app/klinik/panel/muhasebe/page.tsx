@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
-import MuhasebeShellClient, { type DayGroup, type PatientRow, type CatalogItem } from './MuhasebeShellClient'
+import MuhasebeShellClient, { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
 import RandevuListClient, { type AppointmentRow } from './randevu/RandevuListClient'
 
 export const metadata: Metadata = {
@@ -13,7 +13,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-export default async function MuhasebePage() {
+export default async function MuhasebePage({
+  searchParams,
+}: { searchParams: { from_appointment?: string } }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
@@ -65,6 +67,29 @@ export default async function MuhasebePage() {
     status: a.status,
     recurrence_group_id: a.recurrence_group_id,
   }))
+
+  // ─── İşleme alınan randevu varsa hızlı kayıt prefill'ini hazırla ────
+  let prefill: AppointmentPrefill | null = null
+  const fromApptId = typeof searchParams.from_appointment === 'string' ? searchParams.from_appointment : null
+  if (fromApptId) {
+    const { data: appt } = await supabase
+      .from('internal_appointment')
+      .select('id, patient_id, start_at, treatment_type, status')
+      .eq('id', fromApptId)
+      .eq('owner_id', user.id)
+      .maybeSingle()
+    if (appt && appt.status !== 'completed') {
+      const p = patients.find(pp => pp.id === appt.patient_id)
+      prefill = {
+        appointmentId: appt.id,
+        patientId: p?.id ?? null,
+        patientName: p?.name ?? '',
+        patientPhone: p?.phone ?? null,
+        treatmentName: appt.treatment_type ?? '',
+        treatmentDate: new Date(appt.start_at).toISOString().slice(0, 10),
+      }
+    }
+  }
 
   // ─── Hasta satırları ────────────────────────────────────────
   const rows: PatientRow[] = patients.map(p => {
@@ -191,6 +216,7 @@ export default async function MuhasebePage() {
         totalRemaining={remainingAll}
         debtorCount={debtorCount}
         patientCount={rows.length}
+        prefill={prefill}
       />
     </div>
   )

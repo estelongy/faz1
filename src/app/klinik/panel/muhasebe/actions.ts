@@ -284,6 +284,17 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
     }
   }
 
+  // Randevudan geliyor (İşleme Al akışı) — randevuyu da completed yap
+  const completeApptId = (formData.get('complete_appointment_id') as string | null)?.trim() || null
+  if (completeApptId) {
+    await ctx.supabase
+      .from('internal_appointment')
+      .update({ status: 'completed', updated_at: new Date().toISOString() })
+      .eq('id', completeApptId)
+      .eq('owner_id', ctx.user.id)
+    revalidatePath('/klinik/panel/muhasebe/randevu')
+  }
+
   revalidatePath('/klinik/panel/muhasebe')
   revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
   return { ok: true, patientId }

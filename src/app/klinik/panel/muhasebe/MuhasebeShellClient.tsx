@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useMemo } from 'react'
+import { useState, useTransition, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import MuhasebeListClient from './MuhasebeListClient'
@@ -50,6 +50,15 @@ export interface CatalogItem {
   sort_order: number
 }
 
+export interface AppointmentPrefill {
+  appointmentId: string
+  patientId: string | null          // mevcut hasta varsa id, yoksa null (yeni isim/telefon ile gelir)
+  patientName: string
+  patientPhone: string | null
+  treatmentName: string
+  treatmentDate: string             // YYYY-MM-DD
+}
+
 interface Props {
   rows: PatientRow[]
   days: DayGroup[]
@@ -60,6 +69,7 @@ interface Props {
   totalRemaining: number
   debtorCount: number
   patientCount: number
+  prefill?: AppointmentPrefill | null
 }
 
 function formatTRY(n: number): string {
@@ -77,26 +87,41 @@ function formatDayLabel(dateStr: string): string {
 }
 
 export default function MuhasebeShellClient({
-  rows, days, catalog, monthLabel, monthBilled, monthCollected, totalRemaining, debtorCount, patientCount,
+  rows, days, catalog, monthLabel, monthBilled, monthCollected, totalRemaining, debtorCount, patientCount, prefill,
 }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<'gunluk' | 'hastalar'>('gunluk')
-  const [showQuick, setShowQuick] = useState(false)
+  const [showQuick, setShowQuick] = useState(!!prefill)
+  const [completingAppointmentId, setCompletingAppointmentId] = useState<string | null>(prefill?.appointmentId ?? null)
   const [pending, startTransition] = useTransition()
   const [quickError, setQuickError] = useState<string | null>(null)
   const [quickSuccess, setQuickSuccess] = useState(false)
 
   // Hızlı kayıt — mevcut/yeni hasta seçimi
-  const [patientMode, setPatientMode] = useState<'existing' | 'new'>('new')
-  const [selectedPatientId, setSelectedPatientId] = useState('')
-  const [patientSearch, setPatientSearch] = useState('')
+  const [patientMode, setPatientMode] = useState<'existing' | 'new'>(
+    prefill?.patientId ? 'existing' : 'new'
+  )
+  const [selectedPatientId, setSelectedPatientId] = useState(prefill?.patientId ?? '')
+  const [patientSearch, setPatientSearch] = useState(prefill?.patientId ? prefill.patientName : '')
+  const prefillNewName = prefill && !prefill.patientId ? prefill.patientName : ''
+  const prefillNewPhone = prefill && !prefill.patientId ? (prefill.patientPhone ?? '') : ''
 
   // Hızlı kayıt — işlem arama (katalog)
-  const [treatmentMode, setTreatmentMode] = useState<'catalog' | 'custom'>('catalog')
+  const [treatmentMode, setTreatmentMode] = useState<'catalog' | 'custom'>(prefill ? 'custom' : 'catalog')
   const [selectedCatalogId, setSelectedCatalogId] = useState('')
-  const [treatmentName, setTreatmentName] = useState('')          // gerçek input — katalogdan seçilince doldurulur, custom modda serbest yazım
-  const [treatmentSearch, setTreatmentSearch] = useState('')      // arama kutusu metni
+  const [treatmentName, setTreatmentName] = useState(prefill?.treatmentName ?? '')
+  const [treatmentSearch, setTreatmentSearch] = useState(prefill?.treatmentName ?? '')
   const [treatmentFocused, setTreatmentFocused] = useState(false)
+
+  // Prefill geldiğinde sayfa yüklenince form'a kaydır
+  useEffect(() => {
+    if (prefill) {
+      setTimeout(() => {
+        const el = document.querySelector('#hizli-kayit-form')
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+    }
+  }, [prefill])
 
   // Hızlı kayıt — ürün satırları
   const [productRows, setProductRows] = useState<{ name: string; qty: string; unit: string }[]>([])
@@ -155,6 +180,11 @@ export default function MuhasebeShellClient({
         setTreatmentSearch('')
         setTreatmentMode('catalog')
         setTreatmentFocused(false)
+        if (completingAppointmentId) {
+          setCompletingAppointmentId(null)
+          // URL'den ?from_appointment temizle (geri/yenile'de prefill tetiklenmesin)
+          router.replace('/klinik/panel/muhasebe')
+        }
         router.refresh()
         setTimeout(() => setQuickSuccess(false), 3000)
       } else {
@@ -208,7 +238,15 @@ export default function MuhasebeShellClient({
 
       {/* Hızlı Kayıt formu */}
       {showQuick && (
-        <form onSubmit={handleQuickSubmit} className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-800/60 border border-violet-500/30 space-y-4">
+        <form id="hizli-kayit-form" onSubmit={handleQuickSubmit} className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-800/60 border border-violet-500/30 space-y-4">
+          <input type="hidden" name="complete_appointment_id" value={completingAppointmentId ?? ''} />
+
+          {prefill && (
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-3 py-2 text-emerald-300 text-sm font-semibold">
+              ✓ Randevu işleme alınıyor — bilgiler ön doldurudu, eksikleri tamamlayıp kaydet.
+            </div>
+          )}
+
           <p className="text-sm uppercase tracking-widest text-violet-300/80 font-bold">Hızlı Kayıt — Hasta + İşlem + Ürün + Tahsilat</p>
 
           {/* ── Hasta Seçimi ── */}
@@ -229,12 +267,14 @@ export default function MuhasebeShellClient({
                 <div>
                   <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Ad Soyad *</label>
                   <input name="new_patient_name" autoFocus minLength={2} maxLength={120}
+                    defaultValue={prefillNewName}
                     placeholder="Örn. Ayşe Y."
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
                 </div>
                 <div>
                   <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">Telefon</label>
                   <input name="new_patient_phone" type="tel" maxLength={32}
+                    defaultValue={prefillNewPhone}
                     placeholder="0555…"
                     className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500" />
                 </div>
@@ -386,7 +426,7 @@ export default function MuhasebeShellClient({
               </div>
               <div>
                 <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1">İşlem Tarihi</label>
-                <input name="treatment_date" type="date" defaultValue={new Date().toISOString().slice(0,10)}
+                <input name="treatment_date" type="date" defaultValue={prefill?.treatmentDate ?? new Date().toISOString().slice(0,10)}
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
               </div>
               <div>
