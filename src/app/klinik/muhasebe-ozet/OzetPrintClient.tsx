@@ -93,7 +93,7 @@ export default function OzetPrintClient({
           title="Tıkla: kayıtlı numaraya gönder · Shift+Tık: numarayı değiştir"
           style={{ padding: '8px 16px', background: '#25D366', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
         >
-          📱 WhatsApp'ta Paylaş
+          📱 WhatsApp ile Paylaş
         </button>
         <button
           onClick={() => window.close()}
