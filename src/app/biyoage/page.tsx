@@ -133,7 +133,8 @@ export default async function BiyoAGEPage() {
                 <ArrowRight size={16} />
               </Link>
               <Link
-                href="/skor"
+                href="#nasil-isler"
+                scroll={true}
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-violet-300/40 text-white hover:bg-white/10 text-base font-semibold transition-colors"
               >
                 Skorlama Nasıl İşler?
@@ -145,10 +146,10 @@ export default async function BiyoAGEPage() {
         {/* ============================================================
             4 KAPI — ölç / yorumla / anla / sürdür  (beyaz zemin, mor aksent)
             ============================================================ */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <section id="nasil-isler" className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16 scroll-mt-20">
           {/* Eyebrow — 14px bold */}
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#7C3AED] mb-5">
-            BiyoAGE 4 perde
+            BiyoAGE 4 perde · Skorlama Nasıl İşler?
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {DOORS.map(d => {
