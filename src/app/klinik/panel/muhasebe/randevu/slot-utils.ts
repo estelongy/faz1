@@ -8,6 +8,7 @@ export interface DayAvailability {
   open_time: string     // HH:MM
   close_time: string    // HH:MM
   is_closed: boolean
+  slot_duration_minutes: number  // 10/15/20/30/45/60/90 — varsayılan randevu süresi
 }
 
 export type AvailabilityWeek = DayAvailability[]   // length 7
@@ -71,13 +72,13 @@ export function availabilityForIsoDate(week: AvailabilityWeek, iso: string): Day
 
 /** Default haftalık şablon — DB seed başarısız olursa fallback */
 export const DEFAULT_AVAILABILITY: AvailabilityWeek = [
-  { day_of_week: 0, open_time: '00:00', close_time: '00:00', is_closed: true },   // Paz
-  { day_of_week: 1, open_time: '09:00', close_time: '19:00', is_closed: false },
-  { day_of_week: 2, open_time: '09:00', close_time: '19:00', is_closed: false },
-  { day_of_week: 3, open_time: '09:00', close_time: '19:00', is_closed: false },
-  { day_of_week: 4, open_time: '09:00', close_time: '19:00', is_closed: false },
-  { day_of_week: 5, open_time: '09:00', close_time: '19:00', is_closed: false },
-  { day_of_week: 6, open_time: '09:00', close_time: '19:00', is_closed: false },
+  { day_of_week: 0, open_time: '00:00', close_time: '00:00', is_closed: true,  slot_duration_minutes: 30 }, // Paz
+  { day_of_week: 1, open_time: '09:00', close_time: '19:00', is_closed: false, slot_duration_minutes: 30 },
+  { day_of_week: 2, open_time: '09:00', close_time: '19:00', is_closed: false, slot_duration_minutes: 30 },
+  { day_of_week: 3, open_time: '09:00', close_time: '19:00', is_closed: false, slot_duration_minutes: 30 },
+  { day_of_week: 4, open_time: '09:00', close_time: '19:00', is_closed: false, slot_duration_minutes: 30 },
+  { day_of_week: 5, open_time: '09:00', close_time: '19:00', is_closed: false, slot_duration_minutes: 30 },
+  { day_of_week: 6, open_time: '09:00', close_time: '19:00', is_closed: false, slot_duration_minutes: 30 },
 ]
 
 /** Hafta boyu en erken açılış + en geç kapanış (takvim grid'i için ortak aralık) */
@@ -126,6 +127,7 @@ export function normalizeWeek(raw: Partial<DayAvailability>[]): AvailabilityWeek
       open_time: row.open_time ?? def.open_time,
       close_time: row.close_time ?? def.close_time,
       is_closed: row.is_closed ?? def.is_closed,
+      slot_duration_minutes: row.slot_duration_minutes ?? def.slot_duration_minutes,
     }
   })
 }

@@ -21,7 +21,7 @@ export default async function MusaitlikPage() {
 
   const { data } = await supabase
     .from('internal_availability')
-    .select('day_of_week, open_time, close_time, is_closed')
+    .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
     .eq('owner_id', user.id)
     .order('day_of_week', { ascending: true })
 
@@ -29,19 +29,14 @@ export default async function MusaitlikPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      <div className="mb-6 flex items-center gap-3">
+        <Link href="/klinik/panel/muhasebe/randevu" className="text-slate-400 hover:text-white transition-colors text-base font-semibold">← Takvim</Link>
+      </div>
       <div className="mb-6">
-        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <Link href="/klinik/panel" className="hover:text-white transition-colors">Klinik Panel</Link>
-          <span>›</span>
-          <Link href="/klinik/panel/muhasebe" className="hover:text-white transition-colors">Muhasebe</Link>
-          <span>›</span>
-          <Link href="/klinik/panel/muhasebe/randevu" className="hover:text-white transition-colors">Randevular</Link>
-          <span>›</span>
-          <span className="text-slate-300">Müsaitlik</span>
-        </nav>
-        <h1 className="text-2xl font-black text-white">Müsaitlik Ayarları</h1>
+        <h1 className="text-2xl font-black text-white">Müsaitlik Takvimi</h1>
         <p className="text-slate-400 mt-0.5 text-sm">
-          Haftanın günlerinde özel pratik çalışma saatlerin. Marketplace klinik müsaitliğinden bağımsız.
+          Dr. İzzet GÖK — Özel pratik için hangi günler ve saatlerde randevu kabul ettiğini belirle.
+          Marketplace klinik müsaitliğinden bağımsız çalışır.
         </p>
       </div>
 

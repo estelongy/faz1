@@ -3,118 +3,208 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { saveAvailability } from '../../actions'
-import { DAY_LABELS_TR, type AvailabilityWeek } from '../slot-utils'
+import type { AvailabilityWeek } from '../slot-utils'
 
-// Pzt başlangıçlı sıralama (UI için), depo formatı 0=Paz, kayıt yine 0-6
-const ORDERED_DAYS = [1, 2, 3, 4, 5, 6, 0]
+// Pzt başlangıçlı sıra (UI), kayıt yine 0-6 day_of_week
+const GUNLER = [
+  { id: 1, label: 'Pazartesi', short: 'Pzt' },
+  { id: 2, label: 'Salı',      short: 'Sal' },
+  { id: 3, label: 'Çarşamba',  short: 'Çar' },
+  { id: 4, label: 'Perşembe',  short: 'Per' },
+  { id: 5, label: 'Cuma',      short: 'Cum' },
+  { id: 6, label: 'Cumartesi', short: 'Cmt' },
+  { id: 0, label: 'Pazar',     short: 'Paz' },
+]
+
+type DayState = {
+  is_active: boolean
+  start_time: string
+  end_time: string
+  slot_duration_minutes: number
+}
+
+function buildInitial(week: AvailabilityWeek): Record<number, DayState> {
+  const map: Record<number, DayState> = {}
+  for (const d of GUNLER) {
+    map[d.id] = { is_active: false, start_time: '09:00', end_time: '19:00', slot_duration_minutes: 30 }
+  }
+  for (const row of week) {
+    map[row.day_of_week] = {
+      is_active: !row.is_closed,
+      start_time: row.open_time.slice(0, 5),
+      end_time: row.close_time.slice(0, 5),
+      slot_duration_minutes: row.slot_duration_minutes,
+    }
+  }
+  return map
+}
+
+function slotCount(start: string, end: string, duration: number): number {
+  const [sh, sm] = start.split(':').map(Number)
+  const [eh, em] = end.split(':').map(Number)
+  const totalMins = (eh * 60 + em) - (sh * 60 + sm)
+  if (totalMins <= 0) return 0
+  return Math.floor(totalMins / duration)
+}
 
 export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
   const router = useRouter()
-  const [pending, startTransition] = useTransition()
+  const [days, setDays] = useState<Record<number, DayState>>(() => buildInitial(week))
+  const [isPending, startTransition] = useTransition()
+  const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
 
-  // Local state
-  const [days, setDays] = useState(() =>
-    week.reduce((acc, d) => {
-      acc[d.day_of_week] = { open: d.open_time.slice(0, 5), close: d.close_time.slice(0, 5), closed: d.is_closed }
-      return acc
-    }, {} as Record<number, { open: string; close: string; closed: boolean }>)
-  )
-
-  function update(dow: number, field: 'open' | 'close' | 'closed', value: string | boolean) {
-    setDays(d => ({ ...d, [dow]: { ...d[dow], [field]: value } }))
+  function updateDay(dayId: number, patch: Partial<DayState>) {
+    setDays(prev => ({ ...prev, [dayId]: { ...prev[dayId], ...patch } }))
+    setSaved(false)
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  function applyToWeekdays() {
+    const ref = days[1]
+    setDays(prev => {
+      const next = { ...prev }
+      for (const d of [2, 3, 4, 5]) next[d] = { ...ref }
+      return next
+    })
+    setSaved(false)
+  }
+
+  function handleSave() {
     setError(null)
-    setSuccess(false)
     const fd = new FormData()
     for (let dow = 0; dow < 7; dow++) {
       const d = days[dow]
-      fd.set(`open_${dow}`, d.open)
-      fd.set(`close_${dow}`, d.close)
-      fd.set(`closed_${dow}`, d.closed ? 'on' : '')
+      fd.set(`open_${dow}`, d.start_time)
+      fd.set(`close_${dow}`, d.end_time)
+      fd.set(`closed_${dow}`, d.is_active ? '' : 'on')
+      fd.set(`duration_${dow}`, String(d.slot_duration_minutes))
     }
     startTransition(async () => {
       const res = await saveAvailability(fd)
-      if (!res.ok) {
-        setError(res.error)
-        return
-      }
-      setSuccess(true)
+      if (!res.ok) { setError(res.error ?? 'Kayıt hatası'); return }
+      setSaved(true)
       router.refresh()
-      setTimeout(() => setSuccess(false), 3000)
+      setTimeout(() => setSaved(false), 3000)
     })
   }
 
-  const inputCls = 'bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-500 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500/30'
-  const card = 'bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-5 sm:p-6'
+  const activeDays = GUNLER.filter(d => days[d.id]?.is_active)
+  const totalSlotsPerWeek = activeDays.reduce((sum, d) => {
+    const day = days[d.id]
+    return sum + slotCount(day.start_time, day.end_time, day.slot_duration_minutes)
+  }, 0)
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
-      <div className={card}>
-        <div className="space-y-3">
-          {ORDERED_DAYS.map(dow => {
-            const d = days[dow]
-            return (
-              <div key={dow} className="grid grid-cols-[120px_1fr_1fr_auto] gap-3 items-center">
-                <label className="text-white font-semibold text-sm">{DAY_LABELS_TR[dow]}</label>
-                <input
-                  type="time"
-                  value={d.open}
-                  disabled={d.closed}
-                  onChange={e => update(dow, 'open', e.target.value)}
-                  className={inputCls + (d.closed ? ' opacity-40' : '')}
-                />
-                <input
-                  type="time"
-                  value={d.close}
-                  disabled={d.closed}
-                  onChange={e => update(dow, 'close', e.target.value)}
-                  className={inputCls + (d.closed ? ' opacity-40' : '')}
-                />
-                <label className="inline-flex items-center gap-2 cursor-pointer text-sm">
-                  <input
-                    type="checkbox"
-                    checked={d.closed}
-                    onChange={e => update(dow, 'closed', e.target.checked)}
-                    className="w-4 h-4 rounded bg-slate-800 border-slate-700 text-rose-500 focus:ring-rose-500 focus:ring-offset-0"
-                  />
-                  <span className={d.closed ? 'text-rose-300 font-semibold' : 'text-slate-400'}>Kapalı</span>
-                </label>
-              </div>
-            )
-          })}
+    <div className="space-y-4">
+      {/* Özet */}
+      <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl flex items-center gap-4">
+        <div className="text-center">
+          <p className="text-3xl font-black text-violet-400">{activeDays.length}</p>
+          <p className="text-slate-500 text-sm">Aktif Gün</p>
         </div>
-
-        <p className="text-slate-500 text-xs mt-4">
-          Açılış-kapanış arası slot pattern&apos;ine göre üretilir (10 dk yeşil + 20 dk kırmızı). Kapalı günlerde slot oluşmaz.
-        </p>
+        <div className="w-px h-10 bg-slate-700" />
+        <div className="text-center">
+          <p className="text-3xl font-black text-emerald-400">{totalSlotsPerWeek}</p>
+          <p className="text-slate-500 text-sm">Haftalık Slot</p>
+        </div>
+        <div className="ml-auto">
+          <button
+            type="button"
+            onClick={applyToWeekdays}
+            className="text-base px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors font-semibold">
+            Pazartesi ayarlarını Sal-Cum&apos;a uygula
+          </button>
+        </div>
       </div>
+
+      {/* Gün kartları */}
+      {GUNLER.map(gun => {
+        const d = days[gun.id]
+        const slots = d.is_active ? slotCount(d.start_time, d.end_time, d.slot_duration_minutes) : 0
+        return (
+          <div
+            key={gun.id}
+            className={`p-5 rounded-2xl border transition-all ${
+              d.is_active ? 'bg-slate-800/50 border-slate-600' : 'bg-slate-900/30 border-slate-800 opacity-60'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => updateDay(gun.id, { is_active: !d.is_active })}
+                  className={`w-11 h-6 rounded-full transition-colors flex items-center ${
+                    d.is_active ? 'bg-violet-500 justify-end' : 'bg-slate-700 justify-start'
+                  } p-0.5`}
+                >
+                  <span className="w-5 h-5 rounded-full bg-white block" />
+                </button>
+                <span className="text-white font-bold">{gun.label}</span>
+              </div>
+              {d.is_active && (
+                <span className="text-slate-400 text-sm">{slots} slot / gün</span>
+              )}
+            </div>
+
+            {d.is_active && (
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-slate-500 text-sm mb-1">Açılış</label>
+                  <input
+                    type="time"
+                    value={d.start_time}
+                    onChange={e => updateDay(gun.id, { start_time: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-500 text-sm mb-1">Kapanış</label>
+                  <input
+                    type="time"
+                    value={d.end_time}
+                    onChange={e => updateDay(gun.id, { end_time: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-500 text-sm mb-1">Slot Süresi</label>
+                  <select
+                    value={d.slot_duration_minutes}
+                    onChange={e => updateDay(gun.id, { slot_duration_minutes: Number(e.target.value) })}
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500"
+                  >
+                    <option value={10}>10 dk</option>
+                    <option value={15}>15 dk</option>
+                    <option value={20}>20 dk</option>
+                    <option value={30}>30 dk</option>
+                    <option value={45}>45 dk</option>
+                    <option value={60}>60 dk</option>
+                    <option value={90}>90 dk</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })}
 
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl px-4 py-3 text-rose-300 text-sm font-medium">{error}</div>
+        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">{error}</div>
       )}
-      {success && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 text-emerald-300 text-sm font-medium">
-          ✓ Müsaitlik kaydedildi.
+
+      {saved && (
+        <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400 text-sm">
+          ✓ Müsaitlik takvimi kaydedildi.
         </div>
       )}
 
-      <div className="flex items-center justify-end gap-3">
-        <button type="button" onClick={() => router.back()} className="px-5 py-2.5 text-slate-300 hover:text-white text-base font-semibold">
-          Geri
-        </button>
-        <button
-          type="submit"
-          disabled={pending}
-          className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 text-white text-base font-bold rounded-xl shadow-lg shadow-violet-500/20"
-        >
-          {pending ? 'Kaydediliyor…' : 'Kaydet'}
-        </button>
-      </div>
-    </form>
+      <button
+        type="button"
+        onClick={handleSave}
+        disabled={isPending}
+        className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-bold rounded-2xl transition-all">
+        {isPending ? 'Kaydediliyor...' : 'Müsaitliği Kaydet'}
+      </button>
+    </div>
   )
 }

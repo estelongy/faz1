@@ -571,13 +571,18 @@ export async function saveAvailability(formData: FormData): Promise<Result> {
   const ctx = await requireOwner()
   if (!ctx.ok) return { ok: false, error: ctx.error }
 
-  const rows: { owner_id: string; day_of_week: number; open_time: string; close_time: string; is_closed: boolean; updated_at: string }[] = []
+  const ALLOWED_DURATIONS = new Set([10, 15, 20, 30, 45, 60, 90])
+  const rows: { owner_id: string; day_of_week: number; open_time: string; close_time: string; is_closed: boolean; slot_duration_minutes: number; updated_at: string }[] = []
   for (let dow = 0; dow < 7; dow++) {
     const isClosed = formData.get(`closed_${dow}`) === 'on' || formData.get(`closed_${dow}`) === 'true'
     const open = ((formData.get(`open_${dow}`) as string | null) ?? '09:00').trim()
     const close = ((formData.get(`close_${dow}`) as string | null) ?? '19:00').trim()
+    const duration = Number((formData.get(`duration_${dow}`) as string | null) ?? '30')
     if (!/^\d{2}:\d{2}$/.test(open) || !/^\d{2}:\d{2}$/.test(close)) {
       return { ok: false, error: `Gün ${dow}: saat formatı geçersiz.` }
+    }
+    if (!ALLOWED_DURATIONS.has(duration)) {
+      return { ok: false, error: `Gün ${dow}: slot süresi geçersiz.` }
     }
     if (!isClosed) {
       const [oh, om] = open.split(':').map(Number)
@@ -592,6 +597,7 @@ export async function saveAvailability(formData: FormData): Promise<Result> {
       open_time: open,
       close_time: close,
       is_closed: isClosed,
+      slot_duration_minutes: duration,
       updated_at: new Date().toISOString(),
     })
   }
