@@ -99,7 +99,6 @@ export default async function OzetPage() {
 
   return (
     <OzetPrintClient
-      ownerDisplayName={ownerProfile.displayName}
       ownerBrandLine={ownerProfile.brandLine ?? `${ownerProfile.displayName} — Klinik Muhasebe`}
       rangeLabel={`${startLabel} — ${todayLabel}`}
       generatedAt={now.toLocaleString('tr-TR')}

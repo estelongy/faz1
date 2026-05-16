@@ -24,7 +24,6 @@ interface UnmatchedRow {
 }
 
 interface Props {
-  ownerDisplayName: string
   ownerBrandLine: string
   rangeLabel: string
   generatedAt: string
@@ -37,7 +36,7 @@ interface Props {
 }
 
 export default function OzetPrintClient({
-  ownerDisplayName, ownerBrandLine,
+  ownerBrandLine,
   rangeLabel, generatedAt,
   totalBilled, totalCollected, totalRemaining, remainingIsPositive,
   treatmentRows, unmatchedRows,
