@@ -42,18 +42,16 @@ function isoDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+// Pattern: G-R-R döngüsü. Her slot 10 dk. Yeşil her 30 dk'da bir başlar.
 function generateSlots(startHour = 9, endHour = 19) {
   const out: { time: string; type: 'green' | 'red' }[] = []
   let m = startHour * 60
   const end = endHour * 60
-  while (m < end) {
-    if (m + 30 > end) break
-    out.push({ time: fmt(m), type: 'green' })
-    m += 30
-    if (m >= end) break
-    if (m + 10 > end) break
-    out.push({ time: fmt(m), type: 'red' })
+  let cycle = 0
+  while (m + 10 <= end) {
+    out.push({ time: fmt(m), type: cycle === 0 ? 'green' : 'red' })
     m += 10
+    cycle = (cycle + 1) % 3
   }
   return out
 }

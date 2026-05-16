@@ -29,22 +29,20 @@ export default function TimeSlotPicker({
 }: Props) {
   const [selected, setSelected] = useState(defaultValue)
 
+  // Pattern: G-R-R döngüsü. Her slot 10 dk. Yeşil her 30 dk'da bir.
   const slots = useMemo<Slot[]>(() => {
     const out: Slot[] = []
     let m = startHour * 60
     const end = endHour * 60
-    while (m < end) {
-      // 30 dk yeşil slot
-      if (m + 30 <= end) {
-        out.push({ time: fmt(m), type: 'green', endTime: fmt(m + 30) })
-      } else break
-      m += 30
-      if (m >= end) break
-      // 10 dk kırmızı ara
-      if (m + 10 <= end) {
-        out.push({ time: fmt(m), type: 'red', endTime: fmt(m + 10) })
-      } else break
+    let cycle = 0  // 0=yeşil, 1=kırmızı, 2=kırmızı
+    while (m + 10 <= end) {
+      out.push({
+        time: fmt(m),
+        type: cycle === 0 ? 'green' : 'red',
+        endTime: fmt(m + 10),
+      })
       m += 10
+      cycle = (cycle + 1) % 3
     }
     return out
   }, [startHour, endHour])
@@ -97,11 +95,11 @@ export default function TimeSlotPicker({
         <div className="flex items-center gap-3 text-slate-500">
           <span className="inline-flex items-center gap-1">
             <span className="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-500/40 border border-emerald-500/60" />
-            müsait (30 dk)
+            yeşil (10 dk)
           </span>
           <span className="inline-flex items-center gap-1">
             <span className="inline-block w-2.5 h-2.5 rounded-sm bg-rose-500/20 border border-rose-500/50" />
-            ara (10 dk)
+            kırmızı (10 dk)
           </span>
         </div>
         <div className="text-slate-400 font-medium">
