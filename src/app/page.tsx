@@ -6,6 +6,7 @@ import HeroSkorReveal from '@/components/HeroSkorReveal'
 import { createClient } from '@/lib/supabase/server'
 
 import SafeLink from '@/components/SafeLink'
+import GalaxyLink from '@/components/GalaxyLink'
 export const dynamic = 'force-dynamic'
 
 const SCORE_ZONES = [
@@ -140,29 +141,29 @@ export default async function Home({
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     Hesabım
                   </SafeLink>
-                  <Link href="/esteklinik"
+                  <GalaxyLink galaxy="esteklinik"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     EsteKlinik
-                  </Link>
-                  <Link href="/estestore"
+                  </GalaxyLink>
+                  <GalaxyLink galaxy="estestore"
                     className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
                     EsteStore
-                  </Link>
+                  </GalaxyLink>
                 </>
               ) : (
                 <>
-                  <Link href="/biyoage"
+                  <GalaxyLink galaxy="biyoage"
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
                     BiyoAGE
-                  </Link>
-                  <Link href="/esteklinik"
+                  </GalaxyLink>
+                  <GalaxyLink galaxy="esteklinik"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                     EsteKlinik
-                  </Link>
-                  <Link href="/estestore"
+                  </GalaxyLink>
+                  <GalaxyLink galaxy="estestore"
                     className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
                     EsteStore
-                  </Link>
+                  </GalaxyLink>
                 </>
               )}
             </div>
