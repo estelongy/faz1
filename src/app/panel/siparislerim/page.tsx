@@ -18,7 +18,7 @@ const STATUS: Record<string, { label: string; color: string }> = {
 export default async function SiparislerimPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris?next=/panel/siparislerim')
+  if (!user) redirect('/giris?g=estestore&next=/panel/siparislerim')
 
   const { data: orders } = await supabase
     .from('orders')

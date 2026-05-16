@@ -38,7 +38,7 @@ export default async function SiparisPage({
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect(`/giris?next=/siparis/${orderNumber}`)
+  if (!user) redirect(`/giris?g=estestore&next=/siparis/${orderNumber}`)
 
   const { data: order } = await supabase
     .from('orders')

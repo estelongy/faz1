@@ -19,7 +19,7 @@ const STATUS_BADGE: Record<string, { label: string; color: string }> = {
 export default async function IadelerimPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris?next=/panel/iadelerim')
+  if (!user) redirect('/giris?g=estestore&next=/panel/iadelerim')
 
   const { data: returns } = await supabase
     .from('returns')

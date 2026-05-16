@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: 'Ödeme' }
 export default async function OdemePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris?next=/odeme')
+  if (!user) redirect('/giris?g=estestore&next=/odeme')
 
   const { data: addresses } = await supabase
     .from('addresses')

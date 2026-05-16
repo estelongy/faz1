@@ -10,6 +10,10 @@ interface Props {
   fullWidth?: boolean
 }
 
+/**
+ * EsteStore ürün kartı / detay sayfası alış butonları.
+ * Tema: krem-altın (#C9A961). 'Hemen Al' → /sepet (sepet/ödeme akışı galaxy-aware redirect yapar).
+ */
 export default function AddToCartButton({ product, disabled, fullWidth }: Props) {
   const router = useRouter()
   const { add } = useCart()
@@ -33,10 +37,10 @@ export default function AddToCartButton({ product, disabled, fullWidth }: Props)
       <button
         onClick={handleAdd}
         disabled={disabled || added}
-        className={`${fullWidth ? 'flex-1' : ''} inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all ${
+        className={`${fullWidth ? 'flex-1' : ''} inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-base transition-all ${
           added
-            ? 'bg-emerald-600 text-white'
-            : 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700'
+            ? 'bg-[#10876B] text-white border border-[#10876B]'
+            : 'bg-white hover:bg-[#FAFAF7] text-slate-900 border border-slate-300 hover:border-[#C9A961]'
         } disabled:opacity-40 disabled:cursor-not-allowed`}>
         {added ? (
           <>
@@ -58,7 +62,7 @@ export default function AddToCartButton({ product, disabled, fullWidth }: Props)
       <button
         onClick={handleBuyNow}
         disabled={disabled}
-        className={`${fullWidth ? 'flex-1' : ''} inline-flex items-center justify-center px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-violet-500/20 disabled:opacity-40`}>
+        className={`${fullWidth ? 'flex-1' : ''} inline-flex items-center justify-center px-5 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] text-[#0F172A] font-bold rounded-xl text-base transition-all shadow-lg shadow-[#C9A961]/30 disabled:opacity-40 disabled:cursor-not-allowed`}>
         Hemen Al
       </button>
     </div>
