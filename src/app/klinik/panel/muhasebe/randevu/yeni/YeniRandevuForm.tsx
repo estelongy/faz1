@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createAppointment } from '../../actions'
+import TimeSlotPicker from '../TimeSlotPicker'
 
 const DURATIONS = [
   { value: 10, label: '10 dakika' },
@@ -120,14 +121,10 @@ export default function YeniRandevuForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelCls}>Başlangıç Tarihi <span className="text-rose-400">*</span></label>
             <input name="date" type="date" required defaultValue={defaultDate} className={inputCls} />
-          </div>
-          <div>
-            <label className={labelCls}>Randevu Saati <span className="text-rose-400">*</span></label>
-            <input name="time" type="time" required defaultValue="10:00" className={inputCls} />
           </div>
           <div>
             <label className={labelCls}>Randevu Süresi <span className="text-rose-400">*</span></label>
@@ -135,6 +132,10 @@ export default function YeniRandevuForm() {
               {DURATIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
             </select>
           </div>
+        </div>
+        <div>
+          <label className={labelCls}>Randevu Saati <span className="text-rose-400">*</span></label>
+          <TimeSlotPicker name="time" defaultValue="09:00" />
         </div>
       </div>
 

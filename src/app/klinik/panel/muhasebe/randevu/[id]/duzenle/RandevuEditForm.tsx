@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateAppointment } from '../../../actions'
+import TimeSlotPicker from '../../TimeSlotPicker'
 
 const DURATIONS = [10, 15, 20, 30, 45, 60, 90, 120]
 const APPOINTMENT_TYPES = ['İlk Muayene', 'Kontrol', 'İşlem', 'Konsültasyon']
@@ -75,14 +76,10 @@ export default function RandevuEditForm({ appointment }: { appointment: Appointm
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelCls}>Başlangıç Tarihi <span className="text-rose-400">*</span></label>
             <input name="date" type="date" required defaultValue={`${yyyy}-${mm}-${dd}`} className={inputCls} />
-          </div>
-          <div>
-            <label className={labelCls}>Saat <span className="text-rose-400">*</span></label>
-            <input name="time" type="time" required defaultValue={`${hh}:${mi}`} className={inputCls} />
           </div>
           <div>
             <label className={labelCls}>Süre (dk) <span className="text-rose-400">*</span></label>
@@ -90,6 +87,10 @@ export default function RandevuEditForm({ appointment }: { appointment: Appointm
               {DURATIONS.map(d => <option key={d} value={d}>{d} dakika</option>)}
             </select>
           </div>
+        </div>
+        <div>
+          <label className={labelCls}>Saat <span className="text-rose-400">*</span></label>
+          <TimeSlotPicker name="time" defaultValue={`${hh}:${mi}`} />
         </div>
       </div>
 
