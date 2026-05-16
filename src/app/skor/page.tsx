@@ -75,7 +75,7 @@ function metricBar(value: number, invert = false) {
 export default function SkorMerkeziPage() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-b from-[#1B1330] via-[#241942] to-[#1B1330] flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
           <p className="text-slate-400">Skor merkezi yükleniyor…</p>
@@ -234,7 +234,7 @@ function SkorMerkeziInner() {
   // ── Loading ───────────────────────────────────────────────────────────────
   if (loading || !analysis) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-b from-[#1B1330] via-[#241942] to-[#1B1330] flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
           <p className="text-slate-400">Skor merkezi yükleniyor…</p>
@@ -248,9 +248,9 @@ function SkorMerkeziInner() {
   const yasFarki = gercekYas !== null ? gercekYas - gorunumYas : null
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+    <main className="min-h-screen bg-gradient-to-b from-[#1B1330] via-[#241942] to-[#1B1330]">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#1B1330]/85 backdrop-blur-md border-b border-violet-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
@@ -278,7 +278,7 @@ function SkorMerkeziInner() {
             type="button"
             aria-label="Kartı kapat"
             onClick={() => setExpanded(null)}
-            className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-40"
+            className="fixed inset-0 bg-[#1B1330]/85 backdrop-blur-md z-40"
           />
         )}
 
