@@ -5,7 +5,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
-import RandevuListClient, { type AppointmentRow } from './RandevuListClient'
+import { type AppointmentRow } from './RandevuListClient'
+import RandevuTabsClient from './RandevuTabsClient'
 
 export const metadata: Metadata = {
   title: 'Randevular | Muhasebe',
@@ -77,7 +78,7 @@ export default async function RandevuListPage() {
         </Link>
       </div>
 
-      <RandevuListClient rows={rows} variant="full" />
+      <RandevuTabsClient rows={rows} />
     </div>
   )
 }

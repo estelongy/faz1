@@ -12,11 +12,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-export default async function YeniRandevuPage() {
+export default async function YeniRandevuPage({
+  searchParams,
+}: { searchParams: { date?: string; time?: string } }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
+
+  const initialDate = typeof searchParams.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(searchParams.date) ? searchParams.date : undefined
+  const initialTime = typeof searchParams.time === 'string' && /^\d{2}:\d{2}$/.test(searchParams.time) ? searchParams.time : undefined
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -34,7 +39,7 @@ export default async function YeniRandevuPage() {
         </p>
       </div>
 
-      <YeniRandevuForm />
+      <YeniRandevuForm initialDate={initialDate} initialTime={initialTime} />
     </div>
   )
 }

@@ -32,18 +32,24 @@ const FREQ_OPTIONS = [
 
 const MONTH_OPTIONS = [1, 2, 3, 4, 5, 6]
 
-export default function YeniRandevuForm() {
+interface Props {
+  initialDate?: string
+  initialTime?: string
+}
+
+export default function YeniRandevuForm({ initialDate, initialTime }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [isRecurring, setIsRecurring] = useState(false)
 
-  // varsayılan tarih: bugün
+  // varsayılan tarih: query'den gelirse o, yoksa bugün
   const today = new Date()
   const yyyy = today.getFullYear()
   const mm = String(today.getMonth() + 1).padStart(2, '0')
   const dd = String(today.getDate()).padStart(2, '0')
-  const defaultDate = `${yyyy}-${mm}-${dd}`
+  const defaultDate = initialDate ?? `${yyyy}-${mm}-${dd}`
+  const defaultTime = initialTime ?? '09:00'
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -135,7 +141,7 @@ export default function YeniRandevuForm() {
         </div>
         <div>
           <label className={labelCls}>Randevu Saati <span className="text-rose-400">*</span></label>
-          <TimeSlotPicker name="time" defaultValue="09:00" />
+          <TimeSlotPicker name="time" defaultValue={defaultTime} />
         </div>
       </div>
 
