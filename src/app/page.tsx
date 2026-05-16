@@ -134,14 +134,6 @@ export default async function Home({
               </span>
             </Link>
             <div className="flex items-center gap-3">
-              <Link href="/rehber"
-                className="hidden md:block text-slate-400 hover:text-white text-base transition-colors font-semibold">
-                Estelongy Rehberi
-              </Link>
-              <Link href="/esteklinik/basvur"
-                className="hidden lg:block text-slate-400 hover:text-white text-base transition-colors font-semibold">
-                Klinik Başvurusu
-              </Link>
               {isLoggedIn ? (
                 <>
                   <SafeLink href="/panel"
@@ -150,7 +142,7 @@ export default async function Home({
                   </SafeLink>
                   <Link href="/esteklinik"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
-                    Randevu Al
+                    EsteKlinik
                   </Link>
                   <Link href="/estestore"
                     className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
@@ -159,16 +151,13 @@ export default async function Home({
                 </>
               ) : (
                 <>
-                  <SafeLink href="/giris" className="text-slate-400 hover:text-white text-base transition-colors font-semibold">
-                    Giriş Yap
-                  </SafeLink>
-                  <SafeLink href="/kayit"
+                  <Link href="/biyoage"
                     className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
-                    Ücretsiz Başla
-                  </SafeLink>
+                    BiyoAGE
+                  </Link>
                   <Link href="/esteklinik"
                     className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
-                    Randevu Al
+                    EsteKlinik
                   </Link>
                   <Link href="/estestore"
                     className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
@@ -177,6 +166,20 @@ export default async function Home({
                 </>
               )}
             </div>
+          </div>
+          {/* Alt bar — sabit yardımcı linkler */}
+          <div className="flex items-center gap-5 h-9 border-t border-white/5 text-sm">
+            {!isLoggedIn && (
+              <SafeLink href="/giris" className="text-slate-400 hover:text-white transition-colors font-semibold">
+                Giriş Yap
+              </SafeLink>
+            )}
+            <Link href="/esteklinik/basvur" className="text-slate-400 hover:text-white transition-colors font-semibold">
+              Klinik Başvurusu
+            </Link>
+            <Link href="/rehber" className="text-slate-400 hover:text-white transition-colors font-semibold">
+              Estelongy Rehberi
+            </Link>
           </div>
         </div>
       </nav>
@@ -242,8 +245,8 @@ export default async function Home({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
 
-            {/* Kapı 1 — Ücretsiz Analiz */}
-            <Link href={dest1} className="group relative overflow-hidden rounded-3xl border border-violet-500/30 bg-gradient-to-br from-violet-600/20 via-purple-600/10 to-pink-500/5 p-8 text-left transition-all hover:border-violet-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20">
+            {/* Kapı 1 — BiyoAGE galaksisi */}
+            <Link href="/biyoage" className="group relative overflow-hidden rounded-3xl border border-violet-500/30 bg-gradient-to-br from-violet-600/20 via-purple-600/10 to-pink-500/5 p-8 text-left transition-all hover:border-violet-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20">
               <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-violet-500/10 blur-3xl group-hover:bg-violet-500/20 transition-all" />
               <div className="relative">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white mb-5 shadow-lg shadow-violet-500/30">

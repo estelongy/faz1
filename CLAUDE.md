@@ -2,8 +2,9 @@
 
 > Bu dosyayı okuyan kişi, **arsadan mutfaktaki tablonun yerine kadar** tüm süreci anlayabilmelidir. Hangi servis, hangi env var, hangi dosya, hangi RPC nerede, hangi cron ne yapar — hepsi burada.
 
-**Son güncelleme:** 2026-05-08
-**Aktif branch:** `claude/priceless-ellis` (production)
+**Son güncelleme:** 2026-05-16
+**Aktif branch:** `claude/priceless-ellis` (production) — worktree: `thirsty-chatterjee-968aa4`
+**Aktif faz durumu:** Faz 1 (Soft Launch) sürüyor — SMS/OTP canlı, 3-galaksi mimari devrede, EGP motoru **PAUSE** (onay bekliyor), Stripe Live KYC açık
 
 ---
 
@@ -1382,6 +1383,74 @@ DELETE FROM auth.users WHERE email IN ('deneme1@test.com','deneme2@test.com','de
 
 ---
 
+## 25. 3-Galaksi Mimarisi (canlıda)
+
+Estelongy görünmez çatı, 3 galaksi ön planda — **BiyoAGE** (biyoage.com, mor `#1B1330/#241942` — DNA/biyoaging) · **EsteKlinik** (esteklinik.com, klinik otorite) · **EsteStore** (estelongy.store, krem-altın+emerald).
+
+- **Routing:** `/biyoage/*`, `/esteklinik/*`, `/estestore/*` + `?g=<galaxy>` query param + DB `signup_source` kolonu (kayıt hangi galaksiden geldi).
+- **Tek üyelik / 3 galaksi:** Supabase tek Postgres, SSO. Vendor BiyoAGE'e giremez.
+- **Web tek site / mobile 3 ayrı app** (planlı). Reverse proxy mimarisi: biyoage.com → /biyoage prefix.
+- **SafeLink** (`src/components/SafeLink.tsx`) — galaksi-aware Link wrapper. `AUTH_GATED_ROUTES` map: `/skor`→biyoage, `/odeme`→estestore, `/panel/siparislerim|iadelerim`→estestore, `/panel/kurslarim`→esteklinik, `/panel`→null. Auth yoksa `/giris?g=<galaxy>&next=<href>` — 212 galaxy-loss bug fix.
+- **Geçiş dili — KURAL:** yıldız/uzay metaforu YASAK. DNA / biyoaging / hücresel pulse zemin. Slogan bankası galaksi başına ayrı.
+- **EsteStore kategoriler:** Hasta 18 / Klinik 24 kategori. Doktor view toggle. `[slug]/page.tsx` çift taksonomi fallback (3 section + 42 kategori).
+
+## 26. OTP State Machine (uyarı: stale closure)
+
+`idle → sending → entering → verifying → verified → error` — `AdminOtpForm.tsx` (60s cooldown, amber) ve `PhoneOtpStep.tsx` (180s cooldown, violet).
+
+**Stale closure tuzağı** (öğrenildi): 6 hanede auto-submit sırasında `verify()` eski `code` state'ini okuyor. Fix:
+```ts
+async function verify(e?: React.FormEvent, submittedCode?: string) {
+  const c = submittedCode ?? code;
+  // ... c ile doğrula
+}
+// onChange:
+if (next.length === 6) verify(undefined, next);
+```
+
+## 27. Roadmap Fork — Açık Karar
+
+Compaction sonrası askıda kalan stratejik eksen seçimi. **EGP onay olmadan başlatılmayacak.**
+
+1. **EGP biyolojik yaş motoru** — EXPLICIT PAUSE; başlangıç katalog: HA Dolgu 9.2, Skin Booster 8.5, GK 8.5, Botoks 7.0, Altın İğne 6.5.
+2. **Commercial-readiness sprint** — Stripe critical-path canlı test (browse→cart→checkout→sandbox), `force-dynamic` audit (30+ route → sadece auth/OTP/ödeme), test user este@este.com güvenlik denetimi, Vercel iki-proje karışıklığı.
+3. **Marka olgunluğu / içerik derinliği** — rehber makaleleri, klinik+vendor onboarding, ürün katalog 14 → ticari ölçek, arama/öneri/cart-abandonment/email-recovery, galaksi-spesifik içerik hiyerarşisi.
+
+**Küçük askıda kararlar:** /panel ve /admin accent rengi (galaksi nötr mü, krem-altın mı?). Vestoriq Stripe min €0.50 etrafında ürün fiyatlama disiplini.
+
+## 28. Son Sprint Özeti — 2026-05-16 (10 saatlik dalga)
+
+Tek günde 17 commit, 3 dalgada toparlandı. Ana eksen: **galaksi sızıntısının kapatılması + kullanıcı yolculuğundaki kalan ufak engellerin temizlenmesi.**
+
+### Dalga 1 — EsteStore kategori iskeleti (02:41–02:47)
+- `aab086b` — section-aware kategori pages + EGP başlangıç katalog seed + krem-altın navigation chain
+- `0acc4fe` — kategori section sayfasına EsteStore dark navbar
+- `f61c0cd` — detail page `CATEGORY_LABELS` + breadcrumb URL + navbar tipografi
+
+### Dalga 2 — Galaksi büyük migration (07:23–08:07) ⭐ Kritik
+- `55a1ef9` — BiyoAGE "Skorlama Nasıl İşler?" galaksiden çıkarıyordu
+- `c2a85f3` — EsteStore tüketici akışında galaxy kaybı + AddToCartButton tema/tipografi
+- `5a171d1` — **🔥 212 tıklanabilir bug, 96 dosya bulk fix** — tüm sitede galaksi sızıntısı
+- `2635602` — BiyoAGE 4 kapısına auth + galaxy gate
+- `b07c1bb` — **`SafeLink` merkezi helper + 74 yerde bulk migration** (galaksi-bilinçli Link wrapper)
+- `bbf7075` — kullanılmayan `Link` import'ları temizlik (ESLint/Vercel build fix)
+
+### Dalga 3 — UX polishing (08:14–08:48)
+- `989655c` — `BackButton` tema-aware + 16px + logout sonrası anasayfa
+- `ee6c44f` — `/kategori/[slug]` çift taksonomi fallback (3 section + 42 hasta/klinik)
+- `b2f9dec` — EsteStore rol picker (Hasta/Klinik/Admin) yönlendirmesi
+- `f7c43a0` — "EGP nedir?" butonu doğru sayfaya
+- `fe15305` — `/analiz` ve `/skor` zeminleri BiyoAGE mor tema
+- `452536d` — "Ücretsiz Ön Analiz" vaadine aykırı kayıt zorlaması kaldırıldı (`/analiz` ungated)
+- `1383250` — Randevu adım 2 ilk müsait slot'lu güne auto-select
+- `fe05743` — OTP 6 hanede auto-verify + yanlış kodda shake/kırmızı (stale-closure fix)
+
+**Çıkardığımız ders:** 212 noktada sızan galaksi context'i tek tek değil **merkezi `SafeLink` helper'ı + bulk migration** ile kapatıldı — bundan sonra yeni `<Link>` doğrudan kullanılmamalı.
+
+---
+
 **Bu doküman canlıdır.** Yeni özellik eklendiğinde, env vars değiştiğinde, akış güncellendiğinde **buraya yansıt.**
 
-Son ekleme: KVKK cascade · Audit log · Şifre 8 · Storage validasyon · Failed login uyarı · E-posta değiştirme · security.txt · Vendor KYC sprint B (DB + form + admin paneli + trigger).
+Son ekleme (2026-05-16): 3-galaksi mimarisi (BiyoAGE/EsteKlinik/EsteStore) · SafeLink galaxy-aware routing (212 galaxy-loss bug fix) · OTP stale-closure fix pattern · BiyoAGE landing (DNA helix + 4 Kapı + `/analiz` ungated) · EsteStore çift taksonomi fallback · Randevu boş ilk gün iterate · Roadmap fork dokümante edildi (EGP PAUSE).
+
+Önceki: KVKK cascade · Audit log · Şifre 8 · Storage validasyon · Failed login uyarı · E-posta değiştirme · security.txt · Vendor KYC sprint B.
