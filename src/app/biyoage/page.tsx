@@ -154,7 +154,11 @@ export default async function BiyoAGEPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {DOORS.map(d => {
               const Icon = d.icon
-              const href = d.href === '/panel' && !isLoggedIn ? '/giris?next=/panel' : d.href
+              // Auth-required kapılar: /skor + /panel → login yoksa galaxy-aware giriş
+              const authRequired = d.href === '/skor' || d.href === '/panel'
+              const href = authRequired && !isLoggedIn
+                ? `/giris?g=biyoage&next=${d.href}`
+                : d.href
               return (
                 <Link
                   key={d.href}
