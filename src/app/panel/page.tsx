@@ -150,7 +150,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     'use server'
     const supabase = await createClient()
     await supabase.auth.signOut()
-    redirect('/giris')
+    redirect('/')
   }
 
   return (

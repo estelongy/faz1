@@ -9,7 +9,7 @@ async function handleSignOut() {
   'use server'
   const supabase = await createClient()
   await supabase.auth.signOut()
-  redirect('/giris')
+  redirect('/')
 }
 
 export default async function KlinikPanelLayout({ children }: { children: React.ReactNode }) {
