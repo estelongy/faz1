@@ -25,7 +25,6 @@ export default function TimeSlotPicker({ name, defaultValue = '', isoDate, week 
 
   // Mevcut değer slot listesinde yoksa kullanıcıya bildir (eski randevu vs.)
   const legacySelected = defaultValue && !slots.some(s => s.time === defaultValue) ? defaultValue : null
-  const selectedType = slots.find(s => s.time === selected)?.type ?? null
 
   if (!day || day.is_closed) {
     return (
@@ -43,37 +42,21 @@ export default function TimeSlotPicker({ name, defaultValue = '', isoDate, week 
       <input type="hidden" name={name} value={selected} required />
 
       <div className="flex flex-wrap gap-1.5 max-h-72 overflow-y-auto p-2 bg-slate-950/40 border border-slate-800 rounded-lg">
-        {slots.map(s =>
-          s.type === 'green' ? (
-            <button
-              key={s.time}
-              type="button"
-              onClick={() => setSelected(s.time)}
-              className={`px-3 py-1.5 rounded-md text-sm font-bold border transition-all ${
-                selected === s.time
-                  ? 'bg-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/40 scale-105'
-                  : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30 hover:border-emerald-400'
-              }`}
-              title={`${s.time} – ${s.endTime} · yeşil slot`}
-            >
-              {s.time}
-            </button>
-          ) : (
-            <button
-              key={s.time}
-              type="button"
-              onClick={() => setSelected(s.time)}
-              title={`${s.time} – ${s.endTime} · kırmızı slot`}
-              className={`px-2 py-1.5 rounded-md text-xs font-bold border transition-all ${
-                selected === s.time
-                  ? 'bg-rose-500 border-rose-400 text-white shadow-lg shadow-rose-500/40 scale-105'
-                  : 'bg-rose-500/15 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 hover:border-rose-400'
-              }`}
-            >
-              {s.time}
-            </button>
-          )
-        )}
+        {slots.map(s => (
+          <button
+            key={s.time}
+            type="button"
+            onClick={() => setSelected(s.time)}
+            className={`px-3 py-1.5 rounded-md text-sm font-bold border transition-all ${
+              selected === s.time
+                ? 'bg-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/40 scale-105'
+                : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30 hover:border-emerald-400'
+            }`}
+            title={`${s.time} – ${s.endTime} · ${s.durationMinutes} dk`}
+          >
+            {s.time}
+          </button>
+        ))}
       </div>
 
       <div className="flex items-center justify-between mt-2 text-xs">
@@ -82,11 +65,11 @@ export default function TimeSlotPicker({ name, defaultValue = '', isoDate, week 
           <span>·</span>
           <span>{day.open_time.slice(0, 5)} – {day.close_time.slice(0, 5)}</span>
           <span>·</span>
-          <span>{slots.length} slot</span>
+          <span>{slots.length} × {day.slot_duration_minutes} dk slot</span>
         </div>
         <div className="text-slate-400 font-medium">
           {selected ? (
-            <span className={selectedType === 'red' ? 'text-rose-300' : 'text-emerald-300'}>
+            <span className="text-emerald-300">
               Seçili: <span className="font-bold">{selected}</span>
             </span>
           ) : legacySelected ? (

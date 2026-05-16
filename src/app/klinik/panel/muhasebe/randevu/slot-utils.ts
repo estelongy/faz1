@@ -16,7 +16,7 @@ export type AvailabilityWeek = DayAvailability[]   // length 7
 export interface Slot {
   time: string          // HH:MM
   endTime: string       // HH:MM
-  type: 'green' | 'red'
+  durationMinutes: number
 }
 
 export const DAY_LABELS_TR: Record<number, string> = {
@@ -39,21 +39,19 @@ export function parseTime(hhmm: string): number {
 }
 
 /**
- * Pattern: G-R-R döngüsü, her slot 10 dakika.
- * Yeşil her 30 dk'da bir başlar (09:00, 09:30, 10:00 ...).
+ * Slot listesi: gün açılıştan başlar, her adım slot_duration_minutes,
+ * kapanışa kadar tam sığan tüm slotları üretir. Tüm slotlar tek tip
+ * (rezerve edilebilir).
  */
 export function generateSlotsForDay(day: DayAvailability | null | undefined): Slot[] {
   if (!day || day.is_closed) return []
   const start = parseTime(day.open_time)
   const end = parseTime(day.close_time)
-  if (end <= start) return []
+  const step = day.slot_duration_minutes
+  if (end <= start || step <= 0) return []
   const out: Slot[] = []
-  let m = start
-  let cycle = 0
-  while (m + 10 <= end) {
-    out.push({ time: fmtMin(m), endTime: fmtMin(m + 10), type: cycle === 0 ? 'green' : 'red' })
-    m += 10
-    cycle = (cycle + 1) % 3
+  for (let m = start; m + step <= end; m += step) {
+    out.push({ time: fmtMin(m), endTime: fmtMin(m + step), durationMinutes: step })
   }
   return out
 }
@@ -97,24 +95,39 @@ export function unionRange(week: AvailabilityWeek): { open: number; close: numbe
   return { open: earliestOpen, close: latestClose }
 }
 
-/** Verilen aralıkta G-R-R pattern slot üretir (takvim union grid'i için) */
-export function generateSlotsForRange(openMin: number, closeMin: number): Slot[] {
+/** Takvim grid step'i = aktif günler arasındaki en küçük slot süresi (yoksa 30) */
+export function unionStep(week: AvailabilityWeek): number {
+  let min = Number.POSITIVE_INFINITY
+  for (const d of week) {
+    if (d.is_closed || d.slot_duration_minutes <= 0) continue
+    if (d.slot_duration_minutes < min) min = d.slot_duration_minutes
+  }
+  return Number.isFinite(min) ? min : 30
+}
+
+/** Verilen aralıkta sabit step'le slot üretir (haftalık takvim grid'i için) */
+export function generateSlotsForRange(openMin: number, closeMin: number, stepMin: number): Slot[] {
   const out: Slot[] = []
-  let m = openMin
-  let cycle = 0
-  while (m + 10 <= closeMin) {
-    out.push({ time: fmtMin(m), endTime: fmtMin(m + 10), type: cycle === 0 ? 'green' : 'red' })
-    m += 10
-    cycle = (cycle + 1) % 3
+  if (stepMin <= 0) return out
+  for (let m = openMin; m + stepMin <= closeMin; m += stepMin) {
+    out.push({ time: fmtMin(m), endTime: fmtMin(m + stepMin), durationMinutes: stepMin })
   }
   return out
 }
 
-/** Bir slot saatinin o günün açık aralığında olup olmadığı */
+/**
+ * Slot saati o günün açık aralığında VE günün kendi grid'ine hizalı mı.
+ * Hizalama: (slot - open) % slot_duration_minutes === 0.
+ */
 export function slotInDay(slotTime: string, day: DayAvailability | null): boolean {
   if (!day || day.is_closed) return false
   const m = parseTime(slotTime)
-  return m >= parseTime(day.open_time) && m + 10 <= parseTime(day.close_time)
+  const open = parseTime(day.open_time)
+  const close = parseTime(day.close_time)
+  const step = day.slot_duration_minutes
+  if (step <= 0) return false
+  if (m < open || m + step > close) return false
+  return ((m - open) % step) === 0
 }
 
 /** DB'den gelen kısmi satırları 7 günlük tam haftaya genişlet */

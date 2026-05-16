@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { AppointmentRow } from './RandevuListClient'
 import {
   unionRange,
+  unionStep,
   generateSlotsForRange,
   availabilityForDate,
   slotInDay,
@@ -49,9 +50,10 @@ export default function RandevuTakvim({ rows: appointments, week }: Props) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const today = isoDate(new Date())
 
-  // Haftanın union aralığında G-R-R pattern üret
+  // Haftanın union aralığını min slot süresi adımıyla doldur
   const range = useMemo(() => unionRange(week), [week])
-  const slots = useMemo(() => range ? generateSlotsForRange(range.open, range.close) : [], [range])
+  const stepMin = useMemo(() => unionStep(week), [week])
+  const slots = useMemo(() => range ? generateSlotsForRange(range.open, range.close, stepMin) : [], [range, stepMin])
   const slotTimes = useMemo(() => new Set(slots.map(s => s.time)), [slots])
 
   // Randevuları gün+saat anahtarıyla indeksle
@@ -118,15 +120,11 @@ export default function RandevuTakvim({ rows: appointments, week }: Props) {
           {slots.map(slot => (
             <div
               key={slot.time}
-              className={`grid grid-cols-[64px_repeat(7,1fr)] border-b border-slate-800 last:border-0 ${
-                slot.type === 'red' ? 'bg-rose-500/5' : ''
-              }`}
+              className="grid grid-cols-[64px_repeat(7,1fr)] border-b border-slate-800 last:border-0"
             >
               {/* Saat etiketi */}
-              <div className={`px-2 flex items-center ${
-                slot.type === 'green' ? 'py-1.5 text-xs text-slate-400 font-mono font-semibold' : 'py-0 text-[9px] text-rose-400/60 italic h-3'
-              }`}>
-                {slot.type === 'green' ? slot.time : 'ara'}
+              <div className="px-2 flex items-center py-1.5 text-xs text-slate-400 font-mono font-semibold">
+                {slot.time}
               </div>
 
               {/* Gün hücreleri */}
@@ -134,17 +132,16 @@ export default function RandevuTakvim({ rows: appointments, week }: Props) {
                 const dateStr = isoDate(d)
                 const key = `${dateStr}|${slot.time}`
                 const appt = byKey.get(key)
-                const isRed = slot.type === 'red'
                 const dayAvail = availabilityForDate(week, d)
                 const inDay = slotInDay(slot.time, dayAvail)
 
-                // Saat o günün aralığında değilse (kapalı veya saat dışı) — sade gri hücre
+                // Saat o günün slot pattern'inde değilse (kapalı / aralık dışı / step'e oturmuyor) — gri hücre
                 if (!inDay && !appt) {
                   return (
                     <div
                       key={i}
-                      className={`border-l border-slate-800 bg-slate-950/50 ${isRed ? 'h-3' : ''}`}
-                      title={dayAvail?.is_closed ? 'Kapalı gün' : 'Çalışma saatleri dışında'}
+                      className="border-l border-slate-800 bg-slate-950/50"
+                      title={dayAvail?.is_closed ? 'Kapalı gün' : 'Slot dışı'}
                     />
                   )
                 }
@@ -155,17 +152,11 @@ export default function RandevuTakvim({ rows: appointments, week }: Props) {
                     <Link
                       key={i}
                       href={`/klinik/panel/muhasebe/randevu/${appt.id}/duzenle`}
-                      className={`border-l border-slate-800 ${isRed ? 'p-0.5 h-3 text-[9px]' : 'p-1.5 text-xs'} border-l-2 ${colorCls} transition-all overflow-hidden block`}
-                      title={`${appt.patient_name} · ${appt.treatment_type || '—'} · ${appt.duration_minutes} dk${isRed ? ' (ara slot)' : ''}`}
+                      className={`border-l border-slate-800 p-1.5 text-xs border-l-2 ${colorCls} transition-all overflow-hidden block`}
+                      title={`${appt.patient_name} · ${appt.treatment_type || '—'} · ${appt.duration_minutes} dk`}
                     >
-                      {isRed ? (
-                        <div className="font-bold truncate leading-none">{appt.patient_name}</div>
-                      ) : (
-                        <>
-                          <div className="font-bold truncate leading-tight">{appt.patient_name}</div>
-                          <div className="truncate opacity-80 text-[10px] leading-tight">{appt.treatment_type || '—'}</div>
-                        </>
-                      )}
+                      <div className="font-bold truncate leading-tight">{appt.patient_name}</div>
+                      <div className="truncate opacity-80 text-[10px] leading-tight">{appt.treatment_type || '—'}</div>
                     </Link>
                   )
                 }
@@ -173,16 +164,10 @@ export default function RandevuTakvim({ rows: appointments, week }: Props) {
                   <Link
                     key={i}
                     href={`/klinik/panel/muhasebe/randevu/yeni?date=${dateStr}&time=${slot.time}`}
-                    className={`border-l border-slate-800 ${
-                      isRed
-                        ? 'h-3 hover:bg-rose-500/15'
-                        : 'hover:bg-emerald-500/10'
-                    } transition-colors flex items-center justify-center group`}
-                    title={`${slot.time} · boş${isRed ? ' (ara)' : ''}`}
+                    className="border-l border-slate-800 hover:bg-emerald-500/10 transition-colors flex items-center justify-center group"
+                    title={`${slot.time} · boş`}
                   >
-                    <span className={`opacity-0 group-hover:opacity-100 font-bold transition-opacity ${
-                      isRed ? 'text-rose-300 text-[10px]' : 'text-emerald-300 text-lg'
-                    }`}>+</span>
+                    <span className="opacity-0 group-hover:opacity-100 font-bold transition-opacity text-emerald-300 text-lg">+</span>
                   </Link>
                 )
               })}
