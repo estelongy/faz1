@@ -458,8 +458,9 @@ function EGPExplainer() {
   ]
   return (
     <section
+      id="egp-nedir"
       aria-label="Estelongy Gençlik Puanı hakkında"
-      className="rounded-3xl border border-[#C9A961]/30 bg-gradient-to-br from-[#FAFAF7] via-white to-[#F5EFE3] px-6 py-8 lg:px-10 lg:py-10"
+      className="scroll-mt-24 rounded-3xl border border-[#C9A961]/30 bg-gradient-to-br from-[#FAFAF7] via-white to-[#F5EFE3] px-6 py-8 lg:px-10 lg:py-10"
     >
       <div className="grid lg:grid-cols-[1fr_2fr] gap-8 items-center">
         <div className="space-y-3">

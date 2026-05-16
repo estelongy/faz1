@@ -62,7 +62,7 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
       ctaText: 'Keşfet',
       ctaHref: '#urunler',
       secondaryText: 'EGP nedir?',
-      secondaryHref: '/rehber/longevity-nedir',
+      secondaryHref: '#egp-nedir',
     },
     {
       kind: 'product-showcase',
