@@ -113,14 +113,25 @@ export default function MuhasebeShellClient({
   const [treatmentSearch, setTreatmentSearch] = useState(prefill?.treatmentName ?? '')
   const [treatmentFocused, setTreatmentFocused] = useState(false)
 
-  // Prefill geldiğinde sayfa yüklenince form'a kaydır
+  // Prefill geldiğinde (aynı sayfaya yeni ?from_appointment ile dönüş dahil)
+  // state'leri reset et + form'a kaydır. useState initial value sadece ilk
+  // mount'ta çalışır; sonradan gelen prop'u burada uygulamamız gerekir.
   useEffect(() => {
-    if (prefill) {
-      setTimeout(() => {
-        const el = document.querySelector('#hizli-kayit-form')
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, 100)
-    }
+    if (!prefill) return
+    setShowQuick(true)
+    setCompletingAppointmentId(prefill.appointmentId)
+    setPatientMode(prefill.patientId ? 'existing' : 'new')
+    setSelectedPatientId(prefill.patientId ?? '')
+    setPatientSearch(prefill.patientId ? prefill.patientName : '')
+    setTreatmentMode('custom')
+    setTreatmentName(prefill.treatmentName ?? '')
+    setTreatmentSearch(prefill.treatmentName ?? '')
+    setQuickError(null)
+    setQuickSuccess(false)
+    setTimeout(() => {
+      const el = document.querySelector('#hizli-kayit-form')
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
   }, [prefill])
 
   // Hızlı kayıt — ürün satırları
@@ -238,7 +249,7 @@ export default function MuhasebeShellClient({
 
       {/* Hızlı Kayıt formu */}
       {showQuick && (
-        <form id="hizli-kayit-form" onSubmit={handleQuickSubmit} className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-800/60 border border-violet-500/30 space-y-4">
+        <form key={prefill?.appointmentId ?? 'no-prefill'} id="hizli-kayit-form" onSubmit={handleQuickSubmit} className="mb-5 p-4 sm:p-5 rounded-2xl bg-slate-800/60 border border-violet-500/30 space-y-4">
           <input type="hidden" name="complete_appointment_id" value={completingAppointmentId ?? ''} />
 
           {prefill && (
