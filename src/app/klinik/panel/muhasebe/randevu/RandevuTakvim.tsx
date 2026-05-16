@@ -63,7 +63,7 @@ export default function RandevuTakvim({ rows: appointments }: Props) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const today = isoDate(new Date())
   const slots = useMemo(() => generateSlots(), [])
-  const greenTimes = useMemo(() => new Set(slots.filter(s => s.type === 'green').map(s => s.time)), [slots])
+  const slotTimes = useMemo(() => new Set(slots.map(s => s.time)), [slots])
 
   // Randevuları gün+saat anahtarıyla indeksle
   const { byKey, orphans } = useMemo(() => {
@@ -77,14 +77,14 @@ export default function RandevuTakvim({ rows: appointments }: Props) {
       if (t < weekStartTime || t >= weekEndTime) continue
       const dateStr = isoDate(d)
       const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-      if (greenTimes.has(timeStr)) {
+      if (slotTimes.has(timeStr)) {
         m.set(`${dateStr}|${timeStr}`, a)
       } else {
         orphans.push(a)
       }
     }
     return { byKey: m, orphans }
-  }, [appointments, weekStart, greenTimes])
+  }, [appointments, weekStart, slotTimes])
 
   function jumpWeek(delta: number) { setWeekStart(s => addDays(s, delta * 7)) }
   function goToday() { setWeekStart(startOfWeek(new Date())) }
@@ -143,22 +143,27 @@ export default function RandevuTakvim({ rows: appointments }: Props) {
               {/* Gün hücreleri */}
               {days.map((d, i) => {
                 const dateStr = isoDate(d)
-                if (slot.type === 'red') {
-                  return <div key={i} className="border-l border-slate-800/50 h-3" />
-                }
                 const key = `${dateStr}|${slot.time}`
                 const appt = byKey.get(key)
+                const isRed = slot.type === 'red'
+
                 if (appt) {
                   const colorCls = STATUS_BADGE[appt.status] ?? STATUS_BADGE.scheduled
                   return (
                     <Link
                       key={i}
                       href={`/klinik/panel/muhasebe/randevu/${appt.id}/duzenle`}
-                      className={`border-l border-slate-800 p-1.5 text-xs border-l-2 ${colorCls} transition-all overflow-hidden block`}
-                      title={`${appt.patient_name} · ${appt.treatment_type || '—'} · ${appt.duration_minutes} dk`}
+                      className={`border-l border-slate-800 ${isRed ? 'p-0.5 h-3 text-[9px]' : 'p-1.5 text-xs'} border-l-2 ${colorCls} transition-all overflow-hidden block`}
+                      title={`${appt.patient_name} · ${appt.treatment_type || '—'} · ${appt.duration_minutes} dk${isRed ? ' (ara slot)' : ''}`}
                     >
-                      <div className="font-bold truncate leading-tight">{appt.patient_name}</div>
-                      <div className="truncate opacity-80 text-[10px] leading-tight">{appt.treatment_type || '—'}</div>
+                      {isRed ? (
+                        <div className="font-bold truncate leading-none">{appt.patient_name}</div>
+                      ) : (
+                        <>
+                          <div className="font-bold truncate leading-tight">{appt.patient_name}</div>
+                          <div className="truncate opacity-80 text-[10px] leading-tight">{appt.treatment_type || '—'}</div>
+                        </>
+                      )}
                     </Link>
                   )
                 }
@@ -166,10 +171,16 @@ export default function RandevuTakvim({ rows: appointments }: Props) {
                   <Link
                     key={i}
                     href={`/klinik/panel/muhasebe/randevu/yeni?date=${dateStr}&time=${slot.time}`}
-                    className="border-l border-slate-800 hover:bg-emerald-500/10 transition-colors flex items-center justify-center group"
-                    title={`${slot.time} · boş`}
+                    className={`border-l border-slate-800 ${
+                      isRed
+                        ? 'h-3 hover:bg-rose-500/15'
+                        : 'hover:bg-emerald-500/10'
+                    } transition-colors flex items-center justify-center group`}
+                    title={`${slot.time} · boş${isRed ? ' (ara)' : ''}`}
                   >
-                    <span className="opacity-0 group-hover:opacity-100 text-emerald-300 text-lg font-bold transition-opacity">+</span>
+                    <span className={`opacity-0 group-hover:opacity-100 font-bold transition-opacity ${
+                      isRed ? 'text-rose-300 text-[10px]' : 'text-emerald-300 text-lg'
+                    }`}>+</span>
                   </Link>
                 )
               })}

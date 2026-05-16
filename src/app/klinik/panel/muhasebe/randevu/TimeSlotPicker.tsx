@@ -50,9 +50,10 @@ export default function TimeSlotPicker({
   }, [startHour, endHour])
 
   // Mevcut değer slot listesinde yoksa kullanıcıya bildir (eski randevu vs.)
-  const legacySelected = defaultValue && !slots.some(s => s.type === 'green' && s.time === defaultValue)
+  const legacySelected = defaultValue && !slots.some(s => s.time === defaultValue)
     ? defaultValue
     : null
+  const selectedType = slots.find(s => s.time === selected)?.type ?? null
 
   return (
     <div>
@@ -75,14 +76,19 @@ export default function TimeSlotPicker({
               {s.time}
             </button>
           ) : (
-            <div
+            <button
               key={s.time}
-              title={`${s.time} – ${s.endTime} · ara (10 dk)`}
-              aria-hidden
-              className="px-1.5 py-1.5 rounded-md text-[10px] font-medium bg-rose-500/10 border border-rose-500/30 text-rose-400/70 select-none cursor-not-allowed"
+              type="button"
+              onClick={() => setSelected(s.time)}
+              title={`${s.time} – ${s.endTime} · ara slot (10 dk)`}
+              className={`px-2 py-1.5 rounded-md text-xs font-bold border transition-all ${
+                selected === s.time
+                  ? 'bg-rose-500 border-rose-400 text-white shadow-lg shadow-rose-500/40 scale-105'
+                  : 'bg-rose-500/15 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 hover:border-rose-400'
+              }`}
             >
-              ara
-            </div>
+              {s.time}
+            </button>
           )
         )}
       </div>
@@ -91,16 +97,19 @@ export default function TimeSlotPicker({
         <div className="flex items-center gap-3 text-slate-500">
           <span className="inline-flex items-center gap-1">
             <span className="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-500/40 border border-emerald-500/60" />
-            müsait
+            müsait (30 dk)
           </span>
           <span className="inline-flex items-center gap-1">
             <span className="inline-block w-2.5 h-2.5 rounded-sm bg-rose-500/20 border border-rose-500/50" />
-            ara
+            ara (10 dk)
           </span>
         </div>
         <div className="text-slate-400 font-medium">
           {selected ? (
-            <span className="text-emerald-300">Seçili: <span className="font-bold">{selected}</span></span>
+            <span className={selectedType === 'red' ? 'text-rose-300' : 'text-emerald-300'}>
+              Seçili: <span className="font-bold">{selected}</span>
+              {selectedType === 'red' && <span className="ml-1 text-rose-400/70">(ara)</span>}
+            </span>
           ) : legacySelected ? (
             <span className="text-amber-300">Eski saat: <span className="font-bold">{legacySelected}</span> — yeni slot seçin</span>
           ) : (
