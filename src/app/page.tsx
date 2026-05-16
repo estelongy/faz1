@@ -215,13 +215,13 @@ export default async function Home({
             </p>
 
             <div className="mb-4">
-              <Link href={dest1}
+              <GalaxyLink galaxy="biyoage"
                 className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-bold rounded-xl transition-all shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.02]">
                 Skorunu Öğren
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 12h15" />
                 </svg>
-              </Link>
+              </GalaxyLink>
             </div>
 
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-1 text-slate-500 text-sm">
@@ -247,7 +247,7 @@ export default async function Home({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
 
             {/* Kapı 1 — BiyoAGE galaksisi */}
-            <Link href="/biyoage" className="group relative overflow-hidden rounded-3xl border border-violet-500/30 bg-gradient-to-br from-violet-600/20 via-purple-600/10 to-pink-500/5 p-8 text-left transition-all hover:border-violet-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20">
+            <GalaxyLink galaxy="biyoage" className="group relative overflow-hidden rounded-3xl border border-violet-500/30 bg-gradient-to-br from-violet-600/20 via-purple-600/10 to-pink-500/5 p-8 text-left transition-all hover:border-violet-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20">
               <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-violet-500/10 blur-3xl group-hover:bg-violet-500/20 transition-all" />
               <div className="relative">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white mb-5 shadow-lg shadow-violet-500/30">
@@ -257,7 +257,7 @@ export default async function Home({
                   </svg>
                 </div>
                 <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-bold uppercase tracking-widest mb-3">
-                  Ücretsiz
+                  BiyoAGE
                 </div>
                 <h3 className="text-2xl font-black text-white mb-2 leading-tight">
                   Gençlik Skorunu<br />Öğren
@@ -272,10 +272,10 @@ export default async function Home({
                   </svg>
                 </div>
               </div>
-            </Link>
+            </GalaxyLink>
 
             {/* Kapı 2 — Randevu Al */}
-            <Link href={dest2} className="group relative overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-br from-blue-600/20 via-cyan-600/10 to-teal-500/5 p-8 text-left transition-all hover:border-blue-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/20">
+            <GalaxyLink galaxy="esteklinik" className="group relative overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-br from-blue-600/20 via-cyan-600/10 to-teal-500/5 p-8 text-left transition-all hover:border-blue-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/20">
               <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-blue-500/10 blur-3xl group-hover:bg-blue-500/20 transition-all" />
               <div className="relative">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white mb-5 shadow-lg shadow-blue-500/30">
@@ -284,7 +284,7 @@ export default async function Home({
                   </svg>
                 </div>
                 <div className="inline-block px-2.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 text-sm font-bold uppercase tracking-widest mb-3">
-                  Klinik Onaylı
+                  EsteKlinik
                 </div>
                 <h3 className="text-2xl font-black text-white mb-2 leading-tight">
                   Klinikten<br />Randevu Al
@@ -299,10 +299,10 @@ export default async function Home({
                   </svg>
                 </div>
               </div>
-            </Link>
+            </GalaxyLink>
 
             {/* Kapı 3 — Ürün Al */}
-            <Link href="/estestore" className="group relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-600/20 via-orange-600/10 to-rose-500/5 p-8 text-left transition-all hover:border-amber-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-amber-500/20 md:col-span-1 col-span-1">
+            <GalaxyLink galaxy="estestore" className="group relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-600/20 via-orange-600/10 to-rose-500/5 p-8 text-left transition-all hover:border-amber-400 hover:scale-[1.02] hover:shadow-2xl hover:shadow-amber-500/20 md:col-span-1 col-span-1">
               <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-amber-500/10 blur-3xl group-hover:bg-amber-500/20 transition-all" />
               <div className="relative">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white mb-5 shadow-lg shadow-amber-500/30">
@@ -311,7 +311,7 @@ export default async function Home({
                   </svg>
                 </div>
                 <div className="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-sm font-bold uppercase tracking-widest mb-3">
-                  Hekim Puanlı
+                  EsteStore
                 </div>
                 <h3 className="text-2xl font-black text-white mb-2 leading-tight">
                   Güvenilir<br />Ürün Al
@@ -326,7 +326,7 @@ export default async function Home({
                   </svg>
                 </div>
               </div>
-            </Link>
+            </GalaxyLink>
           </div>
 
           <div className="mt-10 text-center">
