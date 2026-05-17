@@ -133,6 +133,31 @@ export default async function UrunDetayPage({
     ? reviews.reduce((s, r) => s + Number(r.rating), 0) / reviews.length
     : null
 
+  // EGP sistemi: yeni 5 sorulu değerlendirmeler
+  const { data: egpReviews } = await supabase
+    .from('egp_reviews')
+    .select('id, baz_score, q_etkinlik, q_sosyal_kanit, q_guvenlik, q_etki_suresi, q_kullanim, created_at, user_id, profiles(full_name)')
+    .eq('product_id', product.id)
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  // EGP belgeleri (gösterim için)
+  const { data: egpDocs } = await supabase
+    .from('egp_documents')
+    .select('document_type, seviye, verified_at')
+    .eq('product_id', product.id)
+    .not('verified_at', 'is', null)
+    .order('seviye', { ascending: false })
+
+  const DOC_LABELS: Record<string, string> = {
+    uts: 'ÜTS Kayıtlı',
+    tufam: 'TÜFAM',
+    tse: 'TSE',
+    ce: 'CE',
+    ce_klas3: 'CE Sınıf-3',
+    klinik_calisma: 'Klinik Çalışma',
+  }
+
   // ── Product JSON-LD ──────────────────────────────────────────────
   const isTreatment = product.treatment_type === 'treatment'
   const productJsonLd: Record<string, unknown> = {
@@ -261,7 +286,7 @@ export default async function UrunDetayPage({
               )}
             </div>
 
-            {/* Estelongy Gençlik Puanı */}
+            {/* Estelongy Gençlik Puanı (EGP) */}
             <div className="bg-[#FAFAF7] border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -270,28 +295,50 @@ export default async function UrunDetayPage({
                   </p>
                   <div className="flex items-end gap-1">
                     <span className={`text-5xl font-black ${
-                      (product.final_score ?? 0) >= 9 ? 'text-[#10876B]' :
-                      (product.final_score ?? 0) >= 7 ? 'text-[#8B7339]' : 'text-red-500'
+                      (product.egp_score ?? product.final_score ?? 0) >= 9 ? 'text-[#10876B]' :
+                      (product.egp_score ?? product.final_score ?? 0) >= 7 ? 'text-[#8B7339]' : 'text-red-500'
                     }`}>
-                      {product.final_score ? product.final_score.toFixed(1) : '—'}
+                      {product.egp_score != null ? Number(product.egp_score).toFixed(2) :
+                       product.final_score ? Number(product.final_score).toFixed(1) : '—'}
                     </span>
                     <span className="text-slate-400 text-lg mb-1">/10</span>
                   </div>
+                  {product.egp_review_count > 0 && (
+                    <p className="text-slate-500 text-xs mt-1">
+                      {product.egp_review_count} kullanıcı değerlendirmesi
+                    </p>
+                  )}
                 </div>
-                {product.preference_count > 0 && (
-                  <div className="text-right">
-                    <p className="text-slate-500 text-sm">Tercih</p>
-                    <p className="text-slate-900 font-bold text-2xl">{product.preference_count}</p>
+              </div>
+
+              <div className="space-y-3">
+                <PuanBar label="Kullanıcı Puanı" value={product.egp_baz ? Number(product.egp_baz) : (avgUserScore ?? product.user_score)} />
+                {product.egp_belge_seviye > 0 && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-slate-500 text-sm w-32 shrink-0">Belge Seviyesi</span>
+                    <div className="flex-1 flex gap-1">
+                      {[1,2,3,4,5].map(n => (
+                        <div key={n} className={`flex-1 h-2 rounded-full ${n <= product.egp_belge_seviye ? 'bg-[#10876B]' : 'bg-slate-200'}`} />
+                      ))}
+                    </div>
+                    <span className="text-slate-900 font-bold text-sm w-8 text-right">{product.egp_belge_seviye}/5</span>
                   </div>
                 )}
               </div>
 
-              <div className="space-y-3">
-                <PuanBar label="Hekim Değerlendirmesi" value={product.doctor_score} />
-                <PuanBar label="Kullanıcı Puanı" value={avgUserScore ?? product.user_score} />
-                <PuanBar label="Bilimsel Belge" value={product.scientific_score} />
-                <PuanBar label="Üretici/Marka" value={product.manufacturer_score} />
-              </div>
+              {/* Doğrulanmış belgeler */}
+              {egpDocs && egpDocs.length > 0 && (
+                <div className="mt-5 pt-5 border-t border-slate-200">
+                  <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Doğrulanmış Belgeler</p>
+                  <div className="flex flex-wrap gap-2">
+                    {egpDocs.map((d, i) => (
+                      <span key={i} className="text-xs bg-[#10876B]/10 text-[#10876B] px-2.5 py-1 rounded-full font-semibold border border-[#10876B]/20">
+                        ✓ {DOC_LABELS[d.document_type] ?? d.document_type}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -369,7 +416,56 @@ export default async function UrunDetayPage({
           </div>
         </div>
 
-        {/* Deneyim Paylaşımları */}
+        {/* EGP Değerlendirmeleri (yeni 5 sorulu sistem) */}
+        {egpReviews && egpReviews.length > 0 && (
+          <div className="mt-14">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-slate-900 font-bold text-xl">
+                EGP Değerlendirmeleri <span className="text-slate-400 font-normal text-base">({egpReviews.length})</span>
+              </h2>
+              {product.egp_baz != null && (
+                <div className="flex items-center gap-2">
+                  <span className="text-[#10876B] font-black text-2xl">{Number(product.egp_baz).toFixed(2)}</span>
+                  <span className="text-slate-400 text-sm">/10 ortalama</span>
+                </div>
+              )}
+            </div>
+            <div className="space-y-4">
+              {egpReviews.slice(0, 10).map(r => (
+                <div key={r.id} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                  <div className="flex items-start justify-between mb-3">
+                    <span className="text-slate-900 font-medium text-sm">
+                      {(r.profiles as { full_name?: string } | null)?.full_name ?? 'Kullanıcı'}
+                    </span>
+                    <div className="text-right shrink-0">
+                      <span className="font-black text-lg text-[#10876B]">{Number(r.baz_score).toFixed(2)}</span>
+                      <span className="text-slate-400 text-sm">/10</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-5 gap-2 text-xs">
+                    {[
+                      ['Etkinlik', r.q_etkinlik],
+                      ['Tavsiye', r.q_sosyal_kanit],
+                      ['Güvenlik', r.q_guvenlik],
+                      ['Süre', r.q_etki_suresi],
+                      ['Kolaylık', r.q_kullanim],
+                    ].map(([label, val]) => (
+                      <div key={label as string} className="text-center">
+                        <p className="text-slate-500">{label}</p>
+                        <p className="font-bold text-amber-500">{'★'.repeat(val as number)}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-slate-400 text-xs mt-3">
+                    {new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Eski Deneyim Paylaşımları (legacy) */}
         <div className="mt-14">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-slate-900 font-bold text-xl">
