@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 interface Props {
   action: (formData: FormData) => Promise<void>
   hasError: boolean
+  errorMessage?: string
   isLoggedIn: boolean
 }
 
@@ -16,7 +17,7 @@ function toE164(phone: string): string {
   return '+90' + digits
 }
 
-export default function SaticiBasvurForm({ action, hasError, isLoggedIn }: Props) {
+export default function SaticiBasvurForm({ action, hasError, errorMessage, isLoggedIn }: Props) {
   // OTP state
   const [otpStep, setOtpStep]         = useState(false)
   const [otpPhone, setOtpPhone]       = useState('')
@@ -96,17 +97,6 @@ export default function SaticiBasvurForm({ action, hasError, isLoggedIn }: Props
 
   return (
     <>
-      {hasError && (
-        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
-          <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <p className="text-red-400 text-sm">
-            Başvuru gönderilemedi. Zaten aktif bir başvurunuz olabilir veya bir hata oluştu. Lütfen tekrar deneyin.
-          </p>
-        </div>
-      )}
-
       {otpStep && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-sm bg-slate-800 rounded-2xl border border-slate-700 p-6">
@@ -223,6 +213,17 @@ export default function SaticiBasvurForm({ action, hasError, isLoggedIn }: Props
         {otpError && !otpStep && (
           <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
             <p className="text-red-400 text-sm">{otpError}</p>
+          </div>
+        )}
+
+        {hasError && (
+          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3">
+            <svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-red-400 text-sm leading-relaxed">
+              {errorMessage ?? 'Başvuru gönderilemedi. Zaten aktif bir başvurunuz olabilir veya bir hata oluştu. Lütfen tekrar deneyin.'}
+            </p>
           </div>
         )}
 

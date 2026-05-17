@@ -38,7 +38,13 @@ async function submitApplication(formData: FormData) {
       phone_confirm: phoneE164 ? true : undefined,
       user_metadata: { first_name: firstName, last_name: lastName || '' },
     })
-    if (createErr || !created.user) redirect('/satici/basvur?error=hesap')
+    if (createErr || !created.user) {
+      // 422 = "already exists" → ayrı kod ile yönlendir
+      const isDuplicate = createErr?.message?.toLowerCase().includes('already') ||
+                          createErr?.message?.toLowerCase().includes('exist') ||
+                          (createErr as { status?: number })?.status === 422
+      redirect(`/satici/basvur?error=${isDuplicate ? 'hesap' : 'hesap_diger'}`)
+    }
 
     if (birthYear) {
       await admin.from('profiles').update({ birth_year: parseInt(birthYear) }).eq('id', created.user.id)
@@ -65,13 +71,21 @@ async function submitApplication(formData: FormData) {
   redirect('/satici/basvur?success=1')
 }
 
+const ERROR_MESSAGES: Record<string, string> = {
+  eksik:  'Zorunlu alanlar eksik. Ad, e-posta ve şifreyi doldurun.',
+  hesap:  'Bu e-posta veya telefon zaten kayıtlı. Lütfen önce giriş yapın, ardından başvurunuzu gönderin.',
+  '1':    'Başvuru kaydedilemedi. Bilgileri kontrol edip tekrar deneyin.',
+}
+
 export default async function SaticiBasvurPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string>>
 }) {
   const params    = await searchParams
-  const hasError  = !!params.error
+  const errorCode = typeof params.error === 'string' ? params.error : null
+  const hasError  = !!errorCode
+  const errorMsg  = errorCode ? (ERROR_MESSAGES[errorCode] ?? 'Bir hata oluştu. Lütfen tekrar deneyin.') : null
   const isSuccess = params.success === '1'
   const supabase  = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -180,7 +194,7 @@ export default async function SaticiBasvurPage({
           ))}
         </div>
 
-        <SaticiBasvurForm action={submitApplication} hasError={hasError} isLoggedIn={!!user} />
+        <SaticiBasvurForm action={submitApplication} hasError={hasError} errorMessage={errorMsg ?? undefined} isLoggedIn={!!user} />
       </div>
     </main>
   )
