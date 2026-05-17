@@ -23,7 +23,7 @@ export default async function SiparislerimPage() {
 
   const { data: orders } = await supabase
     .from('orders')
-    .select('id, order_number, payment_status, total, created_at, order_items(product_snapshot, quantity)')
+    .select('id, order_number, payment_status, status, total, created_at, order_items(product_snapshot, quantity)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(50)
@@ -56,25 +56,34 @@ export default async function SiparislerimPage() {
               const items = (o.order_items ?? []) as { product_snapshot?: { name?: string }; quantity?: number }[]
               const firstNames = items.slice(0, 2).map(x => x.product_snapshot?.name ?? 'Ürün').join(', ')
               const more = items.length > 2 ? ` +${items.length - 2}` : ''
+              const isDelivered = (o as { status?: string }).status === 'delivered'
               return (
-                <SafeLink key={o.id} href={`/siparis/${o.order_number}`}
-                  className="block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-[#C9A961]/50 rounded-2xl p-5 transition-all">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-white font-bold font-mono text-sm">{o.order_number}</p>
-                      <p className="text-slate-400 text-sm mt-1 line-clamp-1">{firstNames}{more}</p>
-                      <p className="text-slate-600 text-sm mt-1">
-                        {new Date(o.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                      </p>
+                <div key={o.id} className="space-y-2">
+                  <SafeLink href={`/siparis/${o.order_number}`}
+                    className="block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-[#C9A961]/50 rounded-2xl p-5 transition-all">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-white font-bold font-mono text-sm">{o.order_number}</p>
+                        <p className="text-slate-400 text-sm mt-1 line-clamp-1">{firstNames}{more}</p>
+                        <p className="text-slate-600 text-sm mt-1">
+                          {new Date(o.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className={`inline-block text-sm font-bold px-2.5 py-1 rounded-full ${badge.color}`}>
+                          {badge.label}
+                        </span>
+                        <p className="text-white font-black mt-2">₺{Number(o.total ?? 0).toLocaleString('tr-TR')}</p>
+                      </div>
                     </div>
-                    <div className="text-right shrink-0">
-                      <span className={`inline-block text-sm font-bold px-2.5 py-1 rounded-full ${badge.color}`}>
-                        {badge.label}
-                      </span>
-                      <p className="text-white font-black mt-2">₺{Number(o.total ?? 0).toLocaleString('tr-TR')}</p>
-                    </div>
-                  </div>
-                </SafeLink>
+                  </SafeLink>
+                  {isDelivered && (
+                    <SafeLink href={`/panel/urun-degerlendir/${o.id}`}
+                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-sm font-bold transition-colors">
+                      ⭐ Ürünleri Değerlendir
+                    </SafeLink>
+                  )}
+                </div>
               )
             })}
           </div>
