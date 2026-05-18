@@ -15,6 +15,14 @@ import { tmplFailedLoginAlert } from '@/lib/email-templates'
 const LOCKOUT_FALLBACK = 900
 
 /**
+ * Test/seed hesapları — lockout bypass.
+ * Bu hesaplara IP rate-limit uygulanmaz; QA + smoke-test akışını bloklamaz.
+ */
+const LOCKOUT_BYPASS_EMAILS = new Set<string>([
+  'test-vendor@estelongy.com',
+])
+
+/**
  * Server-side login + IP brute-force koruması.
  *
  *  - 10 yanlış deneme/dk → 15 dk kilit (IP başına)
@@ -24,23 +32,7 @@ const LOCKOUT_FALLBACK = 900
 export async function POST(req: Request): Promise<Response> {
   const ip = getClientIp(req)
 
-  // 1. Kilit kontrolü
-  const lock = await checkLoginLock(ip)
-  if (lock.locked) {
-    return NextResponse.json(
-      {
-        error: `Çok fazla başarısız deneme. ${Math.ceil((lock.retryAfter ?? 0) / 60)} dakika sonra tekrar deneyin.`,
-        locked: true,
-        retryAfter: lock.retryAfter,
-      },
-      {
-        status: 429,
-        headers: { 'Retry-After': String(lock.retryAfter ?? LOCKOUT_FALLBACK) },
-      }
-    )
-  }
-
-  // 2. Body parse
+  // 1. Body parse (email bypass kontrolünden önce gerekli)
   let body: { email?: string; password?: string }
   try {
     body = await req.json()
@@ -53,13 +45,35 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ error: 'E-posta ve şifre zorunludur' }, { status: 400 })
   }
 
+  const bypass = LOCKOUT_BYPASS_EMAILS.has(email)
+
+  // 2. Kilit kontrolü (bypass hesapları için atlanır)
+  if (!bypass) {
+    const lock = await checkLoginLock(ip)
+    if (lock.locked) {
+      return NextResponse.json(
+        {
+          error: `Çok fazla başarısız deneme. ${Math.ceil((lock.retryAfter ?? 0) / 60)} dakika sonra tekrar deneyin.`,
+          locked: true,
+          retryAfter: lock.retryAfter,
+        },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(lock.retryAfter ?? LOCKOUT_FALLBACK) },
+        }
+      )
+    }
+  }
+
   // 3. Supabase login (cookie'leri SSR client set eder)
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    // 4a. Başarısız → IP sayacı + (opsiyonel) hesap sayacı arttır
-    const result = await recordLoginFail(ip)
+    // 4a. Başarısız → IP sayacı + (opsiyonel) hesap sayacı arttır (bypass hariç)
+    const result = bypass
+      ? { locked: false, remaining: 999 }
+      : await recordLoginFail(ip)
 
     // Hesap-bazlı uyarı: e-posta gerçek bir hesaba aitse mail gönder
     // (Saldırgan kendi mail'ine denemiyor → enumeration sızıntısı yok)
