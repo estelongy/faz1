@@ -13,10 +13,10 @@ import {
 
 /**
  * İki ana ürün türü:
- *  - product  → "Dermo-Kozmetik"  (category=kozmetik)     → kullanıcı + klinik görür
+ *  - product  → "Dermo-Kozmetik"  (category=kozmetik)     → herkes görür
  *                                                           kullanıcı sadece perakende,
- *                                                           klinik perakende + toplu alım
- *  - treatment → "Medikal-Sarf"    (category=sarf_medikal) → SADECE klinik görür
+ *                                                           klinik + sağlık-pro perakende + toplu alım
+ *  - treatment → "Medikal-Sarf"    (category=sarf_medikal) → sadece klinik + sağlık-pro görür
  *                                                           perakende + toplu alım
  *
  * Alt kategori listesi türle değişir:
@@ -125,13 +125,13 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
             value: 'product' as const,
             icon: '📦',
             label: 'Dermo-Kozmetik',
-            sub: 'Kullanıcı + Klinik · perakende (klinik toplu alım)',
+            sub: 'Herkes görür · klinik/sağlık-pro toplu alımı görür',
           },
           {
             value: 'treatment' as const,
             icon: '💉',
             label: 'Medikal-Sarf',
-            sub: 'Sadece Klinik · perakende + toplu alım',
+            sub: 'Sadece klinik + sağlık-pro · perakende + toplu alım',
           },
         ]).map(t => (
           <button
@@ -182,8 +182,8 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
         </select>
         <p className="text-slate-500 text-sm mt-1.5">
           {productType === 'product'
-            ? <>Mağazada <span className="text-[#C9A961] font-semibold">EsteStore (hasta + klinik)</span> kataloğunda görünür.</>
-            : <>Mağazada <span className="text-[#C9A961] font-semibold">Klinik Kataloğu</span> altında görünür. Hasta kullanıcı bu ürünü göremez.</>
+            ? <>Mağazada <span className="text-[#C9A961] font-semibold">EsteStore</span> kataloğunda herkes görür. Toplu alım sadece klinik/sağlık-pro hesaplarına gösterilir.</>
+            : <>Mağazada <span className="text-[#C9A961] font-semibold">Klinik Kataloğu</span> altında görünür. Yalnız klinik ve sağlık-pro hesapları erişebilir — hasta kullanıcı bu ürünü göremez.</>
           }
         </p>
       </div>
@@ -211,8 +211,8 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
           />
           <p className="text-slate-500 text-xs mt-2">
             {productType === 'product'
-              ? 'Toplu alım fiyatları sadece klinik hesaplarına gösterilir. Kullanıcılar yalnız perakende fiyatı görür.'
-              : 'Bu ürün sadece kliniklere açıktır. Perakende ve toplu alım fiyatlarını klinikler görür.'}
+              ? 'Toplu alım fiyatları sadece klinik ve sağlık-pro hesaplarına gösterilir. Hasta kullanıcılar yalnız perakende fiyatı görür.'
+              : 'Bu ürün sadece klinik ve sağlık-pro hesaplarına açıktır. Perakende ve toplu alım fiyatlarını her ikisi de görür.'}
           </p>
         </div>
       )}
