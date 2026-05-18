@@ -27,6 +27,10 @@ export type AuditAction =
   | 'admin_login_otp'
   | 'coupon_create'
   | 'coupon_delete'
+  | 'ep_document_add'
+  | 'ep_document_remove'
+  | 'ep_sahte_tespit'
+  | 'ep_sahte_clear'
 
 export interface AuditEntry {
   /** Aksiyonu yapan admin/kullanıcı */

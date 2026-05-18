@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { submitEgpReview, type EgpReviewPayload } from './actions'
+import { submitEpReview, type EpReviewPayload } from './actions'
 
 interface Product {
   productId: string
@@ -94,7 +94,7 @@ export default function UrunDegerlendirForm({ orderId, products }: Props) {
     if (!isComplete()) { setError('Lütfen tüm soruları yanıtlayın.'); return }
     setError(null)
     startTransition(async () => {
-      const payload: EgpReviewPayload[] = reviewable.map(p => ({
+      const payload: EpReviewPayload[] = reviewable.map(p => ({
         productId: p.productId,
         qEtkinlik:    ratings[p.productId].qEtkinlik,
         qSosyalKanit: ratings[p.productId].qSosyalKanit,
@@ -102,7 +102,7 @@ export default function UrunDegerlendirForm({ orderId, products }: Props) {
         qEtkiSuresi:  ratings[p.productId].qEtkiSuresi,
         qKullanim:    ratings[p.productId].qKullanim,
       }))
-      const res = await submitEgpReview(orderId, payload)
+      const res = await submitEpReview(orderId, payload)
       if (!res.ok) { setError(res.error ?? 'Bir hata oluştu'); return }
       setDone(true)
       setTimeout(() => router.push('/panel/siparislerim'), 2000)

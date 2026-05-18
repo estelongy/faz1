@@ -147,7 +147,7 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
           <div className="text-6xl mb-4">🌱</div>
           <p className="text-xl font-bold text-slate-900 mb-2">Bu kategori yakında dolacak</p>
           <p className="text-base text-slate-600 max-w-md mx-auto mb-6">
-            <span className="font-semibold text-[#8B7339]">{headerLabel}</span> için iş ortaklarımız hazırlanıyor. Çok yakında EGP-skorlu ürünleri burada göreceksin.
+            <span className="font-semibold text-[#8B7339]">{headerLabel}</span> için iş ortaklarımız hazırlanıyor. Çok yakında EP-skorlu ürünleri burada göreceksin.
           </p>
           <Link href="/estestore"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] text-[#0F172A] text-base font-bold shadow-lg shadow-[#C9A961]/30 transition-all">

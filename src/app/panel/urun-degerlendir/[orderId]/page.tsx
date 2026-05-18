@@ -46,9 +46,9 @@ export default async function UrunDegerlendirPage({ params }: Props) {
   if (!items || items.length === 0) notFound()
 
   // Daha önce değerlendirilen ürünler
-  const productIds = [...new Set(items.map(i => i.product_id).filter(Boolean))]
+  const productIds = Array.from(new Set(items.map(i => i.product_id).filter(Boolean)))
   const { data: existing } = await supabase
-    .from('egp_reviews')
+    .from('ep_reviews')
     .select('product_id')
     .eq('user_id', user.id)
     .in('product_id', productIds)

@@ -57,7 +57,7 @@ export async function generateMetadata({
   const title = `${p.name}${titleSuffix}`
   const baseDesc = p.description?.trim() ?? ''
   const truncated = baseDesc.length > 155 ? `${baseDesc.slice(0, 152)}...` : baseDesc
-  const description = truncated || `${p.name} — ${cat ?? 'estetik ürün'}${vendor ? ` · ${vendor}` : ''}. Estelongy Gençlik Puanı (EGP) ${p.final_score?.toFixed(1) ?? '—'}/10.`
+  const description = truncated || `${p.name} — ${cat ?? 'estetik ürün'}${vendor ? ` · ${vendor}` : ''}. Estelongy Puanı (EP) ${p.final_score?.toFixed(1) ?? '—'}/10.`
 
   const canonical = `/estestore/${p.slug ?? slug}`
   const image = p.images?.[0]
@@ -133,17 +133,17 @@ export default async function UrunDetayPage({
     ? reviews.reduce((s, r) => s + Number(r.rating), 0) / reviews.length
     : null
 
-  // EGP sistemi: yeni 5 sorulu değerlendirmeler
-  const { data: egpReviews } = await supabase
-    .from('egp_reviews')
+  // EP (Estelongy Puanı) sistemi: 5 sorulu değerlendirmeler
+  const { data: epReviews } = await supabase
+    .from('ep_reviews')
     .select('id, baz_score, q_etkinlik, q_sosyal_kanit, q_guvenlik, q_etki_suresi, q_kullanim, created_at, user_id, profiles(full_name)')
     .eq('product_id', product.id)
     .order('created_at', { ascending: false })
     .limit(20)
 
-  // EGP belgeleri (gösterim için)
-  const { data: egpDocs } = await supabase
-    .from('egp_documents')
+  // EP belgeleri (gösterim için)
+  const { data: epDocs } = await supabase
+    .from('ep_documents')
     .select('document_type, seviye, verified_at')
     .eq('product_id', product.id)
     .not('verified_at', 'is', null)
@@ -286,52 +286,52 @@ export default async function UrunDetayPage({
               )}
             </div>
 
-            {/* Estelongy Gençlik Puanı (EGP) */}
+            {/* Estelongy Puanı (EP) */}
             <div className="bg-[#FAFAF7] border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <p className="text-slate-500 text-sm uppercase tracking-[0.18em] font-semibold mb-1">
-                    Estelongy Gençlik Puanı
+                    Estelongy Puanı
                   </p>
                   <div className="flex items-end gap-1">
                     <span className={`text-5xl font-black ${
-                      (product.egp_score ?? product.final_score ?? 0) >= 9 ? 'text-[#10876B]' :
-                      (product.egp_score ?? product.final_score ?? 0) >= 7 ? 'text-[#8B7339]' : 'text-red-500'
+                      (product.ep_score ?? product.final_score ?? 0) >= 9 ? 'text-[#10876B]' :
+                      (product.ep_score ?? product.final_score ?? 0) >= 7 ? 'text-[#8B7339]' : 'text-red-500'
                     }`}>
-                      {product.egp_score != null ? Number(product.egp_score).toFixed(2) :
+                      {product.ep_score != null ? Number(product.ep_score).toFixed(2) :
                        product.final_score ? Number(product.final_score).toFixed(1) : '—'}
                     </span>
                     <span className="text-slate-400 text-lg mb-1">/10</span>
                   </div>
-                  {product.egp_review_count > 0 && (
+                  {product.ep_review_count > 0 && (
                     <p className="text-slate-500 text-xs mt-1">
-                      {product.egp_review_count} kullanıcı değerlendirmesi
+                      {product.ep_review_count} kullanıcı değerlendirmesi
                     </p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-3">
-                <PuanBar label="Kullanıcı Puanı" value={product.egp_baz ? Number(product.egp_baz) : (avgUserScore ?? product.user_score)} />
-                {product.egp_belge_seviye > 0 && (
+                <PuanBar label="Kullanıcı Puanı" value={product.ep_baz ? Number(product.ep_baz) : (avgUserScore ?? product.user_score)} />
+                {product.ep_belge_seviye > 0 && (
                   <div className="flex items-center gap-3">
                     <span className="text-slate-500 text-sm w-32 shrink-0">Belge Seviyesi</span>
                     <div className="flex-1 flex gap-1">
                       {[1,2,3,4,5].map(n => (
-                        <div key={n} className={`flex-1 h-2 rounded-full ${n <= product.egp_belge_seviye ? 'bg-[#10876B]' : 'bg-slate-200'}`} />
+                        <div key={n} className={`flex-1 h-2 rounded-full ${n <= product.ep_belge_seviye ? 'bg-[#10876B]' : 'bg-slate-200'}`} />
                       ))}
                     </div>
-                    <span className="text-slate-900 font-bold text-sm w-8 text-right">{product.egp_belge_seviye}/5</span>
+                    <span className="text-slate-900 font-bold text-sm w-8 text-right">{product.ep_belge_seviye}/5</span>
                   </div>
                 )}
               </div>
 
               {/* Doğrulanmış belgeler */}
-              {egpDocs && egpDocs.length > 0 && (
+              {epDocs && epDocs.length > 0 && (
                 <div className="mt-5 pt-5 border-t border-slate-200">
                   <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Doğrulanmış Belgeler</p>
                   <div className="flex flex-wrap gap-2">
-                    {egpDocs.map((d, i) => (
+                    {epDocs.map((d, i) => (
                       <span key={i} className="text-xs bg-[#10876B]/10 text-[#10876B] px-2.5 py-1 rounded-full font-semibold border border-[#10876B]/20">
                         ✓ {DOC_LABELS[d.document_type] ?? d.document_type}
                       </span>
@@ -416,22 +416,22 @@ export default async function UrunDetayPage({
           </div>
         </div>
 
-        {/* EGP Değerlendirmeleri (yeni 5 sorulu sistem) */}
-        {egpReviews && egpReviews.length > 0 && (
+        {/* EP Değerlendirmeleri (5 sorulu sistem) */}
+        {epReviews && epReviews.length > 0 && (
           <div className="mt-14">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-slate-900 font-bold text-xl">
-                EGP Değerlendirmeleri <span className="text-slate-400 font-normal text-base">({egpReviews.length})</span>
+                EP Değerlendirmeleri <span className="text-slate-400 font-normal text-base">({epReviews.length})</span>
               </h2>
-              {product.egp_baz != null && (
+              {product.ep_baz != null && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[#10876B] font-black text-2xl">{Number(product.egp_baz).toFixed(2)}</span>
+                  <span className="text-[#10876B] font-black text-2xl">{Number(product.ep_baz).toFixed(2)}</span>
                   <span className="text-slate-400 text-sm">/10 ortalama</span>
                 </div>
               )}
             </div>
             <div className="space-y-4">
-              {egpReviews.slice(0, 10).map(r => (
+              {epReviews.slice(0, 10).map(r => (
                 <div key={r.id} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
                   <div className="flex items-start justify-between mb-3">
                     <span className="text-slate-900 font-medium text-sm">

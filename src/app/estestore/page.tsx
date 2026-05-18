@@ -24,7 +24,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = {
   title: 'EsteStore — Estelongy Marketplace',
   description:
-    'Estelongy Gençlik Puanlı küratörlü güzellik ve longevity mağazası. Her ürün EGP eşiğinden geçti.',
+    'Estelongy Puanlı küratörlü güzellik ve longevity mağazası. Her ürün EP eşiğinden geçti.',
 }
 
 interface AkademiPackageMini {
@@ -169,7 +169,7 @@ export default async function EsteStorePage() {
           <EsteStoreHero showcaseProducts={heroShowcase} />
 
           <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-12 lg:py-16 space-y-20">
-            <EGPExplainer />
+            <EPExplainer />
 
             <section id="longevity" className="space-y-6">
               <SectionHeader
@@ -239,7 +239,7 @@ export default async function EsteStorePage() {
               <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
                 <ValueProp
                   icon={Star}
-                  title="Estelongy Gençlik Puanlı"
+                  title="Estelongy Puanlı"
                   body="Her ürün 10 üzerinden değerlendirildi. Etki, güvenlik, kanıt ve longevity katkısı."
                 />
                 <ValueProp
@@ -446,10 +446,10 @@ function ValueProp({
 }
 
 /* ============================================================
-   EGP Explainer — "Estelongy Gençlik Puanı nedir?" eğitici strip
+   EP Explainer — "Estelongy Puanı nedir?" eğitici strip
    Her ürün kartında gördüğü skorun anlamını kullanıcıya hızlıca öğretir.
    ============================================================ */
-function EGPExplainer() {
+function EPExplainer() {
   const dims = [
     { label: 'Bilimsel Kanıt', desc: 'Klinik çalışma & literatür' },
     { label: 'Üretici Kalitesi', desc: 'GMP, INCI, sertifika' },
@@ -458,17 +458,17 @@ function EGPExplainer() {
   ]
   return (
     <section
-      id="egp-nedir"
-      aria-label="Estelongy Gençlik Puanı hakkında"
+      id="ep-nedir"
+      aria-label="Estelongy Puanı hakkında"
       className="scroll-mt-24 rounded-3xl border border-[#C9A961]/30 bg-gradient-to-br from-[#FAFAF7] via-white to-[#F5EFE3] px-6 py-8 lg:px-10 lg:py-10"
     >
       <div className="grid lg:grid-cols-[1fr_2fr] gap-8 items-center">
         <div className="space-y-3">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#8B7339]">
-            Estelongy Gençlik Puanı
+            Estelongy Puanı
           </p>
           <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-[-0.02em]">
-            EGP — bir ürünün 10 üzerinden değeri
+            EP — bir ürünün 10 üzerinden değeri
           </h2>
           <p className="text-base text-slate-700 leading-relaxed">
             Her ürünü 4 eksende ölçer, tek skora indirgeriz.

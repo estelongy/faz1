@@ -85,7 +85,7 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
                 </div>
                 {avgScore !== null && (
                   <div>
-                    <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Ortalama EGP</p>
+                    <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Ortalama EP</p>
                     <p className={`font-black text-xl mt-1 ${
                       avgScore >= 9 ? 'text-[#10876B]' : avgScore >= 7 ? 'text-[#8B7339]' : 'text-red-500'
                     }`}>

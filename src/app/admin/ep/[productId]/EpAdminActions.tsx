@@ -3,11 +3,11 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  addEgpDocument,
-  removeEgpDocument,
+  addEpDocument,
+  removeEpDocument,
   reportSahteTespit,
   clearSahteTespit,
-  recomputeEgp,
+  recomputeEp,
 } from '../actions'
 
 const DOC_TYPES: { value: string; label: string; defaultSeviye: number }[] = [
@@ -32,7 +32,7 @@ interface Props {
   isBanned: boolean
 }
 
-export default function EgpAdminActions({ productId, existingDocs, sahteCount, isBanned }: Props) {
+export default function EpAdminActions({ productId, existingDocs, sahteCount, isBanned }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -51,9 +51,9 @@ export default function EgpAdminActions({ productId, existingDocs, sahteCount, i
   function handleAddDoc() {
     setError(null)
     startTransition(async () => {
-      const res = await addEgpDocument(productId, docType, seviye)
+      const res = await addEpDocument(productId, docType, seviye)
       if (!res.ok) { setError(res.error ?? 'Hata'); return }
-      notify('Belge eklendi, EGP güncellendi')
+      notify('Belge eklendi, EP güncellendi')
       router.refresh()
     })
   }
@@ -62,7 +62,7 @@ export default function EgpAdminActions({ productId, existingDocs, sahteCount, i
     if (!confirm(`${type} belgesini kaldırmak istediğine emin misin?`)) return
     setError(null)
     startTransition(async () => {
-      const res = await removeEgpDocument(productId, type)
+      const res = await removeEpDocument(productId, type)
       if (!res.ok) { setError(res.error ?? 'Hata'); return }
       notify('Belge kaldırıldı')
       router.refresh()
@@ -94,8 +94,8 @@ export default function EgpAdminActions({ productId, existingDocs, sahteCount, i
   function handleRecompute() {
     setError(null)
     startTransition(async () => {
-      await recomputeEgp(productId)
-      notify('EGP yeniden hesaplandı')
+      await recomputeEp(productId)
+      notify('EP yeniden hesaplandı')
       router.refresh()
     })
   }
@@ -216,7 +216,7 @@ export default function EgpAdminActions({ productId, existingDocs, sahteCount, i
         disabled={isPending}
         className="w-full bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white font-bold py-3 rounded-2xl text-sm transition-colors"
       >
-        {'🔄 EGP\'yi Yeniden Hesapla'}
+        {'🔄 EP\'yi Yeniden Hesapla'}
       </button>
     </div>
   )

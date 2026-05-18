@@ -45,17 +45,17 @@ export default function EsteStoreSidebar() {
                 href={`/estestore/kategori/${cat.slug}`}
                 title={!open ? cat.name : undefined}
                 className={`group flex items-center gap-3 px-3 py-2.5 mx-2 my-0.5 rounded-lg text-slate-300 hover:bg-slate-800/70 hover:text-white transition-all ${
-                  cat.egpFocus ? 'border-l-2 border-[#C9A961]' : ''
+                  cat.epFocus ? 'border-l-2 border-[#C9A961]' : ''
                 }`}
               >
                 <span
                   className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                    cat.egpFocus ? 'bg-[#C9A961]/15' : 'bg-slate-800/60 border border-slate-700/60'
+                    cat.epFocus ? 'bg-[#C9A961]/15' : 'bg-slate-800/60 border border-slate-700/60'
                   }`}
                 >
                   <Icon
                     size={16}
-                    className={cat.egpFocus ? 'text-[#C9A961]' : 'text-slate-400'}
+                    className={cat.epFocus ? 'text-[#C9A961]' : 'text-slate-400'}
                   />
                 </span>
                 <span

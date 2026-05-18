@@ -527,7 +527,7 @@ function SkorMerkeziInner() {
                           <span className="text-white text-sm font-bold">₺{p.price.toLocaleString('tr-TR')}</span>
                         )}
                         {p.final_score && (
-                          <span className="text-violet-400 text-sm font-semibold">EGP {p.final_score.toFixed(1)}</span>
+                          <span className="text-violet-400 text-sm font-semibold">EP {p.final_score.toFixed(1)}</span>
                         )}
                       </div>
                     </div>
@@ -548,7 +548,7 @@ function SkorMerkeziInner() {
                     EsteStore’a göz atmak istiyorum
                   </p>
                   <p className="text-slate-400 text-sm sm:text-sm mt-0.5">
-                    Kategori, marka ve EGP skoruna göre keşfet
+                    Kategori, marka ve EP skoruna göre keşfet
                   </p>
                 </div>
                 <svg className="w-5 h-5 text-slate-500 group-hover:text-violet-400 group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

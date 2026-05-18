@@ -52,17 +52,17 @@ export default function EsteStoreHero({ showcaseProducts }: Props) {
       eyebrow: 'EsteStore',
       title: (
         <>
-          Estelongy Gençlik Puanlı
+          Estelongy Puanlı
           <br />
           <span className="text-[#C9A961]">zamansız güzellik</span> ürünleri.
         </>
       ),
       subtitle:
-        'Küratörlü ürün koleksiyonu — her biri Estelongy Gençlik Puanı eşiğinden geçti.',
+        'Küratörlü ürün koleksiyonu — her biri Estelongy Puanı eşiğinden geçti.',
       ctaText: 'Keşfet',
       ctaHref: '#urunler',
-      secondaryText: 'EGP nedir?',
-      secondaryHref: '#egp-nedir',
+      secondaryText: 'EP nedir?',
+      secondaryHref: '#ep-nedir',
     },
     {
       kind: 'product-showcase',
@@ -221,7 +221,7 @@ function RolePickerComposition() {
     },
     {
       label: 'Hekim',
-      sub: 'Kliniğini büyüt, EGP işletmesi kur',
+      sub: 'Kliniğini büyüt, EP işletmesi kur',
       icon: Stethoscope,
       href: '/esteklinik/basvur',
       color: '#10876B',
@@ -313,11 +313,11 @@ function HeroShowcase({ products }: { products: ProductCardData[] }) {
   const showItems = products.length >= 5 ? products.slice(0, 5) : fallback
 
   const positions = [
-    { left: '0%', top: '14%', rotate: -10, w: '34%', egp: 9.2, z: 10 },
-    { left: '20%', top: '0%', rotate: -4, w: '34%', egp: 8.7, z: 20 },
-    { left: '40%', top: '8%', rotate: 2, w: '34%', egp: 8.5, z: 30 },
-    { left: '58%', top: '22%', rotate: 6, w: '34%', egp: 8.0, z: 20 },
-    { left: '36%', top: '42%', rotate: -2, w: '34%', egp: 9.5, z: 40 },
+    { left: '0%', top: '14%', rotate: -10, w: '34%', ep: 9.2, z: 10 },
+    { left: '20%', top: '0%', rotate: -4, w: '34%', ep: 8.7, z: 20 },
+    { left: '40%', top: '8%', rotate: 2, w: '34%', ep: 8.5, z: 30 },
+    { left: '58%', top: '22%', rotate: 6, w: '34%', ep: 8.0, z: 20 },
+    { left: '36%', top: '42%', rotate: -2, w: '34%', ep: 9.5, z: 40 },
   ]
 
   return (
@@ -334,7 +334,7 @@ function HeroShowcase({ products }: { products: ProductCardData[] }) {
             zIndex: pos.z,
           }}
         >
-          <PremiumProductCard product={showItems[i]} egp={pos.egp} />
+          <PremiumProductCard product={showItems[i]} ep={pos.ep} />
         </div>
       ))}
     </div>
@@ -343,10 +343,10 @@ function HeroShowcase({ products }: { products: ProductCardData[] }) {
 
 function PremiumProductCard({
   product,
-  egp,
+  ep,
 }: {
   product: ProductCardData
-  egp: number
+  ep: number
 }) {
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-slate-700/60 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.4)] overflow-hidden">
@@ -356,7 +356,7 @@ function PremiumProductCard({
       />
       <div className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 bg-[#C9A961] text-[#0F172A] text-sm font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full">
         <Star size={9} fill="currentColor" />
-        EGP {egp}
+        EP {ep}
       </div>
       <div className="absolute inset-0 flex items-center justify-center p-6">
         {product.cover_image_url ? (

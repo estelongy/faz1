@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-export interface EgpReviewPayload {
+export interface EpReviewPayload {
   productId: string
   qEtkinlik: number
   qSosyalKanit: number
@@ -12,9 +12,9 @@ export interface EgpReviewPayload {
   qKullanim: number
 }
 
-export async function submitEgpReview(
+export async function submitEpReview(
   orderId: string,
-  reviews: EgpReviewPayload[]
+  reviews: EpReviewPayload[]
 ): Promise<{ ok: boolean; error?: string }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -33,7 +33,7 @@ export async function submitEgpReview(
 
   for (const r of reviews) {
     const { error } = await supabase
-      .from('egp_reviews')
+      .from('ep_reviews')
       .upsert({
         product_id: r.productId,
         user_id: user.id,

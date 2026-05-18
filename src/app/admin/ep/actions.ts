@@ -12,11 +12,11 @@ async function requireAdmin() {
   if (!user) redirect('/giris')
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role !== 'admin') redirect('/panel')
-  await ensureAdminOtpFresh(user.id, '/admin/egp')
+  await ensureAdminOtpFresh(user.id, '/admin/ep')
   return { supabase, user }
 }
 
-export async function addEgpDocument(
+export async function addEpDocument(
   productId: string,
   documentType: string,
   seviye: number,
@@ -27,7 +27,7 @@ export async function addEgpDocument(
   const { supabase, user } = await requireAdmin()
 
   const { error } = await supabase
-    .from('egp_documents')
+    .from('ep_documents')
     .upsert({
       product_id: productId,
       document_type: documentType,
@@ -37,48 +37,47 @@ export async function addEgpDocument(
 
   if (error) return { ok: false, error: error.message }
 
-  // EGP yeniden hesapla
-  await supabase.rpc('compute_egp', { p_product_id: productId })
+  await supabase.rpc('compute_ep', { p_product_id: productId })
 
   await writeAuditLog({
     actorId: user.id,
-    action: 'egp_document_add',
-    tableName: 'egp_documents',
+    action: 'ep_document_add',
+    tableName: 'ep_documents',
     recordId: productId,
     newData: { document_type: documentType, seviye },
   })
 
-  revalidatePath('/admin/egp')
-  revalidatePath(`/admin/egp/${productId}`)
+  revalidatePath('/admin/ep')
+  revalidatePath(`/admin/ep/${productId}`)
   return { ok: true }
 }
 
-export async function removeEgpDocument(
+export async function removeEpDocument(
   productId: string,
   documentType: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const { supabase, user } = await requireAdmin()
 
   const { error } = await supabase
-    .from('egp_documents')
+    .from('ep_documents')
     .delete()
     .eq('product_id', productId)
     .eq('document_type', documentType)
 
   if (error) return { ok: false, error: error.message }
 
-  await supabase.rpc('compute_egp', { p_product_id: productId })
+  await supabase.rpc('compute_ep', { p_product_id: productId })
 
   await writeAuditLog({
     actorId: user.id,
-    action: 'egp_document_remove',
-    tableName: 'egp_documents',
+    action: 'ep_document_remove',
+    tableName: 'ep_documents',
     recordId: productId,
     newData: { document_type: documentType },
   })
 
-  revalidatePath('/admin/egp')
-  revalidatePath(`/admin/egp/${productId}`)
+  revalidatePath('/admin/ep')
+  revalidatePath(`/admin/ep/${productId}`)
   return { ok: true }
 }
 
@@ -87,9 +86,8 @@ export async function reportSahteTespit(
 ): Promise<{ ok: boolean; error?: string; newCount?: number; isBanned?: boolean }> {
   const { supabase, user } = await requireAdmin()
 
-  // Mevcut kaydı oku
   const { data: existing } = await supabase
-    .from('egp_verify')
+    .from('ep_verify')
     .select('sahte_count')
     .eq('product_id', productId)
     .maybeSingle()
@@ -102,7 +100,7 @@ export async function reportSahteTespit(
   else if (newCount >= 3) { penalty = 10; isBanned = true }
 
   const { error } = await supabase
-    .from('egp_verify')
+    .from('ep_verify')
     .upsert({
       product_id: productId,
       sahte_count: newCount,
@@ -113,18 +111,18 @@ export async function reportSahteTespit(
 
   if (error) return { ok: false, error: error.message }
 
-  await supabase.rpc('compute_egp', { p_product_id: productId })
+  await supabase.rpc('compute_ep', { p_product_id: productId })
 
   await writeAuditLog({
     actorId: user.id,
-    action: 'egp_sahte_tespit',
-    tableName: 'egp_verify',
+    action: 'ep_sahte_tespit',
+    tableName: 'ep_verify',
     recordId: productId,
     newData: { sahte_count: newCount, penalty, is_banned: isBanned },
   })
 
-  revalidatePath('/admin/egp')
-  revalidatePath(`/admin/egp/${productId}`)
+  revalidatePath('/admin/ep')
+  revalidatePath(`/admin/ep/${productId}`)
   return { ok: true, newCount, isBanned }
 }
 
@@ -134,31 +132,30 @@ export async function clearSahteTespit(
   const { supabase, user } = await requireAdmin()
 
   const { error } = await supabase
-    .from('egp_verify')
+    .from('ep_verify')
     .update({ sahte_count: 0, penalty: 0, is_banned: false, updated_at: new Date().toISOString() })
     .eq('product_id', productId)
 
   if (error) return { ok: false, error: error.message }
 
-  // Banlıysa is_active'i tekrar açma — bu admin'in manuel kararı olsun
-  await supabase.rpc('compute_egp', { p_product_id: productId })
+  await supabase.rpc('compute_ep', { p_product_id: productId })
 
   await writeAuditLog({
     actorId: user.id,
-    action: 'egp_sahte_clear',
-    tableName: 'egp_verify',
+    action: 'ep_sahte_clear',
+    tableName: 'ep_verify',
     recordId: productId,
   })
 
-  revalidatePath('/admin/egp')
-  revalidatePath(`/admin/egp/${productId}`)
+  revalidatePath('/admin/ep')
+  revalidatePath(`/admin/ep/${productId}`)
   return { ok: true }
 }
 
-export async function recomputeEgp(productId: string): Promise<{ ok: boolean }> {
+export async function recomputeEp(productId: string): Promise<{ ok: boolean }> {
   const { supabase } = await requireAdmin()
-  await supabase.rpc('compute_egp', { p_product_id: productId })
-  revalidatePath('/admin/egp')
-  revalidatePath(`/admin/egp/${productId}`)
+  await supabase.rpc('compute_ep', { p_product_id: productId })
+  revalidatePath('/admin/ep')
+  revalidatePath(`/admin/ep/${productId}`)
   return { ok: true }
 }

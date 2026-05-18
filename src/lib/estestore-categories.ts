@@ -47,7 +47,7 @@ export interface StoreCategory {
   shortName?: string // kompakt kart için
   description: string
   icon: LucideIcon
-  egpFocus?: boolean // Estelongy Gençlik Puanı vurgu kategorisi (Longevity, Biyohacking)
+  epFocus?: boolean // Estelongy Puanı vurgu kategorisi (Longevity, Biyohacking)
   bridgeToKlinik?: boolean // İşlem Sonrası gibi köprü kategori
 }
 
@@ -68,7 +68,7 @@ export const HASTA_CATEGORIES: StoreCategory[] = [
     shortName: 'Longevity',
     description: 'NAD+, NMN, resveratrol, spermidine. Bilim destekli içten zamansızlık.',
     icon: Hourglass,
-    egpFocus: true,
+    epFocus: true,
   },
   {
     slug: 'biyohacking-olcum',
@@ -76,7 +76,7 @@ export const HASTA_CATEGORIES: StoreCategory[] = [
     shortName: 'Biyohacking',
     description: 'DNA kit, mikrobiyom, CGM, wearable. Vücudunu ölç, kendini tanı.',
     icon: Activity,
-    egpFocus: true,
+    epFocus: true,
   },
   {
     slug: 'anti-aging',
@@ -320,7 +320,7 @@ export const KLINIK_CATEGORY_GROUPS: KlinikCategoryGroup[] = [
         name: 'Klinik Longevity',
         description: 'NAD+ IV, eksozom, kök hücre, ozon, hiperbarik, IV vitamin',
         icon: Hourglass,
-        egpFocus: true,
+        epFocus: true,
       },
     ],
   },
