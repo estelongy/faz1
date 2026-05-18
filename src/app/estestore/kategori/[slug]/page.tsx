@@ -60,6 +60,9 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
   const anaCategory = section ? section.category : storeCategory!.ana
   const access = getCategoryAccess(anaCategory, role)
 
+  // sarf_medikal kategorisi (24 klinik kategori dahil) hasta kullanıcıya tamamen kapalı.
+  if (access.mode === 'blocked') notFound()
+
   let query = supabase
     .from('products')
     .select('id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers')

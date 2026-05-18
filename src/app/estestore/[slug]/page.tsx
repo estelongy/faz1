@@ -120,6 +120,12 @@ export default async function UrunDetayPage({
 
   if (!product) notFound()
 
+  // Medikal-Sarf (sarf_medikal) ürünleri hasta kullanıcıya tamamen gizli.
+  const role = (user?.app_metadata as Record<string, string> | undefined)?.role as
+    | 'user' | 'clinic' | 'health_professional' | 'vendor' | 'admin' | undefined
+  const isProRole = role === 'clinic' || role === 'health_professional' || role === 'admin'
+  if (product.category === 'sarf_medikal' && !isProRole) notFound()
+
   const { data: reviews } = await supabase
     .from('reviews')
     .select('id, rating, title, body, is_verified, created_at, user_id, profiles(full_name)')

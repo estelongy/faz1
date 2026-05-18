@@ -58,9 +58,24 @@ export function getCategoryAccess(
     return { canSeePrice: true, canBuy: true, mode: 'full' }
   }
 
-  // role:user → hiç fiyat / hiç satın alma; UI'da "ön izleme + giriş yap" göstereceğiz
-  // girişsiz → aynı; toggle ile ön izleme moduna geçer
-  return { canSeePrice: false, canBuy: false, mode: 'preview' }
+  // akademi → ön izleme (paket adı + slug listelenir, fiyat gizli)
+  if (category === 'akademi') {
+    return { canSeePrice: false, canBuy: false, mode: 'preview' }
+  }
+
+  // sarf_medikal → role:user için TAMAMEN GİZLİ.
+  // Storefront listeleri bu kategoriyi hasta kullanıcıdan filtrelemeli;
+  // ürün detay sayfası blocked dönerse 404 verilir.
+  return { canSeePrice: false, canBuy: false, mode: 'blocked' }
+}
+
+/**
+ * Liste sorgularında kullanılacak görünür kategori filtresi.
+ * Pro değilse 'sarf_medikal' ürünler tamamen elenir; akademi preview kalır.
+ */
+export function visibleCategoriesFor(role: UserRole): EsteStoreCategory[] {
+  if (isProfessional(role)) return ['kozmetik', 'sarf_medikal', 'akademi']
+  return ['kozmetik', 'akademi']
 }
 
 // ─── Storefront sections (curated views over flat products) ────────

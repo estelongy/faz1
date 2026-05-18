@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isProfessional, getSectionBySlug, type UserRole } from '@/lib/estestore'
 import ProductCard, { type ProductCardData } from './ProductCard'
-import ProfessionalToggle from './ProfessionalToggle'
 import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
 import BrandMorphButton from './BrandMorphButton'
@@ -67,11 +66,12 @@ export default async function EsteStorePage() {
     return data ?? []
   }
 
+  // Sarf-medikal sadece klinik/sağlık-pro/admin için yüklenir; hasta kullanıcı bu ürünleri görmez.
   const [longevityRaw, islemSonrasiRaw, biyohackingRaw, sarfRaw, heroPoolRaw] = await Promise.all([
     loadSection('longevity', 8),
     loadSection('islem-sonrasi', 8),
     loadSection('biyohacking-olcum', 8),
-    loadSection('sarf-medikal', 9),
+    isPro ? loadSection('sarf-medikal', 9) : Promise.resolve([]),
     supabase
       .from('products')
       .select(PRODUCT_COLS)
@@ -216,13 +216,13 @@ export default async function EsteStorePage() {
               )}
             </section>
 
-            <div className="pt-4">
-              {isPro ? (
+            {/* Klinik tarafı: Medikal-Sarf + Akademi.
+                Hasta kullanıcı bu kısmı HİÇ görmez — toggle / ön izleme yok. */}
+            {isPro && (
+              <div className="pt-4">
                 <div className="space-y-20">{ProSections}</div>
-              ) : (
-                <ProfessionalToggle>{ProSections}</ProfessionalToggle>
-              )}
-            </div>
+              </div>
+            )}
 
             <section className="py-8 lg:py-12 bg-[#FAFAF7] -mx-6 lg:-mx-10 px-6 lg:px-10 rounded-3xl">
               <div className="text-center mb-12 max-w-2xl mx-auto">
