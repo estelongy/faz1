@@ -97,6 +97,22 @@ function PuanBar({ label, value }: { label: string; value: number | null }) {
   )
 }
 
+/** EP başlık ortalama barı — 5 ölçekli (1-5). 5 üzerinden değeri gösterir, çubuk renkli. */
+function BaslikBar({ label, value }: { label: string; value: number | null }) {
+  if (value == null) return null
+  const pct = (value / 5) * 100
+  const color = value >= 4.5 ? 'bg-[#10876B]' : value >= 3.5 ? 'bg-[#C9A961]' : 'bg-red-500'
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-slate-500 text-sm w-28 shrink-0">{label}</span>
+      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-slate-900 font-bold text-sm w-10 text-right tabular-nums">{value.toFixed(1)}/5</span>
+    </div>
+  )
+}
+
 export default async function UrunDetayPage({
   params,
 }: {
@@ -139,13 +155,36 @@ export default async function UrunDetayPage({
     ? reviews.reduce((s, r) => s + Number(r.rating), 0) / reviews.length
     : null
 
-  // EP (Estelongy Puanı) sistemi: 5 sorulu değerlendirmeler
+  // EP (Estelongy Puanı) sistemi: 5 sorulu değerlendirmeler + opsiyonel yorum
   const { data: epReviews } = await supabase
     .from('ep_reviews')
-    .select('id, baz_score, q_etkinlik, q_sosyal_kanit, q_guvenlik, q_etki_suresi, q_kullanim, created_at, user_id, profiles(full_name)')
+    .select('id, baz_score, q_etkinlik, q_sosyal_kanit, q_guvenlik, q_etki_suresi, q_kullanim, comment, created_at, user_id, profiles(full_name)')
     .eq('product_id', product.id)
     .order('created_at', { ascending: false })
-    .limit(20)
+    .limit(50)
+
+  // 5 başlık ortalaması (1-5 ölçeği) — EP rozet bloğunda satır satır barlar.
+  const epAverages = (() => {
+    if (!epReviews || epReviews.length === 0) return null
+    const n = epReviews.length
+    const sum = epReviews.reduce(
+      (acc, r) => ({
+        etkinlik:   acc.etkinlik   + Number(r.q_etkinlik),
+        sosyal:     acc.sosyal     + Number(r.q_sosyal_kanit),
+        guvenlik:   acc.guvenlik   + Number(r.q_guvenlik),
+        etkiSuresi: acc.etkiSuresi + Number(r.q_etki_suresi),
+        kullanim:   acc.kullanim   + Number(r.q_kullanim),
+      }),
+      { etkinlik: 0, sosyal: 0, guvenlik: 0, etkiSuresi: 0, kullanim: 0 },
+    )
+    return {
+      etkinlik:   sum.etkinlik   / n,
+      sosyal:     sum.sosyal     / n,
+      guvenlik:   sum.guvenlik   / n,
+      etkiSuresi: sum.etkiSuresi / n,
+      kullanim:   sum.kullanim   / n,
+    }
+  })()
 
   // EP belgeleri (gösterim için)
   const { data: epDocs } = await supabase
@@ -317,20 +356,30 @@ export default async function UrunDetayPage({
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <PuanBar label="Kullanıcı Puanı" value={product.ep_baz ? Number(product.ep_baz) : (avgUserScore ?? product.user_score)} />
-                {product.ep_belge_seviye > 0 && (
-                  <div className="flex items-center gap-3">
-                    <span className="text-slate-500 text-sm w-32 shrink-0">Belge Seviyesi</span>
-                    <div className="flex-1 flex gap-1">
-                      {[1,2,3,4,5].map(n => (
-                        <div key={n} className={`flex-1 h-2 rounded-full ${n <= product.ep_belge_seviye ? 'bg-[#10876B]' : 'bg-slate-200'}`} />
-                      ))}
-                    </div>
-                    <span className="text-slate-900 font-bold text-sm w-8 text-right">{product.ep_belge_seviye}/5</span>
+              {epAverages ? (
+                <div className="space-y-2">
+                  <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">5 Başlık Ortalaması</p>
+                  <BaslikBar label="Etkinlik"     value={epAverages.etkinlik} />
+                  <BaslikBar label="Sosyal Kanıt" value={epAverages.sosyal} />
+                  <BaslikBar label="Güvenlik"     value={epAverages.guvenlik} />
+                  <BaslikBar label="Etki Süresi"  value={epAverages.etkiSuresi} />
+                  <BaslikBar label="Kullanım"     value={epAverages.kullanim} />
+                </div>
+              ) : (
+                <PuanBar label="Kullanıcı Puanı" value={avgUserScore ?? product.user_score} />
+              )}
+
+              {product.ep_belge_seviye > 0 && (
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-200">
+                  <span className="text-slate-500 text-sm w-28 shrink-0">Belge Seviyesi</span>
+                  <div className="flex-1 flex gap-1">
+                    {[1,2,3,4,5].map(n => (
+                      <div key={n} className={`flex-1 h-2 rounded-full ${n <= product.ep_belge_seviye ? 'bg-[#10876B]' : 'bg-slate-200'}`} />
+                    ))}
                   </div>
-                )}
-              </div>
+                  <span className="text-slate-900 font-bold text-sm w-10 text-right tabular-nums">{product.ep_belge_seviye}/5</span>
+                </div>
+              )}
 
               {/* Doğrulanmış belgeler */}
               {epDocs && epDocs.length > 0 && (
@@ -436,37 +485,59 @@ export default async function UrunDetayPage({
                 </div>
               )}
             </div>
-            <div className="space-y-4">
-              {epReviews.slice(0, 10).map(r => (
-                <div key={r.id} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="text-slate-900 font-medium text-sm">
-                      {(r.profiles as { full_name?: string } | null)?.full_name ?? 'Kullanıcı'}
-                    </span>
-                    <div className="text-right shrink-0">
-                      <span className="font-black text-lg text-[#10876B]">{Number(r.baz_score).toFixed(2)}</span>
-                      <span className="text-slate-400 text-sm">/10</span>
+            {/* Yorumlu kayıtlar üstte, sadece-puan kayıtlar altta */}
+            <div className="divide-y divide-slate-200 border-y border-slate-200">
+              {[...epReviews].slice(0, 20)
+                .sort((a, b) => {
+                  // Yorum varsa üste
+                  const ac = a.comment ? 1 : 0
+                  const bc = b.comment ? 1 : 0
+                  if (ac !== bc) return bc - ac
+                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                })
+                .map(r => {
+                const author = (r.profiles as { full_name?: string } | null)?.full_name ?? 'Kullanıcı'
+                const date = new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+                const aspects = [
+                  ['Etkinlik', r.q_etkinlik],
+                  ['Sosyal',   r.q_sosyal_kanit],
+                  ['Güvenlik', r.q_guvenlik],
+                  ['Süre',     r.q_etki_suresi],
+                  ['Kullanım', r.q_kullanim],
+                ] as const
+
+                return (
+                  <div key={r.id} className="py-4 first:pt-0 last:pb-0">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">
+                          {author.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-slate-900 font-medium text-sm truncate">{author}</p>
+                          <p className="text-slate-400 text-xs">{date}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span className="font-black text-base text-[#10876B] tabular-nums">{Number(r.baz_score).toFixed(2)}</span>
+                        <span className="text-slate-400 text-xs">/10</span>
+                      </div>
+                    </div>
+
+                    {r.comment && (
+                      <p className="text-slate-700 text-sm leading-relaxed mt-2 pl-11">{r.comment}</p>
+                    )}
+
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 pl-11 text-xs text-slate-500">
+                      {aspects.map(([label, val]) => (
+                        <span key={label}>
+                          {label}: <span className="text-amber-500 font-bold">{'★'.repeat(val as number)}</span>
+                        </span>
+                      ))}
                     </div>
                   </div>
-                  <div className="grid grid-cols-5 gap-2 text-xs">
-                    {[
-                      ['Etkinlik', r.q_etkinlik],
-                      ['Tavsiye', r.q_sosyal_kanit],
-                      ['Güvenlik', r.q_guvenlik],
-                      ['Süre', r.q_etki_suresi],
-                      ['Kolaylık', r.q_kullanim],
-                    ].map(([label, val]) => (
-                      <div key={label as string} className="text-center">
-                        <p className="text-slate-500">{label}</p>
-                        <p className="font-bold text-amber-500">{'★'.repeat(val as number)}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-slate-400 text-xs mt-3">
-                    {new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </p>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}

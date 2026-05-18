@@ -27,6 +27,7 @@ const QUESTIONS = [
 
 type QuestionKey = typeof QUESTIONS[number]['key']
 type Ratings = Record<string, Record<QuestionKey, number>>
+type Comments = Record<string, string>
 
 function StarRow({
   value,
@@ -76,12 +77,17 @@ export default function UrunDegerlendirForm({ orderId, products }: Props) {
   }
 
   const [ratings, setRatings] = useState<Ratings>(initRatings)
+  const [comments, setComments] = useState<Comments>({})
 
   function setRating(productId: string, key: QuestionKey, value: number) {
     setRatings(prev => ({
       ...prev,
       [productId]: { ...prev[productId], [key]: value },
     }))
+  }
+
+  function setComment(productId: string, value: string) {
+    setComments(prev => ({ ...prev, [productId]: value }))
   }
 
   function isComplete() {
@@ -101,6 +107,7 @@ export default function UrunDegerlendirForm({ orderId, products }: Props) {
         qGuvenlik:    ratings[p.productId].qGuvenlik,
         qEtkiSuresi:  ratings[p.productId].qEtkiSuresi,
         qKullanim:    ratings[p.productId].qKullanim,
+        comment:      comments[p.productId]?.trim() || null,
       }))
       const res = await submitEpReview(orderId, payload)
       if (!res.ok) { setError(res.error ?? 'Bir hata oluştu'); return }
@@ -163,6 +170,21 @@ export default function UrunDegerlendirForm({ orderId, products }: Props) {
                 />
               </div>
             ))}
+          </div>
+
+          {/* Opsiyonel yorum — bırakmayan kullanıcı yalnız puan vermiş olur */}
+          <div className="space-y-1.5 pt-2 border-t border-slate-700/60">
+            <label className="block text-slate-300 text-sm">
+              Deneyimini birkaç cümleyle anlat <span className="text-slate-500 text-xs">(opsiyonel)</span>
+            </label>
+            <textarea
+              value={comments[product.productId] ?? ''}
+              onChange={e => setComment(product.productId, e.target.value)}
+              maxLength={1000}
+              rows={3}
+              placeholder="Ne için kullandın, nasıl bir sonuç gördün?"
+              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-[#C9A961] transition-colors resize-none"
+            />
           </div>
         </div>
       ))}

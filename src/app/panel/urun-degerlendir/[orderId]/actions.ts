@@ -10,6 +10,8 @@ export interface EpReviewPayload {
   qGuvenlik: number
   qEtkiSuresi: number
   qKullanim: number
+  /** Opsiyonel yorum — yoksa kullanıcı yalnız puan vermiş kabul edilir */
+  comment?: string | null
 }
 
 export async function submitEpReview(
@@ -42,6 +44,7 @@ export async function submitEpReview(
         q_guvenlik: r.qGuvenlik,
         q_etki_suresi: r.qEtkiSuresi,
         q_kullanim: r.qKullanim,
+        comment: r.comment?.trim() ? r.comment.trim().slice(0, 1000) : null,
       }, { onConflict: 'product_id,user_id' })
 
     if (error) return { ok: false, error: error.message }
