@@ -371,12 +371,86 @@ Küçük askıda: /panel ve /admin accent (galaksi nötr mü, krem-altın mı?) 
 
 ---
 
-## 21. Terminoloji
+## 21. EsteVerify (planlı sistem — opt-in orijinallik doğrulaması)
+
+**Durum:** Konsept onaylı, henüz uygulanmadı. Roadmap'te commercial-readiness lane'inin bir parçası olabilir.
+
+**Niyet:** Türkiye'de e-ticaret sahte ürün problemini çözen, vendor için sıfır donanım gerektiren, devletin ÜTS sistemini leverage eden orijinallik doğrulamalı teslimat. "Hekim onaylı" marka vaadinin fiziksel kanıtı.
+
+**Akış (özet):**
+```
+SATICI: sipariş geldi → telefonda ÜTS app → ürün karekodunu okutur (10-30 sn)
+        → Estelongy panel yansıtır → sistem QR token üretir
+        → kargo etiketinin yanına QR sticker basılır → kargoya verilir
+KARGO:  değişmez (Trendyol/Aras/Yurtiçi standart)
+MÜŞTERİ: paket gelir → push bildirim → QR okutur → /verify/[token] sayfası
+         (Ürün · Lot · SKT · ÜTS Kayıt ✓ · Satıcı Güven Skoru · 🛡️ Estelongy Güvencesi)
+```
+
+**Net kararlar (tartışma kapandı):**
+- **Opt-in model** — sistem mecburi değil, vendor istediğinde aktif eder. Opt-in olmayan vendor standart akışta çalışır.
+- **Vendor için sıfır donanım** — telefon + var olan termal yazıcı (kargo etiketi için zaten basıyor). Marjinal maliyet ~₺0.05/sipariş sticker.
+- **ÜTS leveraging** — devletin zaten zorunlu kıldığı karekod sistemine binmek, ayrı verify altyapısı kurmamak.
+- **Kategori kapsama %97.5** — 41/42 EsteStore kategorisinde uygulanır (1 istisna: dijital eğitim). Pazarlama dilinde "her fiziksel üründe EsteVerify" denilebilir.
+- **Üç ayrı kavram — birbirine değen ama ayrık (önemli):**
+  - **EP** (Estelongy Puanı): ürünün bilimsel + memnuniyet değeri, 0-10, `ep_reviews` / `products.ep_score`
+  - **EsteVerify**: paket-bazlı orijinallik doğrulaması, binary ✓/✗, `verify_tokens` (planlı)
+  - **ep_verify** (sahte tespit sayacı): admin tarafından raporlanan sahte tespit + ceza, `ep_verify` tablo. **"EsteVerify" markası bu DEĞİL — adlandırma düzeltilecek (Sahte Tespit Sayacı olarak yeniden etiketle).**
+  - **Satıcı Güven Skoru**: vendor seviyesinde 0-100, formül: iade oranı + zamanında teslim + sahte tespit geçmişi + KYC tamlığı + müşteri yıldız ortalaması (weighted average — ilk versiyon)
+
+**Opt-in teşvikleri (vendor için):**
+- Listede üstte gösterim (Booking.com modeli)
+- EP +0.3 baseline boost
+- "EsteVerify'lı satıcı" rozeti — diğer kanallarda da kullanılır
+- İleride komisyon %2 indirimi (pilot sonuçlarına göre)
+- Bedava mini-WMS (lot/SKT otomatik kayda alınır → recall hazır, sahte iddiasında kanıt)
+
+**Dışlanan seçenekler (tartışılıp elendi — tekrar açma):**
+- ❌ **Tam WMS** (barkod okuyucu + lot/SKT manuel giriş + termal yazıcı entegrasyonu) — vendor onboarding'i kıran ağır iş yükü. Yerine ÜTS leveraging.
+- ❌ **Mecburi sistem** (her vendor için zorunlu) — küçük satıcı arzını öldürür, mali risk asimetrisi yaratır. Yerine opt-in.
+- ❌ **Tüm vendor için Estelongy Güvencesi** — tek başarısız doğrulama brand-ending olurdu. Yerine sadece opt-in vendor için garanti.
+- ❌ **EsteVerify ↔ ep_verify aynı isim** — kafa karıştırıcı (biri "doğruladım" diyor, diğeri "yakaladım"). ep_verify "Sahte Tespit Sayacı" olarak yeniden etiketlenecek.
+
+**Açık sorular (karar bekleyen):**
+1. **ÜTS public programmatic API** var mı? Yoksa Faz 0 screenshot-kanıt modeliyle başla, API çıkarsa upgrade.
+2. **"Estelongy Güvencesi"** mali taahhüt mü (iade + tazminat sigorta poliçesiyle) yoksa deklarasyon mu? Hukuki değerlendirme gerekli.
+3. **"EsteVerify'sız vendor"** rozeti açık mı (opt-in baskısı yüksek) yoksa nötr mü (yumuşak adoption)? Başlangıçta nötr, 6 ay sonra revize öneriliyor.
+4. **Müşteri bildirim kanal önceliği:** SMS (Netgsm canlı) önce mi, web push + email birlikte mi?
+5. **Vendor onboarding'de opt-in toggle** ne zaman sorulsun — signup mı, ileride panel'den mi?
+
+**Planlanan DB şeması:**
+```
+verify_tokens:    id, order_id, vendor_id, product_id, uts_kayit_no,
+                  lot, skt, qr_token (unique), metadata jsonb,
+                  created_at, first_scanned_at, scan_count
+vendors:          + esteverify_enabled boolean default false
+                  + esteverify_activated_at timestamptz
+                  + trust_score numeric (0-100, computed)
+```
+
+**Önerilen rollout sırası:**
+1. Faz 0 (1-2 hafta): DB tablolar + opt-in flag + vendor panel toggle
+2. Faz 1 (2-3 hafta): ÜTS scan UX + QR üretim + sticker PDF template
+3. Faz 2 (1-2 hafta): `/verify/[token]` müşteri sayfası + SMS push
+4. Pilot: 2-3 premium klinik vendor — komisyon indirimi + featured banner karşılığında 30 gün veri
+5. Genel duyuru + EsteStore landing'de explainer + filter
+
+**Strateji notu:** EsteVerify, Trendyol/HB/N11/Amazon TR'nin yapmadığı tek şey. Sırf A grubu klinik (Botoks, Dolgu, Klinik İlaç, Topikal Anestezik, Klinik Longevity = 5 kategori) pilotuyla bile sektörde tek konuma çıkarır. Tam katalog genişlemesi pilot başarısına bağlı.
+
+**Geliştirme için tam prompt:** Gemini/başka AI ile konuşmak istendiğinde, bu bölüm yeterli özet. Daha kapsamlı niyet/mantık dokümanı: `memory/esteverify.md`.
+
+---
+
+## 22. Terminoloji
 
 | Terim | Tanım |
 |---|---|
 | **Skor** | Estelongy Gençlik Skoru® (hastaya ait, 0-100) |
-| **EGP** | Estelongy Gençlik Puanı (nesneye ait, 0-10) |
+| **EGP** | Estelongy Gençlik Puanı — **klinik tarafı için** (Hizmet EGP, `clinic_egp`, 0-10) |
+| **EP** | Estelongy Puanı — **ürün tarafı için** (`products.ep_score`, 0-10, eski adı "Ürün EGP") |
+| **EsteVerify** | Paket-bazlı ÜTS-doğrulu orijinallik sistemi (planlı, opt-in) |
+| **Sahte Tespit Sayacı** | `ep_verify` tablosu — admin'in raporladığı sahte tespit + ceza puanı (EsteVerify markasıyla karıştırma) |
+| **Satıcı Güven Skoru** | Vendor seviyesi 0-100 metrik (planlı) |
 | **C250** | gpt-4o-mini Vision'dan türetilen ham EGS |
 | **EGS** | Skorun eski adı (kodda yer yer kalmış: `src/lib/egs.ts`) |
 | **Estelog** | Skor bazlı, protokol odaklı estetik hekim (yeni meslek tanımı) |
@@ -388,7 +462,7 @@ Küçük askıda: /panel ve /admin accent (galaksi nötr mü, krem-altın mı?) 
 
 ---
 
-## 22. İletişim
+## 23. İletişim
 
 - Kurucu: İzzet Gök · estelongy@gmail.com
 - Admin: estelongy@gmail.com, dr.izzetgok@gmail.com (her ikisi +90 5****5003)
