@@ -20,6 +20,8 @@ function slugify(text: string) {
 
 export type UrunEkleInput = {
   name: string
+  /** ÜTS (Ürün Takip Sistemi) kayıt numarası — zorunlu. Estelongy yalnız ÜTS kayıtlı ürün satar. */
+  utsNo: string
   category: EsteStoreCategory
   subcategory?: string
   treatmentType: 'product' | 'treatment'
@@ -63,6 +65,15 @@ export async function urunEkleAction(input: UrunEkleInput): Promise<{ ok: boolea
     return { ok: false, error: 'Geçersiz kategori.' }
   }
 
+  // ÜTS kayıt numarası — zorunlu. Estelongy yalnız ÜTS kayıtlı ürün satar.
+  const utsNo = input.utsNo?.trim() ?? ''
+  if (utsNo.length < 5) {
+    return { ok: false, error: 'Geçerli bir ÜTS kayıt numarası girin (en az 5 karakter).' }
+  }
+  if (utsNo.length > 64) {
+    return { ok: false, error: 'ÜTS kayıt numarası çok uzun (en fazla 64 karakter).' }
+  }
+
   // Tier validasyonu (varsa)
   let tiers: PricingTiers = []
   if (input.pricingTiers && input.pricingTiers.length > 0) {
@@ -82,6 +93,7 @@ export async function urunEkleAction(input: UrunEkleInput): Promise<{ ok: boolea
   const { error: insertErr } = await supabase.from('products').insert({
     vendor_id:       vendor.id,
     name:            input.name.trim(),
+    uts_no:          utsNo,
     slug,
     category:        input.category,
     subcategory:     input.subcategory?.trim() || null,

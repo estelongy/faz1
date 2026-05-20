@@ -416,6 +416,14 @@ export default async function UrunDetayPage({
               </p>
             )}
 
+            {/* ÜTS kayıt numarası — her ürün ÜTS kayıtlı. Marka vaadi: orijinallik. */}
+            {product.uts_no && (
+              <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 bg-[#10876B]/10 border border-[#10876B]/25 rounded-full">
+                <span className="text-[#10876B] text-sm font-bold">✓ ÜTS Kayıtlı</span>
+                <span className="text-slate-500 text-xs tabular-nums">No: {product.uts_no}</span>
+              </div>
+            )}
+
             {product.description && (
               <p className="text-slate-700 leading-relaxed mb-6">{product.description}</p>
             )}

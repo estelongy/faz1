@@ -31,6 +31,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
   const [open, setOpen] = useState(false)
 
   const [name,          setName]          = useState('')
+  const [utsNo,         setUtsNo]         = useState('')
   const [productType,   setProductType]   = useState<ProductType>('product')
   const [subcategory,   setSubcategory]   = useState<string>(HASTA_CATEGORIES[0].slug)
   const [description,   setDescription]   = useState('')
@@ -57,6 +58,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) { setError('Ürün adı zorunludur.'); return }
+    if (!utsNo.trim()) { setError('ÜTS kayıt numarası zorunludur — Estelongy yalnız ÜTS kayıtlı ürün satar.'); return }
     setError(null)
     setLoading(true)
 
@@ -69,6 +71,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
     const res = await urunEkleAction({
       name: name.trim(),
+      utsNo: utsNo.trim(),
       category,
       subcategory,
       treatmentType: productType,
@@ -87,7 +90,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
     setSuccess(true)
     setLoading(false)
-    setName(''); setDescription(''); setPrice(''); setIngredients(''); setImages([]); setTiers([])
+    setName(''); setUtsNo(''); setDescription(''); setPrice(''); setIngredients(''); setImages([]); setTiers([])
     router.refresh()
     setTimeout(() => { setSuccess(false); setOpen(false) }, 2000)
   }
@@ -157,6 +160,24 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
           placeholder={productType === 'product' ? 'ör. Hyaluronik Asit Serum' : 'ör. Restylane Defyne 1ml'}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-[#C9A961] transition-colors"
         />
+      </div>
+
+      {/* ÜTS Kayıt Numarası — ZORUNLU. Estelongy yalnız ÜTS kayıtlı ürün satar. */}
+      <div>
+        <label className="block text-slate-400 text-sm mb-1">
+          ÜTS Kayıt Numarası <span className="text-red-400">*</span>
+        </label>
+        <input
+          type="text" required value={utsNo} onChange={e => setUtsNo(e.target.value)}
+          placeholder={productType === 'product' ? 'Kozmetik ürün bildirim numarası' : 'Tıbbi cihaz / sarf kayıt numarası'}
+          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 text-sm focus:outline-none focus:border-[#C9A961] transition-colors"
+        />
+        <p className="text-slate-500 text-sm mt-1.5">
+          {productType === 'product'
+            ? 'Ürünün T.C. Sağlık Bakanlığı ÜTS kozmetik bildirim numarası. '
+            : 'Ürünün T.C. Sağlık Bakanlığı ÜTS tıbbi cihaz/sarf kayıt numarası. '}
+          <span className="text-[#C9A961] font-semibold">Estelongy yalnız ÜTS kayıtlı ürün satar</span> — bu alan zorunludur.
+        </p>
       </div>
 
       {/* Alt kategori — türe göre liste */}
