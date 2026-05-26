@@ -312,13 +312,13 @@ function TopNav({ user }: { user: boolean }) {
 
         {/* Sağ: Arama + Rehber + Giriş + Kayıt Ol + Sepet */}
         <div className="flex items-center gap-1 sm:gap-2">
-          <button
-            type="button"
+          <Link
+            href="/estestore/ara"
             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-800/60 text-slate-400 hover:text-slate-100 transition-colors"
             aria-label="Ara"
           >
             <Search size={18} />
-          </button>
+          </Link>
           <Link
             href="/rehber"
             className="hidden sm:inline-flex px-3 h-10 items-center text-base font-semibold text-slate-200 hover:text-white transition-colors rounded-full hover:bg-slate-800/40"

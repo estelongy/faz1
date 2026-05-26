@@ -8,8 +8,10 @@ import {
   type UserRole,
 } from '@/lib/estestore'
 import { HASTA_CATEGORIES, KLINIK_CATEGORIES_FLAT, type StoreCategory } from '@/lib/estestore-categories'
-import ProductCard, { type ProductCardData } from '../../ProductCard'
+import ProductCard from '../../ProductCard'
 import CartButton from '@/components/CartButton'
+import EsteStoreToolbar from '@/components/EsteStoreToolbar'
+import { searchProducts, parseSearchParamsFromUrl } from '@/lib/products-search'
 
 import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
@@ -25,6 +27,7 @@ function findStoreCategory(slug: string): { cat: StoreCategory; ana: 'kozmetik' 
 
 interface Props {
   params: Promise<{ slug: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -36,8 +39,9 @@ export async function generateMetadata({ params }: Props) {
   return { title: storeCat ? `${storeCat.cat.name} | EsteStore` : 'EsteStore' }
 }
 
-export default async function EsteStoreCategoryPage({ params }: Props) {
+export default async function EsteStoreCategoryPage({ params, searchParams }: Props) {
   const { slug: urlSlug } = await params
+  const sp = await searchParams
 
   // Akademi → ayrı modül; redirect.
   if (urlSlug === 'akademi') redirect('/akademi')
@@ -63,34 +67,15 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
   // sarf_medikal kategorisi (24 klinik kategori dahil) hasta kullanıcıya tamamen kapalı.
   if (access.mode === 'blocked') notFound()
 
-  let query = supabase
-    .from('products')
-    .select('id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers')
-    .eq('category', anaCategory)
-    .eq('is_active', true)
-    .eq('approval_status', 'approved')
-
-  if (section?.subcategoryIn && section.subcategoryIn.length > 0) {
-    query = query.in('subcategory', section.subcategoryIn)
-  } else if (storeCategory) {
-    // storeCategory mode: slug = subcategory eşleşmesi
-    query = query.eq('subcategory', storeCategory.cat.slug)
-  }
-
-  const { data: products } = await query.order('created_at', { ascending: false })
-
-  const items: ProductCardData[] = (products ?? []).map(p => ({
-    id: p.id,
-    slug: p.slug,
-    name: p.name,
-    cover_image_url: p.cover_image_url ?? p.images?.[0] ?? null,
-    price: Number(p.price),
-    category: p.category as ProductCardData['category'],
-    subcategory: p.subcategory,
-    pricing_tiers: Array.isArray(p.pricing_tiers)
-      ? (p.pricing_tiers as ProductCardData['pricing_tiers'])
-      : [],
-  }))
+  // URL'den filter/sort/sayfa parametrelerini al + kategori sabitini ekle
+  const baseParams = parseSearchParamsFromUrl(sp)
+  const result = await searchProducts({
+    ...baseParams,
+    category: anaCategory,
+    subcategory: storeCategory ? storeCategory.cat.slug : undefined,
+    subcategoryIn: section?.subcategoryIn ?? undefined,
+  })
+  const items = result.items
 
   // Header bilgileri — section ya da storeCategory'den çek
   const headerLabel = section?.label ?? storeCategory!.cat.name
@@ -144,6 +129,9 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
         )}
       </header>
 
+      {/* Filter & sort toolbar */}
+      {access.mode !== 'preview' && <EsteStoreToolbar total={result.total} />}
+
       {/* Liste */}
       {items.length === 0 ? (
         <div className="text-center py-20 px-6 rounded-3xl border border-dashed border-[#C9A961]/40 bg-gradient-to-br from-[#FAFAF7] to-white">
@@ -158,16 +146,53 @@ export default async function EsteStoreCategoryPage({ params }: Props) {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {items.map(p => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              isPro={isPro}
-              showPrice={access.canSeePrice}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {items.map(p => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                isPro={isPro}
+                showPrice={access.canSeePrice}
+              />
+            ))}
+          </div>
+          {result.totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 pt-6">
+              {result.page > 1 && (
+                <Link href={`/estestore/kategori/${urlSlug}?${(() => {
+                  const params = new URLSearchParams()
+                  for (const [k, v] of Object.entries(sp)) {
+                    if (k === 'sayfa') continue
+                    if (typeof v === 'string') params.set(k, v)
+                  }
+                  if (result.page - 1 > 1) params.set('sayfa', String(result.page - 1))
+                  return params.toString()
+                })()}`}
+                  className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:border-[#C9A961]">
+                  ← Önceki
+                </Link>
+              )}
+              <span className="text-slate-500 text-sm font-semibold">
+                Sayfa <strong className="text-slate-900">{result.page}</strong> / {result.totalPages}
+              </span>
+              {result.page < result.totalPages && (
+                <Link href={`/estestore/kategori/${urlSlug}?${(() => {
+                  const params = new URLSearchParams()
+                  for (const [k, v] of Object.entries(sp)) {
+                    if (k === 'sayfa') continue
+                    if (typeof v === 'string') params.set(k, v)
+                  }
+                  params.set('sayfa', String(result.page + 1))
+                  return params.toString()
+                })()}`}
+                  className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:border-[#C9A961]">
+                  Sonraki →
+                </Link>
+              )}
+            </div>
+          )}
+        </>
       )}
       </div>
     </main>
