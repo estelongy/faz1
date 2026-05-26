@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
+import { verifyGuestOrderToken, normalizeEmail } from '@/lib/guest-order-token'
 import { IadeTalepForm } from './IadeTalepForm'
 import SiparisSuccessOverlay from '@/components/SiparisSuccessOverlay'
 import BackButton from '@/components/BackButton'
@@ -31,21 +33,48 @@ export default async function SiparisPage({
   searchParams,
 }: {
   params: Promise<{ orderNumber: string }>
-  searchParams: Promise<{ success?: string }>
+  searchParams: Promise<{ success?: string; e?: string; t?: string }>
 }) {
   const { orderNumber } = await params
-  const { success } = await searchParams
+  const { success, e: guestEmailParam, t: guestTokenParam } = await searchParams
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect(`/giris?g=estestore&next=/siparis/${orderNumber}`)
 
-  const { data: order } = await supabase
-    .from('orders')
-    .select('*, order_items(*, vendors(company_name), returns(id, status, reason, description, created_at))')
-    .eq('order_number', orderNumber)
-    .eq('user_id', user.id)
-    .single()
+  // Misafir mi yoksa kayıtlı kullanıcı mı? Misafir için ?e=...&t=... query
+  // HMAC token doğrulanıp service client ile RLS bypass yapılır.
+  const isGuestAccess = !user && !!(guestEmailParam && guestTokenParam)
+
+  if (!user && !isGuestAccess) {
+    redirect(`/giris?g=estestore&next=/siparis/${orderNumber}`)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let order: any = null
+
+  if (user) {
+    const { data } = await supabase
+      .from('orders')
+      .select('*, order_items(*, vendors(company_name), returns(id, status, reason, description, created_at))')
+      .eq('order_number', orderNumber)
+      .eq('user_id', user.id)
+      .single()
+    order = data
+  } else if (isGuestAccess) {
+    // HMAC doğrulama — token email + sipariş no'ya bağlı
+    const tokenOk = verifyGuestOrderToken(orderNumber, guestEmailParam!, guestTokenParam!)
+    if (!tokenOk) notFound()
+
+    const admin = createServiceClient()
+    const { data } = await admin
+      .from('orders')
+      .select('*, order_items(*, vendors(company_name), returns(id, status, reason, description, created_at))')
+      .eq('order_number', orderNumber)
+      .eq('is_guest', true)
+      .eq('guest_email', normalizeEmail(guestEmailParam!))
+      .single()
+    order = data
+  }
 
   if (!order) notFound()
 
@@ -92,7 +121,7 @@ export default async function SiparisPage({
 
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
-          <BackButton href="/panel" label="Panelim" />
+          <BackButton href={isGuestAccess ? '/estestore' : '/panel'} label={isGuestAccess ? 'Mağaza' : 'Panelim'} />
           <span className="text-slate-700">|</span>
           <span className="text-white text-sm font-bold truncate">{order.order_number}</span>
         </div>
@@ -108,6 +137,20 @@ export default async function SiparisPage({
                 <p className="text-white font-bold">Siparişin alındı!</p>
                 <p className="text-emerald-300 text-sm mt-0.5">İş Ortaklarımız hazırlığa başladı. E-posta ile takip bilgilendirmesi alacaksın.</p>
               </div>
+            </div>
+          </div>
+        )}
+        {isGuestAccess && order.payment_status === 'paid' && (
+          <div className="mb-6 p-5 bg-[#C9A961]/10 border border-[#C9A961]/30 rounded-2xl">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <p className="text-white font-bold">Hesap oluştur, sipariş geçmişini sakla</p>
+                <p className="text-slate-300 text-sm mt-0.5">İade hakkını kullanmak ve siparişlerini takip etmek için ücretsiz hesap aç.</p>
+              </div>
+              <Link href={`/kayit?email=${encodeURIComponent(guestEmailParam ?? '')}&next=/siparis/${order.order_number}`}
+                className="px-4 py-2 bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] text-sm font-bold rounded-lg transition-colors">
+                Hesap Aç
+              </Link>
             </div>
           </div>
         )}
@@ -215,7 +258,7 @@ export default async function SiparisPage({
                           }
                         </div>
                       )}
-                      {order.payment_status === 'paid' && (
+                      {order.payment_status === 'paid' && !isGuestAccess && (
                         <div className="px-4 pb-3">
                           <IadeTalepForm
                             orderItemId={item.id}

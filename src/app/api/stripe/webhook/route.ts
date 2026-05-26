@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createServiceClient } from '@/lib/supabase/service'
+import { signGuestOrderToken } from '@/lib/guest-order-token'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-03-25.dahlia',
@@ -31,14 +32,29 @@ async function sendOrderConfirmationEmail(
 ) {
   const { data: order } = await admin
     .from('orders')
-    .select('id, order_number, user_id, total, subtotal, shipping_fee, coupon_discount, coupon_code, address_snapshot')
+    .select('id, order_number, user_id, is_guest, guest_email, total, subtotal, shipping_fee, coupon_discount, coupon_code, address_snapshot')
     .eq('id', orderId)
     .single()
   if (!order) return
 
-  const { data: userData } = await admin.auth.admin.getUserById(order.user_id)
-  const email = userData?.user?.email
+  // Email kaynağı: misafir ise guest_email; kayıtlı ise auth.users
+  let email: string | undefined
+  if (order.is_guest && order.guest_email) {
+    email = order.guest_email as string
+  } else if (order.user_id) {
+    const { data: userData } = await admin.auth.admin.getUserById(order.user_id)
+    email = userData?.user?.email ?? undefined
+  }
   if (!email) return
+
+  // Sipariş takip URL'si: misafir için ?e=...&t=... query parametresi
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com').replace(/\/$/, '')
+  let trackingUrl = `${baseUrl}/siparis/${order.order_number}`
+  if (order.is_guest && order.guest_email) {
+    const token = signGuestOrderToken(order.order_number, order.guest_email as string)
+    const q = new URLSearchParams({ e: order.guest_email as string, t: token })
+    trackingUrl = `${trackingUrl}?${q.toString()}`
+  }
 
   const { data: items } = await admin
     .from('order_items')
@@ -98,10 +114,15 @@ async function sendOrderConfirmationEmail(
         ` : ''}
 
         <div style="margin-top:24px;text-align:center">
-          <a href="https://estelongy.com/siparis/${order.order_number}"
+          <a href="${trackingUrl}"
              style="display:inline-block;padding:12px 32px;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">
             Siparişi Görüntüle
           </a>
+          ${order.is_guest ? `
+            <p style="margin-top:12px;font-size:12px;color:#666;text-align:center">
+              Bu link size özeldir — paylaşmayın. Hesap oluşturursanız siparişiniz panelinize işlenir.
+            </p>
+          ` : ''}
         </div>
 
         <p style="margin-top:32px;font-size:12px;color:#999;text-align:center">
