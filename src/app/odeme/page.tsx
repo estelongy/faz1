@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import OdemeFlow from './OdemeFlow'
 
@@ -11,13 +10,15 @@ export const metadata: Metadata = { title: 'Ödeme' }
 export default async function OdemePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris?g=estestore&next=/odeme')
 
-  const { data: addresses } = await supabase
-    .from('addresses')
-    .select('id, title, full_name, phone, city, district, neighborhood, address_line, postal_code, is_default')
-    .eq('user_id', user.id)
-    .order('is_default', { ascending: false })
+  // Login varsa kayıtlı adresleri çek; misafir ise inline adres formu kullanılır.
+  const addresses = user
+    ? (await supabase
+        .from('addresses')
+        .select('id, title, full_name, phone, city, district, neighborhood, address_line, postal_code, is_default')
+        .eq('user_id', user.id)
+        .order('is_default', { ascending: false })).data ?? []
+    : []
 
   return (
     <main className="min-h-screen bg-[#FAFAF7]">
@@ -39,7 +40,7 @@ export default async function OdemePage() {
           </p>
         </div>
 
-        <OdemeFlow initialAddresses={addresses ?? []} />
+        <OdemeFlow initialAddresses={addresses} isGuest={!user} />
       </div>
     </main>
   )

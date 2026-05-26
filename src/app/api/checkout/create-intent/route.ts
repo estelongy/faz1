@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimitCheckout, rateLimitResponse } from '@/lib/ratelimit'
+import { signGuestOrderToken, normalizeEmail } from '@/lib/guest-order-token'
+import { isValidEmail, isValidTrMobile } from '@/lib/contact-validators'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-03-25.dahlia' })
 
@@ -11,9 +13,28 @@ interface CartLine {
   quantity: number
 }
 
+interface GuestAddressInput {
+  full_name: string
+  phone: string
+  city: string
+  district: string
+  address_line: string
+  postal_code: string | null
+}
+
+interface GuestInfo {
+  name: string
+  email: string
+  phone: string
+  address: GuestAddressInput
+}
+
 interface Payload {
   items: CartLine[]
-  addressId: string
+  /** Login kullanıcı için: kayıtlı adres id'si */
+  addressId?: string
+  /** Misafir kullanıcı için: ad/email/telefon + inline adres */
+  guest?: GuestInfo
   couponCode?: string
   referralCode?: string
   /** KVKK Aydınlatma Metni onayı — zorunlu */
@@ -26,15 +47,37 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Oturum açık değil' }, { status: 401 })
-
-    // Rate limiting: kullanıcı başına 20 checkout / dakika
-    const rl = rateLimitCheckout(user.id)
-    if (!rl.success) return rateLimitResponse(rl)
 
     const body = (await req.json()) as Payload
     if (!body.items?.length) return NextResponse.json({ error: 'Sepet boş' }, { status: 400 })
-    if (!body.addressId)     return NextResponse.json({ error: 'Adres seçilmedi' }, { status: 400 })
+
+    const isGuest = !user
+    if (!isGuest) {
+      if (!body.addressId) return NextResponse.json({ error: 'Adres seçilmedi' }, { status: 400 })
+    } else {
+      if (!body.guest) return NextResponse.json({ error: 'Misafir bilgileri eksik.' }, { status: 400 })
+      if (!body.guest.name?.trim() || body.guest.name.trim().length < 3) {
+        return NextResponse.json({ error: 'Ad Soyad girin (en az 3 karakter).' }, { status: 400 })
+      }
+      if (!isValidEmail(body.guest.email)) {
+        return NextResponse.json({ error: 'Geçerli bir email girin.' }, { status: 400 })
+      }
+      if (!isValidTrMobile(body.guest.phone)) {
+        return NextResponse.json({ error: 'Geçerli bir TR cep numarası girin.' }, { status: 400 })
+      }
+      const a = body.guest.address
+      if (!a?.city?.trim() || !a?.district?.trim() || !(a?.address_line?.trim().length >= 10)) {
+        return NextResponse.json({ error: 'Adres bilgilerini eksiksiz girin.' }, { status: 400 })
+      }
+    }
+
+    // Rate limiting: login için user.id; misafir için IP (proxy header'lardan en güveniliri)
+    const rateKey = user?.id
+      ?? req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      ?? req.headers.get('x-real-ip')
+      ?? 'anon'
+    const rl = rateLimitCheckout(rateKey)
+    if (!rl.success) return rateLimitResponse(rl)
 
     // KVKK + Mesafeli Satış onayı — yasal zorunluluk (6698 / 6502 sayılı kanunlar)
     if (!body.kvkkConsent) {
@@ -45,14 +88,38 @@ export async function POST(req: NextRequest) {
     }
     const consentNow = new Date().toISOString()
 
-    // Adresi kendi adresi mi kontrol et
-    const { data: address } = await supabase
-      .from('addresses')
-      .select('*')
-      .eq('id', body.addressId)
-      .eq('user_id', user.id)
-      .single()
-    if (!address) return NextResponse.json({ error: 'Adres bulunamadı' }, { status: 404 })
+    // Adres: login için DB'den, misafir için body'den snapshot
+    type AddressShape = {
+      id?: string
+      full_name: string
+      phone: string
+      city: string
+      district: string
+      neighborhood?: string | null
+      address_line: string
+      postal_code?: string | null
+    }
+    let address: AddressShape | null = null
+    if (!isGuest) {
+      const { data } = await supabase
+        .from('addresses')
+        .select('*')
+        .eq('id', body.addressId!)
+        .eq('user_id', user!.id)
+        .single()
+      if (!data) return NextResponse.json({ error: 'Adres bulunamadı' }, { status: 404 })
+      address = data as AddressShape
+    } else {
+      const ga = body.guest!.address
+      address = {
+        full_name:    body.guest!.name.trim(),
+        phone:        body.guest!.phone.trim(),
+        city:         ga.city.trim(),
+        district:     ga.district.trim(),
+        address_line: ga.address_line.trim(),
+        postal_code:  ga.postal_code?.trim() || null,
+      }
+    }
 
     // Ürünleri DB'den çek (fiyat doğrulama için — client'a güvenme)
     const productIds = body.items.map(i => i.productId)
@@ -172,13 +239,20 @@ export async function POST(req: NextRequest) {
     const { data: orderNumRes } = await supabase.rpc('generate_order_number')
     const orderNumber = orderNumRes as string
 
+    // Misafir email — token + iletişim için. DB kısıtı: is_guest true ise guest_email zorunlu.
+    const guestEmail = isGuest ? normalizeEmail(body.guest!.email) : null
+
     // Orders kaydı (pending)
     const { data: order, error: orderErr } = await supabase
       .from('orders')
       .insert({
-        user_id:         user.id,
+        user_id:         isGuest ? null : user!.id,
+        is_guest:        isGuest,
+        guest_email:     guestEmail,
+        guest_phone:     isGuest ? body.guest!.phone.trim() : null,
+        guest_name:      isGuest ? body.guest!.name.trim() : null,
         order_number:    orderNumber,
-        address_id:      address.id,
+        address_id:      isGuest ? null : address!.id ?? null,
         address_snapshot: address,
         subtotal,
         shipping_fee:    shippingFee,
@@ -232,7 +306,9 @@ export async function POST(req: NextRequest) {
       metadata: {
         order_id: order.id,
         order_number: order.order_number,
-        user_id: user.id,
+        user_id: user?.id ?? '',
+        is_guest: isGuest ? '1' : '0',
+        guest_email: guestEmail ?? '',
         kind: 'marketplace_order',
       },
       ...(destinationAccount && applicationFee !== undefined ? {
@@ -246,11 +322,17 @@ export async function POST(req: NextRequest) {
       .update({ stripe_payment_intent_id: intent.id })
       .eq('id', order.id)
 
+    // Misafir için sipariş takip token'ı (HMAC). DB'de saklanmaz — deterministik.
+    const guestToken = isGuest && guestEmail
+      ? signGuestOrderToken(order.order_number, guestEmail)
+      : null
+
     return NextResponse.json({
       clientSecret: intent.client_secret,
       orderNumber: order.order_number,
       orderId: order.id,
       total,
+      guestToken,
     })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)

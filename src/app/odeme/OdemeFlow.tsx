@@ -7,6 +7,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js'
 import { useCart } from '@/lib/cart'
 import AdresForm from '../panel/adreslerim/AdresForm'
+import { isValidEmail, isValidTrMobile } from '@/lib/contact-validators'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -25,7 +26,7 @@ interface Address {
 
 type Step = 'address' | 'payment' | 'success'
 
-export default function OdemeFlow({ initialAddresses }: { initialAddresses: Address[] }) {
+export default function OdemeFlow({ initialAddresses, isGuest }: { initialAddresses: Address[]; isGuest: boolean }) {
   const router = useRouter()
   const { items, subtotal, clear, hydrated } = useCart()
 
@@ -35,8 +36,26 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
   )
   const [addingAddress, setAddingAddress] = useState(false)
   const [step, setStep] = useState<Step>('address')
+
+  // Misafir akışı: ad/email/telefon + inline adres
+  const [guestName, setGuestName] = useState('')
+  const [guestEmail, setGuestEmail] = useState('')
+  const [guestPhone, setGuestPhone] = useState('')
+  const [guestCity, setGuestCity] = useState('')
+  const [guestDistrict, setGuestDistrict] = useState('')
+  const [guestAddressLine, setGuestAddressLine] = useState('')
+  const [guestPostalCode, setGuestPostalCode] = useState('')
+
+  const guestFormValid =
+    guestName.trim().length >= 3 &&
+    isValidEmail(guestEmail) &&
+    isValidTrMobile(guestPhone) &&
+    guestCity.trim().length >= 2 &&
+    guestDistrict.trim().length >= 2 &&
+    guestAddressLine.trim().length >= 10
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [orderNumber, setOrderNumber] = useState<string | null>(null)
+  const [guestToken, setGuestToken] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -92,9 +111,16 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
   }
 
   async function proceedToPayment() {
-    if (!selectedAddrId) {
-      setError('Lütfen bir adres seç')
-      return
+    if (isGuest) {
+      if (!guestFormValid) {
+        setError('Misafir bilgilerini eksiksiz ve doğru gir (ad, email, TR cep, şehir, ilçe, açık adres).')
+        return
+      }
+    } else {
+      if (!selectedAddrId) {
+        setError('Lütfen bir adres seç')
+        return
+      }
     }
     if (!kvkkConsent || !mesafeliConsent) {
       setError('Devam edebilmek için KVKK ve Mesafeli Satış onaylarını işaretlemen gerekir.')
@@ -109,7 +135,20 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         items: items.map(i => ({ productId: i.productId, quantity: i.quantity })),
-        addressId: selectedAddrId,
+        addressId: isGuest ? undefined : selectedAddrId,
+        guest: isGuest ? {
+          name:  guestName.trim(),
+          email: guestEmail.trim().toLowerCase(),
+          phone: guestPhone.trim(),
+          address: {
+            full_name:    guestName.trim(),
+            phone:        guestPhone.trim(),
+            city:         guestCity.trim(),
+            district:     guestDistrict.trim(),
+            address_line: guestAddressLine.trim(),
+            postal_code:  guestPostalCode.trim() || null,
+          },
+        } : undefined,
         couponCode: appliedCoupon?.code,
         kvkkConsent,
         mesafeliConsent,
@@ -125,6 +164,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
 
     setClientSecret(data.clientSecret)
     setOrderNumber(data.orderNumber)
+    if (data.guestToken) setGuestToken(data.guestToken)
     setStep('payment')
   }
 
@@ -154,7 +194,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
               </span>
               Teslimat Adresi
             </h2>
-            {step !== 'address' && selectedAddrId && (
+            {step !== 'address' && (selectedAddrId || isGuest) && (
               <button onClick={() => setStep('address')}
                 className="text-base font-semibold text-[#8B7339] hover:text-[#6B5828] transition-colors">
                 Değiştir
@@ -164,7 +204,70 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
 
           {step === 'address' ? (
             <div className="space-y-3">
-              {addresses.map(a => (
+              {isGuest && (
+                <div className="mb-2 p-3 bg-[#C9A961]/8 border border-[#C9A961]/25 rounded-xl flex items-center justify-between gap-3">
+                  <p className="text-slate-700 text-sm">
+                    Misafir alışveriş yapıyorsun. <span className="text-slate-500">Hesabın varsa giriş yap — adres ve sipariş geçmişini bul.</span>
+                  </p>
+                  <Link href="/giris?g=estestore&next=/odeme"
+                    className="shrink-0 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-lg transition-colors">
+                    Giriş Yap
+                  </Link>
+                </div>
+              )}
+
+              {isGuest ? (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 text-sm font-semibold mb-1">Ad Soyad *</label>
+                      <input type="text" value={guestName} onChange={e => setGuestName(e.target.value)}
+                        placeholder="Ad Soyad"
+                        className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 text-sm font-semibold mb-1">Email *</label>
+                      <input type="email" value={guestEmail} onChange={e => setGuestEmail(e.target.value)}
+                        placeholder="ornek@mail.com"
+                        className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
+                      <p className="text-slate-500 text-xs mt-1">Sipariş takip linki bu adrese gönderilir.</p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-slate-700 text-sm font-semibold mb-1">Cep Telefonu *</label>
+                    <input type="tel" value={guestPhone} onChange={e => setGuestPhone(e.target.value)}
+                      placeholder="05XX XXX XX XX"
+                      className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-700 text-sm font-semibold mb-1">Şehir *</label>
+                      <input type="text" value={guestCity} onChange={e => setGuestCity(e.target.value)}
+                        placeholder="İstanbul"
+                        className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 text-sm font-semibold mb-1">İlçe *</label>
+                      <input type="text" value={guestDistrict} onChange={e => setGuestDistrict(e.target.value)}
+                        placeholder="Kadıköy"
+                        className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-slate-700 text-sm font-semibold mb-1">Açık Adres *</label>
+                    <textarea value={guestAddressLine} onChange={e => setGuestAddressLine(e.target.value)}
+                      placeholder="Mahalle, sokak, bina no, daire no"
+                      rows={2}
+                      className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961] resize-none" />
+                  </div>
+                  <div>
+                    <label className="block text-slate-700 text-sm font-semibold mb-1">Posta Kodu (opsiyonel)</label>
+                    <input type="text" value={guestPostalCode} onChange={e => setGuestPostalCode(e.target.value)}
+                      placeholder="34000"
+                      className="w-full md:w-1/3 px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
+                  </div>
+                </div>
+              ) : addresses.map(a => (
                 <label key={a.id}
                   className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
                     selectedAddrId === a.id
@@ -191,7 +294,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
                 </label>
               ))}
 
-              {addingAddress ? (
+              {!isGuest && (addingAddress ? (
                 <AdresForm
                   onClose={() => setAddingAddress(false)}
                   onSaved={(id) => {
@@ -205,7 +308,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
                   className="w-full py-3 border border-dashed border-slate-300 hover:border-[#C9A961] rounded-xl text-base font-semibold text-slate-500 hover:text-[#8B7339] transition-all">
                   + Yeni Adres Ekle
                 </button>
-              )}
+              ))}
 
               {/* KVKK + Mesafeli Satış onayları — yasal zorunluluk (KVK Kanunu 6698 / Tüketicinin Korunması 6502) */}
               <div className="space-y-2.5 pt-3 border-t border-slate-200">
@@ -234,7 +337,7 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
               </div>
 
               <button onClick={proceedToPayment}
-                disabled={!selectedAddrId || !kvkkConsent || !mesafeliConsent || loading}
+                disabled={(isGuest ? !guestFormValid : !selectedAddrId) || !kvkkConsent || !mesafeliConsent || loading}
                 className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 disabled:cursor-not-allowed text-[#0F172A] font-semibold rounded-xl transition-all text-base shadow-lg shadow-[#C9A961]/20">
                 {loading ? 'Hazırlanıyor...' : 'Ödemeye Geç →'}
               </button>
@@ -242,6 +345,12 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
               {error && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-base font-semibold">{error}</div>
               )}
+            </div>
+          ) : isGuest ? (
+            <div className="text-base">
+              <p className="text-slate-900 font-bold">{guestName}</p>
+              <p className="text-slate-600 mt-1">{guestEmail} · {guestPhone}</p>
+              <p className="text-slate-600 mt-0.5">{guestAddressLine}, {guestDistrict} / {guestCity}</p>
             </div>
           ) : (
             selectedAddrId && (() => {
@@ -276,10 +385,19 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
                   variables: { colorPrimary: '#C9A961' },
                 },
               }}>
-              <StripePaymentForm orderNumber={orderNumber!} onSuccess={() => {
-                clear()
-                router.push(`/siparis/${orderNumber}?success=1`)
-              }} />
+              <StripePaymentForm
+                orderNumber={orderNumber!}
+                guestEmail={isGuest ? guestEmail.trim().toLowerCase() : null}
+                guestToken={guestToken}
+                onSuccess={() => {
+                  clear()
+                  const q = new URLSearchParams({ success: '1' })
+                  if (isGuest && guestToken) {
+                    q.set('e', guestEmail.trim().toLowerCase())
+                    q.set('t', guestToken)
+                  }
+                  router.push(`/siparis/${orderNumber}?${q.toString()}`)
+                }} />
             </Elements>
           ) : (
             <p className="text-slate-500 text-sm font-bold">Önce teslimat adresini onayla</p>
@@ -400,7 +518,12 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
   )
 }
 
-function StripePaymentForm({ orderNumber, onSuccess }: { orderNumber: string; onSuccess: () => void }) {
+function StripePaymentForm({ orderNumber, guestEmail, guestToken, onSuccess }: {
+  orderNumber: string
+  guestEmail: string | null
+  guestToken: string | null
+  onSuccess: () => void
+}) {
   const stripe = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -408,8 +531,13 @@ function StripePaymentForm({ orderNumber, onSuccess }: { orderNumber: string; on
 
   const returnUrl = useMemo(() => {
     if (typeof window === 'undefined') return ''
-    return `${window.location.origin}/siparis/${orderNumber}?success=1`
-  }, [orderNumber])
+    const q = new URLSearchParams({ success: '1' })
+    if (guestEmail && guestToken) {
+      q.set('e', guestEmail)
+      q.set('t', guestToken)
+    }
+    return `${window.location.origin}/siparis/${orderNumber}?${q.toString()}`
+  }, [orderNumber, guestEmail, guestToken])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
