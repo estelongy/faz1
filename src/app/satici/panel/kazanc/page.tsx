@@ -6,6 +6,8 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import BackButton from '@/components/BackButton'
+import { getVendorStats } from '@/lib/vendor-stats'
+import VendorSalesChart from '@/components/VendorSalesChart'
 
 export const metadata: Metadata = { title: 'Kazançlarım — İş Ortağı' }
 
@@ -82,6 +84,7 @@ export default async function KazancPage() {
   const months = Object.entries(monthly).sort((a, b) => b[0].localeCompare(a[0]))
 
   const commissionPct = Number(vendor.commission_rate ?? 0.15) * 100
+  const stats = await getVendorStats(vendor.id)
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
@@ -121,6 +124,28 @@ export default async function KazancPage() {
           <StatCard label="Teslim Edilen"      value={deliveredNet} color="emerald" note="net, transfer oldu" />
           <StatCard label="Süreçteki"          value={pendingNet}   color="violet"  note="teslim bekliyor" />
         </div>
+
+        {/* Son 12 ay grafiği */}
+        {stats.last12Months.some(m => m.gross > 0) && (
+          <div className="mb-8 p-5 bg-slate-800/50 border border-slate-700 rounded-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-white font-bold text-lg">Son 12 Ay</h2>
+                <p className="text-slate-500 text-sm mt-0.5">Aylık ciro grafiği · altın bar = bu ay</p>
+              </div>
+              {stats.grossChangePct !== null && (
+                <div className={`px-3 py-1.5 rounded-lg text-sm font-bold ${
+                  stats.grossChangePct >= 0
+                    ? 'bg-emerald-500/15 text-emerald-400'
+                    : 'bg-red-500/15 text-red-400'
+                }`}>
+                  {stats.grossChangePct >= 0 ? '↑' : '↓'} %{Math.abs(stats.grossChangePct)} geçen aya göre
+                </div>
+              )}
+            </div>
+            <VendorSalesChart data={stats.last12Months} metric="gross" />
+          </div>
+        )}
 
         {/* Aylık dökümanlar */}
         {months.length > 0 && (

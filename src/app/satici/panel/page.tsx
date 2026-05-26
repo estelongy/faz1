@@ -6,6 +6,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import UrunEkleForm from './UrunEkleForm'
+import { getVendorStats } from '@/lib/vendor-stats'
 
 export const metadata: Metadata = { title: 'İş Ortağı Paneli — Estelongy' }
 
@@ -133,6 +134,9 @@ export default async function SaticiPanelPage() {
   const approvedCount = products?.filter(p => p.approval_status === 'approved').length ?? 0
   const pendingCount  = products?.filter(p => p.approval_status === 'pending').length ?? 0
 
+  // Satış analitikleri (bu ay, geçen ay, top ürünler)
+  const stats = await getVendorStats(vendor.id)
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
@@ -157,8 +161,51 @@ export default async function SaticiPanelPage() {
           <p className="text-slate-400 text-sm mt-1">Ürün ve işlem yönetiminiz</p>
         </div>
 
-        {/* Özet kartlar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+        {/* Bu ay satış KPI satırı */}
+        <div className="mb-6 bg-gradient-to-br from-slate-800/70 to-slate-800/30 border border-slate-700 rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-slate-400 text-xs uppercase tracking-widest font-bold">Bu Ay</p>
+              <p className="text-slate-500 text-sm mt-0.5">
+                {new Date().toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}
+              </p>
+            </div>
+            {stats.grossChangePct !== null && (
+              <div className={`px-3 py-1 rounded-lg text-sm font-bold ${
+                stats.grossChangePct >= 0
+                  ? 'bg-emerald-500/15 text-emerald-400'
+                  : 'bg-red-500/15 text-red-400'
+              }`}>
+                {stats.grossChangePct >= 0 ? '↑' : '↓'} %{Math.abs(stats.grossChangePct)} geçen aya göre
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Ciro</p>
+              <p className="text-2xl font-black text-white">₺{stats.thisMonth.gross.toLocaleString('tr-TR')}</p>
+              <p className="text-slate-600 text-xs mt-0.5">geçen ay ₺{stats.lastMonth.gross.toLocaleString('tr-TR')}</p>
+            </div>
+            <div>
+              <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Net Kazanç</p>
+              <p className="text-2xl font-black text-emerald-400">₺{stats.thisMonth.net.toLocaleString('tr-TR')}</p>
+              <p className="text-slate-600 text-xs mt-0.5">komisyondan sonra</p>
+            </div>
+            <div>
+              <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Sipariş</p>
+              <p className="text-2xl font-black text-white">{stats.thisMonth.count}</p>
+              <p className="text-slate-600 text-xs mt-0.5">geçen ay {stats.lastMonth.count}</p>
+            </div>
+            <div>
+              <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Bekleyen</p>
+              <p className="text-2xl font-black text-[#C9A961]">{stats.pendingItems + stats.shippedItems}</p>
+              <p className="text-slate-600 text-xs mt-0.5">{stats.pendingItems} hazırlık · {stats.shippedItems} kargoda</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Ürün özet kartlar */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 text-center">
             <p className="text-3xl font-black text-white">{totalProducts}</p>
             <p className="text-slate-400 text-sm mt-1">Toplam Ürün</p>
@@ -219,6 +266,39 @@ export default async function SaticiPanelPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
+        )}
+
+        {/* En çok satan ürünler */}
+        {stats.topProducts.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-white font-bold text-lg mb-4">En Çok Satan Ürünlerin</h2>
+            <div className="space-y-2">
+              {stats.topProducts.map((p, idx) => (
+                <div key={p.productId} className="flex items-center gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-xl">
+                  <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center shrink-0">
+                    <span className={`text-sm font-black ${
+                      idx === 0 ? 'text-[#C9A961]' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-[#B8964F]' : 'text-slate-500'
+                    }`}>#{idx + 1}</span>
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden shrink-0 flex items-center justify-center">
+                    {p.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-slate-600 text-sm">📦</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-semibold truncate">{p.name}</p>
+                    <p className="text-slate-500 text-xs mt-0.5">{p.quantity} adet satıldı</p>
+                  </div>
+                  <p className="text-emerald-400 font-bold text-sm shrink-0">
+                    ₺{p.gross.toLocaleString('tr-TR')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Ürün Ekle Formu */}
