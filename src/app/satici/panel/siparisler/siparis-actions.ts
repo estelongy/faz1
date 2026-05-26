@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { notifyOrderShipped, notifyOrderDelivered } from '@/lib/order-notifications'
 
 async function getVendor() {
   const supabase = await createClient()
@@ -43,6 +44,9 @@ export async function kargoGuncelleAction(
 
   if (error) return { ok: false, error: error.message }
 
+  // Müşteriye email + SMS bildirim — fire-and-forget, hata UI'yı bloklamaz.
+  void notifyOrderShipped(orderItemId)
+
   revalidatePath('/satici/panel/siparisler')
   return { ok: true }
 }
@@ -65,6 +69,11 @@ export async function fulfillmentGuncelleAction(
     .eq('vendor_id', vendor.id)
 
   if (error) return { ok: false, error: error.message }
+
+  // 'delivered' geçişinde müşteriye email + SMS — fire-and-forget.
+  if (status === 'delivered') {
+    void notifyOrderDelivered(orderItemId)
+  }
 
   revalidatePath('/satici/panel/siparisler')
   return { ok: true }

@@ -446,6 +446,14 @@ export async function POST(req: NextRequest) {
         console.error('Order confirmation email error:', e)
       }
 
+      // Satıcılara "yeni sipariş" maili — her vendor için tek mail (helper grupluyor)
+      try {
+        const { notifyVendorNewOrder } = await import('@/lib/order-notifications')
+        await notifyVendorNewOrder(orderId)
+      } catch (e) {
+        console.error('Vendor new-order notify error:', e)
+      }
+
       console.log(`Sipariş ödendi: ${orderId} (${pi.metadata.order_number})`)
     }
   }

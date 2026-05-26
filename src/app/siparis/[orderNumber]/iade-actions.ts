@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
+import { notifyReturnDecision } from '@/lib/order-notifications'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-03-25.dahlia' })
 
@@ -191,6 +192,9 @@ export async function iadeKararAction(
       }
     }
   }
+
+  // Müşteriye iade kararı bildirimi — fire-and-forget.
+  void notifyReturnDecision(returnId)
 
   revalidatePath('/satici/panel/siparisler')
   revalidatePath('/satici/panel/iadeler')
