@@ -40,6 +40,10 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // KVKK + Mesafeli Satış onayı — yasal zorunluluk
+  const [kvkkConsent, setKvkkConsent] = useState(false)
+  const [mesafeliConsent, setMesafeliConsent] = useState(false)
+
   // Kupon state
   const [couponInput, setCouponInput] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null)
@@ -92,6 +96,10 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
       setError('Lütfen bir adres seç')
       return
     }
+    if (!kvkkConsent || !mesafeliConsent) {
+      setError('Devam edebilmek için KVKK ve Mesafeli Satış onaylarını işaretlemen gerekir.')
+      return
+    }
     if (items.length === 0) return
     setError(null)
     setLoading(true)
@@ -103,6 +111,8 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
         items: items.map(i => ({ productId: i.productId, quantity: i.quantity })),
         addressId: selectedAddrId,
         couponCode: appliedCoupon?.code,
+        kvkkConsent,
+        mesafeliConsent,
       }),
     })
     const data = await res.json()
@@ -197,9 +207,35 @@ export default function OdemeFlow({ initialAddresses }: { initialAddresses: Addr
                 </button>
               )}
 
+              {/* KVKK + Mesafeli Satış onayları — yasal zorunluluk (KVK Kanunu 6698 / Tüketicinin Korunması 6502) */}
+              <div className="space-y-2.5 pt-3 border-t border-slate-200">
+                <label className="flex items-start gap-2.5 cursor-pointer group">
+                  <input type="checkbox" checked={kvkkConsent}
+                    onChange={e => setKvkkConsent(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 accent-[#C9A961] cursor-pointer shrink-0" />
+                  <span className="text-slate-700 text-sm leading-relaxed">
+                    <Link href="/hakkinda/aydinlatma" target="_blank" className="text-[#8B7339] font-semibold hover:underline">
+                      KVKK Aydınlatma Metni
+                    </Link>
+                    ’ni okudum, kişisel verilerimin bu kapsamda işlenmesini kabul ediyorum.
+                  </span>
+                </label>
+                <label className="flex items-start gap-2.5 cursor-pointer group">
+                  <input type="checkbox" checked={mesafeliConsent}
+                    onChange={e => setMesafeliConsent(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 accent-[#C9A961] cursor-pointer shrink-0" />
+                  <span className="text-slate-700 text-sm leading-relaxed">
+                    <Link href="/hakkinda/sozlesme" target="_blank" className="text-[#8B7339] font-semibold hover:underline">
+                      Mesafeli Satış Sözleşmesi ve Ön Bilgilendirme Formu
+                    </Link>
+                    ’nu okudum, onaylıyorum.
+                  </span>
+                </label>
+              </div>
+
               <button onClick={proceedToPayment}
-                disabled={!selectedAddrId || loading}
-                className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-[#0F172A] font-semibold rounded-xl transition-all text-base shadow-lg shadow-[#C9A961]/20">
+                disabled={!selectedAddrId || !kvkkConsent || !mesafeliConsent || loading}
+                className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 disabled:cursor-not-allowed text-[#0F172A] font-semibold rounded-xl transition-all text-base shadow-lg shadow-[#C9A961]/20">
                 {loading ? 'Hazırlanıyor...' : 'Ödemeye Geç →'}
               </button>
 

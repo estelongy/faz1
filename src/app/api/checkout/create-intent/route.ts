@@ -16,6 +16,10 @@ interface Payload {
   addressId: string
   couponCode?: string
   referralCode?: string
+  /** KVKK Aydınlatma Metni onayı — zorunlu */
+  kvkkConsent: boolean
+  /** Mesafeli Satış Sözleşmesi + Ön Bilgilendirme onayı — 6502 sayılı kanun gereği zorunlu */
+  mesafeliConsent: boolean
 }
 
 export async function POST(req: NextRequest) {
@@ -31,6 +35,15 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as Payload
     if (!body.items?.length) return NextResponse.json({ error: 'Sepet boş' }, { status: 400 })
     if (!body.addressId)     return NextResponse.json({ error: 'Adres seçilmedi' }, { status: 400 })
+
+    // KVKK + Mesafeli Satış onayı — yasal zorunluluk (6698 / 6502 sayılı kanunlar)
+    if (!body.kvkkConsent) {
+      return NextResponse.json({ error: 'KVKK Aydınlatma Metni onayı zorunludur.' }, { status: 400 })
+    }
+    if (!body.mesafeliConsent) {
+      return NextResponse.json({ error: 'Mesafeli Satış Sözleşmesi ve Ön Bilgilendirme onayı zorunludur.' }, { status: 400 })
+    }
+    const consentNow = new Date().toISOString()
 
     // Adresi kendi adresi mi kontrol et
     const { data: address } = await supabase
@@ -177,6 +190,8 @@ export async function POST(req: NextRequest) {
         coupon_code:     validCouponCode,
         coupon_discount: couponDiscount,
         referral_code:   body.referralCode?.trim().toUpperCase() || null,
+        kvkk_consent_at:     consentNow,
+        mesafeli_consent_at: consentNow,
       })
       .select('id, order_number')
       .single()
