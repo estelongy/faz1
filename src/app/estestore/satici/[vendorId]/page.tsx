@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import VendorReviewForm from './VendorReviewForm'
+import SafeLink from '@/components/SafeLink'
 
 export async function generateMetadata({ params }: { params: Promise<{ vendorId: string }> }): Promise<Metadata> {
   const { vendorId } = await params
@@ -55,6 +57,38 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
     ? products.reduce((s, p) => s + Number(p.final_score ?? 0), 0) / products.length
     : null
 
+  // Vendor reviews
+  const { data: vendorReviews } = await supabase
+    .from('vendor_reviews')
+    .select('id, rating, title, body, created_at, user_id, profiles(full_name)')
+    .eq('vendor_id', vendor.id)
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  const reviewCount = vendorReviews?.length ?? 0
+  const avgRating = reviewCount > 0
+    ? (vendorReviews ?? []).reduce((s, r) => s + Number(r.rating ?? 0), 0) / reviewCount
+    : null
+
+  // Mevcut kullanıcı
+  const { data: { user } } = await supabase.auth.getUser()
+  const myReview = user
+    ? (vendorReviews ?? []).find(r => r.user_id === user.id) ?? null
+    : null
+
+  // Kullanıcı bu satıcıdan paid sipariş geçmişine sahip mi?
+  let canReview = false
+  if (user) {
+    const { data: oi } = await supabase
+      .from('order_items')
+      .select('id, orders!inner(payment_status, user_id)')
+      .eq('vendor_id', vendor.id)
+      .eq('orders.payment_status', 'paid')
+      .eq('orders.user_id', user.id)
+      .limit(1)
+    canReview = (oi?.length ?? 0) > 0
+  }
+
   return (
     <main className="min-h-screen bg-white">
       <header className="sticky top-0 z-50 bg-[#0F172A] border-b border-slate-800">
@@ -90,6 +124,15 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
                       avgScore >= 9 ? 'text-[#10876B]' : avgScore >= 7 ? 'text-[#8B7339]' : 'text-red-500'
                     }`}>
                       {avgScore.toFixed(1)}<span className="text-slate-400 text-sm font-bold ml-0.5">/10</span>
+                    </p>
+                  </div>
+                )}
+                {avgRating !== null && (
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Müşteri Puanı</p>
+                    <p className="text-slate-900 font-black text-xl mt-1">
+                      <span className="text-[#C9A961]">★</span> {avgRating.toFixed(1)}
+                      <span className="text-slate-400 text-sm font-bold ml-1">({reviewCount})</span>
                     </p>
                   </div>
                 )}
@@ -141,6 +184,71 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
             <p className="text-base font-semibold text-slate-500">Bu mağazada henüz aktif ürün yok</p>
           </div>
         )}
+
+        {/* Müşteri Yorumları */}
+        <div className="mt-16 space-y-6">
+          <div className="flex items-baseline justify-between flex-wrap gap-2">
+            <h2 className="text-slate-900 font-bold text-xl tracking-[-0.01em]">
+              Müşteri Yorumları
+              {reviewCount > 0 && (
+                <span className="text-slate-400 font-medium ml-2">({reviewCount})</span>
+              )}
+            </h2>
+            {avgRating !== null && (
+              <div className="text-base font-semibold text-slate-700">
+                <span className="text-[#C9A961] text-lg">★</span> {avgRating.toFixed(1)} / 5
+              </div>
+            )}
+          </div>
+
+          {/* Yorum formu — sadece bu satıcıdan sipariş veren kullanıcı */}
+          {user && canReview && (
+            <VendorReviewForm
+              vendorId={vendor.id}
+              existing={myReview ? { rating: myReview.rating, title: myReview.title, body: myReview.body } : null}
+            />
+          )}
+          {user && !canReview && !myReview && (
+            <div className="p-4 bg-[#FAFAF7] border border-slate-200 rounded-2xl text-sm text-slate-600">
+              Bu satıcıyı puanlayabilmek için önce bir sipariş tamamlamalısın.
+            </div>
+          )}
+          {!user && (
+            <div className="p-4 bg-[#FAFAF7] border border-slate-200 rounded-2xl text-sm text-slate-600 text-center">
+              Bu satıcıyı puanlamak için{' '}
+              <SafeLink href={`/giris?g=estestore&next=/estestore/satici/${vendor.id}`} className="text-[#8B7339] hover:text-[#C9A961] font-semibold">giriş yap</SafeLink>
+            </div>
+          )}
+
+          {/* Yorum listesi */}
+          <div className="space-y-3">
+            {(vendorReviews ?? []).length === 0 ? (
+              <p className="text-center py-10 text-slate-400 text-sm">Henüz yorum yok — ilk yorumu sen yap!</p>
+            ) : (
+              (vendorReviews ?? []).map(r => (
+                <div key={r.id} className="p-5 bg-white border border-slate-200 rounded-2xl">
+                  <div className="flex items-start justify-between mb-2 gap-2">
+                    <div>
+                      <p className="text-slate-900 font-semibold text-sm">
+                        {(r.profiles as { full_name?: string } | null)?.full_name ?? 'Kullanıcı'}
+                      </p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        {[1, 2, 3, 4, 5].map(n => (
+                          <span key={n} className={`text-base ${n <= r.rating ? 'text-[#C9A961]' : 'text-slate-300'}`}>★</span>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-slate-400 text-sm shrink-0">
+                      {new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </p>
+                  </div>
+                  {r.title && <p className="text-slate-900 font-semibold text-base mb-1">{r.title}</p>}
+                  {r.body && <p className="text-slate-700 text-sm leading-relaxed">{r.body}</p>}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
     </main>
   )
