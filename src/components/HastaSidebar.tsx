@@ -34,6 +34,7 @@ const HASTA_NAV: NavGroup[] = [
     items: [
       { href: '/panel/hesabim',        icon: '👤', label: 'Hesabım' },
       { href: '/panel/siparislerim',   icon: '📦', label: 'Siparişlerim' },
+      { href: '/panel/favorilerim',    icon: '♥', label: 'Favorilerim' },
       { href: '/panel/iadelerim',      icon: '↩', label: 'İadelerim' },
       { href: '/panel/adreslerim',     icon: '📍', label: 'Adreslerim' },
     ],
@@ -62,6 +63,7 @@ const HEALTH_PRO_NAV: NavGroup[] = [
     items: [
       { href: '/panel/hesabim',        icon: '👤', label: 'Hesabım' },
       { href: '/panel/siparislerim',   icon: '📦', label: 'Siparişlerim' },
+      { href: '/panel/favorilerim',    icon: '♥', label: 'Favorilerim' },
       { href: '/panel/iadelerim',      icon: '↩', label: 'İadelerim' },
       { href: '/panel/adreslerim',     icon: '📍', label: 'Adreslerim' },
     ],

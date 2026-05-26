@@ -64,3 +64,4 @@ veya supabase CLI: `supabase db pull`
 2026-05-07  storage_bucket_hardening                    ← Storage MIME limit
 2026-05-07  vendor_kyc_sprint_b                         ← KYC
 ──────────────────────────────────────────────────────────────────────
+2026-05-26  wishlists_table                              ← Favori ürünler

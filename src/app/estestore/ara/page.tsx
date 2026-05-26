@@ -8,6 +8,7 @@ import { searchProducts, parseSearchParamsFromUrl } from '@/lib/products-search'
 import ProductCard from '../ProductCard'
 import EsteStoreToolbar from '@/components/EsteStoreToolbar'
 import CartButton from '@/components/CartButton'
+import { getUserWishlistSet } from '@/lib/wishlists'
 
 export const metadata: Metadata = { title: 'Arama | EsteStore' }
 
@@ -31,6 +32,8 @@ export default async function EsteStoreSearchPage({ searchParams }: Props) {
   const result = params.q
     ? await searchProducts(searchParams2)
     : { items: [], total: 0, page: 1, perPage: 24, totalPages: 1 }
+
+  const wishlistSet = await getUserWishlistSet(supabase, user?.id)
 
   return (
     <main className="min-h-screen bg-white">
@@ -82,7 +85,7 @@ export default async function EsteStoreSearchPage({ searchParams }: Props) {
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {result.items.map(p => (
-                <ProductCard key={p.id} product={p} isPro={isPro} showPrice={true} />
+                <ProductCard key={p.id} product={p} isPro={isPro} showPrice={true} inWishlist={wishlistSet.has(p.id)} />
               ))}
             </div>
 

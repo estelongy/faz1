@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isProfessional, getSectionBySlug, type UserRole } from '@/lib/estestore'
 import ProductCard, { type ProductCardData } from './ProductCard'
+import { getUserWishlistSet } from '@/lib/wishlists'
 import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
 import BrandMorphButton from './BrandMorphButton'
@@ -118,6 +119,7 @@ export default async function EsteStorePage() {
   const biyohackingFeatured = biyohackingRaw.map(normalizeProduct)
   const sarf                = sarfRaw.map(normalizeProduct)
   const heroShowcase        = heroPoolRaw.map(normalizeProduct)
+  const wishlistSet         = await getUserWishlistSet(supabase, user?.id)
 
   const ProSections = (
     <>
@@ -131,7 +133,7 @@ export default async function EsteStorePage() {
         {sarf.length === 0 ? (
           <EmptyState message="Henüz ürün yok." />
         ) : (
-          <ProductGrid products={sarf} isPro={isPro} />
+          <ProductGrid products={sarf} isPro={isPro} wishlistSet={wishlistSet} />
         )}
       </section>
 
@@ -182,7 +184,7 @@ export default async function EsteStorePage() {
               {longevityFeatured.length === 0 ? (
                 <EmptyState message="Bu kategoride yakında ürünler yer alacak." />
               ) : (
-                <ProductGrid products={longevityFeatured} isPro={isPro} />
+                <ProductGrid products={longevityFeatured} isPro={isPro} wishlistSet={wishlistSet} />
               )}
             </section>
 
@@ -197,7 +199,7 @@ export default async function EsteStorePage() {
               {islemSonrasiFeatured.length === 0 ? (
                 <EmptyState message="Bu kategoride yakında ürünler yer alacak." />
               ) : (
-                <ProductGrid products={islemSonrasiFeatured} isPro={isPro} />
+                <ProductGrid products={islemSonrasiFeatured} isPro={isPro} wishlistSet={wishlistSet} />
               )}
             </section>
 
@@ -212,7 +214,7 @@ export default async function EsteStorePage() {
               {biyohackingFeatured.length === 0 ? (
                 <EmptyState message="Bu kategoride yakında ürünler yer alacak." />
               ) : (
-                <ProductGrid products={biyohackingFeatured} isPro={isPro} />
+                <ProductGrid products={biyohackingFeatured} isPro={isPro} wishlistSet={wishlistSet} />
               )}
             </section>
 
@@ -412,14 +414,16 @@ function SectionHeader({
 function ProductGrid({
   products,
   isPro,
+  wishlistSet,
 }: {
   products: ProductCardData[]
   isPro: boolean
+  wishlistSet: Set<string>
 }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
       {products.slice(0, 8).map((p) => (
-        <ProductCard key={p.id} product={p} isPro={isPro} showPrice={true} />
+        <ProductCard key={p.id} product={p} isPro={isPro} showPrice={true} inWishlist={wishlistSet.has(p.id)} />
       ))}
     </div>
   )

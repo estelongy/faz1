@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import ReviewForm from './ReviewForm'
 import AddToCartButton from '@/components/AddToCartButton'
 import CartButton from '@/components/CartButton'
+import WishlistButton from '@/components/WishlistButton'
 
 import SafeLink from '@/components/SafeLink'
 const SITE_URL = 'https://estelongy.com'
@@ -141,6 +142,18 @@ export default async function UrunDetayPage({
     | 'user' | 'clinic' | 'health_professional' | 'vendor' | 'admin' | undefined
   const isProRole = role === 'clinic' || role === 'health_professional' || role === 'admin'
   if (product.category === 'sarf_medikal' && !isProRole) notFound()
+
+  // Favori listesinde mi?
+  let isInWishlist = false
+  if (user) {
+    const { data: wRow } = await supabase
+      .from('wishlists')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('product_id', product.id)
+      .maybeSingle()
+    isInWishlist = !!wRow
+  }
 
   const { data: reviews } = await supabase
     .from('reviews')
@@ -455,19 +468,29 @@ export default async function UrunDetayPage({
               </Link>
             ) : (
               <>
-                <AddToCartButton
-                  fullWidth
-                  product={{
-                    productId: product.id,
-                    name: product.name,
-                    slug: product.slug ?? null,
-                    price: Number(product.price ?? 0),
-                    image: product.images?.[0] ?? null,
-                    vendorId: product.vendor_id ?? null,
-                    vendorName: (product.vendors as { company_name?: string } | null)?.company_name ?? null,
-                  }}
-                  disabled={!product.price || (product.stock != null && product.stock < 1)}
-                />
+                <div className="flex items-stretch gap-2">
+                  <div className="flex-1">
+                    <AddToCartButton
+                      fullWidth
+                      product={{
+                        productId: product.id,
+                        name: product.name,
+                        slug: product.slug ?? null,
+                        price: Number(product.price ?? 0),
+                        image: product.images?.[0] ?? null,
+                        vendorId: product.vendor_id ?? null,
+                        vendorName: (product.vendors as { company_name?: string } | null)?.company_name ?? null,
+                      }}
+                      disabled={!product.price || (product.stock != null && product.stock < 1)}
+                    />
+                  </div>
+                  <WishlistButton
+                    productId={product.id}
+                    initialInWishlist={isInWishlist}
+                    loginRedirect={`/estestore/${product.slug ?? product.id}`}
+                    variant="inline"
+                  />
+                </div>
                 {product.stock != null && product.stock < 1 && (
                   <p className="text-red-500 text-sm text-center mt-3">Stokta yok</p>
                 )}

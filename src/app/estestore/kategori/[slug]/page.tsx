@@ -12,6 +12,7 @@ import ProductCard from '../../ProductCard'
 import CartButton from '@/components/CartButton'
 import EsteStoreToolbar from '@/components/EsteStoreToolbar'
 import { searchProducts, parseSearchParamsFromUrl } from '@/lib/products-search'
+import { getUserWishlistSet } from '@/lib/wishlists'
 
 import SafeLink from '@/components/SafeLink'
 export const dynamic = 'force-dynamic'
@@ -76,6 +77,7 @@ export default async function EsteStoreCategoryPage({ params, searchParams }: Pr
     subcategoryIn: section?.subcategoryIn ?? undefined,
   })
   const items = result.items
+  const wishlistSet = await getUserWishlistSet(supabase, user?.id)
 
   // Header bilgileri — section ya da storeCategory'den çek
   const headerLabel = section?.label ?? storeCategory!.cat.name
@@ -154,6 +156,8 @@ export default async function EsteStoreCategoryPage({ params, searchParams }: Pr
                 product={p}
                 isPro={isPro}
                 showPrice={access.canSeePrice}
+                inWishlist={wishlistSet.has(p.id)}
+                showWishlist={access.mode !== 'preview'}
               />
             ))}
           </div>

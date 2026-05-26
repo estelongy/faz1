@@ -6,6 +6,7 @@ import {
   type EsteStoreCategory,
   type PricingTiers,
 } from '@/lib/estestore'
+import WishlistButton from '@/components/WishlistButton'
 
 export interface ProductCardData {
   id: string
@@ -26,9 +27,13 @@ interface Props {
   showPrice: boolean
   /** Tıklandığında /estestore/[category]/[slug] yerine başka URL'e yönlendirilecekse */
   hrefOverride?: string
+  /** Kullanıcının favori listesinde mi (server'dan gelir) */
+  inWishlist?: boolean
+  /** Kalp ikonu göster/gizle — preview modunda gizleyebiliriz */
+  showWishlist?: boolean
 }
 
-export default function ProductCard({ product, isPro, showPrice, hrefOverride }: Props) {
+export default function ProductCard({ product, isPro, showPrice, hrefOverride, inWishlist = false, showWishlist = true }: Props) {
   const href = hrefOverride ?? `/estestore/${product.slug ?? product.id}`
 
   const tiers = product.pricing_tiers ?? []
@@ -45,6 +50,14 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride }:
     >
       {/* Görsel */}
       <div className="aspect-square bg-slate-50 overflow-hidden relative">
+        {showWishlist && (
+          <WishlistButton
+            productId={product.id}
+            initialInWishlist={inWishlist}
+            loginRedirect={href}
+            variant="card"
+          />
+        )}
         {product.cover_image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
