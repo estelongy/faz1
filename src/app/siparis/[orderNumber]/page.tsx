@@ -52,7 +52,19 @@ export default async function SiparisPage({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let order: any = null
 
-  if (user) {
+  // Admin tüm siparişleri görebilir — user_id filtresini bypass.
+  const userRole = (user?.app_metadata as Record<string, string> | undefined)?.role
+  const isAdminAccess = userRole === 'admin'
+
+  if (isAdminAccess) {
+    const admin = createServiceClient()
+    const { data } = await admin
+      .from('orders')
+      .select('*, order_items(*, vendors(company_name), returns(id, status, reason, description, created_at))')
+      .eq('order_number', orderNumber)
+      .single()
+    order = data
+  } else if (user) {
     const { data } = await supabase
       .from('orders')
       .select('*, order_items(*, vendors(company_name), returns(id, status, reason, description, created_at))')
@@ -121,7 +133,9 @@ export default async function SiparisPage({
 
       <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
-          <BackButton href={isGuestAccess ? '/estestore' : '/panel'} label={isGuestAccess ? 'Mağaza' : 'Panelim'} />
+          <BackButton
+            href={isAdminAccess ? '/admin/siparisler' : isGuestAccess ? '/estestore' : '/panel'}
+            label={isAdminAccess ? 'Admin Sipariş' : isGuestAccess ? 'Mağaza' : 'Panelim'} />
           <span className="text-slate-700">|</span>
           <span className="text-white text-sm font-bold truncate">{order.order_number}</span>
         </div>
@@ -258,7 +272,7 @@ export default async function SiparisPage({
                           }
                         </div>
                       )}
-                      {order.payment_status === 'paid' && !isGuestAccess && (
+                      {order.payment_status === 'paid' && !isGuestAccess && !isAdminAccess && (
                         <div className="px-4 pb-3">
                           <IadeTalepForm
                             orderItemId={item.id}
