@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
+import { writeAuditLog } from '@/lib/audit'
 
 export async function updateProfileAction(formData: FormData) {
   const supabase = await createClient()
@@ -60,6 +61,13 @@ export async function deleteAccountAction(): Promise<
 
   const admin = createServiceClient()
 
+  // Silinen kullanıcı snapshot — audit için
+  const { data: snapshot } = await admin
+    .from('profiles')
+    .select('full_name, phone, birth_year')
+    .eq('id', user.id)
+    .maybeSingle()
+
   // 1) Public şema: cascade fonksiyonu (anonimize + hard delete)
   const { data: cascadeResult, error: cascadeErr } = await admin
     .rpc('app_delete_account_cascade', { p_user_id: user.id })
@@ -87,7 +95,23 @@ export async function deleteAccountAction(): Promise<
     return { ok: false, error: 'Auth tarafı silinemedi. Destek ekibiyle iletişime geçin.' }
   }
 
-  // 3) Oturumu kapat
+  // 3) Audit log — KVKK denetim için kritik
+  await writeAuditLog({
+    actorId: user.id,
+    action: 'gdpr_kvkk_delete',
+    tableName: 'auth.users',
+    recordId: user.id,
+    oldData: {
+      email: user.email ?? null,
+      role: role ?? null,
+      full_name: snapshot?.full_name ?? null,
+      phone: snapshot?.phone ?? null,
+      birth_year: snapshot?.birth_year ?? null,
+    },
+    newData: { deleted_at: new Date().toISOString(), self_initiated: true },
+  })
+
+  // 4) Oturumu kapat
   await supabase.auth.signOut()
   redirect('/?deleted=1')
 }
