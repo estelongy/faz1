@@ -8,6 +8,8 @@ import ReviewForm from './ReviewForm'
 import AddToCartButton from '@/components/AddToCartButton'
 import CartButton from '@/components/CartButton'
 import WishlistButton from '@/components/WishlistButton'
+import RecentlyViewedTracker from '@/components/RecentlyViewedTracker'
+import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
 
 import SafeLink from '@/components/SafeLink'
 const SITE_URL = 'https://estelongy.com'
@@ -295,6 +297,15 @@ export default async function UrunDetayPage({
 
   return (
     <main className="min-h-screen bg-white">
+      <RecentlyViewedTracker
+        productId={product.id}
+        slug={product.slug ?? null}
+        name={product.name}
+        cover={product.images?.[0] ?? null}
+        price={Number(product.price ?? 0)}
+        category={product.category ?? 'kozmetik'}
+        subcategory={product.subcategory ?? null}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
@@ -633,6 +644,11 @@ export default async function UrunDetayPage({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Son baktıkların — localStorage'dan */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pb-14">
+          <RecentlyViewedShelf excludeId={product.id} />
         </div>
       </div>
     </main>

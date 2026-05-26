@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { isProfessional, getSectionBySlug, type UserRole } from '@/lib/estestore'
 import ProductCard, { type ProductCardData } from './ProductCard'
 import { getUserWishlistSet } from '@/lib/wishlists'
+import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
 import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
 import BrandMorphButton from './BrandMorphButton'
@@ -171,6 +172,7 @@ export default async function EsteStorePage() {
           <EsteStoreHero showcaseProducts={heroShowcase} />
 
           <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-12 lg:py-16 space-y-20">
+            <RecentlyViewedShelf />
             <EPExplainer />
 
             <section id="longevity" className="space-y-6">
