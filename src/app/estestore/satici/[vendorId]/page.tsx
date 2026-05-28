@@ -37,12 +37,18 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
 
   const { data: vendor } = await supabase
     .from('vendors')
-    .select('id, company_name, approval_status')
+    .select(`
+      id, company_name, approval_status,
+      logo_url, banner_url, tagline, about_text, social_links
+    `)
     .eq('id', vendorId)
     .eq('approval_status', 'approved')
     .single()
 
   if (!vendor) notFound()
+
+  const social = (vendor.social_links as Record<string, string> | null) ?? {}
+  const socialEntries = Object.entries(social).filter(([, v]) => !!v)
 
   const { data: products } = await supabase
     .from('products')
@@ -99,45 +105,91 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-16">
-        {/* İş Ortağı banner */}
-        <div className="mb-10 p-8 rounded-3xl bg-gradient-to-br from-[#C9A961]/15 via-[#C9A961]/5 to-transparent border border-[#C9A961]/30">
-          <div className="flex items-start gap-5">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C9A961] to-[#8B7339] flex items-center justify-center shrink-0">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <h1 className="text-3xl font-black text-slate-900 mb-1 tracking-[-0.02em]">{vendor.company_name}</h1>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#8B7339] mb-4">Estelongy Onaylı İş Ortağı</p>
+      {/* Banner (vendor branded ya da default gradient) */}
+      {vendor.banner_url ? (
+        <div className="w-full h-48 sm:h-64 lg:h-72 overflow-hidden bg-slate-100">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={vendor.banner_url} alt={`${vendor.company_name} banner`}
+            className="w-full h-full object-cover" />
+        </div>
+      ) : (
+        <div className="w-full h-32 bg-gradient-to-r from-[#C9A961]/30 via-[#C9A961]/15 to-[#8B7339]/20" />
+      )}
 
-              <div className="flex flex-wrap gap-6">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Ürün Sayısı</p>
-                  <p className="text-slate-900 font-black text-xl mt-1">{totalProducts}</p>
-                </div>
-                {avgScore !== null && (
-                  <div>
-                    <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Ortalama EP</p>
-                    <p className={`font-black text-xl mt-1 ${
-                      avgScore >= 9 ? 'text-[#10876B]' : avgScore >= 7 ? 'text-[#8B7339]' : 'text-red-500'
-                    }`}>
-                      {avgScore.toFixed(1)}<span className="text-slate-400 text-sm font-bold ml-0.5">/10</span>
-                    </p>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+        {/* Vendor profil kartı — logo + ad + tagline */}
+        <div className="-mt-12 sm:-mt-16 mb-6 sm:mb-10">
+          <div className="bg-white border border-slate-200 rounded-3xl shadow-xl shadow-slate-900/5 p-6 sm:p-8">
+            <div className="flex items-start gap-4 sm:gap-5 flex-wrap">
+              {/* Logo veya default kutusu */}
+              <div className="shrink-0 -mt-12 sm:-mt-16 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-white border-4 border-white shadow-lg">
+                {vendor.logo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={vendor.logo_url} alt={`${vendor.company_name} logo`} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-[#C9A961] to-[#8B7339] flex items-center justify-center text-white text-3xl font-black">
+                    {vendor.company_name?.[0]?.toUpperCase() ?? '✦'}
                   </div>
                 )}
-                {avgRating !== null && (
-                  <div>
-                    <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Müşteri Puanı</p>
-                    <p className="text-slate-900 font-black text-xl mt-1">
-                      <span className="text-[#C9A961]">★</span> {avgRating.toFixed(1)}
-                      <span className="text-slate-400 text-sm font-bold ml-1">({reviewCount})</span>
-                    </p>
+              </div>
+
+              <div className="flex-1 min-w-[260px]">
+                <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#8B7339] mb-1">Estelongy Onaylı İş Ortağı</p>
+                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-[-0.02em]">{vendor.company_name}</h1>
+                {vendor.tagline && (
+                  <p className="text-slate-600 text-base mt-2 leading-snug">{vendor.tagline}</p>
+                )}
+
+                {/* Sosyal linkler */}
+                {socialEntries.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {socialEntries.map(([k, v]) => (
+                      <a key={k} href={v} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-[#C9A961]/15 border border-slate-200 hover:border-[#C9A961]/40 text-slate-700 hover:text-[#8B7339] text-sm font-semibold transition-colors">
+                        {socialIcon(k)} {socialLabel(k)}
+                      </a>
+                    ))}
                   </div>
                 )}
               </div>
             </div>
+
+            {/* İstatistikler */}
+            <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-slate-100">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Ürün Sayısı</p>
+                <p className="text-slate-900 font-black text-xl mt-1">{totalProducts}</p>
+              </div>
+              {avgScore !== null && (
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Ortalama EP</p>
+                  <p className={`font-black text-xl mt-1 ${
+                    avgScore >= 9 ? 'text-[#10876B]' : avgScore >= 7 ? 'text-[#8B7339]' : 'text-red-500'
+                  }`}>
+                    {avgScore.toFixed(1)}<span className="text-slate-400 text-sm font-bold ml-0.5">/10</span>
+                  </p>
+                </div>
+              )}
+              {avgRating !== null && (
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Müşteri Puanı</p>
+                  <p className="text-slate-900 font-black text-xl mt-1">
+                    <span className="text-[#C9A961]">★</span> {avgRating.toFixed(1)}
+                    <span className="text-slate-400 text-sm font-bold ml-1">({reviewCount})</span>
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Hakkımızda */}
+            {vendor.about_text && (
+              <div className="mt-6 pt-6 border-t border-slate-100">
+                <p className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-2">Hakkımızda</p>
+                <p className="text-slate-700 text-base leading-relaxed whitespace-pre-wrap">
+                  {vendor.about_text}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -252,4 +304,26 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
       </div>
     </main>
   )
+}
+
+function socialLabel(k: string): string {
+  switch (k) {
+    case 'website':   return 'Web'
+    case 'instagram': return 'Instagram'
+    case 'youtube':   return 'YouTube'
+    case 'twitter':   return 'X (Twitter)'
+    case 'tiktok':    return 'TikTok'
+    default:          return k
+  }
+}
+
+function socialIcon(k: string): string {
+  switch (k) {
+    case 'website':   return '🌐'
+    case 'instagram': return '📷'
+    case 'youtube':   return '▶'
+    case 'twitter':   return '𝕏'
+    case 'tiktok':    return '🎵'
+    default:          return '🔗'
+  }
 }

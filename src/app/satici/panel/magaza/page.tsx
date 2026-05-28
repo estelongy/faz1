@@ -1,0 +1,95 @@
+export const dynamic = 'force-dynamic'
+
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { pathForRole } from '@/lib/auth-redirect'
+import MagazaEditor from './MagazaEditor'
+
+export const metadata: Metadata = { title: 'Mağaza Vitrini — İş Ortağı' }
+
+export default async function MagazaSayfasi() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/giris')
+
+  const role = (user.app_metadata as Record<string, string>)?.role
+  if (role === 'admin' || role === 'clinic') redirect(pathForRole(role))
+
+  const { data: vendor } = await supabase
+    .from('vendors')
+    .select(`
+      id, company_name, approval_status,
+      logo_url, banner_url, tagline, about_text, social_links
+    `)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!vendor) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">🏪</div>
+          <h1 className="text-white font-bold text-xl mb-2">İş Ortağı Hesabı Yok</h1>
+          <Link href="/satici/basvur"
+            className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] text-white font-semibold rounded-xl text-base">
+            İş Ortağı Başvurusu →
+          </Link>
+        </div>
+      </main>
+    )
+  }
+
+  if (vendor.approval_status !== 'approved') {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-5xl mb-4">⏳</div>
+          <h1 className="text-white font-bold text-xl mb-2">Hesabın onay bekliyor</h1>
+          <p className="text-slate-400 text-sm">Onaylandığında mağaza vitrinini özelleştirebilirsin.</p>
+          <Link href="/satici/panel" className="inline-block mt-6 text-[#C9A961] hover:text-[#D4B872] text-sm font-semibold">← Panele dön</Link>
+        </div>
+      </main>
+    )
+  }
+
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-slate-200">
+      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href="/satici/panel"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
+            ← Panel
+          </Link>
+          <span className="text-white font-bold text-sm">Mağaza Vitrini</span>
+          <Link href={`/estestore/satici/${vendor.id}`} target="_blank"
+            className="text-[#C9A961] hover:text-[#D4B872] text-sm font-bold">
+            Önizle ↗
+          </Link>
+        </div>
+      </header>
+
+      <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Mağaza Vitrini</h1>
+          <p className="text-slate-400 text-base mt-2">
+            Müşterilerin sayfanı ziyaret ettiğinde ilk gördüğü şey burası. Markanı tanıt.
+          </p>
+        </div>
+
+        <MagazaEditor
+          vendorId={vendor.id}
+          companyName={vendor.company_name ?? ''}
+          initial={{
+            logo_url:   vendor.logo_url ?? null,
+            banner_url: vendor.banner_url ?? null,
+            tagline:    vendor.tagline ?? '',
+            about_text: vendor.about_text ?? '',
+            social_links: (vendor.social_links as Record<string, string>) ?? {},
+          }}
+        />
+      </div>
+    </main>
+  )
+}

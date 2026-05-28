@@ -259,6 +259,14 @@ export default async function SaticiPanelPage() {
               <p className="text-slate-500 text-sm mt-0.5">Gönderici · tek tık etiket</p>
             </div>
           </Link>
+          <Link href="/satici/panel/magaza"
+            className="p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-rose-500/50 rounded-2xl transition-all flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-xl">🏪</div>
+            <div>
+              <p className="text-white font-bold text-sm">Mağaza Vitrini</p>
+              <p className="text-slate-500 text-sm mt-0.5">Logo · banner · hakkımızda</p>
+            </div>
+          </Link>
         </div>
 
         {/* Ödeme hesabı uyarı banner — henüz stripe_account_id yoksa */}
