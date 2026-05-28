@@ -319,7 +319,13 @@ export default async function SaticiPanelPage() {
 
         {/* Ürün Ekle Formu */}
         <div className="mb-10">
-          <h2 className="text-white font-bold text-lg mb-4">Yeni Ürün / İşlem Ekle</h2>
+          <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
+            <h2 className="text-white font-bold text-lg">Yeni Ürün / İşlem Ekle</h2>
+            <Link href="/satici/panel/urunler/toplu"
+              className="text-[#C9A961] hover:text-[#D4B872] text-sm font-bold">
+              📤 Toplu CSV Yükleme →
+            </Link>
+          </div>
           <UrunEkleForm vendorId={vendor.id} />
         </div>
 
