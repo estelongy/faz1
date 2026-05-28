@@ -56,26 +56,19 @@ export default async function MagazaSayfasi() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-slate-200">
-      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/satici/panel"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
-            ← Panel
-          </Link>
-          <span className="text-white font-bold text-sm">Mağaza Vitrini</span>
+
+      <div className="max-w-3xl mx-auto px-4 pt-16 lg:pt-10 pb-16 space-y-6">
+        <div className="flex items-baseline justify-between gap-3 flex-wrap">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Mağaza Vitrini</h1>
+            <p className="text-slate-400 text-base mt-2">
+              Müşterilerin sayfanı ziyaret ettiğinde ilk gördüğü şey burası. Markanı tanıt.
+            </p>
+          </div>
           <Link href={`/estestore/satici/${vendor.id}`} target="_blank"
-            className="text-[#C9A961] hover:text-[#D4B872] text-sm font-bold">
+            className="px-3 py-1.5 rounded-lg border border-[#C9A961]/40 hover:border-[#C9A961] text-[#D4B872] hover:bg-[#C9A961]/10 text-sm font-bold transition-colors">
             Önizle ↗
           </Link>
-        </div>
-      </header>
-
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Mağaza Vitrini</h1>
-          <p className="text-slate-400 text-base mt-2">
-            Müşterilerin sayfanı ziyaret ettiğinde ilk gördüğü şey burası. Markanı tanıt.
-          </p>
         </div>
 
         <MagazaEditor

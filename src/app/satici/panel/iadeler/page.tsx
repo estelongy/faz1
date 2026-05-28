@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import IadeKararForm from './IadeKararForm'
-import BackButton from '@/components/BackButton'
 
 export const metadata: Metadata = { title: 'İade Talepleri — İş Ortağı Paneli' }
 
@@ -45,22 +44,9 @@ export default async function SaticiIadelerPage({
 
   const { data: returns } = await query
 
-  const pendingCount = (returns ?? []).filter(r => r.status === 'pending').length
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
-          <BackButton href="/satici/panel" label="İş Ortağı Paneli" />
-          <span className="text-slate-700">|</span>
-          <span className="text-white text-sm font-bold">İade Talepleri</span>
-          {pendingCount > 0 && (
-            <span className="bg-[#C9A961] text-slate-900 text-sm font-black px-2 py-0.5 rounded-full">{pendingCount}</span>
-          )}
-        </div>
-      </header>
-
-      <div className="max-w-4xl mx-auto px-4 pt-24 pb-16">
+      <div className="max-w-4xl mx-auto px-4 pt-16 lg:pt-10 pb-16">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-black text-white">İade Talepleri</h1>
         </div>

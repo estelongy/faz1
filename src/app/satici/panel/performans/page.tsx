@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
@@ -47,18 +46,7 @@ export default async function PerformansSayfasi() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-slate-200">
-      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/satici/panel"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
-            ← Panel
-          </Link>
-          <span className="text-white font-bold text-sm">Performans Skoru</span>
-          <span className="w-16" />
-        </div>
-      </header>
-
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 pt-16 lg:pt-10 pb-16 space-y-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Performans Skoru</h1>
           <p className="text-slate-400 text-base mt-2">

@@ -73,18 +73,7 @@ export default async function SaticiSorularPage({
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/satici/panel"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
-            ← Panel
-          </Link>
-          <span className="text-white font-bold text-sm">Müşteri Soruları</span>
-          <span className="w-16" />
-        </div>
-      </header>
-
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 pt-16 lg:pt-10 pb-16 space-y-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Müşteri Soruları</h1>
           <p className="text-slate-400 text-base mt-2">

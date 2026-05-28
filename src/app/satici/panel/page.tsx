@@ -10,6 +10,7 @@ import { getVendorStats } from '@/lib/vendor-stats'
 import { getVendorPerformance } from '@/lib/vendor-performance'
 
 export const metadata: Metadata = { title: 'İş Ortağı Paneli — Estelongy' }
+// Layout (src/app/satici/panel/layout.tsx) sidebar + guard sağlıyor.
 
 const CATEGORY_LABELS: Record<string, string> = {
   // EsteStore ana kategoriler
@@ -29,13 +30,6 @@ function StatusBadge({ status }: { status: string }) {
   }
   const s = map[status] ?? { label: status, cls: 'bg-slate-700 text-slate-400' }
   return <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${s.cls}`}>{s.label}</span>
-}
-
-async function handleSignOut() {
-  'use server'
-  const supabase = await createClient()
-  await supabase.auth.signOut()
-  redirect('/')
 }
 
 export default async function SaticiPanelPage() {
@@ -146,23 +140,8 @@ export default async function SaticiPanelPage() {
                           { bg: 'bg-red-500/15',      fg: 'text-red-300',    ring: 'ring-red-500/40' }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-white font-black text-lg tracking-tight">ESTELONGY</Link>
-            <span className="text-slate-700">|</span>
-            <span className="text-slate-400 text-sm">İş Ortağı Paneli</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <form action={handleSignOut}>
-              <button type="submit" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-700 hover:border-red-400/50 hover:bg-red-500/10 text-slate-300 hover:text-red-400 text-base font-medium transition-colors">Çıkış Yap</button>
-            </form>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-5xl mx-auto px-4 pt-24 pb-16">
+    <main className="min-h-screen">
+      <div className="max-w-5xl mx-auto px-4 pt-16 lg:pt-10 pb-16">
         {/* Başlık */}
         <div className="mb-8">
           <h1 className="text-2xl font-black text-white">{vendor.company_name}</h1>
