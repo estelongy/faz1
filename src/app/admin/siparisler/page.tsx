@@ -172,12 +172,15 @@ export default async function AdminSiparislerPage({
                 </thead>
                 <tbody className="divide-y divide-slate-700">
                   {orders.map(o => {
-                    const items = (o.order_items ?? []) as Array<{
+                    const items = (o.order_items ?? []) as unknown as Array<{
                       id: string; quantity: number; line_total: number
                       fulfillment_status: string | null
-                      vendors: { company_name: string } | null
+                      vendors: { company_name: string } | { company_name: string }[] | null
                     }>
-                    const vendorNames = Array.from(new Set(items.map(i => i.vendors?.company_name).filter(Boolean)))
+                    const vendorNames = Array.from(new Set(items.flatMap(i => {
+                      if (!i.vendors) return []
+                      return Array.isArray(i.vendors) ? i.vendors.map(v => v.company_name) : [i.vendors.company_name]
+                    }).filter(Boolean)))
                     const pay = PAYMENT_BADGE[o.payment_status ?? 'pending'] ?? { label: o.payment_status ?? '—', color: 'bg-slate-700 text-slate-400' }
                     const customer = o.is_guest
                       ? `${o.guest_name ?? '—'} (misafir)`

@@ -84,4 +84,3 @@ export async function saveShippingSettingsAction(
   return { ok: true }
 }
 
-export const CARRIERS = CARRIERS_VALID

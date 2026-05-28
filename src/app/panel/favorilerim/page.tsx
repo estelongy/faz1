@@ -51,7 +51,17 @@ export default async function FavorilerimPage() {
     } | null
   }
 
-  const products: ProductCardData[] = ((rows ?? []) as Row[])
+  const normalized: Row[] = ((rows ?? []) as unknown as Array<{
+    product_id: string
+    created_at: string
+    products: Row['products'] | Row['products'][] | null
+  }>).map(r => ({
+    product_id: r.product_id,
+    created_at: r.created_at,
+    products: Array.isArray(r.products) ? (r.products[0] ?? null) : r.products,
+  }))
+
+  const products: ProductCardData[] = normalized
     .filter(r => r.products && r.products.is_active && r.products.approval_status === 'approved')
     .filter(r => isPro || r.products!.category !== 'sarf_medikal')
     .map(r => ({

@@ -6,9 +6,13 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import KargoAyarForm from './KargoAyarForm'
-import { CARRIERS } from './actions'
 
 export const metadata: Metadata = { title: 'Kargo Ayarları — İş Ortağı' }
+
+const CARRIERS = [
+  'Yurtiçi Kargo', 'Aras Kargo', 'MNG Kargo', 'PTT Kargo',
+  'Sürat Kargo', 'HepsiJet', 'Trendyol Express', 'Diğer',
+]
 
 export default async function KargoAyarSayfasi() {
   const supabase = await createClient()

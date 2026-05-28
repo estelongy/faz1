@@ -286,7 +286,7 @@ export default async function UrunDetayPage({
       bestRating: 10,
       worstRating: 0,
     }
-    productJsonLd.review = reviews.slice(0, 5).map(r => ({
+    productJsonLd.review = (legacyReviews ?? []).slice(0, 5).map(r => ({
       '@type': 'Review',
       reviewRating: {
         '@type': 'Rating',

@@ -350,7 +350,7 @@ export async function notifyVendorNewOrder(orderId: string): Promise<void> {
       }
     }
 
-    for (const v of byVendor.values()) {
+    for (const v of Array.from(byVendor.values())) {
       const { data: userData } = await admin.auth.admin.getUserById(v.userId)
       const email = userData?.user?.email
       if (!email) continue
