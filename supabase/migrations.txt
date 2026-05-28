@@ -70,3 +70,4 @@ veya supabase CLI: `supabase db pull`
 2026-05-26  vendor_storefront_branding                   ← Logo/banner/about/social
 2026-05-26  product_questions_qa                         ← Müşteri Q&A
 2026-05-26  reviews_vendor_response                      ← Satıcı yorum yanıtı
+2026-05-26  ep_reviews_verified_purchase_and_title       ← 5-yıldız unify + verified flag

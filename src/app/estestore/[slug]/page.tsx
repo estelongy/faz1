@@ -158,18 +158,13 @@ export default async function UrunDetayPage({
     isInWishlist = !!wRow
   }
 
-  const { data: reviews } = await supabase
+  // Eski reviews tablosu — sadece backward compat için okunur, yeni form artık ep_reviews'a yazar
+  const { data: legacyReviews } = await supabase
     .from('reviews')
     .select('id, rating, title, body, is_verified, created_at, user_id, vendor_response, vendor_responded_at, profiles(full_name)')
     .eq('product_id', product.id)
     .order('created_at', { ascending: false })
     .limit(20)
-
-  const userReview = reviews?.find(r => r.user_id === user?.id)
-
-  const avgUserScore = reviews && reviews.length > 0
-    ? reviews.reduce((s, r) => s + Number(r.rating), 0) / reviews.length
-    : null
 
   // Q&A — sorular + yanıtlar
   const { data: qaRaw } = await supabase
@@ -197,13 +192,21 @@ export default async function UrunDetayPage({
     asker_full_name: askerNameMap.get(q.asker_user_id) ?? null,
   }))
 
-  // EP (Estelongy Puanı) sistemi: 5 sorulu değerlendirmeler + opsiyonel yorum
+  // EP (Estelongy Puanı) sistemi: 5 sorulu değerlendirmeler + opsiyonel başlık + yorum + verified rozeti
   const { data: epReviews } = await supabase
     .from('ep_reviews')
-    .select('id, baz_score, q_etkinlik, q_sosyal_kanit, q_guvenlik, q_etki_suresi, q_kullanim, comment, created_at, user_id, profiles(full_name)')
+    .select('id, baz_score, q_etkinlik, q_sosyal_kanit, q_guvenlik, q_etki_suresi, q_kullanim, title, comment, is_verified_purchase, created_at, user_id, profiles(full_name)')
     .eq('product_id', product.id)
     .order('created_at', { ascending: false })
     .limit(50)
+
+  const userEpReview = epReviews?.find(r => r.user_id === user?.id) ?? null
+  const avgUserScore = epReviews && epReviews.length > 0
+    ? epReviews.reduce((s, r) => s + Number(r.baz_score ?? 0), 0) / epReviews.length
+    : (legacyReviews && legacyReviews.length > 0
+        ? legacyReviews.reduce((s, r) => s + Number(r.rating), 0) / legacyReviews.length
+        : null)
+  const totalReviewCount = (epReviews?.length ?? 0) + (legacyReviews?.length ?? 0)
 
   // 5 başlık ortalaması (1-5 ölçeği) — EP rozet bloğunda satır satır barlar.
   const epAverages = (() => {
@@ -275,11 +278,11 @@ export default async function UrunDetayPage({
     }
   }
 
-  if (avgUserScore && reviews && reviews.length > 0) {
+  if (avgUserScore && totalReviewCount > 0) {
     productJsonLd.aggregateRating = {
       '@type': 'AggregateRating',
       ratingValue: avgUserScore.toFixed(1),
-      reviewCount: reviews.length,
+      reviewCount: totalReviewCount,
       bestRating: 10,
       worstRating: 0,
     }
@@ -540,84 +543,13 @@ export default async function UrunDetayPage({
           </div>
         </div>
 
-        {/* EP Değerlendirmeleri (5 sorulu sistem) */}
-        {epReviews && epReviews.length > 0 && (
-          <div className="mt-14">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-slate-900 font-bold text-xl">
-                EP Değerlendirmeleri <span className="text-slate-400 font-normal text-base">({epReviews.length})</span>
-              </h2>
-              {product.ep_baz != null && (
-                <div className="flex items-center gap-2">
-                  <span className="text-[#10876B] font-black text-2xl">{Number(product.ep_baz).toFixed(2)}</span>
-                  <span className="text-slate-400 text-sm">/10 ortalama</span>
-                </div>
-              )}
-            </div>
-            {/* Yorumlu kayıtlar üstte, sadece-puan kayıtlar altta */}
-            <div className="divide-y divide-slate-200 border-y border-slate-200">
-              {[...epReviews].slice(0, 20)
-                .sort((a, b) => {
-                  // Yorum varsa üste
-                  const ac = a.comment ? 1 : 0
-                  const bc = b.comment ? 1 : 0
-                  if (ac !== bc) return bc - ac
-                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-                })
-                .map(r => {
-                const author = (r.profiles as { full_name?: string } | null)?.full_name ?? 'Kullanıcı'
-                const date = new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
-                const aspects = [
-                  ['Etkinlik', r.q_etkinlik],
-                  ['Sosyal',   r.q_sosyal_kanit],
-                  ['Güvenlik', r.q_guvenlik],
-                  ['Süre',     r.q_etki_suresi],
-                  ['Kullanım', r.q_kullanim],
-                ] as const
-
-                return (
-                  <div key={r.id} className="py-4 first:pt-0 last:pb-0">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">
-                          {author.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-slate-900 font-medium text-sm truncate">{author}</p>
-                          <p className="text-slate-400 text-xs">{date}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <span className="font-black text-base text-[#10876B] tabular-nums">{Number(r.baz_score).toFixed(2)}</span>
-                        <span className="text-slate-400 text-xs">/10</span>
-                      </div>
-                    </div>
-
-                    {r.comment && (
-                      <p className="text-slate-700 text-sm leading-relaxed mt-2 pl-11">{r.comment}</p>
-                    )}
-
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 pl-11 text-xs text-slate-500">
-                      {aspects.map(([label, val]) => (
-                        <span key={label}>
-                          {label}: <span className="text-amber-500 font-bold">{'★'.repeat(val as number)}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Eski Deneyim Paylaşımları (legacy) */}
+        {/* Müşteri Değerlendirmeleri — birleştirilmiş (ep_reviews + legacy reviews) */}
         <div className="mt-14">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-slate-900 font-bold text-xl">
-              Deneyimler <span className="text-slate-400 font-normal text-base">({reviews?.length ?? 0})</span>
+              Müşteri Değerlendirmeleri <span className="text-slate-400 font-normal text-base">({totalReviewCount})</span>
             </h2>
-            {avgUserScore && (
+            {avgUserScore !== null && (
               <div className="flex items-center gap-2">
                 <span className="text-[#8B7339] font-black text-2xl">{avgUserScore.toFixed(1)}</span>
                 <span className="text-slate-400 text-sm">/10 ortalama</span>
@@ -625,30 +557,94 @@ export default async function UrunDetayPage({
             )}
           </div>
 
-          {user && !userReview && (
-            <ReviewForm productId={product.id} />
-          )}
-          {!user && (
+          {user ? (
+            <ReviewForm
+              productId={product.id}
+              existing={userEpReview ? {
+                qEtkinlik:    userEpReview.q_etkinlik,
+                qSosyalKanit: userEpReview.q_sosyal_kanit,
+                qGuvenlik:    userEpReview.q_guvenlik,
+                qEtkiSuresi:  userEpReview.q_etki_suresi,
+                qKullanim:    userEpReview.q_kullanim,
+                title:        userEpReview.title,
+                comment:      userEpReview.comment,
+              } : null}
+            />
+          ) : (
             <div className="p-5 bg-[#FAFAF7] border border-slate-200 rounded-2xl mb-6 text-center">
               <p className="text-slate-600 text-sm">
-                Deneyimini paylaşmak için{' '}
+                Bu ürünü değerlendirmek için{' '}
                 <SafeLink href={`/giris?g=estestore&next=/estestore/${product.slug ?? product.id}`} className="text-[#8B7339] hover:text-[#C9A961] font-semibold">giriş yap</SafeLink>
               </p>
             </div>
           )}
 
           <div className="space-y-4 mt-6">
-            {reviews && reviews.length > 0 ? reviews.map(review => (
+            {/* EP review'ları */}
+            {epReviews && epReviews.length > 0 && epReviews.map(r => {
+              const score = Number(r.baz_score ?? 0)
+              return (
+                <div key={r.id} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                  <div className="flex items-start justify-between mb-3 gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-slate-900 font-semibold text-sm">
+                          {(r.profiles as { full_name?: string } | null)?.full_name ?? 'Kullanıcı'}
+                        </span>
+                        {r.is_verified_purchase && (
+                          <span className="text-sm bg-[#10876B]/15 text-[#10876B] px-2 py-0.5 rounded-full font-semibold">
+                            ✓ Doğrulanmış Alışveriş
+                          </span>
+                        )}
+                      </div>
+                      {r.title && <p className="text-slate-900 font-bold text-base mt-1">{r.title}</p>}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className={`font-black text-lg ${
+                        score >= 9 ? 'text-[#10876B]' :
+                        score >= 7 ? 'text-[#8B7339]' : 'text-red-500'
+                      }`}>{score.toFixed(1)}</span>
+                      <span className="text-slate-400 text-sm">/10</span>
+                    </div>
+                  </div>
+
+                  {/* 5 başlık × yıldız mini-rozet */}
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
+                    {[
+                      ['Etkinlik', r.q_etkinlik],
+                      ['Sosyal',   r.q_sosyal_kanit],
+                      ['Güvenlik', r.q_guvenlik],
+                      ['Süre',     r.q_etki_suresi],
+                      ['Kullanım', r.q_kullanim],
+                    ].map(([label, val]) => (
+                      <div key={label as string} className="flex items-center justify-between gap-2 text-sm">
+                        <span className="text-slate-500">{label as string}</span>
+                        <span className="text-[#C9A961] font-bold">{'★'.repeat(Number(val))}<span className="text-slate-300">{'★'.repeat(5 - Number(val))}</span></span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {r.comment && <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{r.comment}</p>}
+                  <p className="text-slate-400 text-sm mt-3">
+                    {new Date(r.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                </div>
+              )
+            })}
+
+            {/* Legacy reviews (eski tablo) — geriye dönük gösterim */}
+            {legacyReviews && legacyReviews.length > 0 && legacyReviews.map(review => (
               <div key={review.id} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-slate-900 font-medium text-sm">
                         {(review.profiles as { full_name?: string } | null)?.full_name ?? 'Kullanıcı'}
                       </span>
                       {review.is_verified && (
-                        <span className="text-sm bg-[#10876B]/15 text-[#10876B] px-2 py-0.5 rounded-full font-semibold">Doğrulanmış</span>
+                        <span className="text-sm bg-[#10876B]/15 text-[#10876B] px-2 py-0.5 rounded-full font-semibold">✓ Doğrulanmış</span>
                       )}
+                      <span className="text-sm bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-semibold">eski format</span>
                     </div>
                     {review.title && <p className="text-slate-700 text-sm font-medium mt-1">{review.title}</p>}
                   </div>
@@ -664,7 +660,7 @@ export default async function UrunDetayPage({
                 <p className="text-slate-400 text-sm mt-3">
                   {new Date(review.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
-                {/* Satıcı yanıtı */}
+                {/* Satıcı yanıtı (legacy) */}
                 {(review as { vendor_response?: string | null; vendor_responded_at?: string | null }).vendor_response && (
                   <div className="mt-3 ml-4 pl-4 border-l-2 border-[#C9A961]/40 bg-[#C9A961]/5 rounded-r-lg py-2 px-3">
                     <div className="flex items-center gap-2 mb-1">
@@ -683,9 +679,11 @@ export default async function UrunDetayPage({
                   </div>
                 )}
               </div>
-            )) : (
+            ))}
+
+            {totalReviewCount === 0 && (
               <div className="text-center py-10 text-slate-400">
-                Henüz deneyim paylaşılmamış — ilk sen paylaş!
+                Henüz değerlendirme yok — ilk sen yap!
               </div>
             )}
           </div>
