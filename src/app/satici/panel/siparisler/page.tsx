@@ -43,6 +43,14 @@ export default async function SaticiSiparislerPage({
 
   const { data: items } = await query.limit(100)
 
+  // Kargo ayarları var mı? Etiket butonu için gerekli
+  const { data: shippingSettings } = await supabase
+    .from('vendor_shipping_settings')
+    .select('vendor_id')
+    .eq('vendor_id', vendor.id)
+    .maybeSingle()
+  const hasShippingSettings = !!shippingSettings
+
   const statusCounts = {
     pending:    0,
     preparing:  0,
@@ -97,7 +105,7 @@ export default async function SaticiSiparislerPage({
 
         {/* Kartlar */}
         {items && items.length > 0 ? (
-          <SiparisKartlari items={items} />
+          <SiparisKartlari items={items} hasShippingSettings={hasShippingSettings} />
         ) : (
           <div className="text-center py-24 text-slate-600">
             <div className="text-5xl mb-4">📦</div>

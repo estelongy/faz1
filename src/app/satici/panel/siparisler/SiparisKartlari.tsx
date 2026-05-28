@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { kargoGuncelleAction, fulfillmentGuncelleAction } from './siparis-actions'
+import { kargoGuncelleAction, fulfillmentGuncelleAction, etiketOlusturAction } from './siparis-actions'
 
 interface Profile { full_name?: string | null }
 interface OrderInfo {
@@ -25,24 +25,60 @@ interface OrderItem {
   fulfillment_status: string
   tracking_number: string | null
   tracking_carrier: string | null
+  shipping_label_code: string | null
   shipped_at: string | null
   created_at: string
   orders: OrderInfo
 }
 
+interface Props {
+  items: OrderItem[]
+  hasShippingSettings: boolean
+}
+
 const CARRIERS = ['Yurtiçi Kargo', 'Aras Kargo', 'MNG Kargo', 'PTT Kargo', 'Sürat Kargo', 'HepsiJet', 'Diğer']
 
-export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
+export default function SiparisKartlari({ items, hasShippingSettings }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [trackingDrafts, setTrackingDrafts] = useState<Record<string, { no: string; carrier: string }>>({})
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [bulkError, setBulkError] = useState<string | null>(null)
+  const [showManual, setShowManual] = useState<Set<string>>(new Set())
 
   function setDraft(id: string, field: 'no' | 'carrier', value: string) {
     setTrackingDrafts(p => ({
       ...p,
       [id]: { ...p[id], [field]: value },
     }))
+  }
+
+  function toggleSelect(id: string) {
+    setSelected(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function selectAllPreparing() {
+    const eligible = items.filter(i => i.fulfillment_status === 'preparing').map(i => i.id)
+    setSelected(new Set(eligible))
+  }
+
+  function clearSelection() {
+    setSelected(new Set())
+  }
+
+  function toggleManual(id: string) {
+    setShowManual(prev => {
+      const n = new Set(prev)
+      if (n.has(id)) n.delete(id)
+      else n.add(id)
+      return n
+    })
   }
 
   function handleStatus(itemId: string, status: 'preparing' | 'delivered' | 'cancelled') {
@@ -61,18 +97,106 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
     })
   }
 
+  function handleEtiketTekli(itemId: string) {
+    if (!hasShippingSettings) {
+      setBulkError('Önce kargo ayarlarını doldur: /satici/panel/kargo')
+      return
+    }
+    setBulkError(null)
+    startTransition(async () => {
+      const res = await etiketOlusturAction([itemId])
+      if (!res.ok) { setBulkError(res.error ?? 'Etiket oluşturulamadı.'); return }
+      // Print sayfasını yeni sekmede aç
+      window.open(`/satici/panel/siparisler/etiket/${itemId}`, '_blank')
+      router.refresh()
+    })
+  }
+
+  function handleEtiketToplu() {
+    if (!hasShippingSettings) {
+      setBulkError('Önce kargo ayarlarını doldur: /satici/panel/kargo')
+      return
+    }
+    const ids = Array.from(selected)
+    if (ids.length === 0) return
+    setBulkError(null)
+    startTransition(async () => {
+      const res = await etiketOlusturAction(ids)
+      if (!res.ok) { setBulkError(res.error ?? 'Toplu etiket oluşturulamadı.'); return }
+      window.open(`/satici/panel/siparisler/etiket/toplu?ids=${ids.join(',')}`, '_blank')
+      clearSelection()
+      router.refresh()
+    })
+  }
+
+  const eligibleCount = items.filter(i => i.fulfillment_status === 'preparing').length
+  const allSelected = eligibleCount > 0 && eligibleCount === selected.size
+
   return (
     <div className="space-y-4">
+      {/* Toplu işlem barı */}
+      {!hasShippingSettings && (
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm flex items-center justify-between flex-wrap gap-2">
+          <span>⚠️ <strong>Kargo ayarların yok.</strong> Tek tıkla etiket üretmek için ayarları doldur.</span>
+          <a href="/satici/panel/kargo" className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-lg text-sm">Ayarları Doldur →</a>
+        </div>
+      )}
+
+      {eligibleCount > 0 && (
+        <div className="sticky top-16 z-20 p-3 bg-slate-900/90 backdrop-blur-md border border-slate-700 rounded-xl flex items-center justify-between flex-wrap gap-2 shadow-lg">
+          <div className="flex items-center gap-3 text-sm">
+            <label className="inline-flex items-center gap-2 text-slate-300 cursor-pointer">
+              <input type="checkbox"
+                checked={allSelected}
+                onChange={() => allSelected ? clearSelection() : selectAllPreparing()}
+                className="w-4 h-4 accent-[#C9A961]" />
+              <span className="font-semibold">Hepsini seç</span>
+            </label>
+            <span className="text-slate-500">·</span>
+            <span className="text-slate-400">
+              <strong className="text-white">{selected.size}</strong> / {eligibleCount} kargolanmaya hazır
+            </span>
+          </div>
+          <button
+            onClick={handleEtiketToplu}
+            disabled={selected.size === 0 || isPending}
+            className="px-4 py-2 bg-gradient-to-r from-[#C9A961] to-[#B8964F] disabled:opacity-40 hover:from-[#D4B872] hover:to-[#C9A961] text-slate-900 font-bold rounded-lg text-sm transition-all"
+          >
+            🏷️ Toplu Etiket ({selected.size})
+          </button>
+        </div>
+      )}
+
+      {bulkError && (
+        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm font-semibold">
+          {bulkError}
+        </div>
+      )}
+
       {items.map(item => {
         const snap = item.product_snapshot
         const addr = item.orders.address_snapshot
         const customerName = item.orders.profiles?.full_name ?? addr?.full_name ?? 'Müşteri'
         const expanded = expandedId === item.id
 
+        const isSelectable = item.fulfillment_status === 'preparing'
+        const isSelected = selected.has(item.id)
+
         return (
-          <div key={item.id} className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden">
+          <div key={item.id} className={`bg-slate-800/50 border rounded-2xl overflow-hidden transition-colors ${
+            isSelected ? 'border-[#C9A961]' : 'border-slate-700'
+          }`}>
             <div className="p-5">
               <div className="flex items-start gap-4">
+                {/* Checkbox — sadece preparing aşamasındakiler seçilebilir */}
+                {isSelectable && (
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleSelect(item.id)}
+                    className="mt-1 w-5 h-5 accent-[#C9A961] cursor-pointer shrink-0"
+                  />
+                )}
                 {/* Thumbnail */}
                 <div className="shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-slate-900 border border-slate-700">
                   {snap?.image ? (
@@ -133,25 +257,45 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
 
                 {item.fulfillment_status === 'preparing' && (
                   <div className="space-y-3">
-                    <p className="text-white font-bold text-sm">Kargo Bilgisi Gir</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <select
-                        value={trackingDrafts[item.id]?.carrier ?? 'Yurtiçi Kargo'}
-                        onChange={e => setDraft(item.id, 'carrier', e.target.value)}
-                        className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#C9A961]">
-                        {CARRIERS.map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                      <input type="text"
-                        value={trackingDrafts[item.id]?.no ?? ''}
-                        onChange={e => setDraft(item.id, 'no', e.target.value)}
-                        placeholder="Takip numarası"
-                        className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#C9A961]" />
-                    </div>
-                    <button onClick={() => handleKargo(item.id)}
-                      disabled={isPending || !trackingDrafts[item.id]?.no?.trim()}
-                      className="w-full py-2.5 bg-[#C9A961] hover:bg-[#D4B872] disabled:opacity-40 text-white font-semibold rounded-xl text-sm">
-                      🚚 Kargoya Verdim
+                    {/* Tek tıkla etiket — birincil aksiyon */}
+                    <button
+                      onClick={() => handleEtiketTekli(item.id)}
+                      disabled={isPending || !hasShippingSettings}
+                      className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-slate-900 font-bold rounded-xl text-base shadow-lg shadow-[#C9A961]/20 transition-all"
+                    >
+                      🏷️ Etiket Oluştur & Yazdır
                     </button>
+
+                    {/* Manuel kargo girişi — opsiyonel */}
+                    <button
+                      onClick={() => toggleManual(item.id)}
+                      className="w-full text-slate-400 hover:text-slate-200 text-sm font-semibold py-1 transition-colors"
+                    >
+                      {showManual.has(item.id) ? '− Manuel girişi kapat' : '+ Kendi kargo numaramı girmek istiyorum'}
+                    </button>
+
+                    {showManual.has(item.id) && (
+                      <div className="space-y-2 p-3 bg-slate-900/50 rounded-xl">
+                        <div className="grid grid-cols-2 gap-2">
+                          <select
+                            value={trackingDrafts[item.id]?.carrier ?? 'Yurtiçi Kargo'}
+                            onChange={e => setDraft(item.id, 'carrier', e.target.value)}
+                            className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#C9A961]">
+                            {CARRIERS.map(c => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                          <input type="text"
+                            value={trackingDrafts[item.id]?.no ?? ''}
+                            onChange={e => setDraft(item.id, 'no', e.target.value)}
+                            placeholder="Takip numarası"
+                            className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#C9A961]" />
+                        </div>
+                        <button onClick={() => handleKargo(item.id)}
+                          disabled={isPending || !trackingDrafts[item.id]?.no?.trim()}
+                          className="w-full py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-white font-semibold rounded-lg text-sm">
+                          🚚 Kargoya Verdim (Manuel)
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -163,11 +307,21 @@ export default function SiparisKartlari({ items }: { items: OrderItem[] }) {
                         {item.tracking_carrier} · <span className="font-mono">{item.tracking_number}</span>
                       </p>
                     </div>
-                    <button onClick={() => handleStatus(item.id, 'delivered')}
-                      disabled={isPending}
-                      className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-semibold rounded-xl text-sm">
-                      ✓ Teslim Edildi
-                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      {item.shipping_label_code && (
+                        <a href={`/satici/panel/siparisler/etiket/${item.id}`} target="_blank" rel="noopener"
+                          className="py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl text-sm text-center transition-colors">
+                          🖨 Etiketi Yeniden Yazdır
+                        </a>
+                      )}
+                      <button onClick={() => handleStatus(item.id, 'delivered')}
+                        disabled={isPending}
+                        className={`py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-semibold rounded-xl text-sm ${
+                          item.shipping_label_code ? '' : 'col-span-2'
+                        }`}>
+                        ✓ Teslim Edildi
+                      </button>
+                    </div>
                   </div>
                 )}
 
