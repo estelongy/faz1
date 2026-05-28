@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import UrunEkleForm from './UrunEkleForm'
 import { getVendorStats } from '@/lib/vendor-stats'
+import { getVendorPerformance } from '@/lib/vendor-performance'
 
 export const metadata: Metadata = { title: 'İş Ortağı Paneli — Estelongy' }
 
@@ -136,6 +137,13 @@ export default async function SaticiPanelPage() {
 
   // Satış analitikleri (bu ay, geçen ay, top ürünler)
   const stats = await getVendorStats(vendor.id)
+  const perf = await getVendorPerformance(vendor.id)
+  const perfColors =
+    perf.letter === 'A' ? { bg: 'bg-emerald-500/15', fg: 'text-emerald-300', ring: 'ring-emerald-500/40' } :
+    perf.letter === 'B' ? { bg: 'bg-[#C9A961]/15',   fg: 'text-[#D4B872]',  ring: 'ring-[#C9A961]/40' } :
+    perf.letter === 'C' ? { bg: 'bg-amber-500/15',    fg: 'text-amber-300',  ring: 'ring-amber-500/40' } :
+    perf.letter === 'D' ? { bg: 'bg-orange-500/15',   fg: 'text-orange-300', ring: 'ring-orange-500/40' } :
+                          { bg: 'bg-red-500/15',      fg: 'text-red-300',    ring: 'ring-red-500/40' }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
@@ -203,6 +211,39 @@ export default async function SaticiPanelPage() {
             </div>
           </div>
         </div>
+
+        {/* Performans rozeti */}
+        <Link href="/satici/panel/performans"
+          className={`block mb-6 p-5 rounded-2xl ${perfColors.bg} border border-slate-700 ring-2 ${perfColors.ring} hover:border-slate-500 transition-colors group`}>
+          <div className="flex items-center gap-5 flex-wrap">
+            <div className={`shrink-0 w-16 h-16 rounded-2xl ${perfColors.bg} flex items-center justify-center text-4xl font-black ${perfColors.fg}`}>
+              {perf.letter}
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <p className="text-slate-400 text-xs uppercase tracking-widest font-bold">Performans Skoru</p>
+              <p className="text-3xl font-black text-white">{perf.totalScore}<span className="text-slate-500 text-lg">/100</span></p>
+              {!perf.hasEnoughData && (
+                <p className="text-slate-500 text-xs mt-1">Yeterli veri yok — ilk 5 sipariş sonrası kalibre olur</p>
+              )}
+            </div>
+            <div className="grid grid-cols-5 gap-1 flex-1 min-w-[200px]">
+              {perf.metrics.map(m => (
+                <div key={m.key} className="flex flex-col items-center" title={m.label}>
+                  <div className="w-full h-1.5 rounded-full bg-slate-900/50 overflow-hidden">
+                    <div className={`h-full ${
+                      m.band === 'good' ? 'bg-emerald-400' :
+                      m.band === 'ok' ? 'bg-amber-400' : 'bg-red-400'
+                    }`} style={{ width: `${(m.score / 20) * 100}%` }} />
+                  </div>
+                  <p className="text-slate-500 text-[10px] mt-1 truncate w-full text-center font-semibold">
+                    {m.label.split(' ')[0]}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <span className="text-[#C9A961] group-hover:translate-x-0.5 transition-transform text-2xl">→</span>
+          </div>
+        </Link>
 
         {/* Ürün özet kartlar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -281,6 +322,14 @@ export default async function SaticiPanelPage() {
             <div>
               <p className="text-white font-bold text-sm">Müşteri Yorumları</p>
               <p className="text-slate-500 text-sm mt-0.5">Değerlendirmelere yanıt</p>
+            </div>
+          </Link>
+          <Link href="/satici/panel/performans"
+            className="p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-indigo-500/50 rounded-2xl transition-all flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-xl">📊</div>
+            <div>
+              <p className="text-white font-bold text-sm">Performans Skoru</p>
+              <p className="text-slate-500 text-sm mt-0.5">5 metrik · {perf.letter} ({perf.totalScore}/100)</p>
             </div>
           </Link>
         </div>
