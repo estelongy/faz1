@@ -10,6 +10,7 @@ import CartButton from '@/components/CartButton'
 import WishlistButton from '@/components/WishlistButton'
 import RecentlyViewedTracker from '@/components/RecentlyViewedTracker'
 import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
+import QaSection from './QaSection'
 
 import SafeLink from '@/components/SafeLink'
 const SITE_URL = 'https://estelongy.com'
@@ -159,7 +160,7 @@ export default async function UrunDetayPage({
 
   const { data: reviews } = await supabase
     .from('reviews')
-    .select('id, rating, title, body, is_verified, created_at, user_id, profiles(full_name)')
+    .select('id, rating, title, body, is_verified, created_at, user_id, vendor_response, vendor_responded_at, profiles(full_name)')
     .eq('product_id', product.id)
     .order('created_at', { ascending: false })
     .limit(20)
@@ -169,6 +170,32 @@ export default async function UrunDetayPage({
   const avgUserScore = reviews && reviews.length > 0
     ? reviews.reduce((s, r) => s + Number(r.rating), 0) / reviews.length
     : null
+
+  // Q&A — sorular + yanıtlar
+  const { data: qaRaw } = await supabase
+    .from('product_questions')
+    .select('id, question, answer, answered_at, created_at, asker_user_id')
+    .eq('product_id', product.id)
+    .eq('is_hidden', false)
+    .order('created_at', { ascending: false })
+    .limit(50)
+
+  // Profil isimlerini ayrı çek (FK direkt auth.users'a)
+  const askerIds = Array.from(new Set((qaRaw ?? []).map(q => q.asker_user_id)))
+  const { data: askerProfiles } = askerIds.length > 0
+    ? await supabase.from('profiles').select('id, full_name').in('id', askerIds)
+    : { data: [] }
+  const askerNameMap = new Map((askerProfiles ?? []).map(p => [p.id, p.full_name as string | null]))
+
+  const questions = (qaRaw ?? []).map(q => ({
+    id: q.id,
+    question: q.question,
+    answer: q.answer,
+    answered_at: q.answered_at,
+    created_at: q.created_at,
+    asker_user_id: q.asker_user_id,
+    asker_full_name: askerNameMap.get(q.asker_user_id) ?? null,
+  }))
 
   // EP (Estelongy Puanı) sistemi: 5 sorulu değerlendirmeler + opsiyonel yorum
   const { data: epReviews } = await supabase
@@ -637,6 +664,24 @@ export default async function UrunDetayPage({
                 <p className="text-slate-400 text-sm mt-3">
                   {new Date(review.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
+                {/* Satıcı yanıtı */}
+                {(review as { vendor_response?: string | null; vendor_responded_at?: string | null }).vendor_response && (
+                  <div className="mt-3 ml-4 pl-4 border-l-2 border-[#C9A961]/40 bg-[#C9A961]/5 rounded-r-lg py-2 px-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#C9A961]/15 text-[#8B7339] text-xs font-bold">
+                        ✓ Satıcı Yanıtı
+                      </span>
+                      {(review as { vendor_responded_at?: string }).vendor_responded_at && (
+                        <span className="text-slate-500 text-xs">
+                          {new Date((review as { vendor_responded_at: string }).vendor_responded_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
+                      {(review as { vendor_response: string }).vendor_response}
+                    </p>
+                  </div>
+                )}
               </div>
             )) : (
               <div className="text-center py-10 text-slate-400">
@@ -644,6 +689,17 @@ export default async function UrunDetayPage({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Sorular & Cevaplar */}
+        <div id="qa" className="max-w-6xl mx-auto px-4 sm:px-6 mt-14">
+          <QaSection
+            productId={product.id}
+            productSlug={product.slug ?? null}
+            questions={questions}
+            currentUserId={user?.id ?? null}
+            loginRedirect={`/estestore/${product.slug ?? product.id}#qa`}
+          />
         </div>
 
         {/* Son baktıkların — localStorage'dan */}
