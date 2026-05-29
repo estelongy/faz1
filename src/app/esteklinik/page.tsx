@@ -6,6 +6,7 @@ import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { Building2, ArrowRight } from 'lucide-react'
 import EsteKlinikNav from './EsteKlinikNav'
+import GalaxyVisitBeacon from '@/components/GalaxyVisitBeacon'
 import { KlinikSearchProvider, KlinikSearchInputs, KlinikSearchResults } from './KlinikSearch'
 import type { ClinicRow } from './ClinicCard'
 
@@ -40,6 +41,7 @@ export default async function KliniklerPage() {
 
   return (
     <>
+      <GalaxyVisitBeacon galaxy="esteklinik" />
       <EsteKlinikNav />
 
       <KlinikSearchProvider clinics={clinics}>

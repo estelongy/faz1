@@ -4,6 +4,7 @@ import SafeLink from '@/components/SafeLink'
 import { Camera, Activity, BookOpen, LayoutDashboard, ArrowRight } from 'lucide-react'
 import Footer from '@/components/Footer'
 import BiyoAGENav from './BiyoAGENav'
+import GalaxyVisitBeacon from '@/components/GalaxyVisitBeacon'
 
 export const dynamic = 'force-dynamic'
 
@@ -69,6 +70,7 @@ export default async function BiyoAGEPage() {
   // Not: SafeLink auth-gate'leri otomatik yapıyor; sayfa içinde isLoggedIn'e ihtiyaç kalmadı.
   return (
     <>
+      <GalaxyVisitBeacon galaxy="biyoage" />
       <BiyoAGENav />
 
       <main className="min-h-screen bg-white">

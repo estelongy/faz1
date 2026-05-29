@@ -34,3 +34,11 @@ export const otpPerHour = new Ratelimit({
   prefix: 'ratelimit:otp:hour',
   analytics: false,
 })
+
+/** Galaksi ziyaret beacon'ı — aynı visitor dakikada 20 (abuse koruması) */
+export const galaxyTrackLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, '1 m'),
+  prefix: 'ratelimit:galaxy',
+  analytics: false,
+})

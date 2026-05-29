@@ -6,6 +6,7 @@ import { getUserWishlistSet } from '@/lib/wishlists'
 import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
 import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
+import GalaxyVisitBeacon from '@/components/GalaxyVisitBeacon'
 import BrandMorphButton from './BrandMorphButton'
 import SafeLink from '@/components/SafeLink'
 import {
@@ -160,6 +161,7 @@ export default async function EsteStorePage() {
 
   return (
     <main className="bg-white min-h-screen text-slate-900">
+      <GalaxyVisitBeacon galaxy="estestore" />
       <TopNav user={!!user} />
 
       <div className="flex">
