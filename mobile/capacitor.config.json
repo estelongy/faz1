@@ -1,0 +1,14 @@
+{
+  "appId": "com.estelongy.biyoage",
+  "appName": "BiyoAGE",
+  "webDir": "www",
+  "server": {
+    "url": "https://faz-1-git-master-estelongy-3655s-projects.vercel.app/biyoage",
+    "cleartext": false
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}
