@@ -3,4 +3,6 @@ android/
 ios/
 .gradle/
 *.log
+*.png
+build-log.txt
 .DS_Store
