@@ -4,6 +4,7 @@ import './globals.css'
 import AuthHashHandler from '@/components/AuthHashHandler'
 import AuthStatusProvider from '@/components/AuthStatusProvider'
 import { GalaxyTransitionProvider } from '@/components/GalaxyTransition'
+import AppBottomNav from '@/components/native/AppBottomNav'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -143,6 +144,7 @@ export default function RootLayout({
           <GalaxyTransitionProvider>
             {children}
           </GalaxyTransitionProvider>
+          <AppBottomNav />
         </AuthStatusProvider>
       </body>
     </html>
