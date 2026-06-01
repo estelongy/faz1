@@ -127,9 +127,10 @@ export default function AppHome() {
           </span>
         </div>
 
-        {/* Çıpa manifesto — antiteli ikili lockup: "Sağlıklı yaş al & her zaman genç kal" */}
-        <div className="mt-6 flex items-start justify-center gap-3 sm:gap-6 text-center">
-          <div>
+        {/* Çıpa manifesto — kenarlara dayalı antitez: solda yaşlanma, sağda gençlik.
+            İki blok ekranı kucaklar; merkez skor halkasına kalır. */}
+        <div className="mt-6 flex items-start justify-between">
+          <div className="text-left">
             <p className="text-[13px] sm:text-sm font-extrabold uppercase tracking-[0.24em] text-[#7BE495]">
               SAĞLIKLI
             </p>
@@ -137,10 +138,7 @@ export default function AppHome() {
               YAŞ&nbsp;AL
             </p>
           </div>
-          <span className="self-center text-2xl sm:text-3xl font-serif italic text-[#C9BBF5] leading-none -mt-1">
-            &amp;
-          </span>
-          <div>
+          <div className="text-right">
             <p className="text-[13px] sm:text-sm font-extrabold uppercase tracking-[0.24em] text-[#7BE495]">
               HER ZAMAN
             </p>
