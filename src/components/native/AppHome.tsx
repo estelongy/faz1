@@ -1,20 +1,20 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import SafeLink from '@/components/SafeLink'
 import { Camera, Activity, BookOpen, LayoutDashboard, ShoppingBag, ChevronRight } from 'lucide-react'
 import { useIsNativeApp } from './useIsNativeApp'
 import { useAuthStatus } from '@/components/AuthStatusProvider'
+import Confetti from './Confetti'
 
 /**
  * AppHome — yalnızca Capacitor app içinde görünen, skor-önce (score-first)
  * mobil ev ekranı. Web'de null render eder; oradaki pazarlama landing'i
  * (BiyoAGENav + hero + 4 kapı) `web-only` ile gizlenir, yerine bu gelir.
  *
- * Tasarım niyeti: pazarlama değil, kişisel başlangıç. Tek büyük skor halkası,
- * tek net aksiyon (Selfie ile Ölç), birkaç büyük dokunma hedefi. Basit/eğlenceli.
- *
- * Not: Landing'de gerçek skor verisi yok (panel verisi auth-gated). Bu yüzden
- * halka "?" gösterir ve kullanıcıyı ölçüme davet eder — sahte skor YOK.
+ * Skor halkası: oturumlu kullanıcının gerçek Gençlik Skoru /api/me/score'dan
+ * gelir. Skor VARSA halka dolar, sayı sayılır ve bir kez konfeti patlar.
+ * Skor YOKSA (anonim ya da hiç ölçmemiş) "?" daveti gösterilir — sahte skor YOK.
  */
 
 const TILES = [
@@ -24,11 +24,84 @@ const TILES = [
   { href: '/estestore', label: 'Mağaza', desc: 'Süreklilik', Icon: ShoppingBag, glow: '#9F8CE0' },
 ]
 
+const CIRC = 553 // 2πr, r=88
+const PARTY_KEY = 'eg_score_party'
+
+// score: undefined = yükleniyor, null = ölçüm yok, number = skor var
 export default function AppHome() {
   const isApp = useIsNativeApp()
   const { isLoggedIn } = useAuthStatus()
 
+  const [score, setScore] = useState<number | null | undefined>(undefined)
+  const [offset, setOffset] = useState<number>(CIRC) // boş halka
+  const [display, setDisplay] = useState<number>(0) // sayım animasyonu
+  const [confetti, setConfetti] = useState(false)
+  const rafRef = useRef<number | null>(null)
+
+  // Skoru çek
+  useEffect(() => {
+    let alive = true
+    fetch('/api/me/score', { cache: 'no-store' })
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (!alive) return
+        const s = typeof d?.score === 'number' ? d.score : null
+        setScore(s)
+      })
+      .catch(() => alive && setScore(null))
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  // Skor geldikten sonra: halkayı doldur + sayıyı say + (ilk kez) konfeti
+  useEffect(() => {
+    if (typeof score !== 'number') {
+      setOffset(score === null ? 470 : CIRC) // ölçüm yoksa dekoratif kısmi yay
+      return
+    }
+
+    // halka dolum (CSS transition ile)
+    const t = setTimeout(() => setOffset(CIRC * (1 - score / 100)), 80)
+
+    // sayı sayımı 0 → score (~1.1s)
+    const start = performance.now()
+    const dur = 1100
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / dur)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setDisplay(Math.round(eased * score))
+      if (p < 1) rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
+
+    // konfeti — oturum başına bir kez
+    let partied = true
+    try {
+      partied = sessionStorage.getItem(PARTY_KEY) === '1'
+    } catch {
+      /* yoksay */
+    }
+    if (!partied) {
+      setConfetti(true)
+      try {
+        sessionStorage.setItem(PARTY_KEY, '1')
+      } catch {
+        /* yoksay */
+      }
+      setTimeout(() => setConfetti(false), 1800)
+    }
+
+    return () => {
+      clearTimeout(t)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [score])
+
   if (!isApp) return null
+
+  const measured = typeof score === 'number'
+  const ringHref = measured ? '/panel' : '/analiz'
 
   return (
     <div
@@ -57,10 +130,10 @@ export default function AppHome() {
         {/* Çıpa manifesto — antiteli ikili lockup: "Sağlıklı yaş al & her zaman genç kal" */}
         <div className="mt-6 flex items-start justify-center gap-3 sm:gap-6 text-center">
           <div>
-            <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.28em] text-[#7BE495]">
+            <p className="text-[13px] sm:text-sm font-extrabold uppercase tracking-[0.24em] text-[#7BE495]">
               SAĞLIKLI
             </p>
-            <p className="text-3xl sm:text-4xl font-black tracking-tight leading-none mt-1.5">
+            <p className="text-3xl sm:text-4xl font-bold tracking-tight leading-none mt-1.5">
               YAŞ&nbsp;AL
             </p>
           </div>
@@ -68,20 +141,22 @@ export default function AppHome() {
             &amp;
           </span>
           <div>
-            <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.28em] text-[#7BE495]">
+            <p className="text-[13px] sm:text-sm font-extrabold uppercase tracking-[0.24em] text-[#7BE495]">
               HER ZAMAN
             </p>
-            <p className="text-3xl sm:text-4xl font-black tracking-tight leading-none mt-1.5">
+            <p className="text-3xl sm:text-4xl font-bold tracking-tight leading-none mt-1.5">
               GENÇ&nbsp;KAL
             </p>
           </div>
         </div>
 
-        {/* Skor halkası — büyük, tıklanınca ölçüme götürür */}
-        <SafeLink href="/analiz" className="mt-7 block">
+        {/* Skor halkası — ölçüm varsa dolar + konfeti; yoksa "?" daveti */}
+        <SafeLink href={ringHref} className="mt-7 block">
           <div className="relative mx-auto w-56 h-56">
-            {/* pulse halka */}
-            <span className="absolute inset-0 rounded-full bg-[#9F8CE0]/10 app-pulse" aria-hidden />
+            {/* pulse halka (yalnız ölçüm yokken canlandırır) */}
+            {!measured && (
+              <span className="absolute inset-0 rounded-full bg-[#9F8CE0]/10 app-pulse" aria-hidden />
+            )}
             <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90">
               <circle cx="100" cy="100" r="88" fill="none" stroke="#3D2C66" strokeWidth="12" />
               <circle
@@ -89,18 +164,28 @@ export default function AppHome() {
                 cy="100"
                 r="88"
                 fill="none"
-                stroke="#9F8CE0"
+                stroke={measured ? '#7BE495' : '#9F8CE0'}
                 strokeWidth="12"
                 strokeLinecap="round"
-                strokeDasharray="553"
-                strokeDashoffset="470"
+                strokeDasharray={CIRC}
+                strokeDashoffset={offset}
+                style={{ transition: 'stroke-dashoffset 1.1s cubic-bezier(0.2,0.7,0.3,1), stroke 0.6s' }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-6xl font-black leading-none">?</span>
+              {measured ? (
+                <span className="text-6xl font-black leading-none tabular-nums">{display}</span>
+              ) : (
+                <span className="text-6xl font-black leading-none">?</span>
+              )}
               <span className="mt-2 text-sm font-semibold text-[#C9BBF5]">Gençlik Skoru</span>
-              <span className="mt-1 text-xs text-violet-300/70">henüz ölçülmedi</span>
+              <span className="mt-1 text-xs text-violet-300/70">
+                {score === undefined ? ' ' : measured ? 'bugünkü skorun' : 'henüz ölçülmedi'}
+              </span>
             </div>
+
+            {/* konfeti patlaması — skor dolunca bir kez */}
+            {confetti && <Confetti />}
           </div>
         </SafeLink>
 
@@ -110,9 +195,11 @@ export default function AppHome() {
           className="mt-7 flex items-center justify-center gap-2.5 w-full py-4 rounded-2xl bg-[#9F8CE0] active:bg-[#8B76D4] text-[#1B1330] font-bold text-base shadow-lg shadow-[#9F8CE0]/30 transition-colors"
         >
           <Camera size={20} />
-          Selfie ile Ölç
+          {measured ? 'Skoru Yenile' : 'Selfie ile Ölç'}
         </SafeLink>
-        <p className="mt-2 text-center text-xs text-violet-300/70">Ücretsiz · kayıt gerekmez · saniyeler içinde</p>
+        <p className="mt-2 text-center text-xs text-violet-300/70">
+          {measured ? 'yeni selfie ile skorunu güncelle' : 'Ücretsiz · kayıt gerekmez · saniyeler içinde'}
+        </p>
 
         {/* Hızlı erişim — 2×2 büyük kartlar */}
         <p className="mt-8 mb-3 text-sm font-bold uppercase tracking-[0.22em] text-violet-300/80">Hızlı Erişim</p>

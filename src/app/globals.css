@@ -20,6 +20,15 @@
   }
   .app-pulse { animation: appPulse 2.8s ease-in-out infinite; }
 
+  /* AppHome konfeti — skor dolunca merkezden dışa savrulan parçalar */
+  @keyframes confettiBurst {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) rotate(var(--r)); opacity: 0; }
+  }
+  .confetti-piece {
+    animation: confettiBurst 1.6s cubic-bezier(0.15, 0.7, 0.3, 1) forwards;
+  }
+
   /* Hero telefon float — sakin yukarı/aşağı (~8-10px) */
   @keyframes phoneFloat {
     0%, 100% { transform: translateY(0); }
