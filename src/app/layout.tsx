@@ -145,8 +145,8 @@ export default function RootLayout({
         <AuthStatusProvider>
           <GalaxyTransitionProvider>
             {children}
+            <AppBottomNav />
           </GalaxyTransitionProvider>
-          <AppBottomNav />
         </AuthStatusProvider>
       </body>
     </html>
