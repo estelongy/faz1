@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Camera, Activity, ShoppingBag, User } from 'lucide-react'
+import { Home, Camera, CalendarCheck, ShoppingBag, User } from 'lucide-react'
 import { useIsNativeApp } from './useIsNativeApp'
 import { useGalaxyTransition, type Galaxy } from '@/components/GalaxyTransition'
 
@@ -22,8 +22,8 @@ type Tab = {
 const TABS: Tab[] = [
   { href: '/biyoage',       label: 'Ana Sayfa', Icon: Home },
   { href: '/analiz',        label: 'Analiz',    Icon: Camera },
-  { href: '/skor',          label: 'Skor',      Icon: Activity },
-  { href: '/estestore',     label: 'Mağaza',    Icon: ShoppingBag, galaxy: 'estestore' },
+  { href: '/esteklinik',    label: 'Randevu',   Icon: CalendarCheck, galaxy: 'esteklinik' },
+  { href: '/estestore',     label: 'Mağaza',    Icon: ShoppingBag,   galaxy: 'estestore' },
   { href: '/panel/hesabim', label: 'Hesap',     Icon: User },
 ]
 
