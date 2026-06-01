@@ -7,6 +7,19 @@
     text-wrap: balance;
   }
 
+  /* App-only / web-only görünürlük — Capacitor kabuğu <html>'e `is-app` ekler.
+     Web'de hiçbir etki yok; app içinde pazarlama chrome'u gizlenir. */
+  html.is-app .web-only {
+    display: none !important;
+  }
+
+  /* AppHome skor halkası — sakin pulse */
+  @keyframes appPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50%      { transform: scale(1.06); opacity: 0.15; }
+  }
+  .app-pulse { animation: appPulse 2.8s ease-in-out infinite; }
+
   /* Hero telefon float — sakin yukarı/aşağı (~8-10px) */
   @keyframes phoneFloat {
     0%, 100% { transform: translateY(0); }

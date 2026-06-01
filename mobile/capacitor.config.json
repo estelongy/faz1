@@ -6,6 +6,7 @@
     "url": "https://faz-1-git-master-estelongy-3655s-projects.vercel.app/biyoage",
     "cleartext": false
   },
+  "appendUserAgent": "EstelongyApp",
   "plugins": {
     "PushNotifications": {
       "presentationOptions": ["badge", "sound", "alert"]

@@ -5,6 +5,7 @@ import { Camera, Activity, BookOpen, LayoutDashboard, ArrowRight } from 'lucide-
 import Footer from '@/components/Footer'
 import BiyoAGENav from './BiyoAGENav'
 import GalaxyVisitBeacon from '@/components/GalaxyVisitBeacon'
+import AppHome from '@/components/native/AppHome'
 
 export const dynamic = 'force-dynamic'
 
@@ -71,6 +72,12 @@ export default async function BiyoAGEPage() {
   return (
     <>
       <GalaxyVisitBeacon galaxy="biyoage" />
+
+      {/* App içinde: skor-önce mobil ev. Web'de null render eder. */}
+      <AppHome />
+
+      {/* Web pazarlama landing'i — app içinde `web-only` ile gizlenir. */}
+      <div className="web-only">
       <BiyoAGENav />
 
       <main className="min-h-screen bg-white">
@@ -217,6 +224,7 @@ export default async function BiyoAGEPage() {
       </main>
 
       <Footer />
+      </div>
     </>
   )
 }

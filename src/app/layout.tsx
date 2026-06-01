@@ -5,6 +5,7 @@ import AuthHashHandler from '@/components/AuthHashHandler'
 import AuthStatusProvider from '@/components/AuthStatusProvider'
 import { GalaxyTransitionProvider } from '@/components/GalaxyTransition'
 import AppBottomNav from '@/components/native/AppBottomNav'
+import NativeAppClass from '@/components/native/NativeAppClass'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -140,6 +141,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased`}>
         <AuthHashHandler />
+        <NativeAppClass />
         <AuthStatusProvider>
           <GalaxyTransitionProvider>
             {children}
