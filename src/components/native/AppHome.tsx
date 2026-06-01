@@ -46,18 +46,35 @@ export default function AppHome() {
       />
 
       <div className="relative px-5 pt-5">
-        {/* Selamlama */}
+        {/* Üst satır — marka + selam (küçük, geri planda) */}
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#C9BBF5]">BiyoAGE</p>
-            <h1 className="text-2xl font-black leading-tight mt-0.5">
-              {isLoggedIn ? 'Tekrar hoş geldin 👋' : 'Hoş geldin 👋'}
-            </h1>
-          </div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 text-[#C9BBF5] text-xs font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#9F8CE0] shadow-[0_0_8px_#9F8CE0]" />
-            Ölçüm Galaksisi
+          <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#C9BBF5]">BiyoAGE</p>
+          <span className="text-xs font-semibold text-violet-300/70">
+            {isLoggedIn ? 'Tekrar hoş geldin 👋' : 'Hoş geldin 👋'}
           </span>
+        </div>
+
+        {/* Çıpa manifesto — antiteli ikili lockup: "Sağlıklı yaş al & her zaman genç kal" */}
+        <div className="mt-6 flex items-start justify-center gap-3 sm:gap-6 text-center">
+          <div>
+            <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.28em] text-[#7BE495]">
+              SAĞLIKLI
+            </p>
+            <p className="text-3xl sm:text-4xl font-black tracking-tight leading-none mt-1.5">
+              YAŞ&nbsp;AL
+            </p>
+          </div>
+          <span className="self-center text-2xl sm:text-3xl font-serif italic text-[#C9BBF5] leading-none -mt-1">
+            &amp;
+          </span>
+          <div>
+            <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.28em] text-[#7BE495]">
+              HER ZAMAN
+            </p>
+            <p className="text-3xl sm:text-4xl font-black tracking-tight leading-none mt-1.5">
+              GENÇ&nbsp;KAL
+            </p>
+          </div>
         </div>
 
         {/* Skor halkası — büyük, tıklanınca ölçüme götürür */}
