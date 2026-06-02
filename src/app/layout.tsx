@@ -136,7 +136,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{if(/EstelongyApp|Capacitor/i.test(navigator.userAgent)){document.documentElement.classList.add('is-app')}}catch(e){}",
+              "try{var c=window.Capacitor;if((c&&c.isNativePlatform&&c.isNativePlatform())||/EstelongyApp|Capacitor/i.test(navigator.userAgent)){document.documentElement.classList.add('is-app')}}catch(e){}",
           }}
         />
         <script
