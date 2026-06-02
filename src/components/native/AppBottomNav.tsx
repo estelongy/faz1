@@ -1,8 +1,8 @@
 'use client'
 
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Camera, CalendarCheck, ShoppingBag, User } from 'lucide-react'
+import SafeLink from '@/components/SafeLink'
 import { useIsNativeApp } from './useIsNativeApp'
 import { useGalaxyTransition, type Galaxy } from '@/components/GalaxyTransition'
 
@@ -75,10 +75,12 @@ export default function AppBottomNav() {
               )
             }
 
+            // İç sekme: SafeLink → auth-gated route'ta galaksi-bilinçli giriş
+            // (çatı /giris değil, /giris?g=biyoage), geri dönüşle.
             return (
-              <Link key={href} href={href} className={cls}>
+              <SafeLink key={href} href={href} className={cls}>
                 {inner}
-              </Link>
+              </SafeLink>
             )
           })}
         </div>

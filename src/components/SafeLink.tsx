@@ -34,6 +34,7 @@ import type { ComponentProps } from 'react'
  */
 const AUTH_GATED_ROUTES: Record<string, string | null> = {
   // BiyoAGE flow
+  '/analiz': 'biyoage',
   '/skor': 'biyoage',
   '/panel/analizlerim': 'biyoage',
 
