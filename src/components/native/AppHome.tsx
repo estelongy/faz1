@@ -210,7 +210,7 @@ export default function AppHome() {
           {measured ? 'Skoru Yenile' : 'Selfie ile Ölç'}
         </SafeLink>
         <p className="mt-2 text-center text-xs text-violet-300/70">
-          {measured ? 'yeni selfie ile skorunu güncelle' : 'Ücretsiz · kayıt gerekmez · saniyeler içinde'}
+          {measured ? 'yeni selfie ile skorunu güncelle' : 'Ücretsiz · saniyeler içinde'}
         </p>
 
         {/* Hızlı erişim — 2×2 büyük kartlar */}
