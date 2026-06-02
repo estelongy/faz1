@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import SafeLink from '@/components/SafeLink'
-import { Camera, Activity, BookOpen, LayoutDashboard, ShoppingBag, ChevronRight } from 'lucide-react'
+import { Camera, BookOpen, LayoutDashboard, ShoppingBag, CalendarCheck, ChevronRight } from 'lucide-react'
 import { useIsNativeApp } from './useIsNativeApp'
 import { useAuthStatus } from '@/components/AuthStatusProvider'
+import { useGalaxyTransition, type Galaxy } from '@/components/GalaxyTransition'
 import Confetti from './Confetti'
 
 /**
@@ -17,11 +18,23 @@ import Confetti from './Confetti'
  * Skor YOKSA (anonim ya da hiç ölçmemiş) "?" daveti gösterilir — sahte skor YOK.
  */
 
-const TILES = [
-  { href: '/skor', label: 'Klinik Skor', desc: 'Hekim onaylı', Icon: Activity, glow: '#B7A6E8' },
-  { href: '/rehber', label: 'Longevity', desc: 'Bilimsel rehber', Icon: BookOpen, glow: '#7E6BC9' },
-  { href: '/panel', label: 'Panelim', desc: 'Yolculuğun', Icon: LayoutDashboard, glow: '#6553A8' },
-  { href: '/estestore', label: 'Mağaza', desc: 'Süreklilik', Icon: ShoppingBag, glow: '#9F8CE0' },
+// Öncelik: Randevu (EsteKlinik) + Alışveriş (EsteStore) — ikisi de başka
+// galaksiye ışınlanma (galaxy doluysa GalaxyTransition oynar). Glow rengi
+// hedef galaksinin rengi: klinik yeşili / store altını.
+type Tile = {
+  href: string
+  label: string
+  desc: string
+  Icon: typeof Camera
+  glow: string
+  galaxy?: Galaxy
+}
+
+const TILES: Tile[] = [
+  { href: '/esteklinik', label: 'Randevu',   desc: 'Klinikte dönüştür', Icon: CalendarCheck,   glow: '#10876B', galaxy: 'esteklinik' },
+  { href: '/estestore',  label: 'Alışveriş', desc: 'Ürün & süreklilik', Icon: ShoppingBag,     glow: '#C9A961', galaxy: 'estestore' },
+  { href: '/rehber',     label: 'Longevity', desc: 'Bilimsel rehber',   Icon: BookOpen,        glow: '#7E6BC9' },
+  { href: '/panel',      label: 'Panelim',   desc: 'Yolculuğun',        Icon: LayoutDashboard, glow: '#6553A8' },
 ]
 
 const CIRC = 553 // 2πr, r=88
@@ -31,6 +44,7 @@ const PARTY_KEY = 'eg_score_party'
 export default function AppHome() {
   const isApp = useIsNativeApp()
   const { isLoggedIn } = useAuthStatus()
+  const { transitionTo } = useGalaxyTransition()
 
   const [score, setScore] = useState<number | null | undefined>(undefined)
   const [offset, setOffset] = useState<number>(CIRC) // boş halka
@@ -202,28 +216,43 @@ export default function AppHome() {
         {/* Hızlı erişim — 2×2 büyük kartlar */}
         <p className="mt-8 mb-3 text-sm font-bold uppercase tracking-[0.22em] text-violet-300/80">Hızlı Erişim</p>
         <div className="grid grid-cols-2 gap-3">
-          {TILES.map(({ href, label, desc, Icon, glow }) => (
-            <SafeLink
-              key={href}
-              href={href}
-              className="relative overflow-hidden rounded-2xl bg-white/[0.06] border border-white/10 active:bg-white/[0.12] p-4 transition-colors"
-            >
-              <div
-                aria-hidden
-                className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-20"
-                style={{ background: glow }}
-              />
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
-                style={{ background: glow, boxShadow: `0 4px 14px ${glow}50` }}
-              >
-                <Icon size={20} className="text-[#1B1330]" />
-              </div>
-              <p className="font-bold text-[15px] leading-tight">{label}</p>
-              <p className="text-xs text-violet-300/70 mt-0.5">{desc}</p>
-              <ChevronRight size={16} className="absolute bottom-3 right-3 text-violet-300/50" />
-            </SafeLink>
-          ))}
+          {TILES.map(({ href, label, desc, Icon, glow, galaxy }) => {
+            const tileCls =
+              'relative overflow-hidden rounded-2xl bg-white/[0.06] border border-white/10 active:bg-white/[0.12] p-4 transition-colors text-left'
+            const inner = (
+              <>
+                <div
+                  aria-hidden
+                  className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-20"
+                  style={{ background: glow }}
+                />
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
+                  style={{ background: glow, boxShadow: `0 4px 14px ${glow}50` }}
+                >
+                  <Icon size={20} className="text-[#1B1330]" />
+                </div>
+                <p className="font-bold text-[15px] leading-tight">{label}</p>
+                <p className="text-xs text-violet-300/70 mt-0.5">{desc}</p>
+                <ChevronRight size={16} className="absolute bottom-3 right-3 text-violet-300/50" />
+              </>
+            )
+
+            // Başka galaksiye → ışınlanma geçişi
+            if (galaxy) {
+              return (
+                <button key={href} type="button" onClick={() => transitionTo(galaxy, href)} className={tileCls}>
+                  {inner}
+                </button>
+              )
+            }
+
+            return (
+              <SafeLink key={href} href={href} className={tileCls}>
+                {inner}
+              </SafeLink>
+            )
+          })}
         </div>
       </div>
     </div>
