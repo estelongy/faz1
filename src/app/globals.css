@@ -13,6 +13,19 @@
     display: none !important;
   }
 
+  /* App içinde web mobil sidebar/hamburger gizlenir — gezinmeyi alt nav yapar.
+     Desktop web etkilenmez (.is-app yalnız Capacitor app'inde). */
+  html.is-app .web-mobile-nav {
+    display: none !important;
+  }
+
+  /* App'te zemin koyu — web gizlenip AppHome mount olana dek beyaz boşluk olmasın
+     (FOUC karşıtı: ilk kare koyu, web sayfası asla görünmez). */
+  html.is-app,
+  html.is-app body {
+    background-color: #160f28;
+  }
+
   /* AppHome skor halkası — sakin pulse */
   @keyframes appPulse {
     0%, 100% { transform: scale(1); opacity: 0.5; }

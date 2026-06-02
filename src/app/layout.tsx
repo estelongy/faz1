@@ -130,6 +130,15 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <head>
+        {/* App tespiti — boyamadan ÖNCE senkron çalışır, is-app sınıfını ekler.
+            Böylece Capacitor app'inde web-only chrome ilk kareden gizli → FOUC yok.
+            CSP script-src 'unsafe-inline' izinli (next.config.mjs). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(/EstelongyApp|Capacitor/i.test(navigator.userAgent)){document.documentElement.classList.add('is-app')}}catch(e){}",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

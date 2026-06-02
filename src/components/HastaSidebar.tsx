@@ -122,7 +122,7 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
       {/* Mobil hamburger */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2 rounded-lg bg-slate-800 border border-slate-700 text-white shadow-lg"
+        className="web-mobile-nav lg:hidden fixed top-4 left-4 z-[60] p-2 rounded-lg bg-slate-800 border border-slate-700 text-white shadow-lg"
         aria-label="Menü"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,13 +134,13 @@ export default function HastaSidebar({ userName, pointsBalance, hasClinicAccess,
       </button>
 
       {mobileOpen && (
-        <div onClick={() => setMobileOpen(false)} className="lg:hidden fixed inset-0 bg-black/50 z-40" />
+        <div onClick={() => setMobileOpen(false)} className="web-mobile-nav lg:hidden fixed inset-0 bg-black/50 z-40" />
       )}
 
       <aside
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className={`fixed top-0 left-0 bottom-0 bg-slate-900 border-r border-slate-800 z-50 flex flex-col transition-[width,transform] duration-200 ease-out ${
+        className={`web-mobile-nav fixed top-0 left-0 bottom-0 bg-slate-900 border-r border-slate-800 z-50 flex flex-col transition-[width,transform] duration-200 ease-out ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 w-64 ${expanded ? 'lg:w-64 lg:shadow-2xl lg:shadow-black/40' : 'lg:w-[72px]'}`}
       >
