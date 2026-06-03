@@ -77,6 +77,12 @@
   .klinik-sidebar-scroll-hidden::-webkit-scrollbar {
     display: none;
   }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
   /* EsteStore — brand morph button (text fade-up + progress bar) */
   @keyframes brand-morph-in {

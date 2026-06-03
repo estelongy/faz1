@@ -11,6 +11,7 @@ import { HASTA_CATEGORIES, KLINIK_CATEGORIES_FLAT, type StoreCategory } from '@/
 import ProductCard from '../../ProductCard'
 import CartButton from '@/components/CartButton'
 import EsteStoreToolbar from '@/components/EsteStoreToolbar'
+import StoreCategoryBar from '@/components/native/StoreCategoryBar'
 import { searchProducts, parseSearchParamsFromUrl } from '@/lib/products-search'
 import { getUserWishlistSet } from '@/lib/wishlists'
 
@@ -100,6 +101,7 @@ export default async function EsteStoreCategoryPage({ params, searchParams }: Pr
           <CartButton />
         </div>
       </header>
+      <StoreCategoryBar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       {/* Breadcrumb — 14 bold */}

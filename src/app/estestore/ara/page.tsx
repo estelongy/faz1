@@ -7,6 +7,7 @@ import { isProfessional, type UserRole } from '@/lib/estestore'
 import { searchProducts, parseSearchParamsFromUrl } from '@/lib/products-search'
 import ProductCard from '../ProductCard'
 import EsteStoreToolbar from '@/components/EsteStoreToolbar'
+import StoreCategoryBar from '@/components/native/StoreCategoryBar'
 import CartButton from '@/components/CartButton'
 import { getUserWishlistSet } from '@/lib/wishlists'
 
@@ -48,6 +49,7 @@ export default async function EsteStoreSearchPage({ searchParams }: Props) {
           <CartButton />
         </div>
       </header>
+      <StoreCategoryBar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <nav className="flex items-center gap-2 text-sm font-bold text-slate-500">

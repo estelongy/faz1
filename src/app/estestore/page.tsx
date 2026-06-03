@@ -6,6 +6,7 @@ import { getUserWishlistSet } from '@/lib/wishlists'
 import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
 import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
+import StoreCategoryBar from '@/components/native/StoreCategoryBar'
 import GalaxyVisitBeacon from '@/components/GalaxyVisitBeacon'
 import BrandMorphButton from './BrandMorphButton'
 import SafeLink from '@/components/SafeLink'
@@ -164,6 +165,7 @@ export default async function EsteStorePage() {
       <GalaxyVisitBeacon galaxy="estestore" />
       <TopNav user={!!user} />
       <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
+      <StoreCategoryBar />
 
       <div className="flex">
         {/* Sidebar — üstten itibaren hero'nun yanında, sol üst boşluk yok */}

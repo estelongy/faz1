@@ -382,6 +382,29 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
               </Link>
             ))}
           </div>
+
+          {/* Yardım & Yasal — web footer app'te gizli; bu linkler oradan buraya taşındı.
+              (App Store / Play onayı için gizlilik & sözleşme erişilebilir olmalı.) */}
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 mt-5 px-1">Yardım & Yasal</p>
+          <div className="rounded-2xl border border-slate-700/60 bg-slate-800/40 divide-y divide-slate-700/40 overflow-hidden">
+            {[
+              { href: '/rehber', icon: '📖', label: 'Estelongy Rehberi' },
+              { href: '/hakkinda/sss', icon: '❓', label: 'Sıkça Sorulan Sorular' },
+              { href: '/hakkinda/iletisim', icon: '✉️', label: 'İletişim' },
+              { href: '/hakkinda/sozlesme', icon: '📄', label: 'Kullanım Sözleşmesi' },
+              { href: '/hakkinda/aydinlatma', icon: '🛡️', label: 'KVKK Aydınlatma' },
+              { href: '/hakkinda/cerez', icon: '🍪', label: 'Çerez Politikası' },
+            ].map(m => (
+              <Link key={m.href} href={m.href} className="flex items-center gap-3 px-4 py-3.5 active:bg-slate-700/40 transition-colors">
+                <span className="text-lg w-6 text-center shrink-0">{m.icon}</span>
+                <span className="flex-1 text-white text-sm font-medium">{m.label}</span>
+                <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ))}
+          </div>
+
           <form action={handleSignOut} className="mt-3">
             <button type="submit" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-300 text-sm font-semibold active:bg-red-500/20 transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
