@@ -40,6 +40,17 @@ const TILES: Tile[] = [
 const CIRC = 553 // 2πr, r=88
 const PARTY_KEY = 'eg_score_party'
 
+type HistPoint = { id: string; at: string; score: number; kind: 'web' | 'temp' | 'final' | null }
+
+// Kısa tarih: "12 Haz"
+function fmtShort(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })
+  } catch {
+    return ''
+  }
+}
+
 // score: undefined = yükleniyor, null = ölçüm yok, number = skor var
 export default function AppHome() {
   const isApp = useIsNativeApp()
@@ -47,6 +58,11 @@ export default function AppHome() {
   const { transitionTo } = useGalaxyTransition()
 
   const [score, setScore] = useState<number | null | undefined>(undefined)
+  const [delta, setDelta] = useState<number | null>(null)
+  const [history, setHistory] = useState<HistPoint[]>([])
+  const [stage, setStage] = useState<'none' | 'web' | 'temp' | 'final'>('none')
+  const [hasActiveAppt, setHasActiveAppt] = useState(false)
+  const [latestAnalysisId, setLatestAnalysisId] = useState<string | null>(null)
   const [offset, setOffset] = useState<number>(CIRC) // boş halka
   const [display, setDisplay] = useState<number>(0) // sayım animasyonu
   const [confetti, setConfetti] = useState(false)
@@ -61,6 +77,11 @@ export default function AppHome() {
         if (!alive) return
         const s = typeof d?.score === 'number' ? d.score : null
         setScore(s)
+        setDelta(typeof d?.delta === 'number' ? d.delta : null)
+        setHistory(Array.isArray(d?.history) ? d.history : [])
+        setStage(d?.stage ?? 'none')
+        setHasActiveAppt(Boolean(d?.hasActiveAppt))
+        setLatestAnalysisId(typeof d?.latestAnalysisId === 'string' ? d.latestAnalysisId : null)
       })
       .catch(() => alive && setScore(null))
     return () => {
@@ -116,6 +137,29 @@ export default function AppHome() {
 
   const measured = typeof score === 'number'
   const ringHref = measured ? '/panel' : '/analiz'
+
+  // Başrol öneri motoru (recast) — aşamaya göre "dilersen" sonraki adım.
+  // web → anket · temp → randevu (yoksa) · final → ürünle sürdür.
+  type Suggestion =
+    | { kind: 'link'; href: string; title: string; desc: string; cta: string; accent: string }
+    | { kind: 'galaxy'; galaxy: Galaxy; href: string; title: string; desc: string; cta: string; accent: string }
+
+  const suggestion: Suggestion | null = (() => {
+    if (stage === 'web') {
+      const href = latestAnalysisId ? `/skor?analysisId=${latestAnalysisId}&open=anket` : '/skor'
+      return { kind: 'link', href, title: 'Anketini doldur', desc: '5 soru ile skorunu netleştir', cta: 'Anketi aç', accent: '#9F8CE0' }
+    }
+    if (stage === 'temp') {
+      if (hasActiveAppt) {
+        return { kind: 'link', href: '/panel/analizlerim', title: 'Randevun hazır', desc: 'Randevu detaylarını gör', cta: 'Randevuna git', accent: '#10876B' }
+      }
+      return { kind: 'galaxy', galaxy: 'esteklinik', href: '/esteklinik', title: 'Bir hekim skorunu onaylasın', desc: 'Dilersen klinikten randevu al', cta: 'Randevu al', accent: '#10876B' }
+    }
+    if (stage === 'final') {
+      return { kind: 'galaxy', galaxy: 'estestore', href: '/estestore', title: 'Bu skoru korumak senin elinde', desc: 'Dilersen bakım ürünlerine bak', cta: 'Ürünleri gör', accent: '#C9A961' }
+    }
+    return null
+  })()
 
   return (
     <div
@@ -254,6 +298,96 @@ export default function AppHome() {
             )
           })}
         </div>
+
+        {/* Başrol öneri — aşamaya göre "dilersen" sonraki adım */}
+        {suggestion && (() => {
+          const body = (
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: suggestion.accent }}>
+                  Sıradaki adım
+                </p>
+                <p className="font-bold text-[15px] leading-tight mt-0.5">{suggestion.title}</p>
+                <p className="text-xs text-violet-300/70 mt-0.5">{suggestion.desc}</p>
+              </div>
+              <span className="shrink-0 inline-flex items-center gap-1 text-sm font-bold" style={{ color: suggestion.accent }}>
+                {suggestion.cta}
+                <ChevronRight size={16} />
+              </span>
+            </div>
+          )
+          const inner = (
+            <div
+              className="rounded-2xl border p-4"
+              style={{ borderColor: `${suggestion.accent}55`, background: `${suggestion.accent}14` }}
+            >
+              {body}
+            </div>
+          )
+          if (suggestion.kind === 'galaxy') {
+            return (
+              <button
+                type="button"
+                onClick={() => transitionTo(suggestion.galaxy, suggestion.href)}
+                className="mt-8 block w-full text-left active:opacity-90 transition-opacity"
+              >
+                {inner}
+              </button>
+            )
+          }
+          return (
+            <SafeLink href={suggestion.href} className="mt-8 block w-full text-left active:opacity-90 transition-opacity">
+              {inner}
+            </SafeLink>
+          )
+        })()}
+
+        {/* Skor yolculuğu — son ölçümler (yalnızca >=2 ölçüm varsa) */}
+        {measured && history.length >= 2 && (
+          <SafeLink href="/panel" className="mt-8 block">
+            <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-bold uppercase tracking-[0.22em] text-violet-300/80">
+                  Skor Yolculuğun
+                </p>
+                {delta != null && delta !== 0 && (
+                  <span
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                      delta > 0 ? 'bg-[#7BE495]/15 text-[#7BE495]' : 'bg-red-400/15 text-red-300'
+                    }`}
+                  >
+                    {delta > 0 ? `▲ +${delta}` : `▼ ${Math.abs(delta)}`}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-end justify-between gap-2">
+                {[...history].reverse().map((h, i, arr) => {
+                  const isLast = i === arr.length - 1
+                  const barH = 8 + Math.round((h.score / 100) * 52)
+                  return (
+                    <div key={h.id} className="flex-1 flex flex-col items-center justify-end">
+                      <span
+                        className={`text-[11px] font-bold mb-1 ${
+                          isLast ? 'text-[#7BE495]' : 'text-violet-200/70'
+                        }`}
+                      >
+                        {h.score}
+                      </span>
+                      <div
+                        className="w-full max-w-[28px] rounded-t-md"
+                        style={{
+                          height: `${barH}px`,
+                          background: isLast ? '#7BE495' : 'rgba(159,140,224,0.4)',
+                        }}
+                      />
+                      <span className="text-[9px] text-violet-300/50 mt-1">{fmtShort(h.at)}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </SafeLink>
+        )}
       </div>
     </div>
   )
