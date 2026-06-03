@@ -28,6 +28,9 @@ const MAP: Record<string, { title: string; back: string }> = {
   '/panel/yorumlarim': { title: 'Deneyim', back: '/panel' },
   '/panel/referral': { title: 'Davet & Puan', back: '/panel' },
   '/panel/leaderboard': { title: 'Sıralama', back: '/panel' },
+  // EsteKlinik galaksisi (app içinde ışınlanılan dünya)
+  '/esteklinik': { title: 'Klinikler', back: '/biyoage' },
+  '/esteklinik/basvur': { title: 'Klinik Başvuru', back: '/esteklinik' },
 }
 
 export default function NativeTopBar() {
@@ -42,6 +45,11 @@ export default function NativeTopBar() {
     entry = { title: 'Deneyimini Paylaş', back: '/panel/analizlerim' }
   if (!entry && pathname.startsWith('/panel/urun-degerlendir/'))
     entry = { title: 'Ürünü Değerlendir', back: '/panel/siparislerim' }
+  // EsteKlinik derin rotaları (özelden genele sırayla)
+  if (!entry && pathname.startsWith('/esteklinik/randevu/'))
+    entry = { title: 'Randevu', back: '/esteklinik' }
+  if (!entry && pathname.startsWith('/esteklinik/'))
+    entry = { title: 'Klinik', back: '/esteklinik' }
   // Haritada olmayan diğer derin /panel/* rotaları: yine de geri-bar (Panel'e dön)
   if (!entry && pathname.startsWith('/panel/')) entry = { title: '', back: '/panel' }
   if (!entry) return null

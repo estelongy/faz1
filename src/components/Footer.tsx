@@ -31,7 +31,7 @@ export default function Footer() {
 // ────────────────────────────────────────────────────────────────────
 function RootFooter() {
   return (
-    <footer className="border-t border-slate-700 bg-slate-900">
+    <footer className="web-only border-t border-slate-700 bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-2 md:col-span-1">
@@ -92,7 +92,7 @@ function RootFooter() {
 // ────────────────────────────────────────────────────────────────────
 function EsteStoreFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-[#FAFAF7]">
+    <footer className="web-only border-t border-slate-200 bg-[#FAFAF7]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-2 md:col-span-1">
@@ -150,7 +150,7 @@ function EsteStoreFooter() {
 // ────────────────────────────────────────────────────────────────────
 function EsteKlinikFooter() {
   return (
-    <footer className="border-t border-[#0A6347]/40 bg-[#053527]">
+    <footer className="web-only border-t border-[#0A6347]/40 bg-[#053527]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-2 md:col-span-1">
