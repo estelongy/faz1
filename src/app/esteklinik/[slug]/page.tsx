@@ -25,16 +25,17 @@ export async function generateMetadata({ params }: Props) {
   const supabase = await createClient()
   const { data } = await supabase
     .from('clinics')
-    .select('name, location')
+    .select('title, name, location')
     .eq('slug', slug)
     .eq('is_active', true)
     .maybeSingle()
   if (!data) return { title: 'Klinik bulunamadı | EsteKlinik' }
+  const fullName = [data.title, data.name].filter(Boolean).join(' ')
   return {
-    title: `${data.name} | EsteKlinik`,
+    title: `${fullName} | EsteKlinik`,
     description: data.location
-      ? `${data.name} — ${data.location}. EsteKlinik ekosisteminde değerlendirilen klinik.`
-      : `${data.name} — EsteKlinik ekosisteminde değerlendirilen klinik.`,
+      ? `${fullName} — ${data.location}. EsteKlinik ekosisteminde değerlendirilen klinik.`
+      : `${fullName} — EsteKlinik ekosisteminde değerlendirilen klinik.`,
   }
 }
 
@@ -44,7 +45,7 @@ export default async function PublicClinicPage({ params }: Props) {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_operational, avg_nps, logo_url, cover_image_url')
+    .select('id, title, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_operational, avg_nps, logo_url, cover_image_url')
     .eq('slug', slug)
     .eq('is_active', true)
     .maybeSingle()
@@ -98,12 +99,12 @@ export default async function PublicClinicPage({ params }: Props) {
             <nav className="flex items-center gap-2 text-sm text-emerald-200/70 mb-3">
               <Link href="/esteklinik" className="hover:text-white transition-colors">EsteKlinik</Link>
               <span>›</span>
-              <span className="text-white font-semibold truncate">{clinic.name}</span>
+              <span className="text-white font-semibold truncate">{[clinic.title, clinic.name].filter(Boolean).join(' ')}</span>
             </nav>
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-emerald-300 mb-1">
               EsteKlinik · Onaylı Merkez
             </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">{clinic.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">{[clinic.title, clinic.name].filter(Boolean).join(' ')}</h1>
             {clinic.location && (
               <p className="text-emerald-100/80 text-sm mt-1 flex items-center gap-1.5">
                 <MapPin size={13} /> {clinic.location}

@@ -16,10 +16,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const supabase = await createClient()
   const { data } = await supabase
     .from('clinics')
-    .select('name')
+    .select('title, name')
     .eq('slug', params.slug)
     .maybeSingle()
-  const name = data?.name ?? 'Klinik'
+  const name = data ? [data.title, data.name].filter(Boolean).join(' ') : 'Klinik'
   return {
     title: `${name} — Randevu Al`,
     description: `${name} kliniğinden online randevu al.`,
@@ -34,7 +34,7 @@ export default async function RandevuSlugPage({ params }: PageProps) {
   const isUuid = UUID_RE.test(params.slug)
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, slug, name, location')
+    .select('id, slug, title, name, location')
     .eq(isUuid ? 'id' : 'slug', params.slug)
     .eq('is_active', true)
     .eq('approval_status', 'approved')
@@ -53,7 +53,7 @@ export default async function RandevuSlugPage({ params }: PageProps) {
               <Link href="/esteklinik" className="hover:text-white transition-colors">EsteKlinik</Link>
               <span>·</span>
               <Link href={`/esteklinik/${clinic.slug}`} className="hover:text-white transition-colors">
-                {clinic.name}
+                {[clinic.title, clinic.name].filter(Boolean).join(' ')}
               </Link>
               <span>·</span>
               <span className="text-white font-semibold">Randevu</span>
@@ -61,7 +61,7 @@ export default async function RandevuSlugPage({ params }: PageProps) {
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-emerald-300 mb-1">
               Randevu Oluştur
             </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">{clinic.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">{[clinic.title, clinic.name].filter(Boolean).join(' ')}</h1>
             {clinic.location && (
               <p className="text-emerald-100/80 text-sm mt-1">📍 {clinic.location}</p>
             )}

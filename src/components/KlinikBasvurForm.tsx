@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { CLINIC_TYPES, TREATMENTS_BY_BRANCH, ALL_TREATMENTS, LOCATIONS } from '@/lib/randevu-filters'
+import { TITLES, CLINIC_TYPES, TREATMENTS_BY_BRANCH, ALL_TREATMENTS, LOCATIONS } from '@/lib/randevu-filters'
 
 interface Props {
   action: (formData: FormData) => Promise<void>
@@ -267,11 +267,24 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
           </div>
         )}
 
-        {/* Klinik Adı */}
+        {/* Ünvan + Ad — ünvan ada gömülmesin, ayrı alan */}
         <div>
-          <label className="block text-sm text-slate-500 mb-2">Klinik Adı <span className="text-red-400">*</span></label>
-          <input type="text" name="name" required placeholder="Dr. Ahmet Yılmaz Dermatoloji Kliniği"
-            className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors" />
+          <label className="block text-sm text-slate-500 mb-2">Ünvan & Ad <span className="text-red-400">*</span></label>
+          <div className="flex gap-2">
+            <select
+              name="title"
+              defaultValue="Dr."
+              className="shrink-0 w-32 px-3 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-[#10876B] transition-colors appearance-none cursor-pointer"
+            >
+              <option value="">(ünvansız)</option>
+              {TITLES.map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+            <input type="text" name="name" required placeholder="İzzet Gök"
+              className="flex-1 min-w-0 px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#10876B] transition-colors" />
+          </div>
+          <p className="text-xs text-slate-400 mt-1.5">Ünvanı ayrı seç — &quot;Dr.&quot; herkese uymaz (Uzm./Op./Doç./Prof.). Adı düzgün yaz, BÜYÜK harfle değil.</p>
         </div>
 
         {/* Telefon */}
@@ -347,7 +360,7 @@ export default function KlinikBasvurForm({ action, hasError, errorType, isLogged
         {/* Klinik Tipi */}
         <div>
           <label className="block text-sm text-slate-500 mb-2">
-            Klinik Tipi <span className="text-red-400">*</span>
+            Branş <span className="text-red-400">*</span>
           </label>
           <select
             name="clinic_type"

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Calendar } from 'lucide-react'
+import { Calendar, MapPin } from 'lucide-react'
 import { egpBadgeColor, egpDisplayPublic, MIN_REVIEWS_THRESHOLD } from '@/lib/clinic-review'
 import MeasuringBadge from '@/components/MeasuringBadge'
 import ClinicPreviewModal, { type ClinicPreview } from '@/components/ClinicPreviewModal'
@@ -10,6 +10,7 @@ import ClinicPreviewModal, { type ClinicPreview } from '@/components/ClinicPrevi
 export interface ClinicRow {
   id: string
   slug: string | null
+  title: string | null
   name: string
   location: string | null
   bio: string | null
@@ -22,15 +23,6 @@ export interface ClinicRow {
   cover_image_url: string | null
 }
 
-const CLINIC_TYPE_LABEL: Record<string, string> = {
-  estetik: 'Estetik',
-  dermatoloji: 'Dermatoloji',
-  sac_ekimi: 'Saç Ekimi',
-  lazer: 'Lazer',
-  longevity: 'Longevity',
-  diger: 'Diğer',
-}
-
 export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
   const [previewOpen, setPreviewOpen] = useState(false)
 
@@ -39,9 +31,24 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
   const showMeasuring = reviewCount < MIN_REVIEWS_THRESHOLD
   const egpPublic = egpDisplayPublic(egp, reviewCount)
 
+  // Ünvan + ad tek kimlik satırı: "Dr. İzzet Gök". Ünvan ayrı alan (clinics.title).
+  const displayName = [clinic.title, clinic.name].filter(Boolean).join(' ')
+  const services = clinic.specialties ?? []
+
+  // Güven rozeti — kapağın üstüne (sağ-üst). Ad satırından yer çalmaz → uzun
+  // gerçek adlar ("Kanuni Sultan Süleyman") kırpılmadan iki satıra sığar.
+  const trustBadge = showMeasuring ? (
+    <MeasuringBadge reviewCount={reviewCount} variant="mini" />
+  ) : (
+    <div className={`px-2 py-1 rounded-md border text-center min-w-[56px] shadow-sm ${egpBadgeColor(egp)}`}>
+      <p className="text-lg font-black leading-none">{egpPublic ?? '—'}</p>
+      <p className="text-[8px] uppercase tracking-wider opacity-70 mt-0.5">EGP</p>
+    </div>
+  )
+
   const previewClinic: ClinicPreview = {
     id: clinic.id,
-    name: clinic.name,
+    name: displayName,
     location: clinic.location,
     bio: clinic.bio,
     specialties: clinic.specialties,
@@ -59,13 +66,13 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
         onClick={() => setPreviewOpen(true)}
         className="group relative h-full rounded-2xl bg-white border border-slate-200 hover:border-[#10876B]/60 hover:shadow-2xl hover:shadow-[#064E3B]/15 hover:-translate-y-0.5 transition-all overflow-hidden flex flex-col shadow-sm cursor-pointer"
       >
-        {/* Kapak banner — yeşil/teal kalır */}
+        {/* Kapak banner — yeşil/teal */}
         <div className="relative aspect-[3/1] overflow-hidden bg-gradient-to-br from-[#10876B] via-[#0A6347] to-[#064E3B]">
           {clinic.cover_image_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={clinic.cover_image_url}
-              alt={clinic.name}
+              alt={displayName}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
@@ -73,75 +80,71 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
               {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
             </div>
           )}
+          {/* Güven rozeti kapakta — ad satırından yer çalmaz */}
+          <div className="absolute top-2 right-2 z-10">{trustBadge}</div>
         </div>
 
-        {/* Detay — BEYAZ zemin, koyu metinler */}
-        <div className="p-5 space-y-3 flex-1 flex flex-col">
-          <header className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              {clinic.logo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={clinic.logo_url}
-                  alt={clinic.name}
-                  className="w-10 h-10 rounded-xl object-cover shrink-0 border border-slate-200"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#10876B] to-[#064E3B] flex items-center justify-center text-white font-black text-base shrink-0">
-                  {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <h3 className="text-slate-900 font-bold text-base group-hover:text-[#10876B] transition-colors line-clamp-2 leading-tight">
-                  {clinic.name}
-                </h3>
-                {clinic.location && (
-                  <p className="text-slate-500 text-sm mt-0.5 line-clamp-1">📍 {clinic.location}</p>
-                )}
-              </div>
-            </div>
-            {showMeasuring ? (
-              <MeasuringBadge reviewCount={reviewCount} variant="mini" />
+        {/* Detay — BEYAZ zemin */}
+        <div className="p-5 flex-1 flex flex-col">
+          {/* KİMLİK: ünvan+ad (kalın) · branş (yeşil alt-başlık) · konum */}
+          <header className="flex items-start gap-2.5">
+            {clinic.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={clinic.logo_url}
+                alt={displayName}
+                className="w-11 h-11 rounded-xl object-cover shrink-0 border border-slate-200"
+              />
             ) : (
-              <div className={`shrink-0 px-2 py-1 rounded-md border text-center min-w-[60px] ${egpBadgeColor(egp)}`}>
-                <p className="text-lg font-black leading-none">{egpPublic ?? '—'}</p>
-                <p className="text-[8px] uppercase tracking-wider opacity-70 mt-0.5">EGP</p>
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#10876B] to-[#064E3B] flex items-center justify-center text-white font-black text-lg shrink-0">
+                {clinic.name.charAt(0).toLocaleUpperCase('tr-TR')}
               </div>
             )}
+            <div className="min-w-0 flex-1">
+              <h3 className="text-slate-900 font-bold text-base group-hover:text-[#10876B] transition-colors line-clamp-2 leading-tight">
+                {displayName}
+              </h3>
+              {clinic.clinic_type && (
+                <p className="text-[#0E7559] text-sm font-semibold mt-0.5 line-clamp-1">{clinic.clinic_type}</p>
+              )}
+            </div>
           </header>
 
-          {/* Etiketler — slot her zaman var (yer rezerve), boş kalabilir */}
-          <div className="flex flex-wrap gap-1.5 min-h-[24px]">
-            {clinic.clinic_type && (
-              <span className="text-sm font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#10876B]/12 text-[#0E7559] border border-[#10876B]/30">
-                {CLINIC_TYPE_LABEL[clinic.clinic_type] ?? clinic.clinic_type}
-              </span>
-            )}
-            {(clinic.specialties ?? []).slice(0, 2).map((s, i) => (
-              <span
-                key={i}
-                className="text-sm uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200"
-              >
-                {s}
-              </span>
-            ))}
-            {(clinic.specialties ?? []).length > 2 && (
-              <span className="text-sm text-slate-400 self-center">+{(clinic.specialties ?? []).length - 2}</span>
-            )}
-          </div>
+          {clinic.location && (
+            <p className="flex items-center gap-1 text-slate-500 text-sm mt-2.5 line-clamp-1">
+              <MapPin size={13} className="shrink-0 text-slate-400" />
+              {clinic.location}
+            </p>
+          )}
 
-          {/* Footer: deneyim sayısı + Randevu Al
-              (Bio/CV "incele" katmanına ait — karttan çıkarıldı, ClinicPreviewModal'da) */}
-          <footer className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto gap-3">
+          {/* HİZMETLER — branştan ayrı, gri chip'ler (ne sunuyor) */}
+          {services.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5 mt-3">
+              {services.slice(0, 3).map((s, i) => (
+                <span
+                  key={i}
+                  className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200"
+                >
+                  {s}
+                </span>
+              ))}
+              {services.length > 3 && (
+                <span className="text-xs text-slate-400">+{services.length - 3} hizmet</span>
+              )}
+            </div>
+          )}
+
+          {/* Footer: deneyim + Randevu Al (Bio/CV "incele" → ClinicPreviewModal) */}
+          <footer className="flex items-center justify-between gap-3 pt-3.5 border-t border-slate-100 mt-auto">
             <p className="text-sm text-slate-500">
-              💬 <strong className="text-slate-700">{reviewCount}</strong> deneyim · son 12 ay
+              💬 <strong className="text-slate-700">{reviewCount}</strong> deneyim
             </p>
 
             <Link
               href={`/esteklinik/randevu/${clinic.slug ?? clinic.id}`}
               onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#10876B] hover:bg-[#0E7559] text-white text-sm font-bold transition-colors shadow-md shadow-[#10876B]/30"
-              aria-label={`${clinic.name} için randevu al`}
+              aria-label={`${displayName} için randevu al`}
             >
               <Calendar size={13} />
               Randevu Al

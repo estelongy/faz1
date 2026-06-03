@@ -30,7 +30,7 @@ export default async function KliniklerPage() {
 
   const { data: rows } = await supabase
     .from('clinics')
-    .select('id, slug, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_nps, logo_url, cover_image_url')
+    .select('id, slug, title, name, location, bio, specialties, clinic_type, clinic_egp, review_count, avg_nps, logo_url, cover_image_url')
     .eq('is_active', true)
     .eq('approval_status', 'approved')
     .order('clinic_egp', { ascending: false, nullsFirst: false })

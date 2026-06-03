@@ -58,6 +58,7 @@ async function submitApplication(formData: FormData) {
     user = created.user
   }
 
+  const title       = (formData.get('title') as string)?.trim()
   const name        = formData.get('name') as string
   const phone       = formData.get('phone') as string
   const location    = formData.get('location') as string
@@ -69,6 +70,7 @@ async function submitApplication(formData: FormData) {
   const insertClient = createServiceClient()
   const { error } = await insertClient.from('clinics').insert({
     user_id:         user.id,
+    title:           title || null,
     name,
     phone:           phone || null,
     location:        location || null,

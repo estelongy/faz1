@@ -1,3 +1,14 @@
+// Hekim ünvanları — herkes düz "Dr." değil. Başvuru formu + kart için ortak.
+export const TITLES = [
+  'Dr.',
+  'Uzm. Dr.',
+  'Op. Dr.',
+  'Doç. Dr.',
+  'Prof. Dr.',
+  'Dt.',
+  'Uzm. Dt.',
+] as const
+
 // Klinik kayıt formu + randevu pill'leri için ortak liste
 export const CLINIC_TYPES = [
   'Plastik ve Estetik Cerrahi',
