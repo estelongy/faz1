@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import SafeLink from '@/components/SafeLink'
 import { useIsNativeApp } from './useIsNativeApp'
+import { useCart } from '@/lib/cart'
 
 /**
  * App içinde TÜM detay sayfalarının ince native geri-bar'ı.
@@ -34,11 +35,13 @@ const MAP: Record<string, { title: string; back: string }> = {
   // EsteStore galaksisi (app içinde ışınlanılan dünya)
   '/estestore': { title: 'Mağaza', back: '/biyoage' },
   '/estestore/ara': { title: 'Ürün Ara', back: '/estestore' },
+  '/sepet': { title: 'Sepetim', back: '/estestore' },
 }
 
 export default function NativeTopBar() {
   const isApp = useIsNativeApp()
   const pathname = usePathname()
+  const { count, hydrated } = useCart()
 
   if (!isApp) return null
 
@@ -64,6 +67,10 @@ export default function NativeTopBar() {
   if (!entry && pathname.startsWith('/panel/')) entry = { title: '', back: '/panel' }
   if (!entry) return null
 
+  // Sepet erişimi yalnızca mağaza rotalarında (web header'ı gizlediğimiz için
+  // CartButton kayboldu — native bar'ın sağına taşıdık). /sepet'teyken gösterme.
+  const showCart = pathname.startsWith('/estestore')
+
   return (
     <header
       className="app-only fixed top-0 inset-x-0 z-[45] bg-[#160F28]/95 backdrop-blur-lg border-b border-violet-500/15"
@@ -79,9 +86,26 @@ export default function NativeTopBar() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </SafeLink>
-        <span className="flex-1 text-center text-white font-semibold text-base pr-9 truncate">
+        <span className={`flex-1 text-center text-white font-semibold text-base truncate ${showCart ? '' : 'pr-9'}`}>
           {entry.title}
         </span>
+        {showCart && (
+          <SafeLink
+            href="/sepet"
+            aria-label="Sepetim"
+            className="relative inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-200 active:bg-white/10 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            {hydrated && count > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-[#C9A961] text-[#160F28] text-[10px] font-black rounded-full min-w-[17px] h-[17px] flex items-center justify-center px-1">
+                {count}
+              </span>
+            )}
+          </SafeLink>
+        )}
       </div>
     </header>
   )
