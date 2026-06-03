@@ -38,6 +38,15 @@ export default function AppBottomNav() {
 
   if (!isApp) return null
 
+  // Auth / geçiş ekranlarında alt tab bar gösterilmez. Giriş bir "sekme" değil;
+  // ayrıca min-h-screen giriş sayfasının altına eklenen spacer boşluğu sayfayı
+  // ~60px taşırıp gereksiz dikey kaymaya yol açıyordu.
+  const isAuthRoute =
+    pathname.startsWith('/giris') ||
+    pathname.startsWith('/kayit') ||
+    pathname.startsWith('/kurumsal/giris')
+  if (isAuthRoute) return null
+
   return (
     <>
       {/* İçeriğin bar arkasında kalmaması için boşluk */}
