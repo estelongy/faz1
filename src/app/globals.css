@@ -162,6 +162,27 @@
   }
 }
 
+/* ───────────────────────────────────────────────────────────────────────────
+   APP KABUĞU VİEWPORT KONTRATI (yalnız Capacitor app — html.is-app)
+   Layer'sız bırakıldı: @layer utilities'ten gelen Tailwind kurallarını her
+   durumda yener. Web (tarayıcı) hiç etkilenmez.
+
+   1) Yatay kayma: dekoratif absolute/blur öğeler taşma korumasız olduğunda
+      sayfayı yana kaydırabiliyordu. App kökünde overflow-x kapatılır.
+   2) Dikey kayma: alt tab bar içeriğin arkada kalmaması için akışa
+      `60px + safe-area` spacer ekliyor. Sayfa min-h-screen (=100vh) ise
+      100vh + 60px = ~60px taşma. App içinde min-h-screen'i "nav hariç görünür
+      alan" (100dvh − 60px − safe) yaparız → min-h-screen + spacer = tam 100dvh.
+      (dvh desteklenmezse kural geçersiz sayılıp 100vh'a düşer — zararsız.)
+   ─────────────────────────────────────────────────────────────────────────── */
+html.is-app,
+html.is-app body {
+  overflow-x: hidden;
+}
+html.is-app .min-h-screen {
+  min-height: calc(100dvh - 60px - env(safe-area-inset-bottom));
+}
+
 @layer base {
   :root {
     --background: oklch(1 0 0);
