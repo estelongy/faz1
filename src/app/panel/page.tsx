@@ -156,7 +156,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
   return (
     <main className="min-h-screen">
       {/* Üst bar — sidebar ile uyumlu */}
-      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5 h-14 flex items-center justify-between px-4 lg:px-8">
+      <header className="web-only sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5 h-14 flex items-center justify-between px-4 lg:px-8">
         <div className="lg:hidden w-10" />
         <span className="text-slate-400 text-sm hidden sm:block truncate">{profile?.full_name ?? user.email}</span>
         <form action={handleSignOut}>
@@ -165,6 +165,9 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
           </button>
         </form>
       </header>
+
+      {/* App: web header gizli → NativeTopBar yüksekliği için boşluk */}
+      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16 space-y-6">
 
@@ -354,6 +357,40 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
             <span className="text-white font-semibold text-sm shrink-0">{nextAction.cta}</span>
           </div>
         </Link>
+
+        {/* ─── APP: Menü listesi — web sidebar app'te gizli; alt sayfalara buradan erişilir ── */}
+        <section className="app-only pt-2">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 px-1">Menü</p>
+          <div className="rounded-2xl border border-slate-700/60 bg-slate-800/40 divide-y divide-slate-700/40 overflow-hidden">
+            {[
+              { href: '/panel/analizlerim', icon: '🎯', label: 'Geçmişim' },
+              { href: '/panel/hesabim', icon: '👤', label: 'Hesabım' },
+              { href: '/panel/siparislerim', icon: '📦', label: 'Siparişlerim' },
+              { href: '/panel/favorilerim', icon: '♥', label: 'Favorilerim' },
+              { href: '/panel/iadelerim', icon: '↩', label: 'İadelerim' },
+              { href: '/panel/adreslerim', icon: '📍', label: 'Adreslerim' },
+              { href: '/panel/yorumlarim', icon: '💬', label: 'Deneyimlerim' },
+              { href: '/panel/referral', icon: '🎁', label: 'Davet & Puan' },
+              { href: '/panel/leaderboard', icon: '🏆', label: 'Sıralama' },
+            ].map(m => (
+              <Link key={m.href} href={m.href} className="flex items-center gap-3 px-4 py-3.5 active:bg-slate-700/40 transition-colors">
+                <span className="text-lg w-6 text-center shrink-0">{m.icon}</span>
+                <span className="flex-1 text-white text-sm font-medium">{m.label}</span>
+                <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ))}
+          </div>
+          <form action={handleSignOut} className="mt-3">
+            <button type="submit" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-300 text-sm font-semibold active:bg-red-500/20 transition-colors">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Çıkış Yap
+            </button>
+          </form>
+        </section>
 
       </div>
     </main>

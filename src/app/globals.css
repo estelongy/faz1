@@ -19,6 +19,12 @@
     display: none !important;
   }
 
+  /* App-only öğeler: yalnız Capacitor app'inde görünür (web'de gizli).
+     web-only'nin simetriği — native başlık, app menü listesi gibi parçalar için. */
+  html:not(.is-app) .app-only {
+    display: none !important;
+  }
+
   /* App'te zemin koyu — web gizlenip AppHome mount olana dek beyaz boşluk olmasın
      (FOUC karşıtı: ilk kare koyu, web sayfası asla görünmez). */
   html.is-app,
