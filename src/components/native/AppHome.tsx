@@ -163,7 +163,7 @@ export default function AppHome() {
 
   return (
     <div
-      className="app-home fixed inset-0 z-[60] overflow-y-auto bg-gradient-to-b from-[#1B1330] via-[#241942] to-[#160F28] text-white"
+      className="app-home fixed inset-0 z-[60] overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#1B1330] via-[#241942] to-[#160F28] text-white"
       style={{
         paddingTop: 'env(safe-area-inset-top)',
         paddingBottom: 'calc(72px + env(safe-area-inset-bottom))',
