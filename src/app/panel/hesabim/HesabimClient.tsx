@@ -166,10 +166,10 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
             <label className="block text-sm text-slate-400 mb-2">E-posta</label>
             <div className="flex gap-2">
               <input type="email" disabled value={email}
-                className="flex-1 px-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-slate-500 cursor-not-allowed" />
+                className="flex-1 min-w-0 px-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-slate-500 cursor-not-allowed" />
               {emailStep === 'idle' && (
                 <button type="button" onClick={() => { setEmailStep('enter'); setNewEmail(''); setEmailErr(null) }}
-                  className="px-4 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors">
+                  className="shrink-0 px-4 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors">
                   Değiştir
                 </button>
               )}

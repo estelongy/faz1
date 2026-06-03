@@ -24,7 +24,7 @@ const TABS: Tab[] = [
   { href: '/analiz',        label: 'Analiz',    Icon: Camera },
   { href: '/esteklinik',    label: 'Randevu',   Icon: CalendarCheck, galaxy: 'esteklinik' },
   { href: '/estestore',     label: 'Mağaza',    Icon: ShoppingBag,   galaxy: 'estestore' },
-  { href: '/panel/hesabim', label: 'Hesap',     Icon: User },
+  { href: '/panel',         label: 'Hesap',     Icon: User },
 ]
 
 /**
