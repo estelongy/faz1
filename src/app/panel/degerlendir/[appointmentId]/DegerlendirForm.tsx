@@ -87,6 +87,8 @@ export default function DegerlendirForm({
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      {/* App: native geri-bar yüksekliğini boşalt (web'de görünmez) */}
+      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
       {/* Başlık */}
       <header>
         <h1 className="text-2xl sm:text-3xl font-bold text-white">Deneyimini Paylaş</h1>

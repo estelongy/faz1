@@ -37,7 +37,12 @@ export default function NativeTopBar() {
   if (!isApp) return null
 
   let entry = MAP[pathname]
-  // Haritada olmayan derin /panel/* rotaları: yine de geri-bar (Panel'e dön)
+  // Dinamik derin rotalar (id'li): başlığı prefix'ten türet
+  if (!entry && pathname.startsWith('/panel/degerlendir/'))
+    entry = { title: 'Deneyimini Paylaş', back: '/panel/analizlerim' }
+  if (!entry && pathname.startsWith('/panel/urun-degerlendir/'))
+    entry = { title: 'Ürünü Değerlendir', back: '/panel/siparislerim' }
+  // Haritada olmayan diğer derin /panel/* rotaları: yine de geri-bar (Panel'e dön)
   if (!entry && pathname.startsWith('/panel/')) entry = { title: '', back: '/panel' }
   if (!entry) return null
 
