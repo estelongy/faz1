@@ -97,7 +97,8 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
 
   return (
     <main className="min-h-screen bg-white">
-      <header className="sticky top-0 z-50 bg-[#0F172A] border-b border-slate-800">
+      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
+      <header className="web-only sticky top-0 z-50 bg-[#0F172A] border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center gap-3">
           <Link href="/estestore" className="text-slate-300 hover:text-white transition-colors text-base font-semibold">← EsteStore</Link>
           <span className="text-slate-700">|</span>

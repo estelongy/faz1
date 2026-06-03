@@ -163,6 +163,7 @@ export default async function EsteStorePage() {
     <main className="bg-white min-h-screen text-slate-900">
       <GalaxyVisitBeacon galaxy="estestore" />
       <TopNav user={!!user} />
+      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
 
       <div className="flex">
         {/* Sidebar — üstten itibaren hero'nun yanında, sol üst boşluk yok */}
@@ -262,7 +263,7 @@ export default async function EsteStorePage() {
             </section>
           </div>
 
-          <footer className="border-t border-slate-200 bg-[#FAFAF7]">
+          <footer className="web-only border-t border-slate-200 bg-[#FAFAF7]">
             <div className="max-w-[1280px] mx-auto px-6 lg:px-10 py-10">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div>
@@ -294,7 +295,7 @@ export default async function EsteStorePage() {
    ============================================================ */
 function TopNav({ user }: { user: boolean }) {
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-[#0F172A]/90 border-b border-slate-800/60">
+    <nav className="web-only sticky top-0 z-50 backdrop-blur-md bg-[#0F172A]/90 border-b border-slate-800/60">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
         {/* Sol: EsteStore lead + sub-brand'ler */}
         <div className="flex items-center gap-6">

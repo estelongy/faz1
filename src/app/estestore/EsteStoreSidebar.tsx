@@ -17,7 +17,7 @@ export default function EsteStoreSidebar() {
     <aside
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
-      className={`shrink-0 sticky top-16 self-start h-[calc(100vh-64px)] bg-[#0F172A] border-r border-slate-800 transition-[width] duration-300 ease-out overflow-hidden ${
+      className={`web-only shrink-0 sticky top-16 self-start h-[calc(100vh-64px)] bg-[#0F172A] border-r border-slate-800 transition-[width] duration-300 ease-out overflow-hidden ${
         open ? 'w-[280px]' : 'w-[72px]'
       }`}
     >
