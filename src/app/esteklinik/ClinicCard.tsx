@@ -38,9 +38,6 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
   const reviewCount = clinic.review_count ?? 0
   const showMeasuring = reviewCount < MIN_REVIEWS_THRESHOLD
   const egpPublic = egpDisplayPublic(egp, reviewCount)
-  const bioPreview = clinic.bio
-    ? clinic.bio.length > 140 ? clinic.bio.slice(0, 140).trim() + '…' : clinic.bio
-    : null
 
   const previewClinic: ClinicPreview = {
     id: clinic.id,
@@ -95,7 +92,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <h3 className="text-slate-900 font-bold text-base group-hover:text-[#10876B] transition-colors line-clamp-1">
+                <h3 className="text-slate-900 font-bold text-base group-hover:text-[#10876B] transition-colors line-clamp-2 leading-tight">
                   {clinic.name}
                 </h3>
                 {clinic.location && (
@@ -120,7 +117,7 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
                 {CLINIC_TYPE_LABEL[clinic.clinic_type] ?? clinic.clinic_type}
               </span>
             )}
-            {(clinic.specialties ?? []).slice(0, 3).map((s, i) => (
+            {(clinic.specialties ?? []).slice(0, 2).map((s, i) => (
               <span
                 key={i}
                 className="text-sm uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200"
@@ -128,17 +125,13 @@ export default function ClinicCard({ clinic }: { clinic: ClinicRow }) {
                 {s}
               </span>
             ))}
-            {(clinic.specialties ?? []).length > 3 && (
-              <span className="text-sm text-slate-400 self-center">+{(clinic.specialties ?? []).length - 3}</span>
+            {(clinic.specialties ?? []).length > 2 && (
+              <span className="text-sm text-slate-400 self-center">+{(clinic.specialties ?? []).length - 2}</span>
             )}
           </div>
 
-          {/* Bio — sabit 3 satır yüksekliği, boşsa bile yer tutar */}
-          <p className="text-slate-700 text-sm leading-relaxed line-clamp-3 h-[60px]">
-            {bioPreview ?? <span className="text-slate-300 italic">Henüz açıklama eklenmedi.</span>}
-          </p>
-
-          {/* Footer: deneyim sayısı + Randevu Al */}
+          {/* Footer: deneyim sayısı + Randevu Al
+              (Bio/CV "incele" katmanına ait — karttan çıkarıldı, ClinicPreviewModal'da) */}
           <footer className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto gap-3">
             <p className="text-sm text-slate-500">
               💬 <strong className="text-slate-700">{reviewCount}</strong> deneyim · son 12 ay
