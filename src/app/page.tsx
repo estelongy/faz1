@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 
 import SafeLink from '@/components/SafeLink'
 import GalaxyLink from '@/components/GalaxyLink'
+import NativeHomeRedirect from '@/components/native/NativeHomeRedirect'
 export const dynamic = 'force-dynamic'
 
 const SCORE_ZONES = [
@@ -114,7 +115,10 @@ export default async function Home({
   // 3 kapı + hero CTA artık GalaxyLink ile ışınlanıyor — dest1/dest2 değişkenlerine gerek kalmadı.
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 overflow-x-hidden">
+    <>
+      {/* App içinde çatı ASLA gösterilmez → /biyoage AppHome'a ışınla (web flash yok) */}
+      <NativeHomeRedirect />
+      <main className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 overflow-x-hidden web-only">
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -599,6 +603,7 @@ export default async function Home({
       </section>
 
       <Footer />
-    </main>
+      </main>
+    </>
   )
 }

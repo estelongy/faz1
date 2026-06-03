@@ -16,6 +16,16 @@ const ADMIN_ONLY = ['/formlestelongy', '/rehber/genclik-skoru-nasil-hesaplanir']
 // Admin OTP zorunlu rotalar — buraya girmeden önce SMS doğrulanmalı
 const ADMIN_OTP_REQUIRED = ['/admin']
 
+// Korumalı route → hangi galaksinin giriş ekranı? (g param ile /giris galaksi-bilinçli
+// boyanır; app içinde galaksisiz "çatı" temasına düşmeyi engeller.)
+function galaxyForPath(p: string): string | null {
+  if (p.startsWith('/analiz') || p.startsWith('/skor') || p.startsWith('/test-skor')) return 'biyoage'
+  if (p.startsWith('/klinik/panel')) return 'esteklinik'
+  if (p.startsWith('/satici/panel')) return 'estestore'
+  if (p.startsWith('/panel')) return 'biyoage'
+  return null // /admin → galaksi yok
+}
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } })
 
@@ -49,6 +59,8 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/giris'
     url.searchParams.set('next', pathname)
+    const g = galaxyForPath(pathname)
+    if (g) url.searchParams.set('g', g)
     return NextResponse.redirect(url)
   }
 
