@@ -6,6 +6,7 @@ import { User, ShieldCheck, LayoutDashboard } from 'lucide-react'
 import { useAuthStatus } from '@/components/AuthStatusProvider'
 
 import SafeLink from '@/components/SafeLink'
+import AppTopSpacer from '@/components/native/AppTopSpacer'
 /**
  * EsteKlinik top nav — EsteStore'un AYNASI:
  * - EsteKlinik başrol YEŞİL pill SAĞDA (EsteStore sarı pill soldaydı)
@@ -19,8 +20,9 @@ export default function EsteKlinikNav() {
 
   return (
     <>
-    {/* App: web nav gizli (NativeTopBar geçer) → sticky yüksekliğini boşalt */}
-    <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
+    {/* App: web nav gizli (NativeTopBar geçer) → bar varken boşluk bırak.
+        Klinik flavor'ında /esteklinik EV olduğundan bar yok → spacer da yok. */}
+    <AppTopSpacer />
     <header className="web-only sticky top-0 z-50 bg-[#064E3B] border-b border-[#0A6347]/60 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* SOL: Aksiyon butonları — login'e göre Panel ya da Giriş/Kayıt */}

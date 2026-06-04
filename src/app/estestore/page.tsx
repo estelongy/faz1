@@ -7,6 +7,7 @@ import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
 import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
 import StoreCategoryBar from '@/components/native/StoreCategoryBar'
+import AppTopSpacer from '@/components/native/AppTopSpacer'
 import GalaxyVisitBeacon from '@/components/GalaxyVisitBeacon'
 import BrandMorphButton from './BrandMorphButton'
 import SafeLink from '@/components/SafeLink'
@@ -164,7 +165,7 @@ export default async function EsteStorePage() {
     <main className="bg-white min-h-screen text-slate-900">
       <GalaxyVisitBeacon galaxy="estestore" />
       <TopNav user={!!user} />
-      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
+      <AppTopSpacer />
       <StoreCategoryBar />
 
       <div className="flex">
