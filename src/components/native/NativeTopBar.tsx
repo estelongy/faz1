@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import SafeLink from '@/components/SafeLink'
 import { useIsNativeApp } from './useIsNativeApp'
 import { useCart } from '@/lib/cart'
+import { useFlavor, FLAVOR_HOME } from './flavor'
 
 /**
  * App içinde TÜM detay sayfalarının ince native geri-bar'ı.
@@ -15,6 +16,11 @@ import { useCart } from '@/lib/cart'
  *
  * Ana ekran (/biyoage) haritada YOK → orada AppHome tam ekran kalır, bar çıkmaz.
  * z-index anket/kart modallarının (z-50) ALTINDA (z-45) → modal açıkken bar örtülür.
+ *
+ * FLAVOR farkındalığı (App Başrol Modeli): MAP'teki `back: '/biyoage'` artık
+ * "ev" sentinel'idir — runtime'da aktif flavor'ın evine çözülür. Böylece klinik
+ * app'inde her şeyin geri-oku /esteklinik'e gider. Flavor'ın kendi galaksi
+ * landing'i (ev) bar göstermez → o app'in tam-ekran ana ekranıdır.
  */
 const MAP: Record<string, { title: string; back: string }> = {
   '/analiz': { title: 'Analiz', back: '/biyoage' },
@@ -40,10 +46,15 @@ const MAP: Record<string, { title: string; back: string }> = {
 
 export default function NativeTopBar() {
   const isApp = useIsNativeApp()
+  const flavor = useFlavor()
   const pathname = usePathname()
   const { count, hydrated } = useCart()
 
   if (!isApp) return null
+
+  // Flavor'ın evi (başrol galaksi landing'i) = tam ekran, bar yok.
+  const home = FLAVOR_HOME[flavor]
+  if (pathname === home) return null
 
   let entry = MAP[pathname]
   // Dinamik derin rotalar (id'li): başlığı prefix'ten türet
@@ -67,6 +78,9 @@ export default function NativeTopBar() {
   if (!entry && pathname.startsWith('/panel/')) entry = { title: '', back: '/panel' }
   if (!entry) return null
 
+  // "/biyoage" back sentinel'i = ev → aktif flavor'ın evine çöz.
+  const back = entry.back === '/biyoage' ? home : entry.back
+
   // Sepet erişimi yalnızca mağaza rotalarında (web header'ı gizlediğimiz için
   // CartButton kayboldu — native bar'ın sağına taşıdık). /sepet'teyken gösterme.
   const showCart = pathname.startsWith('/estestore')
@@ -78,7 +92,7 @@ export default function NativeTopBar() {
     >
       <div className="h-14 flex items-center px-3">
         <SafeLink
-          href={entry.back}
+          href={back}
           aria-label="Geri"
           className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-200 active:bg-white/10 transition-colors"
         >

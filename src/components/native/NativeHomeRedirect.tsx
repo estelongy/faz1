@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useIsNativeApp } from './useIsNativeApp'
+import { useFlavor, FLAVOR_HOME } from './flavor'
 
 /**
  * App içinde umbrella root "/" (çatı) ASLA gösterilmez.
@@ -20,11 +21,12 @@ import { useIsNativeApp } from './useIsNativeApp'
  */
 export default function NativeHomeRedirect() {
   const isApp = useIsNativeApp()
+  const flavor = useFlavor()
   const router = useRouter()
 
   useEffect(() => {
-    if (isApp) router.replace('/biyoage')
-  }, [isApp, router])
+    if (isApp) router.replace(FLAVOR_HOME[flavor])
+  }, [isApp, flavor, router])
 
   if (!isApp) return null
   return <div className="fixed inset-0 z-[200] bg-[#160F28]" aria-hidden />
