@@ -8,6 +8,8 @@ import EsteStoreHero from './EsteStoreHero'
 import EsteStoreSidebar from './EsteStoreSidebar'
 import StoreCategoryBar from '@/components/native/StoreCategoryBar'
 import AppTopSpacer from '@/components/native/AppTopSpacer'
+import StoreAppHome, { type ReorderItem } from './StoreAppHome'
+import { getServerFlavor } from '@/lib/server-flavor'
 import GalaxyVisitBeacon from '@/components/GalaxyVisitBeacon'
 import BrandMorphButton from './BrandMorphButton'
 import SafeLink from '@/components/SafeLink'
@@ -125,6 +127,37 @@ export default async function EsteStorePage() {
   const heroShowcase        = heroPoolRaw.map(normalizeProduct)
   const wishlistSet         = await getUserWishlistSet(supabase, user?.id)
 
+  // EsteStore FLAVOR app'i mi? (UA'dan server tespiti) → app-özel ev ekranı.
+  // Web + diğer flavor'lar mevcut vitrini görür.
+  const flavor = await getServerFlavor()
+  const appHome = flavor === 'estestore'
+
+  // "Tekrar sipariş" — kullanıcının geçmiş sipariş kalemleri (app-home için).
+  let reorder: ReorderItem[] = []
+  if (appHome && user) {
+    const { data: orderRows } = await supabase
+      .from('orders')
+      .select('order_items(product_id, unit_price, product_snapshot)')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(6)
+    const seen = new Set<string>()
+    for (const o of (orderRows ?? []) as { order_items?: { product_id?: string; unit_price?: number | string; product_snapshot?: { id?: string; name?: string; slug?: string; image?: string } | null }[] }[]) {
+      for (const it of o.order_items ?? []) {
+        const snap = it.product_snapshot ?? {}
+        const pid = snap.id ?? it.product_id
+        if (!pid || seen.has(pid)) continue
+        seen.add(pid)
+        reorder.push({ id: pid, name: snap.name ?? 'Ürün', slug: snap.slug ?? null, image: snap.image ?? null, price: Number(it.unit_price ?? 0) })
+      }
+    }
+    reorder = reorder.slice(0, 10)
+  }
+
+  const userName = (user?.user_metadata as Record<string, unknown> | undefined)?.full_name as string | undefined
+    ?? (user?.user_metadata as Record<string, unknown> | undefined)?.name as string | undefined
+    ?? null
+
   const ProSections = (
     <>
       <section id="sarf-medikal" className="space-y-6">
@@ -174,6 +207,18 @@ export default async function EsteStorePage() {
 
         {/* Ana içerik */}
         <div id="urunler" className="flex-1 min-w-0 bg-white">
+          {appHome ? (
+            <StoreAppHome
+              userName={userName}
+              reorder={reorder}
+              longevity={longevityFeatured}
+              islemSonrasi={islemSonrasiFeatured}
+              biyohacking={biyohackingFeatured}
+              isPro={isPro}
+              wishlistSet={wishlistSet}
+            />
+          ) : (
+          <>
           {/* Hero (33vh) — KOYU kalır (premium cinematic) */}
           <EsteStoreHero showcaseProducts={heroShowcase} />
 
@@ -284,6 +329,8 @@ export default async function EsteStorePage() {
               </div>
             </div>
           </footer>
+          </>
+          )}
         </div>
       </div>
     </main>
