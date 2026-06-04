@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { formatTRY } from '@/lib/estestore'
 import ProductCard, { type ProductCardData } from './ProductCard'
 import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
+import AuthRefreshGate from '@/components/native/AuthRefreshGate'
 
 /**
  * EsteStore app-özel EV ekranı (App Başrol Modeli — Stage 2).
@@ -60,6 +61,7 @@ function Shelf({
 
 export default function StoreAppHome({
   userName,
+  serverAuthed,
   reorder,
   longevity,
   islemSonrasi,
@@ -68,6 +70,7 @@ export default function StoreAppHome({
   wishlistSet,
 }: {
   userName: string | null
+  serverAuthed: boolean
   reorder: ReorderItem[]
   longevity: ProductCardData[]
   islemSonrasi: ProductCardData[]
@@ -77,6 +80,8 @@ export default function StoreAppHome({
 }) {
   return (
     <div className="bg-white pb-6">
+      {/* Cold-start auth race: server guest gördüyse ama client girişliyse tazele */}
+      <AuthRefreshGate serverAuthed={serverAuthed} />
       {/* Sakin "senin için" ev başlığı — dark cinematic vitrin yerine */}
       <section className="px-5 pt-4 pb-1">
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#8B7339]">EsteStore</p>

@@ -210,6 +210,7 @@ export default async function EsteStorePage() {
           {appHome ? (
             <StoreAppHome
               userName={userName}
+              serverAuthed={!!user}
               reorder={reorder}
               longevity={longevityFeatured}
               islemSonrasi={islemSonrasiFeatured}
