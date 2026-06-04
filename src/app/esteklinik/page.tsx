@@ -9,6 +9,8 @@ import EsteKlinikNav from './EsteKlinikNav'
 import GalaxyVisitBeacon from '@/components/GalaxyVisitBeacon'
 import { KlinikSearchProvider, KlinikSearchInputs, KlinikSearchResults } from './KlinikSearch'
 import type { ClinicRow } from './ClinicCard'
+import { getServerFlavor } from '@/lib/server-flavor'
+import KlinikAppHome, { type AppointmentItem } from './KlinikAppHome'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com'
 
@@ -39,6 +41,42 @@ export default async function KliniklerPage() {
 
   const clinics = (rows ?? []) as ClinicRow[]
 
+  // App Başrol Modeli: sadece EsteKlinik FLAVOR app'inde ev ekranı; web/diğer
+  // flavor'lar mevcut "Randevu Ara" hero'sunu görür.
+  const flavor = await getServerFlavor()
+  const appHome = flavor === 'esteklinik'
+
+  let upcoming: AppointmentItem[] = []
+  let userName: string | null = null
+  let serverAuthed = false
+  if (appHome) {
+    const { data: { user } } = await supabase.auth.getUser()
+    serverAuthed = !!user
+    if (user) {
+      const meta = (user.user_metadata ?? {}) as Record<string, unknown>
+      const fullName = typeof meta.full_name === 'string' ? meta.full_name : null
+      const name = typeof meta.name === 'string' ? meta.name : null
+      userName = (fullName || name || (user.email ? user.email.split('@')[0] : null)) ?? null
+      const { data: apptRows } = await supabase
+        .from('appointments')
+        .select('id, appointment_date, status, clinics(name)')
+        .eq('user_id', user.id)
+        .in('status', ['pending', 'confirmed', 'in_progress'])
+        .order('appointment_date', { ascending: true })
+        .limit(5)
+      upcoming = (apptRows ?? []).map((r) => {
+        const c = (r as { clinics?: { name?: string } | { name?: string }[] | null }).clinics
+        const cname = Array.isArray(c) ? (c[0]?.name ?? null) : (c?.name ?? null)
+        return {
+          id: String((r as { id: string }).id),
+          appointment_date: String((r as { appointment_date: string }).appointment_date),
+          status: String((r as { status: string }).status),
+          clinic_name: cname,
+        }
+      })
+    }
+  }
+
   return (
     <>
       <GalaxyVisitBeacon galaxy="esteklinik" />
@@ -46,6 +84,15 @@ export default async function KliniklerPage() {
 
       <KlinikSearchProvider clinics={clinics}>
         <main className="min-h-screen bg-white">
+          {appHome && (
+            <KlinikAppHome
+              userName={userName}
+              serverAuthed={serverAuthed}
+              upcoming={upcoming}
+              recommended={clinics.slice(0, 6)}
+            />
+          )}
+          <div className={appHome ? 'web-only' : ''}>
           {/* ============================================================
               HERO — derin teal zemin + "Klinik Seçin" arama motoru
               ============================================================ */}
@@ -115,6 +162,7 @@ export default async function KliniklerPage() {
               </p>
             </div>
           </section>
+          </div>
         </main>
       </KlinikSearchProvider>
 
