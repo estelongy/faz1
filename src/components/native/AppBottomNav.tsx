@@ -64,6 +64,15 @@ export default function AppBottomNav() {
     pathname.startsWith('/kurumsal/giris')
   if (isAuthRoute) return null
 
+  // Profesyonel paneller (klinik / satıcı / admin) ayrı sahneler — kendi
+  // sidebar'ları var. Hasta-flavor bottom nav (Skorum/Mağaza/Randevu) bu
+  // kullanıcılar için yanıltıcı → gizle. Yönlendirme ilgili sidebar'dan.
+  if (
+    pathname.startsWith('/klinik') ||
+    pathname.startsWith('/satici') ||
+    pathname.startsWith('/admin')
+  ) return null
+
   return (
     <>
       {/* İçeriğin bar arkasında kalmaması için boşluk */}
