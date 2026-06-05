@@ -106,7 +106,8 @@ export default function NativeTopBar() {
     const segs = pathname.split('/').filter(Boolean) // ['klinik','panel', ...]
     const key = segs[2]
     const title = key ? (KLINIK_TITLES[key] ?? 'Klinik Paneli') : 'Klinik Paneli'
-    const back = segs.length > 3 ? '/klinik/panel' : '/biyoage'
+    // Kök /klinik/panel → flavor evi; alt sayfalar → klinik kökü
+    const back = segs.length > 2 ? '/klinik/panel' : '/biyoage'
     entry = { title, back }
   }
   // Satıcı paneli — aynı kalıp
@@ -128,7 +129,7 @@ export default function NativeTopBar() {
     const segs = pathname.split('/').filter(Boolean)
     const key = segs[2]
     const title = key ? (SATICI_TITLES[key] ?? 'Satıcı Paneli') : 'Satıcı Paneli'
-    const back = segs.length > 3 ? '/satici/panel' : '/biyoage'
+    const back = segs.length > 2 ? '/satici/panel' : '/biyoage'
     entry = { title, back }
   }
   // Rehber + diğer üst-seviye marka sayfaları — derin rota olsa bile geri evi'ne
