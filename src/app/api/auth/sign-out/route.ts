@@ -6,8 +6,11 @@ import { createClient } from '@/lib/supabase/server'
  * yönlendirir. App'te sidebar drawer'ından (klinik/satıcı) çağrılır;
  * web layout'ları kendi `'use server'` form action'larını kullanır.
  */
-export async function POST() {
+export async function POST(req: Request) {
   const supabase = await createClient()
   await supabase.auth.signOut()
-  return NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com'), { status: 303 })
+  // Relatif redirect — istek hangi origin'den geldiyse oraya dön (Capacitor
+  // Vercel preview, web prod, vb). NEXT_PUBLIC_SITE_URL ile cross-origin
+  // bounce yapmıyoruz.
+  return NextResponse.redirect(new URL('/', req.url), { status: 303 })
 }
