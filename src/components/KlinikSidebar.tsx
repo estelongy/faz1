@@ -85,6 +85,13 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
     } catch {}
   }, [])
 
+  // App'te alt tab bar'ın "Menü" tab'ı bu event'i fırlatır → drawer açılır.
+  useEffect(() => {
+    const open = () => setMobileOpen(true)
+    window.addEventListener('klinik-sidebar-open', open)
+    return () => window.removeEventListener('klinik-sidebar-open', open)
+  }, [])
+
   function togglePin() {
     setPinned(prev => {
       const next = !prev

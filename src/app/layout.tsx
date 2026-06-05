@@ -6,6 +6,7 @@ import AuthStatusProvider from '@/components/AuthStatusProvider'
 import { GalaxyTransitionProvider } from '@/components/GalaxyTransition'
 import AppBottomNav from '@/components/native/AppBottomNav'
 import NativeTopBar from '@/components/native/NativeTopBar'
+import KlinikBottomNav from '@/components/native/KlinikBottomNav'
 import NativeAppClass from '@/components/native/NativeAppClass'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -157,6 +158,7 @@ export default function RootLayout({
             <NativeTopBar />
             {children}
             <AppBottomNav />
+            <KlinikBottomNav />
           </GalaxyTransitionProvider>
         </AuthStatusProvider>
       </body>
