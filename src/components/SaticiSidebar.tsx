@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { signOutAction } from '@/app/panel/actions'
+import { useIsNativeApp } from '@/components/native/useIsNativeApp'
 
 interface NavItem {
   href: string
@@ -37,6 +38,7 @@ const PIN_KEY = 'estelongy_satici_sidebar_pinned'
 
 export default function SaticiSidebar({ companyName, approvalStatus, performanceLetter, performanceScore, counts }: Props) {
   const pathname = usePathname()
+  const isApp = useIsNativeApp()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [pinned, setPinned] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -121,10 +123,11 @@ export default function SaticiSidebar({ companyName, approvalStatus, performance
 
   return (
     <>
-      {/* Mobil hamburger */}
+      {/* Mobil hamburger — app'te NativeTopBar (z-45) altında kalmasın diye aşağı kaydır. */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2 rounded-lg bg-slate-800 border border-slate-700 text-white shadow-lg"
+        className="lg:hidden fixed left-4 z-[60] p-2 rounded-lg bg-slate-800 border border-slate-700 text-white shadow-lg"
+        style={isApp ? { top: 'calc(env(safe-area-inset-top) + 68px)' } : { top: '1rem' }}
         aria-label="Menü"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

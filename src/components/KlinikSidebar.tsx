@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import SafeLink from '@/components/SafeLink'
+import { useIsNativeApp } from '@/components/native/useIsNativeApp'
 interface NavItem {
   href: string
   icon: string
@@ -70,6 +71,7 @@ const PIN_KEY = 'estelongy_klinik_sidebar_pinned'
 
 export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isEducator = false, showMuhasebe = false }: Props) {
   const pathname = usePathname()
+  const isApp = useIsNativeApp()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [pinned, setPinned] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -103,10 +105,12 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
 
   return (
     <>
-      {/* Mobil hamburger */}
+      {/* Mobil hamburger — app'te NativeTopBar (z-45) altında kalmasın diye
+          aşağı kaydır (status bar + 56px bar + 12px nefes). */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2 rounded-lg bg-slate-800 border border-slate-700 text-white shadow-lg"
+        className="lg:hidden fixed left-4 z-[60] p-2 rounded-lg bg-slate-800 border border-slate-700 text-white shadow-lg"
+        style={isApp ? { top: 'calc(env(safe-area-inset-top) + 68px)' } : { top: '1rem' }}
         aria-label="Menü"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,6 +258,17 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
             <span className="shrink-0">⌂</span>
             <span className={`transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0 hidden'}`}>Anasayfa</span>
           </Link>
+          {/* Çıkış — app'te layout sticky header gizlendiği için sidebar'a taşındı */}
+          <form action="/api/auth/sign-out" method="post">
+            <button
+              type="submit"
+              className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors ${expanded ? '' : 'justify-center'}`}
+              title={!expanded ? 'Çıkış' : undefined}
+            >
+              <span className="shrink-0">⎋</span>
+              <span className={`transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0 hidden'}`}>Çıkış</span>
+            </button>
+          </form>
         </div>
       </aside>
     </>

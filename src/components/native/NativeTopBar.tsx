@@ -55,6 +55,13 @@ export default function NativeTopBar() {
   // Flavor'ın evi (başrol galaksi landing'i) = tam ekran, bar yok.
   const home = FLAVOR_HOME[flavor]
   if (pathname === home) return null
+  // Auth ekranları: giriş/kayıt kendi sade görünümünde — bar yok
+  if (
+    pathname.startsWith('/giris') ||
+    pathname.startsWith('/kayit') ||
+    pathname.startsWith('/kurumsal/giris') ||
+    pathname.startsWith('/auth/')
+  ) return null
 
   let entry = MAP[pathname]
   // Dinamik derin rotalar (id'li): başlığı prefix'ten türet
@@ -76,7 +83,63 @@ export default function NativeTopBar() {
     entry = { title: 'Ürün', back: '/estestore' }
   // Haritada olmayan diğer derin /panel/* rotaları: yine de geri-bar (Panel'e dön)
   if (!entry && pathname.startsWith('/panel/')) entry = { title: '', back: '/panel' }
-  if (!entry) return null
+  // Klinik paneli — başlığı segment'ten türet, geri = flavor evi
+  if (!entry && pathname.startsWith('/klinik/panel')) {
+    const KLINIK_TITLES: Record<string, string> = {
+      randevular: 'Randevular',
+      hastalarim: 'Hastalarım',
+      yorumlar: 'Yorumlar',
+      mesajlar: 'Mesajlar',
+      kredi: 'Krediler',
+      rapor: 'Raporlar',
+      muhasebe: 'Muhasebe',
+      akademi: 'Akademi',
+      pazarlama: 'Pazarlama',
+      profil: 'Profil',
+      takvim: 'Takvim',
+      musaitlik: 'Müsaitlik',
+      topluluk: 'Topluluk',
+      destek: 'Destek',
+      hasta: 'Hasta',
+      randevu: 'Randevu',
+    }
+    const segs = pathname.split('/').filter(Boolean) // ['klinik','panel', ...]
+    const key = segs[2]
+    const title = key ? (KLINIK_TITLES[key] ?? 'Klinik Paneli') : 'Klinik Paneli'
+    const back = segs.length > 3 ? '/klinik/panel' : '/biyoage'
+    entry = { title, back }
+  }
+  // Satıcı paneli — aynı kalıp
+  if (!entry && pathname.startsWith('/satici/panel')) {
+    const SATICI_TITLES: Record<string, string> = {
+      urunler: 'Ürünler',
+      siparisler: 'Siparişler',
+      iadeler: 'İadeler',
+      kargo: 'Kargo',
+      kazanc: 'Kazanç',
+      kyc: 'KYC',
+      magaza: 'Mağaza',
+      'odeme-hesabi': 'Ödeme Hesabı',
+      performans: 'Performans',
+      sorular: 'Sorular',
+      yorumlar: 'Yorumlar',
+      hesabim: 'Hesabım',
+    }
+    const segs = pathname.split('/').filter(Boolean)
+    const key = segs[2]
+    const title = key ? (SATICI_TITLES[key] ?? 'Satıcı Paneli') : 'Satıcı Paneli'
+    const back = segs.length > 3 ? '/satici/panel' : '/biyoage'
+    entry = { title, back }
+  }
+  // Rehber + diğer üst-seviye marka sayfaları — derin rota olsa bile geri evi'ne
+  if (!entry && pathname.startsWith('/rehber'))
+    entry = { title: 'Rehber', back: '/biyoage' }
+  if (!entry && pathname.startsWith('/akademi'))
+    entry = { title: 'Akademi', back: '/biyoage' }
+  if (!entry && pathname.startsWith('/hakkinda'))
+    entry = { title: 'Hakkında', back: '/biyoage' }
+  // Genel fallback: ne olursa olsun app'te geri-evi bar'ı gözüksün
+  if (!entry) entry = { title: '', back: '/biyoage' }
 
   // "/biyoage" back sentinel'i = ev → aktif flavor'ın evine çöz.
   const back = entry.back === '/biyoage' ? home : entry.back

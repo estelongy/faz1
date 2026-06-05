@@ -75,7 +75,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
       <div className="lg:pl-[72px]">
         {/* Üst bar (mobil için boşluk + çıkış) */}
         <header
-          className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur border-b border-slate-800 h-14 flex items-center justify-between px-4 lg:px-8"
+          className="web-only sticky top-0 z-30 bg-slate-900/80 backdrop-blur border-b border-slate-800 h-14 flex items-center justify-between px-4 lg:px-8"
           style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(3.5rem + env(safe-area-inset-top))' }}
         >
           <div className="lg:hidden w-10" /> {/* mobile hamburger placeholder */}
