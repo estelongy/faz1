@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { verifyGuestOrderToken, normalizeEmail } from '@/lib/guest-order-token'
 import { IadeTalepForm } from './IadeTalepForm'
+import KargoTakipKart from './KargoTakipKart'
 import SiparisSuccessOverlay from '@/components/SiparisSuccessOverlay'
 import BackButton from '@/components/BackButton'
 
@@ -19,14 +20,8 @@ const PAYMENT_STATUS_LABEL: Record<string, { label: string; color: string }> = {
   refunded: { label: 'İade Edildi',     color: 'bg-blue-500/20 text-blue-400' },
 }
 
-const FULFILLMENT_STATUS_LABEL: Record<string, { label: string; color: string; icon: string }> = {
-  pending:    { label: 'Hazırlanacak',  color: 'text-amber-400',   icon: '⏳' },
-  preparing:  { label: 'Hazırlanıyor',  color: 'text-blue-400',    icon: '📦' },
-  shipped:    { label: 'Kargoya Verildi', color: 'text-[#C9A961]', icon: '🚚' },
-  delivered:  { label: 'Teslim Edildi', color: 'text-emerald-400', icon: '✓' },
-  cancelled:  { label: 'İptal Edildi',  color: 'text-red-400',     icon: '✕' },
-  returned:   { label: 'İade',          color: 'text-slate-400',   icon: '↩' },
-}
+// Fulfillment status etiketleri artık KargoTakipKart içinde — bu sayfada
+// vendor kartında /satıcı bloğunda KargoTakipKart durumu kendi gösterir.
 
 export default async function SiparisPage({
   params,
@@ -101,6 +96,7 @@ export default async function SiparisPage({
     fulfillment_status?: string | null
     tracking_number?: string | null
     tracking_carrier?: string | null
+    shipped_at?: string | null
     delivered_at?: string | null
     vendors?: { company_name?: string } | null
     returns?: { id: string; status: string; reason: string; description: string | null; created_at: string }[] | null
@@ -220,12 +216,6 @@ export default async function SiparisPage({
             <div key={vendorName} className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden">
               <div className="px-5 py-3 border-b border-slate-700 flex items-center justify-between">
                 <span className="text-slate-300 text-sm font-medium">{vendorName}</span>
-                {items[0]?.fulfillment_status && (
-                  <span className={`text-sm font-medium ${FULFILLMENT_STATUS_LABEL[items[0].fulfillment_status]?.color ?? 'text-slate-500'}`}>
-                    {FULFILLMENT_STATUS_LABEL[items[0].fulfillment_status]?.icon}{' '}
-                    {FULFILLMENT_STATUS_LABEL[items[0].fulfillment_status]?.label ?? items[0].fulfillment_status}
-                  </span>
-                )}
               </div>
 
               {/* Kalemler */}
@@ -287,16 +277,16 @@ export default async function SiparisPage({
                 })}
               </div>
 
-              {/* Kargo takip */}
-              {items[0]?.tracking_number && (
-                <div className="px-5 py-3 bg-slate-900/50 border-t border-slate-700 text-sm">
-                  <span className="text-slate-500">Takip No: </span>
-                  <span className="text-[#C9A961] font-mono">{items[0].tracking_number}</span>
-                  {items[0].tracking_carrier && (
-                    <span className="text-slate-500 ml-2">({items[0].tracking_carrier})</span>
-                  )}
-                </div>
-              )}
+              {/* Kargo durumu + takip + Teslim Aldım */}
+              <KargoTakipKart
+                orderNumber={order.order_number}
+                orderItemIds={items.map(i => i.id)}
+                trackingNumber={items[0]?.tracking_number ?? null}
+                carrier={items[0]?.tracking_carrier ?? null}
+                shippedAt={items[0]?.shipped_at ?? null}
+                fulfillmentStatus={items[0]?.fulfillment_status ?? 'pending'}
+                canConfirmDelivery={!!user && !isGuestAccess && !isAdminAccess && order.payment_status === 'paid'}
+              />
             </div>
           ))}
         </div>
