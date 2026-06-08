@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Calendar, ClipboardCheck, Users, MessageCircle, CreditCard, BarChart3, ShoppingBag, LogOut } from 'lucide-react'
+import { Calendar, ClipboardCheck, Users, MessageCircle, CreditCard, BarChart3, ShoppingBag } from 'lucide-react'
 
 interface AppointmentLite {
   id: string
@@ -154,18 +154,6 @@ export default function KlinikPROAppHome({
         </div>
       </section>
 
-      {/* Çıkış — görünür yerde */}
-      <section className="mt-6 px-5">
-        <form action="/api/auth/sign-out" method="post">
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/5 px-4 py-3.5 text-rose-300 active:bg-rose-500/10 transition text-sm font-medium"
-          >
-            <LogOut size={16} />
-            Çıkış yap
-          </button>
-        </form>
-      </section>
     </div>
   )
 }
