@@ -58,10 +58,13 @@ export default async function SaticiSiparislerPage({
     shipped:    0,
     delivered:  0,
   }
+  // Sayım liste sorgusu ile AYNI kapsama sahip olmalı (paid sipariş).
+  // Aksi halde tab'da count görünür ama tıklayınca liste boş çıkar.
   const { data: counts } = await supabase
     .from('order_items')
-    .select('fulfillment_status')
+    .select('fulfillment_status, orders!inner(payment_status)')
     .eq('vendor_id', vendor.id)
+    .eq('orders.payment_status', 'paid')
   if (counts) {
     for (const c of counts) {
       const s = c.fulfillment_status as keyof typeof statusCounts

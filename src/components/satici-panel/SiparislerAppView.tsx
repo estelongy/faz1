@@ -42,8 +42,8 @@ export default function SiparislerAppView({
       </header>
 
       {/* Sticky filter pills */}
-      <div className="sticky top-0 z-10 px-5 py-3 bg-slate-950/95 backdrop-blur border-b border-slate-900">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="sticky top-0 z-10 py-3 bg-slate-950/95 backdrop-blur border-b border-slate-900">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar px-5">
           <Link
             href="/satici/panel/siparisler"
             className={`shrink-0 px-3.5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition ${
