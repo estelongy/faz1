@@ -56,11 +56,14 @@ export default function NativeTopBar() {
   const home = FLAVOR_HOME[flavor]
   if (pathname === home) return null
   // Auth ekranları: giriş/kayıt kendi sade görünümünde — bar yok
+  // Onboarding (karşılama) da kendi tam ekran tasarımına sahip
   if (
     pathname.startsWith('/giris') ||
     pathname.startsWith('/kayit') ||
     pathname.startsWith('/kurumsal/giris') ||
-    pathname.startsWith('/auth/')
+    pathname.startsWith('/auth/') ||
+    pathname.startsWith('/satici/karsilama') ||
+    pathname.startsWith('/klinik/karsilama')
   ) return null
 
   let entry = MAP[pathname]

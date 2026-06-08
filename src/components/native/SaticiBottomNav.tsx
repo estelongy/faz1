@@ -31,6 +31,8 @@ export default function SaticiBottomNav() {
 
   if (!isApp || !mounted) return null
   if (!pathname.startsWith('/satici')) return null
+  // Onboarding ekranında gizli — kullanıcı henüz giriş yapmadı.
+  if (pathname.startsWith('/satici/karsilama')) return null
 
   const isActive = (t: typeof TABS[number]) => {
     if (t.prefix) return pathname.startsWith(t.prefix)
