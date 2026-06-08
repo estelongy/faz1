@@ -2,16 +2,24 @@
  * Flavor tespitinin SAF kısmı — 'use client' YOK, hem server (headers) hem
  * client (UA/sınıf) tarafında kullanılabilsin. Hook'lar flavor.ts'te.
  */
-export type Flavor = 'biyoage' | 'esteklinik' | 'estestore'
+export type Flavor = 'biyoage' | 'esteklinik' | 'estestore' | 'esteklinikpro'
 
 /** Her flavor'ın "ev" rotası — açılış + alt-nav Ana Sayfa + geri-çekim hedefi. */
 export const FLAVOR_HOME: Record<Flavor, string> = {
   biyoage: '/biyoage',
   esteklinik: '/esteklinik',
   estestore: '/estestore',
+  esteklinikpro: '/klinik/panel',
 }
 
-const FLAVORS: Flavor[] = ['biyoage', 'esteklinik', 'estestore']
+const FLAVORS: Flavor[] = ['biyoage', 'esteklinik', 'estestore', 'esteklinikpro']
+
+/** PRO flavor'lar — saf kullanıcı değil, profesyonel persona (klinik/vendor). */
+export const PRO_FLAVORS: Flavor[] = ['esteklinikpro']
+
+export function isProFlavor(f: Flavor): boolean {
+  return PRO_FLAVORS.includes(f)
+}
 
 export function isFlavor(v: string): v is Flavor {
   return (FLAVORS as string[]).includes(v)

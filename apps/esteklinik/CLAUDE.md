@@ -41,5 +41,12 @@ Teal/emerald (mevcut: deep teal #064E3B hero, emerald accents #10876B). Sakin pr
 - appendUserAgent: `EstelongyApp/esteklinik`
 - server.url: vercel deploy URL
 
+## Rol koruması (AppFlavorRoleGate)
+Bu app saf KULLANICI için. Klinik hesabıyla giriş yapan kullanıcı full-screen kapı görür:
+- "Klinik için EsteKlinikPRO var" mesajı
+- "Klinik panelime git" → `/klinik/panel` (PRO yayında değilken bu yol açık)
+- "EsteKlinikPRO — Play Store" linki (PRO yayınlanınca aktif)
+- Çıkış butonu
+
 ## Çalışma kuralı
 Bu app'e özgü değişiklikler bu dosyaya işlenir. Genel değişiklik olduysa paylaşılan kuralın bu app'te nasıl renklendiği yazılır.

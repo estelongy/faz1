@@ -25,19 +25,25 @@ type Tab = {
  * - EsteKlinik app: Ana Sayfa(/esteklinik) · Analiz · Skorum · Mağaza · Hesap
  * - EsteStore app: Ana Sayfa(/estestore) · Analiz · Skorum · Randevu · Hesap
  */
-const GALAXY_TAB: Record<Flavor, Tab> = {
+/** Consumer flavor'lar — PRO app'lerde AppBottomNav zaten render edilmez. */
+type ConsumerFlavor = 'biyoage' | 'esteklinik' | 'estestore'
+const GALAXY_TAB: Record<ConsumerFlavor, Tab> = {
   biyoage:    { href: '/biyoage',    label: 'Skorum',  Icon: Activity,      galaxy: 'biyoage' },
   esteklinik: { href: '/esteklinik', label: 'Randevu', Icon: CalendarCheck, galaxy: 'esteklinik' },
   estestore:  { href: '/estestore',  label: 'Mağaza',  Icon: ShoppingBag,   galaxy: 'estestore' },
 }
 const ANALIZ_TAB: Tab = { href: '/analiz', label: 'Analiz', Icon: Camera }
 const HESAP_TAB: Tab = { href: '/panel', label: 'Hesap', Icon: User }
-const ALL_FLAVORS: Flavor[] = ['biyoage', 'esteklinik', 'estestore']
+const CONSUMER_FLAVORS: ConsumerFlavor[] = ['biyoage', 'esteklinik', 'estestore']
 
 function tabsForFlavor(flavor: Flavor): Tab[] {
-  // Başrol = ev (düz nav, galaxy yok). Diğer iki galaksi = switcher.
+  // PRO flavor'ları için consumer tab seti anlamsız — biyoage default'una düş
+  // (pratikte PRO app'lerde isApp+/klinik/panel guard'ı bu component'i zaten
+  // erken çıkarır; bu sadece tip güvencesi).
+  const baseFlavor: ConsumerFlavor =
+    (CONSUMER_FLAVORS as Flavor[]).includes(flavor) ? (flavor as ConsumerFlavor) : 'biyoage'
   const home: Tab = { href: FLAVOR_HOME[flavor], label: 'Ana Sayfa', Icon: Home }
-  const others = ALL_FLAVORS.filter((g) => g !== flavor).map((g) => GALAXY_TAB[g])
+  const others = CONSUMER_FLAVORS.filter((g) => g !== baseFlavor).map((g) => GALAXY_TAB[g])
   return [home, ANALIZ_TAB, others[0], others[1], HESAP_TAB]
 }
 

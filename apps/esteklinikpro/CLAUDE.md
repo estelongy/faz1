@@ -29,25 +29,41 @@ Kredi, Rapor, Takvim, Müsaitlik, Profil, Yorumlar, Topluluk, Akademi, Muhasebe,
 - `/klinik/panel/muhasebe/*` — muhasebe yetkilisi (yetkilendirme arkasında)
 - `/akademi/*`, `/panel/kurslarim` — eğitim alma (topluluk üyesi olarak)
 
-## Gelecek (kapsama dahil ama henüz yok)
-- **Tedarik** — B2B store, klinik fiyatlı vitrin, toplu sepet, fatura. Vendor ürünleri burada satılır (EsteStore consumer'dan ayrı).
+## Mağaza erişimi (klinik için EsteStore)
+**Karar:** Ayrı tedarik paneli/sepeti YOK. Klinik kullanıcı `/estestore`'a girdiğinde:
+- Sayfa üstünde toggle: `[Klinik Ürünleri ✓] [Hasta Ürünleri]` — default klinik açık (24 kategori)
+- Klinik fiyatı + barem (10/50/100 adet kırılımı) ürün kartında görünür
+- `klinik_only=true` ürünler de görünür (consumer'a görünmez)
+- Sepet, ödeme, sipariş akışı consumer ile aynı route — fiyat hesaplaması role'e göre değişir
+
+Bu mağaza vitrini henüz inşa edilmedi (DB kolonları + UI). EsteKlinikPRO Faz 0 = sadece flavor + panel. Faz 1 = `/estestore` klinik view.
 
 ## Yok (klinik dışı)
 - `/biyoage` consumer ev, `/skor`, `/analiz`, `/paylas/*` — kullanıcı skor deneyimi
 - `/esteklinik` consumer arama
-- `/estestore` consumer vitrin/sepet
 - `/panel/*` (kurslarim hariç) — kullanıcı paneli
 - `/satici/*` — vendor dünyası
 - `/rehber/*` consumer açıklayıcılar
 - `/formlestelongy` (iç doküman)
 
+## Rol koruması (AppFlavorRoleGate)
+Klinik OLMAYAN kullanıcı bu app'te giriş yaparsa full-screen kapı çıkar:
+- "Bu app klinikler için" mesajı
+- BiyoAGE / EsteKlinik app indir Play Store linkleri
+- Çıkış butonu
+
 ## Marka rengi & ton
 Slate-950 + emerald-500 (mevcut klinik panel teması). Yönetim arayüzü tonu — yoğun, fonksiyonel, gece moduna kapalı.
 
-## Capacitor flavor (planlanan)
+## Capacitor flavor (kuruldu)
 - applicationId: `com.estelongy.esteklinikpro`
 - appendUserAgent: `EstelongyApp/esteklinikpro`
-- server.url: vercel deploy URL
+- server.url: `https://faz-1-git-master-estelongy-3655s-projects.vercel.app/klinik/panel`
+- `mobile/android/app/src/esteklinikpro/assets/capacitor.config.json` (**gitignored**)
+- `build.gradle` productFlavor: `esteklinikpro` (**gitignored**)
+- `FLAVOR_HOME.esteklinikpro` = `/klinik/panel` (tracked)
+
+**Önemli:** `mobile/android/` tamamı `.gitignore`'da. Flavor build dosyaları lokal-only. Yeni makinede build için `mobile/android/app/build.gradle`'a `esteklinikpro` productFlavor ve `mobile/android/app/src/esteklinikpro/assets/capacitor.config.json` elle eklenmeli (template: biyoage/esteklinik/estestore flavor'larından).
 
 ## Çalışma kuralı
 Bu app'in çekirdek aksiyonları yönetimsel — consumer akış kodu ile karışmamalı. Genel değişiklik (örn. ortak sign-out, auth) yapıldığında bu app'in PRO bağlamına uygunluğu teyit edilir.
