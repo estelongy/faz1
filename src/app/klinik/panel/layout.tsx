@@ -92,7 +92,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
           </form>
         </header>
 
-        <main className="p-4 lg:p-8">
+        <main className="klinik-panel-main p-4 lg:p-8">
           {children}
         </main>
       </div>
