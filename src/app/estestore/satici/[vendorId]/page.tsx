@@ -50,12 +50,20 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
   const social = (vendor.social_links as Record<string, string> | null) ?? {}
   const socialEntries = Object.entries(social).filter(([, v]) => !!v)
 
-  const { data: products } = await supabase
+  // Mevcut kullanıcı — klinik_only ürünleri filtrelemek için rolü erkenden çek
+  const { data: { user } } = await supabase.auth.getUser()
+  const currentRole = (user?.app_metadata as Record<string, string> | undefined)?.role as
+    | 'user' | 'clinic' | 'health_professional' | 'vendor' | 'admin' | undefined
+  const isProRole = currentRole === 'clinic' || currentRole === 'health_professional' || currentRole === 'admin'
+
+  let productsQuery = supabase
     .from('products')
-    .select('id, name, slug, description, category, price, final_score, preference_count, treatment_type, images')
+    .select('id, name, slug, description, category, price, final_score, preference_count, treatment_type, images, klinik_only')
     .eq('vendor_id', vendor.id)
     .eq('is_active', true)
     .eq('approval_status', 'approved')
+  if (!isProRole) productsQuery = productsQuery.eq('klinik_only', false)
+  const { data: products } = await productsQuery
     .order('final_score', { ascending: false })
 
   const totalProducts = products?.length ?? 0
@@ -76,8 +84,7 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
     ? (vendorReviews ?? []).reduce((s, r) => s + Number(r.rating ?? 0), 0) / reviewCount
     : null
 
-  // Mevcut kullanıcı
-  const { data: { user } } = await supabase.auth.getUser()
+  // Mevcut kullanıcı (yukarıda alındı)
   const myReview = user
     ? (vendorReviews ?? []).find(r => r.user_id === user.id) ?? null
     : null

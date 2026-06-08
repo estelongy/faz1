@@ -35,6 +35,8 @@ export interface ProductSearchParams {
   page?: number
   /** Sayfa başına */
   perPage?: number
+  /** Klinik-only ürünleri dahil et (true = isPro). Varsayılan false (hasta görünümü). */
+  includeKlinikOnly?: boolean
 }
 
 export interface ProductSearchResult {
@@ -93,12 +95,17 @@ export async function searchProducts(params: ProductSearchParams): Promise<Produ
   let query = supabase
     .from('products')
     .select(
-      'id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers, final_score, stock, description',
+      'id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers, final_score, stock, description, klinik_only',
       { count: 'exact' }
     )
     .eq('is_active', true)
     .eq('approval_status', 'approved')
     .range(from, to)
+
+  // klinik_only ürünler sadece klinik/health_pro/admin için görünür
+  if (!params.includeKlinikOnly) {
+    query = query.eq('klinik_only', false)
+  }
 
   // Kategori
   if (params.category) {
@@ -152,6 +159,7 @@ export async function searchProducts(params: ProductSearchParams): Promise<Produ
     pricing_tiers: Array.isArray(p.pricing_tiers)
       ? (p.pricing_tiers as ProductCardData['pricing_tiers'])
       : [],
+    klinik_only: Boolean((p as { klinik_only?: boolean | null }).klinik_only),
   }))
 
   const total = count ?? items.length

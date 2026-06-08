@@ -17,6 +17,7 @@ export interface ProductCardData {
   category: EsteStoreCategory
   subcategory?: string | null
   pricing_tiers?: PricingTiers | null
+  klinik_only?: boolean
 }
 
 interface Props {
@@ -84,11 +85,18 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride, i
 
       {/* Bilgi */}
       <div className="p-4 flex-1 flex flex-col">
-        {product.subcategory && (
-          <p className="text-sm uppercase tracking-wider text-slate-500 font-semibold mb-1">
-            {product.subcategory}
-          </p>
-        )}
+        <div className="flex items-start justify-between gap-2 mb-1">
+          {product.subcategory ? (
+            <p className="text-sm uppercase tracking-wider text-slate-500 font-semibold">
+              {product.subcategory}
+            </p>
+          ) : <span />}
+          {isPro && product.klinik_only && (
+            <span className="shrink-0 bg-emerald-500/15 text-emerald-300 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold">
+              Kliniğe Özel
+            </span>
+          )}
+        </div>
         <h3 className="text-slate-900 text-sm font-semibold leading-snug line-clamp-2 mb-3">
           {product.name}
         </h3>

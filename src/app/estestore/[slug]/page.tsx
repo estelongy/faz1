@@ -145,6 +145,8 @@ export default async function UrunDetayPage({
     | 'user' | 'clinic' | 'health_professional' | 'vendor' | 'admin' | undefined
   const isProRole = role === 'clinic' || role === 'health_professional' || role === 'admin'
   if (product.category === 'sarf_medikal' && !isProRole) notFound()
+  // klinik_only ürünler hasta kullanıcıya kapalı (direkt URL ile de erişilemez)
+  if (product.klinik_only && !isProRole) notFound()
 
   // Favori listesinde mi?
   let isInWishlist = false

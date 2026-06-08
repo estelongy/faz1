@@ -28,7 +28,9 @@ export default async function EsteStoreSearchPage({ searchParams }: Props) {
 
   // Hasta kullanıcılar sarf_medikal göremez — arama da bu kısıt altında
   // (category=kozmetik filter empoze ediyoruz pro değilse)
-  const searchParams2 = isPro ? params : { ...params, category: 'kozmetik' as const }
+  const searchParams2 = isPro
+    ? { ...params, includeKlinikOnly: true }
+    : { ...params, category: 'kozmetik' as const, includeKlinikOnly: false }
 
   const result = params.q
     ? await searchProducts(searchParams2)

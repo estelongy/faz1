@@ -76,6 +76,7 @@ export default async function EsteStoreCategoryPage({ params, searchParams }: Pr
     category: anaCategory,
     subcategory: storeCategory ? storeCategory.cat.slug : undefined,
     subcategoryIn: section?.subcategoryIn ?? undefined,
+    includeKlinikOnly: isPro,
   })
   const items = result.items
   const wishlistSet = await getUserWishlistSet(supabase, user?.id)

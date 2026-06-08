@@ -52,7 +52,7 @@ export default async function EsteStorePage() {
   const isPro = isProfessional(role)
 
   const PRODUCT_COLS =
-    'id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers'
+    'id, slug, name, cover_image_url, images, price, category, subcategory, pricing_tiers, klinik_only'
 
   async function loadSection(slug: string, limit = 8) {
     const section = getSectionBySlug(slug)
@@ -66,6 +66,8 @@ export default async function EsteStorePage() {
     if (section.subcategoryIn && section.subcategoryIn.length > 0) {
       q = q.in('subcategory', section.subcategoryIn)
     }
+    // klinik_only ürünler sadece klinik/health_pro/admin için görünür
+    if (!isPro) q = q.eq('klinik_only', false)
     const { data } = await q
       .order('final_score', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false })
@@ -79,12 +81,20 @@ export default async function EsteStorePage() {
     loadSection('islem-sonrasi', 8),
     loadSection('biyohacking-olcum', 8),
     isPro ? loadSection('sarf-medikal', 9) : Promise.resolve([]),
-    supabase
-      .from('products')
-      .select(PRODUCT_COLS)
-      .eq('category', 'kozmetik')
-      .eq('is_active', true)
-      .eq('approval_status', 'approved')
+    (isPro
+      ? supabase
+          .from('products')
+          .select(PRODUCT_COLS)
+          .eq('category', 'kozmetik')
+          .eq('is_active', true)
+          .eq('approval_status', 'approved')
+      : supabase
+          .from('products')
+          .select(PRODUCT_COLS)
+          .eq('category', 'kozmetik')
+          .eq('is_active', true)
+          .eq('approval_status', 'approved')
+          .eq('klinik_only', false))
       .order('final_score', { ascending: false, nullsFirst: false })
       .limit(5)
       .then(r => r.data ?? []),
@@ -107,6 +117,7 @@ export default async function EsteStorePage() {
     category: string
     subcategory: string | null
     pricing_tiers: unknown
+    klinik_only?: boolean | null
   }): ProductCardData => ({
     id: p.id,
     slug: p.slug,
@@ -118,6 +129,7 @@ export default async function EsteStorePage() {
     pricing_tiers: Array.isArray(p.pricing_tiers)
       ? (p.pricing_tiers as ProductCardData['pricing_tiers'])
       : [],
+    klinik_only: Boolean(p.klinik_only),
   })
 
   const longevityFeatured   = longevityRaw.map(normalizeProduct)
