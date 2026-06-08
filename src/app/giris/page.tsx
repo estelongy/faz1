@@ -199,20 +199,25 @@ function GirisInner() {
                 </button>
               </form>
 
-              {/* B: PRO app'te "Kaydolun" → consumer kayıt değil, başvuru. */}
-              <p className={`mt-6 text-center ${t.mutedText} text-sm`}>
-                {isProApp ? (
-                  <>
-                    Henüz iş ortağı değil misiniz?{' '}
-                    <Link href={proApplyHref} className={`${t.accent} ${t.accentHover} font-medium`}>Başvuru yapın</Link>
-                  </>
-                ) : (
-                  <>
-                    Hesabınız yok mu?{' '}
-                    <Link href={kayitHref} className={`${t.accent} ${t.accentHover} font-medium`}>Kaydolun</Link>
-                  </>
-                )}
-              </p>
+              {/* B: PRO app'te "Kaydolun" → consumer kayıt değil, başvuru.
+                  PRO: 2 satırlı şık blok (soru üstte küçük, link altta vurgulu)
+                  Consumer: tek satır inline (alışılmış pattern). */}
+              {isProApp ? (
+                <div className="mt-6 text-center">
+                  <p className={`text-xs ${t.mutedText}`}>Henüz iş ortağı değil misiniz?</p>
+                  <Link
+                    href={proApplyHref}
+                    className={`inline-block mt-1.5 text-sm font-semibold ${t.accent} ${t.accentHover}`}
+                  >
+                    Başvuru yapın →
+                  </Link>
+                </div>
+              ) : (
+                <p className={`mt-6 text-center ${t.mutedText} text-sm`}>
+                  Hesabınız yok mu?{' '}
+                  <Link href={kayitHref} className={`${t.accent} ${t.accentHover} font-medium`}>Kaydolun</Link>
+                </p>
+              )}
 
               {/* C: PRO app'te "Kurumsal Giriş" butonu gizli — zaten kurumsal app'teyiz. */}
               {!isProApp && (
