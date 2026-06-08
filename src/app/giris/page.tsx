@@ -6,12 +6,19 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { pathForRole } from '@/lib/auth-redirect'
 import { GALAXY_THEMES, resolveGalaxy, type Galaxy } from '@/lib/galaxy-themes'
+import { useFlavor } from '@/components/native/flavor'
 
 function GirisInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const galaxy: Galaxy = resolveGalaxy(searchParams.get('g'))
   const t = GALAXY_THEMES[galaxy]
+  // PRO app'lerde (vendor/klinik flavor) consumer-flow öğeleri gizlenir:
+  // "geri linki" yok, "Kaydolun" → başvuru, "Kurumsal Giriş" gizli.
+  const flavor = useFlavor()
+  const isProApp = flavor === 'estestorepro' || flavor === 'esteklinikpro'
+  const proApplyHref = flavor === 'esteklinikpro' ? '/klinik/basvur' : '/satici/basvur'
+  const proSubline = flavor === 'esteklinikpro' ? 'Klinik panelinize giriş yapın' : 'İş ortağı panelinize giriş yapın'
 
   const [email, setEmail]         = useState('')
   const [password, setPassword]   = useState('')
@@ -102,13 +109,17 @@ function GirisInner() {
   return (
     <main className={`min-h-screen bg-gradient-to-b ${t.bgFrom} ${t.bgVia} ${t.bgTo} flex items-center justify-center p-4`}>
       <div className="w-full max-w-md">
-        <Link href={homeHref}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 mb-8 rounded-lg border ${t.cardBorder} ${t.backLinkHover} ${t.backLinkText} text-sm font-medium transition-colors`}>
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          {homeLabel}
-        </Link>
+        {/* A: PRO app'te üst geri linki gizli — app içinden consumer landing'e
+            atmak galaksi-loss + app-dışı navigasyon hissi yaratıyor. */}
+        {!isProApp && (
+          <Link href={homeHref}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 mb-8 rounded-lg border ${t.cardBorder} ${t.backLinkHover} ${t.backLinkText} text-sm font-medium transition-colors`}>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            {homeLabel}
+          </Link>
+        )}
 
         <div className={`${t.cardBg} ${t.mode === 'dark' ? 'backdrop-blur-sm' : ''} rounded-2xl p-6 sm:p-8 border ${t.cardBorder} shadow-xl`}>
           <div className="text-center mb-6 sm:mb-8">
@@ -124,7 +135,7 @@ function GirisInner() {
               {resetMode ? 'Şifre Sıfırla' : 'Giriş Yap'}
             </h1>
             <p className={`${t.mutedText} text-sm mt-1`}>
-              {resetMode ? 'E-postanıza sıfırlama bağlantısı göndereceğiz' : t.subline}
+              {resetMode ? 'E-postanıza sıfırlama bağlantısı göndereceğiz' : (isProApp ? proSubline : t.subline)}
             </p>
           </div>
 
@@ -188,21 +199,34 @@ function GirisInner() {
                 </button>
               </form>
 
+              {/* B: PRO app'te "Kaydolun" → consumer kayıt değil, başvuru. */}
               <p className={`mt-6 text-center ${t.mutedText} text-sm`}>
-                Hesabınız yok mu?{' '}
-                <Link href={kayitHref} className={`${t.accent} ${t.accentHover} font-medium`}>Kaydolun</Link>
+                {isProApp ? (
+                  <>
+                    Henüz iş ortağı değil misiniz?{' '}
+                    <Link href={proApplyHref} className={`${t.accent} ${t.accentHover} font-medium`}>Başvuru yapın</Link>
+                  </>
+                ) : (
+                  <>
+                    Hesabınız yok mu?{' '}
+                    <Link href={kayitHref} className={`${t.accent} ${t.accentHover} font-medium`}>Kaydolun</Link>
+                  </>
+                )}
               </p>
 
-              <div className={`mt-4 pt-4 border-t ${t.dividerBorder}`}>
-                <Link href="/kurumsal/giris"
-                  className={`w-full flex items-center justify-center gap-2 py-3 px-4 ${t.inputBg} border ${t.inputBorder} hover:opacity-80 rounded-xl ${t.mutedText} text-sm font-medium transition-all`}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                  Kurumsal Giriş
-                  <span className={`text-sm ${t.strengthText}`}>(Klinik / İş Ortağı)</span>
-                </Link>
-              </div>
+              {/* C: PRO app'te "Kurumsal Giriş" butonu gizli — zaten kurumsal app'teyiz. */}
+              {!isProApp && (
+                <div className={`mt-4 pt-4 border-t ${t.dividerBorder}`}>
+                  <Link href="/kurumsal/giris"
+                    className={`w-full flex items-center justify-center gap-2 py-3 px-4 ${t.inputBg} border ${t.inputBorder} hover:opacity-80 rounded-xl ${t.mutedText} text-sm font-medium transition-all`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Kurumsal Giriş
+                    <span className={`text-sm ${t.strengthText}`}>(Klinik / İş Ortağı)</span>
+                  </Link>
+                </div>
+              )}
             </>
           )}
         </div>
