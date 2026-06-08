@@ -1,11 +1,19 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getServerFlavor } from '@/lib/server-flavor'
+import DestekAppView from '@/components/klinik-panel/DestekAppView'
 
 export const metadata: Metadata = {
   title: 'Destek — Klinik',
 }
 
-export default function DestekPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function DestekPage() {
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return <DestekAppView />
+  }
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">

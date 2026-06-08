@@ -1,11 +1,19 @@
 import type { Metadata } from 'next'
 import KlinikComingSoon from '@/components/KlinikComingSoon'
+import { getServerFlavor } from '@/lib/server-flavor'
+import PazarlamaAppView from '@/components/klinik-panel/PazarlamaAppView'
 
 export const metadata: Metadata = {
   title: 'Pazarlama — Klinik',
 }
 
-export default function PazarlamaPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function PazarlamaPage() {
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return <PazarlamaAppView />
+  }
   return (
     <KlinikComingSoon
       emoji="📱"

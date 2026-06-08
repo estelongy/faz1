@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import EditForm from './EditForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import ProfilDuzenleAppView from '@/components/klinik-panel/ProfilDuzenleAppView'
 
 export const metadata: Metadata = {
   title: 'Profili Düzenle | Klinik Paneli',
@@ -22,6 +24,22 @@ export default async function ProfilDuzenlePage() {
     .single()
   if (!clinic) redirect('/esteklinik/basvur')
 
+  const initial = {
+    name: clinic.name,
+    location: clinic.location,
+    bio: clinic.bio,
+    clinic_type: clinic.clinic_type,
+    specialties: (clinic.specialties as string[] | null) ?? null,
+    phone: clinic.phone,
+    logo_url: clinic.logo_url,
+    cover_image_url: clinic.cover_image_url,
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return <ProfilDuzenleAppView initial={initial} />
+  }
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
@@ -35,16 +53,7 @@ export default async function ProfilDuzenlePage() {
       </div>
 
       <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 sm:p-6">
-        <EditForm initial={{
-          name: clinic.name,
-          location: clinic.location,
-          bio: clinic.bio,
-          clinic_type: clinic.clinic_type,
-          specialties: (clinic.specialties as string[] | null) ?? null,
-          phone: clinic.phone,
-          logo_url: clinic.logo_url,
-          cover_image_url: clinic.cover_image_url,
-        }} />
+        <EditForm initial={initial} />
       </div>
 
       <p className="mt-4 text-sm text-slate-600">

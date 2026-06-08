@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getServerFlavor } from '@/lib/server-flavor'
+import ProfilAppView from '@/components/klinik-panel/ProfilAppView'
 
 export const metadata: Metadata = {
   title: 'Klinik Profilim',
@@ -20,6 +22,22 @@ export default async function KlinikProfilPage() {
     .eq('user_id', user.id)
     .single()
   if (!clinic) redirect('/esteklinik/basvur')
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <ProfilAppView
+        clinic={{
+          name: clinic.name,
+          location: clinic.location,
+          bio: clinic.bio,
+          specialties: (clinic.specialties as string[] | null) ?? null,
+          clinic_type: clinic.clinic_type,
+          created_at: clinic.created_at,
+        }}
+      />
+    )
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
 import MuhasebeShellClient, { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
 import RandevuListClient, { type AppointmentRow } from './randevu/RandevuListClient'
+import { getServerFlavor } from '@/lib/server-flavor'
+import MuhasebeAppView from '@/components/klinik-panel/MuhasebeAppView'
 
 export const metadata: Metadata = {
   title: 'Muhasebe | Klinik Paneli',
@@ -164,6 +166,25 @@ export default async function MuhasebePage({
     g.collected += amt
   }
   const days: DayGroup[] = Array.from(dayMap.values()).sort((a, b) => b.date.localeCompare(a.date))
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <MuhasebeAppView
+        rows={rows}
+        days={days}
+        catalog={catalog as CatalogItem[]}
+        monthLabel={monthLabel}
+        monthBilled={monthBilled}
+        monthCollected={monthCollected}
+        totalRemaining={remainingAll}
+        debtorCount={debtorCount}
+        patientCount={rows.length}
+        prefill={prefill}
+        upcomingAppts={upcomingAppts}
+      />
+    )
+  }
 
   return (
     <div className="max-w-5xl mx-auto">

@@ -10,6 +10,8 @@ import KlinikNotlar, { type ClinicNote } from './KlinikNotlar'
 import ZiyaretKarti, { type ZiyaretItem, type ZiyaretAnalysis } from '@/components/ZiyaretKarti'
 import { saveVisitNotesAction } from './ziyaret-actions'
 import VitrinePaylasimSection from './VitrinePaylasimSection'
+import { getServerFlavor } from '@/lib/server-flavor'
+import HastaDetayAppView from '@/components/klinik-panel/HastaDetayAppView'
 
 export const metadata: Metadata = {
   title: 'Hasta Detayı',
@@ -197,6 +199,26 @@ export default async function HastaDetayPage({
       } : null,
     }))
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <HastaDetayAppView
+        userId={params.userId}
+        profileName={profile?.full_name ?? 'Hasta'}
+        profileCreatedAt={profile?.created_at ?? null}
+        totalAppts={appts?.length ?? 0}
+        latestScore={latestScore}
+        scorePhase={getCurrentPhase()}
+        chartPoints={chartPoints}
+        activeApptId={activeAppt?.id ?? null}
+        activeApptStatus={activeAppt?.status ?? null}
+        notes={notes}
+        timeline={timeline}
+        vitrineAnalyses={vitrineAnalyses}
+      />
+    )
+  }
 
   return (
     <div className="max-w-7xl mx-auto">

@@ -15,6 +15,8 @@ import {
   addVideo,
   deleteVideo,
 } from '../actions'
+import { getServerFlavor } from '@/lib/server-flavor'
+import AkademiPaketDetayAppView from '@/components/klinik-panel/AkademiPaketDetayAppView'
 
 export const dynamic = 'force-dynamic'
 
@@ -66,6 +68,18 @@ export default async function PaketDetayPage({ params }: Props) {
 
   const paidPurchases = (purchases ?? []).filter(p => p.status === 'paid')
   const totalEarnings = paidPurchases.reduce((sum, p) => sum + (p.educator_share ?? 0), 0)
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <AkademiPaketDetayAppView
+        pkg={pkg}
+        videos={videos}
+        totalSales={paidPurchases.length}
+        totalEarnings={totalEarnings}
+      />
+    )
+  }
 
   return (
     <div className="max-w-5xl mx-auto">

@@ -13,6 +13,8 @@ import {
   type TekrarGelir,
 } from '@/lib/clinic-review'
 import RespondToReviewForm from './RespondToReviewForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import YorumlarAppView from '@/components/klinik-panel/YorumlarAppView'
 
 export const metadata: Metadata = {
   title: 'Yorumlarım — Klinik Paneli',
@@ -55,6 +57,22 @@ export default async function KlinikYorumlarPage() {
   const totalReviews = reviews.length
   const respondedCount = reviews.filter(r => r.clinic_response).length
   const responseRate = totalReviews > 0 ? Math.round((respondedCount / totalReviews) * 100) : 0
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <YorumlarAppView
+        clinicEgp={clinic.clinic_egp != null ? Number(clinic.clinic_egp) : null}
+        reviewCount={clinic.review_count ?? 0}
+        avgNps={clinic.avg_nps != null ? Number(clinic.avg_nps) : null}
+        responseRate={responseRate}
+        respondedCount={respondedCount}
+        totalReviews={totalReviews}
+        reviews={reviews}
+        profileById={profileById}
+      />
+    )
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">

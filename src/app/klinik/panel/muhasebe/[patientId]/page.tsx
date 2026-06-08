@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
 import PatientDetailClient from './PatientDetailClient'
+import { getServerFlavor } from '@/lib/server-flavor'
+import MuhasebePatientAppView from '@/components/klinik-panel/MuhasebePatientAppView'
 
 export const metadata: Metadata = {
   title: 'Hasta Detayı | Muhasebe',
@@ -48,6 +50,48 @@ export default async function PatientDetailPage({
   const paidAmount = payments.reduce((s, p) => s + Number(p.amount ?? 0), 0)
   const remaining = totalAmount - paidAmount
 
+  const treatmentsMapped = treatmentsWithProducts.map(t => ({
+    id: t.id,
+    name: t.name,
+    treatment_date: t.treatment_date,
+    amount: Number(t.amount ?? 0),
+    notes: t.notes,
+    products: t.products.map(p => ({
+      id: p.id,
+      name: p.name,
+      quantity: Number(p.quantity ?? 0),
+      unit: p.unit,
+      notes: p.notes,
+    })),
+  }))
+  const paymentsMapped = payments.map(p => ({
+    id: p.id,
+    amount: Number(p.amount ?? 0),
+    paid_at: p.paid_at,
+    method: p.method,
+    notes: p.notes,
+    treatment_id: p.treatment_id,
+  }))
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <MuhasebePatientAppView
+        patient={{
+          id: patient.id,
+          name: patient.name,
+          phone: patient.phone,
+          notes: patient.notes,
+        }}
+        treatments={treatmentsMapped}
+        payments={paymentsMapped}
+        totalAmount={totalAmount}
+        paidAmount={paidAmount}
+        remaining={remaining}
+      />
+    )
+  }
+
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-6">
@@ -78,22 +122,8 @@ export default async function PatientDetailPage({
 
       <PatientDetailClient
         patientId={patientId}
-        treatments={treatmentsWithProducts.map(t => ({
-          id: t.id, name: t.name,
-          treatment_date: t.treatment_date,
-          amount: Number(t.amount ?? 0),
-          notes: t.notes,
-          products: t.products.map(p => ({
-            id: p.id, name: p.name,
-            quantity: Number(p.quantity ?? 0),
-            unit: p.unit, notes: p.notes,
-          })),
-        }))}
-        payments={payments.map(p => ({
-          id: p.id, amount: Number(p.amount ?? 0),
-          paid_at: p.paid_at, method: p.method, notes: p.notes,
-          treatment_id: p.treatment_id,
-        }))}
+        treatments={treatmentsMapped}
+        payments={paymentsMapped}
       />
     </div>
   )

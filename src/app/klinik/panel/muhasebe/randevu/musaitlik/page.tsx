@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, getMuhasebeOwnerProfile } from '@/lib/muhasebe-owner'
 import { normalizeWeek, type DayAvailability } from '../slot-utils'
 import MusaitlikForm from './MusaitlikForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import MuhasebeMusaitlikAppView from '@/components/klinik-panel/MuhasebeMusaitlikAppView'
 
 export const metadata: Metadata = {
   title: 'Müsaitlik | Muhasebe Randevu',
@@ -27,6 +29,13 @@ export default async function MusaitlikPage() {
     .order('day_of_week', { ascending: true })
 
   const week = normalizeWeek((data ?? []) as Partial<DayAvailability>[])
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <MuhasebeMusaitlikAppView week={week} doctorName={ownerProfile.displayName} />
+    )
+  }
 
   return (
     <div className="max-w-3xl mx-auto">

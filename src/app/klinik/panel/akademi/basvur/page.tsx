@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { applyForEducator, withdrawApplication } from './actions'
+import { getServerFlavor } from '@/lib/server-flavor'
+import AkademiBasvurAppView from '@/components/klinik-panel/AkademiBasvurAppView'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,6 +29,23 @@ export default async function EgitmenBasvuruPage({ searchParams }: Props) {
 
   if (!clinic) redirect('/esteklinik/basvur')
   if (clinic.approval_status !== 'approved') redirect('/klinik/panel')
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <AkademiBasvurAppView
+        justSubmitted={justSubmitted}
+        clinic={{
+          is_educator: clinic.is_educator,
+          educator_application_status: clinic.educator_application_status,
+          educator_application_message: clinic.educator_application_message,
+          educator_applied_at: clinic.educator_applied_at,
+          educator_decided_at: clinic.educator_decided_at,
+          educator_decision_note: clinic.educator_decision_note,
+        }}
+      />
+    )
+  }
 
   // Zaten eğitmen
   if (clinic.is_educator) {

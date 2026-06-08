@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MusaitlikForm from './MusaitlikForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import MusaitlikAppView from '@/components/klinik-panel/MusaitlikAppView'
 
 export default async function MusaitlikPage() {
   const supabase = await createClient()
@@ -23,6 +25,26 @@ export default async function MusaitlikPage() {
     .eq('clinic_id', clinic.id)
     .order('day_of_week')
 
+  const availabilityRows = (availability ?? []) as {
+    id: string
+    day_of_week: number
+    start_time: string
+    end_time: string
+    slot_duration_minutes: number
+    is_active: boolean
+  }[]
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <MusaitlikAppView
+        clinicId={clinic.id}
+        clinicName={clinic.name}
+        availability={availabilityRows}
+      />
+    )
+  }
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6 flex items-center gap-3">
@@ -38,14 +60,7 @@ export default async function MusaitlikPage() {
 
       <MusaitlikForm
         clinicId={clinic.id}
-        availability={(availability ?? []) as {
-          id: string
-          day_of_week: number
-          start_time: string
-          end_time: string
-          slot_duration_minutes: number
-          is_active: boolean
-        }[]}
+        availability={availabilityRows}
       />
     </div>
   )

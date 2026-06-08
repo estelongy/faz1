@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, getMuhasebeOwnerProfile } from '@/lib/muhasebe-owner'
 import { normalizeWeek, type DayAvailability } from '../slot-utils'
 import YeniRandevuForm from './YeniRandevuForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import MuhasebeRandevuYeniAppView from '@/components/klinik-panel/MuhasebeRandevuYeniAppView'
 
 export const metadata: Metadata = {
   title: 'Yeni Randevu | Muhasebe',
@@ -30,6 +32,18 @@ export default async function YeniRandevuPage({
     .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
     .eq('owner_id', user.id)
   const week = normalizeWeek((availabilityRows ?? []) as Partial<DayAvailability>[])
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <MuhasebeRandevuYeniAppView
+        initialDate={initialDate}
+        initialTime={initialTime}
+        week={week}
+        doctorName={ownerProfile.displayName}
+      />
+    )
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { formatDuration, formatPrice, LEVEL_LABELS, AKADEMI_KATEGORILER } from '@/lib/akademi'
 import type { CoursePackage } from '@/lib/akademi'
+import { getServerFlavor } from '@/lib/server-flavor'
+import AkademiPaketlerAppView from '@/components/klinik-panel/AkademiPaketlerAppView'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,7 +23,20 @@ export default async function EgitmenPaketlerPage() {
 
   if (!clinic || clinic.approval_status !== 'approved') redirect('/klinik/panel')
 
+  const flavor = await getServerFlavor()
+  const isApp = flavor === 'esteklinikpro'
+
   if (!clinic.is_educator) {
+    if (isApp) {
+      return (
+        <AkademiPaketlerAppView
+          isEducator={false}
+          packages={[]}
+          totalEarnings={0}
+          totalSales={0}
+        />
+      )
+    }
     return (
       <div className="max-w-2xl mx-auto p-8 text-center">
         <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-4">
@@ -62,6 +77,17 @@ export default async function EgitmenPaketlerPage() {
 
   const published = packages.filter(p => p.is_published)
   const drafts = packages.filter(p => !p.is_published)
+
+  if (isApp) {
+    return (
+      <AkademiPaketlerAppView
+        isEducator={true}
+        packages={packages}
+        totalEarnings={totalEarnings}
+        totalSales={totalSales}
+      />
+    )
+  }
 
   return (
     <div className="max-w-6xl mx-auto">

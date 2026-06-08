@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { AKADEMI_KATEGORILER } from '@/lib/akademi'
 import { createPackage } from '../actions'
+import { getServerFlavor } from '@/lib/server-flavor'
+import AkademiPaketYeniAppView from '@/components/klinik-panel/AkademiPaketYeniAppView'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +23,11 @@ export default async function YeniPaketPage() {
 
   if (!clinic || clinic.approval_status !== 'approved' || !clinic.is_educator) {
     redirect('/klinik/panel/akademi/paketler')
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return <AkademiPaketYeniAppView />
   }
 
   return (

@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
 import { normalizeWeek, type DayAvailability } from '../../slot-utils'
 import RandevuEditForm from './RandevuEditForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import MuhasebeRandevuDuzenleAppView from '@/components/klinik-panel/MuhasebeRandevuDuzenleAppView'
 
 export const metadata: Metadata = {
   title: 'Randevu Düzenle | Muhasebe',
@@ -34,6 +36,19 @@ export default async function RandevuEditPage({ params }: { params: { id: string
   ])
   const patient = patientRes.data
   const week = normalizeWeek((availabilityRes.data ?? []) as Partial<DayAvailability>[])
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <MuhasebeRandevuDuzenleAppView
+        appointment={appt}
+        week={week}
+        patientName={patient?.name ?? null}
+        patientPhone={patient?.phone ?? null}
+        isRecurring={!!appt.recurrence_group_id}
+      />
+    )
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

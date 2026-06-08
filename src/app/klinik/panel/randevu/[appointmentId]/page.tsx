@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import KlinikAkisWizard from '@/components/KlinikAkisWizard'
+import RandevuDetayAppView from '@/components/klinik-panel/RandevuDetayAppView'
+import { getServerFlavor } from '@/lib/server-flavor'
 import { sumComponents, finalApprovedScore } from '@/lib/egs'
 import { klinikAnketPuani } from '@/lib/anket-sorular'
 import { scoreTetkikValues } from '@/lib/tetkik-params'
@@ -392,6 +394,27 @@ export default async function RandevuAkisPage({
     if (survey?.answers && typeof survey.answers === 'object') {
       hastaAnketCevaplari = survey.answers as Record<string, number>
     }
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <RandevuDetayAppView
+        clinicName={clinic.name}
+        patientName={(appointment as { profiles?: { full_name?: string | null } | null }).profiles?.full_name ?? 'Hasta'}
+        appointment={appointment as Parameters<typeof KlinikAkisWizard>[0]['appointment']}
+        analysis={analysis as Parameters<typeof KlinikAkisWizard>[0]['analysis']}
+        creditBalance={(clinic as { credit_balance?: number }).credit_balance ?? 0}
+        freeBalance={(clinic as { free_appointments_remaining?: number }).free_appointments_remaining ?? 0}
+        hastaAnketCevaplari={hastaAnketCevaplari}
+        onKabul={kabulEt}
+        onSaveAnket={saveAnket}
+        onSaveTetkik={saveTetkik}
+        onSaveIleriAnaliz={saveIleriAnaliz}
+        onSaveHekim={saveHekim}
+        onFinalOnay={finalOnay}
+      />
+    )
   }
 
   return (
