@@ -6,28 +6,23 @@ import ProductImageUploader from '@/components/ProductImageUploader'
 import TierBuilder from '@/components/TierBuilder'
 import { urunGuncelleAction, urunSilAction } from '../../../urun-actions'
 import type { EsteStoreCategory, PricingTiers } from '@/lib/estestore'
+import { HASTA_CATEGORIES, KLINIK_CATEGORY_GROUPS } from '@/lib/estestore-categories'
 
 const ANA_KATEGORI: { value: EsteStoreCategory; label: string }[] = [
-  { value: 'kozmetik',     label: '🧴 Kozmetik' },
-  { value: 'sarf_medikal', label: '💉 Sarf & Medikal' },
+  { value: 'kozmetik',     label: '🧴 Kozmetik (Hasta)' },
+  { value: 'sarf_medikal', label: '💉 Sarf & Medikal (Klinik)' },
 ]
 
-const ALT_KATEGORILER = [
-  { value: 'serum',       label: 'Serum' },
-  { value: 'krem',        label: 'Krem' },
-  { value: 'maske',       label: 'Maske' },
-  { value: 'temizleyici', label: 'Temizleyici' },
-  { value: 'gunes',       label: 'Güneş Koruyucu' },
-  { value: 'supplement',  label: 'Takviye' },
-  { value: 'mezoterapi',  label: 'Mezoterapi' },
-  { value: 'dolgu',       label: 'Dolgu' },
-  { value: 'botoks',      label: 'Botoks' },
-  { value: 'altin_igne',  label: 'Altın İğne' },
-  { value: 'peeling',     label: 'Peeling' },
-  { value: 'lazer',       label: 'Lazer' },
-  { value: 'cihaz',       label: 'Cihaz' },
-  { value: 'other',       label: 'Diğer' },
-]
+// Kategorinin alt-kategorileri (subcategory) hangileri olabilir?
+function subcategoriesFor(cat: EsteStoreCategory): string[] {
+  if (cat === 'kozmetik') return HASTA_CATEGORIES.map(c => c.slug)
+  return KLINIK_CATEGORY_GROUPS.flatMap(g => g.categories.map(c => c.slug))
+}
+function defaultSubFor(cat: EsteStoreCategory): string {
+  return cat === 'kozmetik'
+    ? HASTA_CATEGORIES[0].slug
+    : KLINIK_CATEGORY_GROUPS[0].categories[0].slug
+}
 
 interface Product {
   id: string
@@ -58,9 +53,24 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
+  const initialCat = normalizeCategory(product.category)
   const [name,        setName]        = useState(product.name)
-  const [category,    setCategory]    = useState<EsteStoreCategory>(normalizeCategory(product.category))
-  const [subcategory, setSubcategory] = useState(product.subcategory ?? 'serum')
+  const [category,    setCategory]    = useState<EsteStoreCategory>(initialCat)
+  // İlk subcategory: DB'deki değer kategoriye uyuyorsa kullan; uymuyorsa
+  // kategori varsayılanına düş (eski karışık veriden gelen tutarsızlığı
+  // edit ekranında otomatik onar).
+  const [subcategory, setSubcategory] = useState(() => {
+    const allowed = subcategoriesFor(initialCat)
+    const fromDb = product.subcategory ?? ''
+    return allowed.includes(fromDb) ? fromDb : defaultSubFor(initialCat)
+  })
+
+  // Ana kategori değişince subcategory'i o kategorinin varsayılanına resetle.
+  function handleCategoryChange(next: EsteStoreCategory) {
+    if (next === category) return
+    setCategory(next)
+    setSubcategory(defaultSubFor(next))
+  }
   const [description, setDescription] = useState(product.description)
   const [price,       setPrice]       = useState(product.price?.toString() ?? '')
   const [stock,       setStock]       = useState(product.stock?.toString() ?? '')
@@ -160,13 +170,13 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
 
       {/* Ana kategori */}
       <div>
-        <label className="block text-slate-400 text-sm mb-2">EsteStore EsteStore</label>
+        <label className="block text-slate-400 text-sm mb-2">Ana Kategori</label>
         <div className="grid grid-cols-2 gap-2">
           {ANA_KATEGORI.map(c => (
             <button
               key={c.value}
               type="button"
-              onClick={() => setCategory(c.value)}
+              onClick={() => handleCategoryChange(c.value)}
               className={`py-2.5 rounded-xl text-sm font-semibold border transition-all ${
                 category === c.value
                   ? 'bg-[#C9A961]/15 border-[#C9A961]/50 text-white'
@@ -177,14 +187,32 @@ export default function UrunDuzenleForm({ vendorId, product }: Props) {
             </button>
           ))}
         </div>
+        <p className="text-slate-500 text-sm mt-1.5">
+          {category === 'kozmetik'
+            ? <>Mağazada <span className="text-[#C9A961] font-semibold">EsteStore</span> kataloğunda herkes görür.</>
+            : <>Mağazada <span className="text-[#C9A961] font-semibold">Klinik Kataloğu</span> altında görünür. Yalnız klinik/sağlık-pro hesapları erişebilir.</>
+          }
+        </p>
       </div>
 
-      {/* Alt kategori */}
+      {/* Alt kategori — ana kategoriye göre listelenir */}
       <div>
         <label className="block text-slate-400 text-sm mb-1">Alt Kategori</label>
         <select value={subcategory} onChange={e => setSubcategory(e.target.value)}
           className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-[#C9A961]">
-          {ALT_KATEGORILER.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+          {category === 'kozmetik' ? (
+            HASTA_CATEGORIES.map(c => (
+              <option key={c.slug} value={c.slug}>{c.name}</option>
+            ))
+          ) : (
+            KLINIK_CATEGORY_GROUPS.map(g => (
+              <optgroup key={g.groupSlug} label={g.groupName}>
+                {g.categories.map(c => (
+                  <option key={c.slug} value={c.slug}>{c.name}</option>
+                ))}
+              </optgroup>
+            ))
+          )}
         </select>
       </div>
 
