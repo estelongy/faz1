@@ -207,6 +207,7 @@ html.is-app .min-h-screen {
    ─────────────────────────────────────────────────────────────────────────── */
 html.is-app .klinik-panel-main {
   padding: 0 !important;
+  padding-top: env(safe-area-inset-top) !important;
 }
 
 /* Yan padding'i kompakt tut — her sayfa kendi içinde gerekirse ekler. */
