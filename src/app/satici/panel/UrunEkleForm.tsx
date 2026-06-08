@@ -59,6 +59,14 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
     e.preventDefault()
     if (!name.trim()) { setError('Ürün adı zorunludur.'); return }
     if (!utsNo.trim()) { setError('ÜTS kayıt numarası zorunludur — Estelongy yalnız ÜTS kayıtlı ürün satar.'); return }
+    // Estelongy felsefesi: vitrin küratörlü. Görselsiz/açıklamasız ürün
+    // admin onay sırasına dahi giremesin — gürültü oluşturur, kullanıcıya
+    // değer vermez. Anında kullanıcıya geri bildirim.
+    if (images.length === 0) { setError('En az 1 ürün görseli zorunlu.'); return }
+    if (description.trim().length < 30) {
+      setError('Ürün açıklaması en az 30 karakter olmalı — müşterinin ne aldığını anlaması için.')
+      return
+    }
     setError(null)
     setLoading(true)
 
@@ -240,7 +248,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       {/* Açıklama */}
       <div>
-        <label className="block text-slate-400 text-sm mb-1">Açıklama <span className="text-slate-600">(isteğe bağlı)</span></label>
+        <label className="block text-slate-400 text-sm mb-1">Açıklama <span className="text-red-400">*</span> <span className="text-slate-600">(en az 30 karakter)</span></label>
         <textarea
           value={description} onChange={e => setDescription(e.target.value)}
           placeholder={productType === 'product' ? 'Ürün hakkında kısa bilgi...' : 'Ürün spesifikasyonu, içerik miktarı, kullanım notu...'}
@@ -265,7 +273,7 @@ export default function UrunEkleForm({ vendorId }: { vendorId: string }) {
 
       {/* Görseller */}
       <div>
-        <label className="block text-slate-400 text-sm mb-2">Görseller <span className="text-slate-600">(en az 1 önerilir)</span></label>
+        <label className="block text-slate-400 text-sm mb-2">Görseller <span className="text-red-400">*</span> <span className="text-slate-600">(en az 1 zorunlu)</span></label>
         <ProductImageUploader vendorId={vendorId} initialImages={images} onChange={setImages} />
       </div>
 

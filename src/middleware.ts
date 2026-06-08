@@ -48,8 +48,12 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Session refresh (cookie güncelleme)
-  const { data: { session } } = await supabase.auth.getSession()
+  // Auth doğrulama: getUser() Supabase auth server'ına çağrı yapıp token'ı
+  // gerçekten validate eder. getSession() sadece cookie'yi okur → stale
+  // localStorage/cookie tutarsızlığı durumunda "vardır" deyip yanlış yön
+  // verebilir (TOO_MANY_REDIRECTS loop sebebi).
+  const { data: { user } } = await supabase.auth.getUser()
+  const session = user ? { user } : null
 
   const { pathname } = request.nextUrl
 

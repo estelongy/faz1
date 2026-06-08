@@ -64,6 +64,15 @@ export async function urunEkleAction(input: UrunEkleInput): Promise<{ ok: boolea
   if (input.category !== 'kozmetik' && input.category !== 'sarf_medikal') {
     return { ok: false, error: 'Geçersiz kategori.' }
   }
+  // Estelongy felsefesi: vitrin küratörlü. Görselsiz/açıklamasız ürün admin
+  // onay sırasına bile girmesin (client validation bypass edilse de burada
+  // kesilir — server-of-truth).
+  if (!input.images || input.images.length === 0) {
+    return { ok: false, error: 'En az 1 ürün görseli zorunlu.' }
+  }
+  if (!input.description?.trim() || input.description.trim().length < 30) {
+    return { ok: false, error: 'Ürün açıklaması en az 30 karakter olmalı.' }
+  }
 
   // ÜTS kayıt numarası — zorunlu. Estelongy yalnız ÜTS kayıtlı ürün satar.
   const utsNo = input.utsNo?.trim() ?? ''

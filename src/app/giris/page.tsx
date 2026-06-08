@@ -48,20 +48,11 @@ function GirisInner() {
     return pathForRole(role)
   }
 
-  // Zaten girişli kullanıcı
-  useEffect(() => {
-    let cancelled = false
-    async function checkAuth() {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (cancelled || !user) return
-      const role = (user.app_metadata as Record<string, string>)?.role
-      router.replace(resolveDest(role))
-    }
-    checkAuth()
-    return () => { cancelled = true }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, searchParams, galaxy])
+  // NOT: Eskiden burada client-side checkAuth + router.replace vardı.
+  // Bu, server cookie ≠ client localStorage senaryosunda middleware ile
+  // ping-pong oluşturup TOO_MANY_REDIRECTS loop'una yol açıyordu.
+  // Artık auth otoritesi tek: middleware. Login'liysen middleware
+  // /giris'i görür görmez next'e (veya rol paneline) atar.
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
