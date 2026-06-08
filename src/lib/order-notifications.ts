@@ -19,6 +19,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { sendEmail } from '@/lib/notifications'
 import { sendInfoSms } from '@/lib/netgsm'
 import { signGuestOrderToken } from '@/lib/guest-order-token'
+import { sendPushToVendor } from '@/lib/push'
 
 // ── URL yardımcısı ────────────────────────────────────────────────────
 function baseUrl(): string {
@@ -384,6 +385,12 @@ export async function notifyVendorNewOrder(orderId: string): Promise<void> {
           itemsCount: v.itemsCount,
         }))
       }
+      // Push (FCM yapılandırılmışsa)
+      void sendPushToVendor(v.userId, {
+        title: 'Yeni Sipariş',
+        body: `${order.order_number} — ${v.itemsCount} kalem · 24 saatte kargoya ver`,
+        link: '/satici/panel/siparisler',
+      })
     }
   } catch (e) {
     console.error('[order-notifications] vendor-new-order exception:', e)
@@ -443,6 +450,11 @@ export async function notifyVendorReturnRequested(returnId: string): Promise<voi
     if (vendor.phone) {
       await sendInfoSms(vendor.phone, smsVendorReturn({ orderNumber }))
     }
+    void sendPushToVendor(vendor.user_id, {
+      title: 'Yeni İade Talebi',
+      body: `${orderNumber} · ${productName.slice(0, 50)}`,
+      link: '/satici/panel/iadeler',
+    })
   } catch (e) {
     console.error('[order-notifications] vendor-return-requested exception:', e)
   }
@@ -494,6 +506,11 @@ export async function notifyVendorNewQuestion(questionId: string): Promise<void>
     if (vendor.phone) {
       await sendInfoSms(vendor.phone, smsVendorQuestion({ productName }))
     }
+    void sendPushToVendor(vendor.user_id, {
+      title: 'Yeni Ürün Sorusu',
+      body: productName.slice(0, 60),
+      link: '/satici/panel/sorular',
+    })
   } catch (e) {
     console.error('[order-notifications] vendor-new-question exception:', e)
   }
