@@ -1,14 +1,16 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { pathForRole } from '@/lib/auth-redirect'
+import { pathForRole, loginRedirectPath } from '@/lib/auth-redirect'
 import SaticiSidebar from '@/components/SaticiSidebar'
 import AppTopSpacer from '@/components/native/AppTopSpacer'
 import { getVendorPerformance } from '@/lib/vendor-performance'
+import { getServerFlavor } from '@/lib/server-flavor'
 
 export default async function SaticiPanelLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
+  const flavor = await getServerFlavor()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/giris')
+  if (!user) redirect(loginRedirectPath({ next: '/satici/panel', flavor }))
 
   const role = (user.app_metadata as Record<string, string>)?.role
   if (role === 'admin' || role === 'clinic') redirect(pathForRole(role))

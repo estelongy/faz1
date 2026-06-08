@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
-import { notifyReturnDecision } from '@/lib/order-notifications'
+import { notifyReturnDecision, notifyVendorReturnRequested } from '@/lib/order-notifications'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-03-25.dahlia' })
 
@@ -71,6 +71,9 @@ export async function iadeTalebiOlusturAction(input: IadeInput): Promise<{ ok: b
     .single()
 
   if (error) return { ok: false, error: error.message }
+
+  // Vendor'a iade-açıldı bildirimi — fire-and-forget.
+  void notifyVendorReturnRequested(data.id)
 
   revalidatePath('/siparis')
   revalidatePath('/panel/iadelerim')

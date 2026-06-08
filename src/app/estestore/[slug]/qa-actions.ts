@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { notifyVendorNewQuestion } from '@/lib/order-notifications'
 
 export type QaResult =
   | { ok: true }
@@ -24,7 +25,7 @@ export async function askQuestionAction(productId: string, question: string): Pr
     .single()
   if (!product) return { ok: false, error: 'Ürün bulunamadı.' }
 
-  const { error } = await supabase
+  const { data: inserted, error } = await supabase
     .from('product_questions')
     .insert({
       product_id:    productId,
@@ -32,7 +33,12 @@ export async function askQuestionAction(productId: string, question: string): Pr
       asker_user_id: user.id,
       question:      q,
     })
+    .select('id')
+    .single()
   if (error) return { ok: false, error: error.message }
+
+  // Vendor'a yeni-soru bildirimi — fire-and-forget.
+  if (inserted?.id) void notifyVendorNewQuestion(inserted.id as string)
 
   revalidatePath(`/estestore/${product.slug ?? product.id}`)
   revalidatePath('/satici/panel/sorular')
