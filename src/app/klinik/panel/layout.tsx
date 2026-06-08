@@ -5,6 +5,7 @@ import KlinikSidebar from '@/components/KlinikSidebar'
 import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
 
 import SafeLink from '@/components/SafeLink'
+import AppTopSpacer from '@/components/native/AppTopSpacer'
 async function handleSignOut() {
   'use server'
   const supabase = await createClient()
@@ -92,6 +93,7 @@ export default async function KlinikPanelLayout({ children }: { children: React.
           </form>
         </header>
 
+        <AppTopSpacer />
         <main className="klinik-panel-main p-4 lg:p-8">
           {children}
         </main>
