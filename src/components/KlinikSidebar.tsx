@@ -85,12 +85,16 @@ export default function KlinikSidebar({ clinicName, totalCredit, freeCredit, isE
     } catch {}
   }, [])
 
-  // App'te alt tab bar'ın "Menü" tab'ı bu event'i fırlatır → drawer açılır.
+  // App'te alt tab bar'ın "Menü" tab'ı /klinik/panel/menu sayfasına gider
+  // (drawer event yok). Web sidebar kullanır.
   useEffect(() => {
     const open = () => setMobileOpen(true)
     window.addEventListener('klinik-sidebar-open', open)
     return () => window.removeEventListener('klinik-sidebar-open', open)
   }, [])
+
+  // App (Capacitor) içinde sidebar/drawer YOK. Hooks'tan sonra erken çıkış.
+  if (isApp) return null
 
   function togglePin() {
     setPinned(prev => {

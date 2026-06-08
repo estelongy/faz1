@@ -22,6 +22,7 @@ const TABS: Array<{ href: string; label: string; Icon: typeof Home; prefix?: str
   { href: '/klinik/panel/randevular', label: 'Randevu', Icon: Calendar, prefix: '/klinik/panel/randevular' },
   { href: '/klinik/panel/hastalarim', label: 'Hastalar', Icon: Users, prefix: '/klinik/panel/hasta' },
   { href: '/klinik/panel/mesajlar', label: 'Mesaj', Icon: MessageCircle, prefix: '/klinik/panel/mesajlar' },
+  { href: '/klinik/panel/menu', label: 'Menü', Icon: Menu, prefix: '/klinik/panel/menu' },
 ]
 
 export default function KlinikBottomNav() {
@@ -37,11 +38,6 @@ export default function KlinikBottomNav() {
   const isActive = (t: typeof TABS[number]) => {
     if (t.prefix) return pathname.startsWith(t.prefix)
     return pathname === t.href
-  }
-
-  // Sidebar drawer'ı tetiklemek için DOM event — KlinikSidebar yakalar.
-  const openMenu = () => {
-    window.dispatchEvent(new CustomEvent('klinik-sidebar-open'))
   }
 
   return (
@@ -64,15 +60,6 @@ export default function KlinikBottomNav() {
               </SafeLink>
             )
           })}
-          <button
-            type="button"
-            onClick={openMenu}
-            className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-slate-500 active:text-slate-300 transition-colors"
-            aria-label="Menü"
-          >
-            <Menu size={22} strokeWidth={2} />
-            <span className="text-[11px] font-medium leading-none">Menü</span>
-          </button>
         </div>
       </nav>
     </>

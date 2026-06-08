@@ -1,0 +1,221 @@
+import Link from 'next/link'
+import { Calendar, ClipboardCheck, Users, MessageCircle, CreditCard, BarChart3, ShoppingBag, LogOut } from 'lucide-react'
+
+interface AppointmentLite {
+  id: string
+  time: string | null
+  patientName: string
+  status: string
+}
+
+interface Props {
+  greeting: string
+  hekimFirstName: string
+  clinicName: string
+  totalCredit: number
+  todayAppts: AppointmentLite[]
+  pendingCount: number
+  inProgressCount: number
+  tomorrowApptsCount: number
+}
+
+/**
+ * EsteKlinikPRO app için /klinik/panel ev ekranı — mobil-first.
+ *
+ * Web dashboard (KlinikPanelDashboard) masaüstü 7xl ızgaralı.
+ * Bu sürüm: dikey akış, büyük dokunma alanları, status bar / safe-area + bottom-nav
+ * boşluğu hesaplı padding, çıkış görünür yerde (top bar değil burada da var).
+ *
+ * Render edilme yeri: src/app/klinik/panel/page.tsx → flavor === 'esteklinikpro' ise.
+ * Aksi halde mevcut KlinikPanelDashboard (web) render edilir.
+ */
+export default function KlinikPROAppHome({
+  greeting,
+  hekimFirstName,
+  clinicName,
+  totalCredit,
+  todayAppts,
+  pendingCount,
+  inProgressCount,
+  tomorrowApptsCount,
+}: Props) {
+  return (
+    <div
+      // -m-4 lg:-m-8: panel layout'unun main p-4/p-8'ini iptal ederek full-bleed
+      className="-m-4 lg:-m-8 min-h-screen bg-slate-950 text-white"
+      style={{
+        // NativeTopBar + safe-area zaten layout'ta var; burada ek alt boşluk
+        // KlinikBottomNav için (60 + safe-area-bottom)
+        paddingBottom: 'calc(80px + env(safe-area-inset-bottom))',
+      }}
+    >
+      {/* Karşılama */}
+      <header className="px-5 pt-4 pb-3">
+        <p className="text-xs uppercase tracking-[0.18em] text-emerald-400/80">{clinicName}</p>
+        <h1 className="mt-1 text-2xl font-bold leading-tight">
+          {greeting},<br />
+          <span className="text-emerald-300">Dr. {hekimFirstName}</span>
+        </h1>
+      </header>
+
+      {/* Üst hızlı durum şeridi — kredi + EsteStore kapısı */}
+      <div className="px-5 grid grid-cols-2 gap-2.5">
+        <Link
+          href="/klinik/panel/kredi"
+          className="flex items-center gap-2 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 active:bg-emerald-500/20 transition"
+        >
+          <CreditCard size={18} className="text-emerald-300 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-wider">Kredi</p>
+            <p className="text-white font-bold text-base leading-tight truncate">{totalCredit}</p>
+          </div>
+        </Link>
+        <Link
+          href="/estestore"
+          className="flex items-center gap-2 rounded-2xl border border-violet-500/25 bg-violet-500/10 px-4 py-3 active:bg-violet-500/20 transition"
+        >
+          <ShoppingBag size={18} className="text-violet-300 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-violet-400 text-[10px] font-bold uppercase tracking-wider">Mağaza</p>
+            <p className="text-white font-bold text-base leading-tight truncate">EsteStore</p>
+          </div>
+        </Link>
+      </div>
+
+      {/* ŞİMDİ — bekleyen + akıştaki rakamları büyük göster */}
+      <section className="mt-5 px-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Şimdi</p>
+        <Link
+          href="/klinik/panel/randevular"
+          className="block rounded-2xl border border-slate-800 bg-slate-900/60 p-4 active:bg-slate-900 transition"
+        >
+          <div className="grid grid-cols-3 gap-3">
+            <Stat label="Bugün" value={todayAppts.length} accent="text-white" />
+            <Stat label="Bekleyen" value={pendingCount} accent={pendingCount > 0 ? 'text-amber-300' : 'text-white'} />
+            <Stat label="Akışta" value={inProgressCount} accent={inProgressCount > 0 ? 'text-emerald-300' : 'text-white'} />
+          </div>
+          <p className="mt-3 text-xs text-slate-500">
+            Yarın {tomorrowApptsCount} randevu · Randevuları aç →
+          </p>
+        </Link>
+      </section>
+
+      {/* Bugün — kart listesi */}
+      <section className="mt-5 px-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Bugünün Akışı</p>
+        {todayAppts.length === 0 ? (
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-center">
+            <Calendar size={28} className="mx-auto text-slate-600" />
+            <p className="mt-2 text-sm text-slate-400">Bugün randevu yok.</p>
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {todayAppts.slice(0, 4).map((a) => (
+              <li key={a.id}>
+                <Link
+                  href={`/klinik/panel/randevular`}
+                  className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-3.5 active:bg-slate-900 transition"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
+                    <ClipboardCheck size={20} className="text-emerald-300" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium truncate">{a.patientName}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {formatTime(a.time)} · {statusLabel(a.status)}
+                    </p>
+                  </div>
+                  <span className="text-slate-500">→</span>
+                </Link>
+              </li>
+            ))}
+            {todayAppts.length > 4 && (
+              <li>
+                <Link
+                  href="/klinik/panel/randevular"
+                  className="block text-center text-xs font-medium text-emerald-400 py-2 active:text-emerald-300"
+                >
+                  +{todayAppts.length - 4} randevu — tümünü göster
+                </Link>
+              </li>
+            )}
+          </ul>
+        )}
+      </section>
+
+      {/* Hızlı eylemler */}
+      <section className="mt-5 px-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Hızlı Erişim</p>
+        <div className="grid grid-cols-2 gap-2.5">
+          <QuickAction href="/klinik/panel/hastalarim" Icon={Users} label="Hastalarım" />
+          <QuickAction href="/klinik/panel/mesajlar" Icon={MessageCircle} label="Mesajlar" />
+          <QuickAction href="/klinik/panel/musaitlik" Icon={Calendar} label="Müsaitlik" />
+          <QuickAction href="/klinik/panel/rapor" Icon={BarChart3} label="Rapor" />
+        </div>
+      </section>
+
+      {/* Çıkış — görünür yerde */}
+      <section className="mt-6 px-5">
+        <form action="/api/auth/sign-out" method="post">
+          <button
+            type="submit"
+            className="w-full flex items-center justify-center gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/5 px-4 py-3.5 text-rose-300 active:bg-rose-500/10 transition text-sm font-medium"
+          >
+            <LogOut size={16} />
+            Çıkış yap
+          </button>
+        </form>
+      </section>
+    </div>
+  )
+}
+
+function Stat({ label, value, accent }: { label: string; value: number; accent: string }) {
+  return (
+    <div>
+      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
+      <p className={`mt-1 text-2xl font-black tabular-nums ${accent}`}>{value}</p>
+    </div>
+  )
+}
+
+function QuickAction({
+  href,
+  Icon,
+  label,
+}: {
+  href: string
+  Icon: typeof Users
+  label: string
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-2.5 rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-3.5 active:bg-slate-900 transition"
+    >
+      <Icon size={18} className="text-slate-300 shrink-0" />
+      <span className="text-sm font-medium text-white">{label}</span>
+    </Link>
+  )
+}
+
+function formatTime(iso: string | null): string {
+  if (!iso) return '--:--'
+  try {
+    const d = new Date(iso)
+    return d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+  } catch {
+    return '--:--'
+  }
+}
+
+function statusLabel(status: string): string {
+  switch (status) {
+    case 'pending': return 'Onay bekliyor'
+    case 'confirmed': return 'Onaylandı'
+    case 'in_progress': return 'Akışta'
+    case 'completed': return 'Tamamlandı'
+    case 'cancelled': return 'İptal'
+    default: return status
+  }
+}

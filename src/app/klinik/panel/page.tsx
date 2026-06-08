@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import KlinikPanelDashboard from '@/components/klinik-panel/KlinikPanelDashboard'
+import KlinikPROAppHome from '@/components/klinik-panel/KlinikPROAppHome'
+import { getServerFlavor } from '@/lib/server-flavor'
 import { computeAccreditation } from '@/lib/clinic-accreditation'
 import { computeOnboarding } from '@/lib/clinic-onboarding'
 import { fetchEditorialPosts } from '@/lib/editorial-posts'
@@ -137,6 +139,29 @@ export default async function KlinikPanelPage() {
 
   const totalCredit = (clinic.credit_balance ?? 0) + (clinic.free_appointments_remaining ?? 0)
 
+  // ── EsteKlinikPRO app — mobil-first ev (web dashboard değil) ──────────
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    const apptToViewLite = (a: typeof apptsList[number]) => ({
+      id: a.id,
+      time: a.appointment_date,
+      patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
+      status: a.status as string,
+    })
+    return (
+      <KlinikPROAppHome
+        greeting={getGreeting()}
+        hekimFirstName={(profile?.full_name?.split(' ')[0]) ?? 'Hekim'}
+        clinicName={clinic.name}
+        totalCredit={totalCredit}
+        todayAppts={todayAppts.map(apptToViewLite)}
+        pendingCount={pendingAppts.length}
+        inProgressCount={inProgressAppts.length}
+        tomorrowApptsCount={tomorrowAppts.length}
+      />
+    )
+  }
+
   // Akreditasyon, onboarding, editöryel postlar, vitrini vakalar — paralel
   const [accreditation, onboarding, postsByCategory, approvedCases] = await Promise.all([
     computeAccreditation(clinic.id, supabase),
@@ -175,4 +200,12 @@ export default async function KlinikPanelPage() {
       onRejectAppointment={rejectAppointmentAction}
     />
   )
+}
+
+function getGreeting(): string {
+  const h = new Date().getHours()
+  if (h < 6) return 'İyi geceler'
+  if (h < 12) return 'Günaydın'
+  if (h < 18) return 'İyi günler'
+  return 'İyi akşamlar'
 }
