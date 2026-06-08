@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import type { ClinicReviewRow } from '@/lib/clinic-review'
 import { PrivateReplyForm, MarkReadButton } from './PrivateReplyForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import MesajlarAppView from '@/components/klinik-panel/MesajlarAppView'
 
 export const metadata: Metadata = {
   title: 'Mesajlar — Klinik Paneli',
@@ -63,6 +65,20 @@ export default async function KlinikMesajlarPage({
   ;(profiles ?? []).forEach(p => {
     profileById.set(p.id as string, (p as { full_name?: string | null }).full_name ?? 'Hasta')
   })
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <MesajlarAppView
+        rows={all}
+        filtered={filtered}
+        profileById={profileById}
+        activeFilter={f}
+        unreadCount={unreadCount}
+        repliedCount={repliedCount}
+      />
+    )
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">

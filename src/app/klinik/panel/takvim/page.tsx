@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import KlinikTakvimClient from './KlinikTakvimClient'
+import { getServerFlavor } from '@/lib/server-flavor'
+import TakvimAppView from '@/components/klinik-panel/TakvimAppView'
 
 // ── Server Actions ─────────────────────────────────────────────
 async function confirmAction(apptId: string): Promise<{ ok: boolean; error?: string }> {
@@ -95,6 +97,27 @@ export default async function KlinikTakvimPage() {
 
   const appts = (appointments ?? []) as unknown as RawAppt[]
 
+  const mappedAppts = appts.map(a => ({
+    id: a.id,
+    userId: a.user_id,
+    date: a.appointment_date ?? '',
+    status: a.status,
+    durationMinutes: a.duration_minutes ?? 30,
+    patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
+  }))
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <TakvimAppView
+        appointments={mappedAppts}
+        onConfirm={confirmAction}
+        onReject={rejectAction}
+        onNoShow={noShowAction}
+      />
+    )
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -104,14 +127,7 @@ export default async function KlinikTakvimPage() {
         </Link>
       </div>
       <KlinikTakvimClient
-        appointments={appts.map(a => ({
-          id: a.id,
-          userId: a.user_id,
-          date: a.appointment_date ?? '',
-          status: a.status,
-          durationMinutes: a.duration_minutes ?? 30,
-          patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
-        }))}
+        appointments={mappedAppts}
         onConfirm={confirmAction}
         onReject={rejectAction}
         onNoShow={noShowAction}

@@ -3,6 +3,8 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getServerFlavor } from '@/lib/server-flavor'
+import RaporAppView from '@/components/klinik-panel/RaporAppView'
 
 export const metadata: Metadata = { title: 'Klinik Raporu' }
 
@@ -147,6 +149,24 @@ export default async function KlinikRaporPage() {
   // Kabul oranı (completed / (completed + cancelled + noShow))
   const finalized = current.completed + current.cancelled + current.noShow
   const acceptRate = finalized > 0 ? (current.completed / finalized) * 100 : 0
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    const totalCredits =
+      ((clinic as { credit_balance?: number }).credit_balance ?? 0) +
+      ((clinic as { free_appointments_remaining?: number }).free_appointments_remaining ?? 0)
+    return (
+      <RaporAppView
+        clinicName={clinic.name}
+        totalCredits={totalCredits}
+        months={months}
+        current={current}
+        previous={previous}
+        acceptRate={acceptRate}
+        finalized={finalized}
+      />
+    )
+  }
 
   return (
     <div className="max-w-6xl mx-auto">

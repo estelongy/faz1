@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import KrediSatinAl from './KrediSatinAl'
+import { getServerFlavor } from '@/lib/server-flavor'
+import KrediAppView, { type CreditTxn } from '@/components/klinik-panel/KrediAppView'
 
 export const metadata: Metadata = {
   title: 'Kredi Yönetimi',
@@ -51,6 +53,23 @@ export default async function KrediPage({
 
   const totalKullanim = (transactions ?? []).filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0)
   const totalYukleme  = (transactions ?? []).filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0)
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    return (
+      <KrediAppView
+        clinicName={clinic.name}
+        creditBalance={clinic.credit_balance ?? 0}
+        freeRemaining={clinic.free_appointments_remaining ?? 0}
+        totalCredits={totalCredits}
+        totalKullanim={totalKullanim}
+        totalYukleme={totalYukleme}
+        transactions={(transactions ?? []) as CreditTxn[]}
+        success={params.success === '1'}
+        cancelled={params.cancelled === '1'}
+      />
+    )
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

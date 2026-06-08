@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getServerFlavor } from '@/lib/server-flavor'
+import HastalarimAppView, { type HastaItem } from '@/components/klinik-panel/HastalarimAppView'
 
 export const metadata: Metadata = {
   title: 'Hastalarım — Klinik',
@@ -89,6 +91,27 @@ export default async function HastalarimPage() {
     const bd = b.last_visit ? new Date(b.last_visit).getTime() : 0
     return bd - ad
   })
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'esteklinikpro') {
+    const appHastalar: HastaItem[] = hastalar.map(h => {
+      const profile = profileMap.get(h.user_id) as
+        | { full_name?: string | null; birth_year?: number | null }
+        | undefined
+      const score = scoreMap.get(h.user_id)
+      return {
+        userId: h.user_id,
+        fullName: profile?.full_name ?? 'İsimsiz',
+        birthYear: profile?.birth_year ?? null,
+        lastVisit: h.last_visit,
+        totalAppts: h.total_appts,
+        completed: h.completed,
+        score: score?.score ?? null,
+        isFinalScore: !!score?.isFinal,
+      }
+    })
+    return <HastalarimAppView clinicName={clinic.name} hastalar={appHastalar} />
+  }
 
   function scoreColorClass(s: number) {
     if (s >= 90) return 'text-cyan-400'
