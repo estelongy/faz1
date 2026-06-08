@@ -6,6 +6,8 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import SiparisKartlari from './SiparisKartlari'
+import { getServerFlavor } from '@/lib/server-flavor'
+import SiparislerAppView from '@/components/satici-panel/SiparislerAppView'
 
 export const metadata: Metadata = { title: 'Siparişlerim — İş Ortağı' }
 
@@ -65,6 +67,19 @@ export default async function SaticiSiparislerPage({
       const s = c.fulfillment_status as keyof typeof statusCounts
       if (s in statusCounts) statusCounts[s]++
     }
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <SiparislerAppView
+        companyName={vendor.company_name ?? 'İş Ortağı'}
+        items={(items ?? []) as unknown as Parameters<typeof SiparislerAppView>[0]['items']}
+        hasShippingSettings={hasShippingSettings}
+        durum={durum}
+        statusCounts={statusCounts}
+      />
+    )
   }
 
   return (

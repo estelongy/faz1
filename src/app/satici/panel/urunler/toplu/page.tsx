@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import TopluYukleClient from './TopluYukleClient'
+import { getServerFlavor } from '@/lib/server-flavor'
+import UrunTopluAppView from '@/components/satici-panel/UrunTopluAppView'
 
 export const metadata: Metadata = { title: 'Toplu Ürün Yükle — İş Ortağı' }
 
@@ -33,6 +35,11 @@ export default async function TopluUrunYuklemeSayfasi() {
         </div>
       </main>
     )
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return <UrunTopluAppView />
   }
 
   return (

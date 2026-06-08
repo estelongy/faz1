@@ -5,6 +5,8 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import UrunDuzenleForm from './UrunDuzenleForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import UrunDuzenleAppView from '@/components/satici-panel/UrunDuzenleAppView'
 
 export const metadata: Metadata = { title: 'Ürün Düzenle — İş Ortağı Paneli' }
 
@@ -32,6 +34,26 @@ export default async function UrunDuzenlePage({ params }: { params: Promise<{ id
     .single()
   if (!product) notFound()
 
+  const productInit = {
+    id:            product.id,
+    name:          product.name,
+    category:      product.category ?? 'kozmetik',
+    subcategory:   product.subcategory,
+    description:   product.description ?? '',
+    price:         product.price,
+    stock:         product.stock,
+    ingredients:   product.ingredients ?? [],
+    images:        product.images ?? [],
+    is_active:     product.is_active ?? false,
+    approval_status: product.approval_status,
+    pricing_tiers: Array.isArray(product.pricing_tiers) ? product.pricing_tiers : [],
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return <UrunDuzenleAppView vendorId={vendor.id} product={productInit} />
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <div className="max-w-3xl mx-auto px-4 pt-16 lg:pt-10 pb-16">
@@ -44,23 +66,7 @@ export default async function UrunDuzenlePage({ params }: { params: Promise<{ id
           ⚠ İçerik değişikliği (ad, kategori, açıklama, görseller, içerikler) yaptığında ürün yeniden admin onayına düşer ve mağazada geçici olarak pasif olur.
         </div>
 
-        <UrunDuzenleForm
-          vendorId={vendor.id}
-          product={{
-            id:            product.id,
-            name:          product.name,
-            category:      product.category ?? 'kozmetik',
-            subcategory:   product.subcategory,
-            description:   product.description ?? '',
-            price:         product.price,
-            stock:         product.stock,
-            ingredients:   product.ingredients ?? [],
-            images:        product.images ?? [],
-            is_active:     product.is_active ?? false,
-            approval_status: product.approval_status,
-            pricing_tiers: Array.isArray(product.pricing_tiers) ? product.pricing_tiers : [],
-          }}
-        />
+        <UrunDuzenleForm vendorId={vendor.id} product={productInit} />
       </div>
     </main>
   )

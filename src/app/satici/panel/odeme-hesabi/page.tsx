@@ -5,6 +5,8 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import OdemeHesabiPanel from './OdemeHesabiPanel'
+import { getServerFlavor } from '@/lib/server-flavor'
+import OdemeHesabiAppView from '@/components/satici-panel/OdemeHesabiAppView'
 
 export const metadata: Metadata = { title: 'Ödeme Hesabı — İş Ortağı' }
 
@@ -28,6 +30,26 @@ export default async function OdemeHesabiPage({
     .single()
   if (!vendor || vendor.approval_status !== 'approved') notFound()
 
+  const initial = {
+    companyName: vendor.company_name,
+    hasAccount: !!vendor.stripe_account_id,
+    chargesEnabled: vendor.stripe_charges_enabled ?? false,
+    payoutsEnabled: vendor.stripe_payouts_enabled ?? false,
+    detailsSubmitted: vendor.stripe_details_submitted ?? false,
+    commissionRate: Number(vendor.commission_rate ?? 0.15),
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <OdemeHesabiAppView
+        initial={initial}
+        flashOk={sp.onboarded === '1'}
+        flashRefresh={sp.refresh === '1'}
+      />
+    )
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <div className="max-w-3xl mx-auto px-4 pt-16 lg:pt-10 pb-16">
@@ -50,16 +72,7 @@ export default async function OdemeHesabiPage({
           </div>
         )}
 
-        <OdemeHesabiPanel
-          initial={{
-            companyName: vendor.company_name,
-            hasAccount: !!vendor.stripe_account_id,
-            chargesEnabled: vendor.stripe_charges_enabled ?? false,
-            payoutsEnabled: vendor.stripe_payouts_enabled ?? false,
-            detailsSubmitted: vendor.stripe_details_submitted ?? false,
-            commissionRate: Number(vendor.commission_rate ?? 0.15),
-          }}
-        />
+        <OdemeHesabiPanel initial={initial} />
       </div>
     </main>
   )

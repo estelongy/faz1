@@ -5,6 +5,8 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import HesabimClient from './HesabimClient'
+import { getServerFlavor } from '@/lib/server-flavor'
+import HesabimAppView from '@/components/satici-panel/HesabimAppView'
 
 export const metadata: Metadata = { title: 'Hesabım — İş Ortağı' }
 
@@ -24,6 +26,17 @@ export default async function SaticiHesabimPage() {
   if (!vendor || vendor.approval_status !== 'approved') notFound()
 
   const phone = (user.phone || vendor.phone || null) as string | null
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <HesabimAppView
+        email={user.email ?? ''}
+        phone={phone}
+        companyName={vendor.company_name ?? ''}
+      />
+    )
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">

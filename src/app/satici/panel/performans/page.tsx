@@ -5,6 +5,8 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import { getVendorPerformance, type MetricScore } from '@/lib/vendor-performance'
+import { getServerFlavor } from '@/lib/server-flavor'
+import PerformansAppView from '@/components/satici-panel/PerformansAppView'
 
 export const metadata: Metadata = { title: 'Performans Skoru — İş Ortağı' }
 
@@ -43,6 +45,19 @@ export default async function PerformansSayfasi() {
 
   const perf = await getVendorPerformance(vendor.id)
   const colors = letterColor(perf.letter)
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <PerformansAppView
+        letter={perf.letter}
+        totalScore={perf.totalScore}
+        totalOrders={perf.totalOrders}
+        hasEnoughData={perf.hasEnoughData}
+        metrics={perf.metrics}
+      />
+    )
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-slate-200">

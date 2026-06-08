@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import { getVendorStats } from '@/lib/vendor-stats'
 import VendorSalesChart from '@/components/VendorSalesChart'
+import { getServerFlavor } from '@/lib/server-flavor'
+import KazancAppView, { type AylikOzet } from '@/components/satici-panel/KazancAppView'
 
 export const metadata: Metadata = { title: 'Kazançlarım — İş Ortağı' }
 
@@ -84,6 +86,32 @@ export default async function KazancPage() {
 
   const commissionPct = Number(vendor.commission_rate ?? 0.15) * 100
   const stats = await getVendorStats(vendor.id)
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    const monthSummaries: AylikOzet[] = months.map(([ym, m]) => ({
+      ym,
+      label: formatMonth(ym),
+      gross: m.gross,
+      commis: m.commis,
+      net: m.net,
+      count: m.count,
+    }))
+    return (
+      <KazancAppView
+        companyName={vendor.company_name ?? 'İş Ortağı'}
+        commissionPct={commissionPct}
+        totalGross={totalGross}
+        totalCommis={totalCommis}
+        deliveredNet={deliveredNet}
+        pendingNet={pendingNet}
+        lineCount={lines.length}
+        months={monthSummaries}
+        payoutsEnabled={!!vendor.stripe_payouts_enabled}
+        grossChangePct={stats.grossChangePct}
+      />
+    )
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">

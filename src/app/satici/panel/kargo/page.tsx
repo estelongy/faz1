@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import KargoAyarForm from './KargoAyarForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import KargoAppView from '@/components/satici-panel/KargoAppView'
 
 export const metadata: Metadata = { title: 'Kargo Ayarları — İş Ortağı' }
 
@@ -61,6 +63,18 @@ export default async function KargoAyarSayfasi() {
     .select('*')
     .eq('vendor_id', vendor.id)
     .maybeSingle()
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <KargoAppView
+        carriers={CARRIERS}
+        companyName={vendor.company_name ?? ''}
+        companyAddress={vendor.company_address ?? ''}
+        settings={settings ?? null}
+      />
+    )
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-slate-200">

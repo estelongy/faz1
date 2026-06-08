@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import IadeKararForm from './IadeKararForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import IadelerAppView, { type IadeKalem } from '@/components/satici-panel/IadelerAppView'
 
 export const metadata: Metadata = { title: 'İade Talepleri — İş Ortağı Paneli' }
 
@@ -43,6 +45,30 @@ export default async function SaticiIadelerPage({
   if (durum && durum !== 'tumu') query = query.eq('status', durum)
 
   const { data: returns } = await query
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    const list: IadeKalem[] = (returns ?? []).map(ret => {
+      const item = ret.order_items as unknown as {
+        product_snapshot?: { name?: string }
+        line_total?: number
+        orders?: { order_number?: string }
+      } | null
+      return {
+        id: ret.id as string,
+        status: ret.status as string,
+        reason: ret.reason as string,
+        description: (ret.description as string | null) ?? null,
+        resolver_note: (ret.resolver_note as string | null) ?? null,
+        created_at: ret.created_at as string,
+        refund_amount: ret.refund_amount != null ? Number(ret.refund_amount) : null,
+        product_name: item?.product_snapshot?.name ?? 'Ürün',
+        order_number: item?.orders?.order_number ?? null,
+        line_total: item?.line_total != null ? Number(item.line_total) : null,
+      }
+    })
+    return <IadelerAppView items={list} durum={durum} />
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">

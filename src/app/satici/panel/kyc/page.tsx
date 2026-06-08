@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import KycForm from './KycForm'
+import { getServerFlavor } from '@/lib/server-flavor'
+import KYCAppView from '@/components/satici-panel/KYCAppView'
 
 export const metadata: Metadata = { title: 'KYC Onay — İş Ortağı' }
 
@@ -50,6 +52,36 @@ export default async function VendorKycPage({
 
   const sp = await searchParams
   const justSubmitted = sp.ok === '1'
+
+  const kycInitial = {
+    taxNumber: vendor.tax_number,
+    tradeRegistryNo: vendor.trade_registry_no,
+    mersisNo: vendor.mersis_no,
+    kepAddress: vendor.kep_address,
+    companyAddress: vendor.company_address,
+    sellsMedicalProducts: vendor.sells_medical_products,
+    iban: vendor.iban,
+    ibanHolderName: vendor.iban_holder_name,
+    bankName: vendor.bank_name,
+    taxCertificatePath: vendor.tax_certificate_url,
+    contractSignedPath: vendor.contract_signed_url,
+    itsCertificatePath: vendor.its_certificate_url,
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <KYCAppView
+        vendorId={vendor.id}
+        status={vendor.kyc_status as string}
+        initial={kycInitial}
+        reviewNote={vendor.kyc_review_note}
+        submittedAt={vendor.kyc_submitted_at}
+        reviewedAt={vendor.kyc_reviewed_at}
+        justSubmitted={justSubmitted}
+      />
+    )
+  }
 
   // ── Onaylı durumda salt-okunur özet göster ──
   if (vendor.kyc_status === 'approved') {

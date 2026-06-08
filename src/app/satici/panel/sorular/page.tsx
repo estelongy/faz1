@@ -6,6 +6,8 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import SoruKartlari from './SoruKartlari'
+import { getServerFlavor } from '@/lib/server-flavor'
+import SorularAppView from '@/components/satici-panel/SorularAppView'
 
 export const metadata: Metadata = { title: 'Müşteri Soruları — İş Ortağı' }
 
@@ -70,6 +72,18 @@ export default async function SaticiSorularPage({
     .eq('vendor_id', vendor.id)
   const pendingCount = (allCounts ?? []).filter(q => !q.answer).length
   const answeredCount = (allCounts ?? []).filter(q => q.answer).length
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <SorularAppView
+        questions={questions}
+        durum={durum}
+        pendingCount={pendingCount}
+        answeredCount={answeredCount}
+      />
+    )
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">

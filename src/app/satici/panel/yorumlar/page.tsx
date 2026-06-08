@@ -6,6 +6,8 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import YorumKartlari from './YorumKartlari'
+import { getServerFlavor } from '@/lib/server-flavor'
+import YorumlarAppView from '@/components/satici-panel/YorumlarAppView'
 
 export const metadata: Metadata = { title: 'Müşteri Yorumları — İş Ortağı' }
 
@@ -85,6 +87,18 @@ export default async function SaticiYorumlarPage({
     .in('product_id', productIds)
   const pendingCount = (allCount ?? []).filter(r => !r.vendor_response).length
   const answeredCount = (allCount ?? []).filter(r => r.vendor_response).length
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <YorumlarAppView
+        reviews={items}
+        durum={durum}
+        pendingCount={pendingCount}
+        answeredCount={answeredCount}
+      />
+    )
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">

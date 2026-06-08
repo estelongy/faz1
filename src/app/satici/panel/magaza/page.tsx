@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import MagazaEditor from './MagazaEditor'
+import { getServerFlavor } from '@/lib/server-flavor'
+import MagazaAppView from '@/components/satici-panel/MagazaAppView'
 
 export const metadata: Metadata = { title: 'Mağaza Vitrini — İş Ortağı' }
 
@@ -51,6 +53,23 @@ export default async function MagazaSayfasi() {
           <Link href="/satici/panel" className="inline-block mt-6 text-[#C9A961] hover:text-[#D4B872] text-sm font-semibold">← Panele dön</Link>
         </div>
       </main>
+    )
+  }
+
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    return (
+      <MagazaAppView
+        vendorId={vendor.id}
+        companyName={vendor.company_name ?? ''}
+        initial={{
+          logo_url: vendor.logo_url ?? null,
+          banner_url: vendor.banner_url ?? null,
+          tagline: vendor.tagline ?? '',
+          about_text: vendor.about_text ?? '',
+          social_links: (vendor.social_links as Record<string, string>) ?? {},
+        }}
+      />
     )
   }
 
