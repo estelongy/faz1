@@ -71,7 +71,7 @@ export default function UrunlerAppView({
 
       <section className="px-5 mt-3 grid grid-cols-2 gap-2.5">
         <Link
-          href="/satici/panel"
+          href="/satici/panel/urunler/ekle"
           className="flex items-center gap-2 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 active:bg-amber-500/20 transition"
         >
           <Plus size={16} className="text-amber-300 shrink-0" />
