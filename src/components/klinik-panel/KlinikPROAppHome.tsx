@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Calendar, ClipboardCheck, Users, MessageCircle, CreditCard, BarChart3, ShoppingBag } from 'lucide-react'
+import { Calendar, ClipboardCheck, Users, MessageCircle, CreditCard, BarChart3, ShoppingBag, Clock } from 'lucide-react'
 
 interface AppointmentLite {
   id: string
@@ -57,6 +57,24 @@ export default function KlinikPROAppHome({
           <span className="text-emerald-300">Dr. {hekimFirstName}</span>
         </h1>
       </header>
+
+      {/* Çekirdek aksiyon — Müsaitlik aç. Hekim sabah app'i açar, ilk niyet:
+          "bugün/yarın boş saatlerimi düzenle". En sık aksiyon → en görünür yer. */}
+      <div className="px-5 mb-3">
+        <Link
+          href="/klinik/panel/musaitlik"
+          className="flex items-center gap-3 rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 px-4 py-3.5 active:from-emerald-500/30 active:to-emerald-500/15 transition"
+        >
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
+            <Clock size={20} className="text-emerald-300" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-semibold text-base leading-tight">Müsaitlik aç / kapa</p>
+            <p className="text-xs text-emerald-300/80 mt-0.5">Bugün / yarın boş saatlerini düzenle</p>
+          </div>
+          <span className="text-emerald-300">→</span>
+        </Link>
+      </div>
 
       {/* Üst hızlı durum şeridi — kredi + EsteStore kapısı */}
       <div className="px-5 grid grid-cols-2 gap-2.5">

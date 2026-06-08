@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Package, Truck, Star, ShoppingBag, Wallet, BarChart3, Store } from 'lucide-react'
+import { Package, Truck, Star, ShoppingBag, Wallet, BarChart3, Store, Plus } from 'lucide-react'
 
 interface Props {
   greeting: string
@@ -49,6 +49,24 @@ export default function SaticiPROAppHome({
           <span className="text-amber-300">Hoş geldin, {vendorFirstName}</span>
         </h1>
       </header>
+
+      {/* Çekirdek aksiyon — Yeni Ürün. Vendor app'i açar, ilk niyet ürün
+          eklemek (özellikle başlangıçta). En sık aksiyon → en görünür yer. */}
+      <div className="px-5 mb-3">
+        <Link
+          href="/satici/panel/urunler/ekle"
+          className="flex items-center gap-3 rounded-2xl border border-amber-400/30 bg-gradient-to-br from-amber-500/20 to-amber-500/10 px-4 py-3.5 active:from-amber-500/30 active:to-amber-500/15 transition"
+        >
+          <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center shrink-0">
+            <Plus size={20} className="text-amber-300" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-semibold text-base leading-tight">Yeni Ürün ekle</p>
+            <p className="text-xs text-amber-300/80 mt-0.5">Onay sonrası mağazada yayınlanır</p>
+          </div>
+          <span className="text-amber-300">→</span>
+        </Link>
+      </div>
 
       {/* Üst hızlı durum şeridi — kazanç + performans */}
       <div className="px-5 grid grid-cols-2 gap-2.5">
