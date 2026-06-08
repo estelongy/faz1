@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { pathForRole } from '@/lib/auth-redirect'
 import SaticiSidebar from '@/components/SaticiSidebar'
+import AppTopSpacer from '@/components/native/AppTopSpacer'
 import { getVendorPerformance } from '@/lib/vendor-performance'
 
 export default async function SaticiPanelLayout({ children }: { children: React.ReactNode }) {
@@ -22,7 +23,12 @@ export default async function SaticiPanelLayout({ children }: { children: React.
   const showSidebar = !!(vendor && vendor.approval_status === 'approved')
 
   if (!showSidebar) {
-    return <>{children}</>
+    return (
+      <>
+        <AppTopSpacer />
+        {children}
+      </>
+    )
   }
 
   // Badge sayıları — paralel
@@ -79,7 +85,8 @@ export default async function SaticiPanelLayout({ children }: { children: React.
         counts={counts}
       />
       <div className="lg:pl-[72px]">
-        {children}
+        <AppTopSpacer />
+        <main className="satici-panel-main p-4 lg:p-8">{children}</main>
       </div>
     </div>
   )

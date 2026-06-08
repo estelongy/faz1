@@ -50,6 +50,9 @@ export default function SaticiSidebar({ companyName, approvalStatus, performance
     } catch {}
   }, [])
 
+  // App (Capacitor) içinde sidebar/drawer YOK. Hooks'tan sonra erken çıkış.
+  if (isApp) return null
+
   function togglePin() {
     setPinned(prev => {
       const next = !prev

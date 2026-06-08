@@ -7,6 +7,7 @@ import { GalaxyTransitionProvider } from '@/components/GalaxyTransition'
 import AppBottomNav from '@/components/native/AppBottomNav'
 import NativeTopBar from '@/components/native/NativeTopBar'
 import KlinikBottomNav from '@/components/native/KlinikBottomNav'
+import SaticiBottomNav from '@/components/native/SaticiBottomNav'
 import NativeAppClass from '@/components/native/NativeAppClass'
 import AppFlavorRoleGate from '@/components/native/AppFlavorRoleGate'
 
@@ -139,7 +140,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var c=window.Capacitor;var ua=navigator.userAgent;if((c&&c.isNativePlatform&&c.isNativePlatform())||/EstelongyApp|Capacitor/i.test(ua)){var d=document.documentElement;d.classList.add('is-app');var m=ua.match(/EstelongyApp\\/([a-z]+)/i);var f=(m&&/^(biyoage|esteklinik|estestore|esteklinikpro)$/i.test(m[1]))?m[1].toLowerCase():'biyoage';d.classList.add('flavor-'+f)}}catch(e){}",
+              "try{var c=window.Capacitor;var ua=navigator.userAgent;if((c&&c.isNativePlatform&&c.isNativePlatform())||/EstelongyApp|Capacitor/i.test(ua)){var d=document.documentElement;d.classList.add('is-app');var m=ua.match(/EstelongyApp\\/([a-z]+)/i);var f=(m&&/^(biyoage|esteklinik|estestore|esteklinikpro|estestorepro)$/i.test(m[1]))?m[1].toLowerCase():'biyoage';d.classList.add('flavor-'+f)}}catch(e){}",
           }}
         />
         <script
@@ -160,6 +161,7 @@ export default function RootLayout({
             {children}
             <AppBottomNav />
             <KlinikBottomNav />
+            <SaticiBottomNav />
             <AppFlavorRoleGate />
           </GalaxyTransitionProvider>
         </AuthStatusProvider>

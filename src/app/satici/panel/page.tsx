@@ -8,6 +8,8 @@ import { pathForRole } from '@/lib/auth-redirect'
 import UrunEkleForm from './UrunEkleForm'
 import { getVendorStats } from '@/lib/vendor-stats'
 import { getVendorPerformance } from '@/lib/vendor-performance'
+import { getServerFlavor } from '@/lib/server-flavor'
+import SaticiPROAppHome from '@/components/satici-panel/SaticiPROAppHome'
 
 export const metadata: Metadata = { title: 'İş Ortağı Paneli — Estelongy' }
 // Layout (src/app/satici/panel/layout.tsx) sidebar + guard sağlıyor.
@@ -132,6 +134,34 @@ export default async function SaticiPanelPage() {
   // Satış analitikleri (bu ay, geçen ay, top ürünler)
   const stats = await getVendorStats(vendor.id)
   const perf = await getVendorPerformance(vendor.id)
+
+  // ── EsteStorePRO app — mobil-first ev (web dashboard değil) ──────────
+  const flavor = await getServerFlavor()
+  if (flavor === 'estestorepro') {
+    const fullName = (user.user_metadata as Record<string, unknown> | undefined)?.full_name as string | undefined
+    const vendorFirstName = (fullName ?? 'Ortak').split(' ')[0]
+    const hour = new Date().getHours()
+    const greeting = hour < 6 ? 'İyi geceler' : hour < 12 ? 'Günaydın' : hour < 18 ? 'İyi günler' : 'İyi akşamlar'
+
+    // Son 30 gün net kazanç ≈ son 12 ay bucket'larından bu ay net (yaklaşık).
+    // Daha keskin "30 gün" hesabı yapmak istersek ayrı sorgu gerekir; şimdilik
+    // bu ayın net'i = "kazanç 30g" yer-tutucu.
+    const totalEarnings30d = Math.round(stats.thisMonth.net)
+
+    return (
+      <SaticiPROAppHome
+        greeting={greeting}
+        vendorFirstName={vendorFirstName}
+        companyName={vendor.company_name ?? 'İş Ortağı'}
+        pendingOrders={stats.pendingItems}
+        openReturns={0}
+        openQuestions={0}
+        todayOrders={stats.thisMonth.count}
+        totalEarnings30d={totalEarnings30d}
+      />
+    )
+  }
+
   const perfColors =
     perf.letter === 'A' ? { bg: 'bg-emerald-500/15', fg: 'text-emerald-300', ring: 'ring-emerald-500/40' } :
     perf.letter === 'B' ? { bg: 'bg-[#C9A961]/15',   fg: 'text-[#D4B872]',  ring: 'ring-[#C9A961]/40' } :

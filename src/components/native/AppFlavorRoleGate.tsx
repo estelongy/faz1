@@ -20,7 +20,11 @@ export default async function AppFlavorRoleGate() {
   const flavor = await getServerFlavor()
 
   // Hızlı çıkış: kapı potansiyeli olan flavor'lar dışındaysa hiç sorgu atma.
-  if (flavor !== 'esteklinikpro' && flavor !== 'esteklinik') return null
+  if (
+    flavor !== 'esteklinikpro' &&
+    flavor !== 'esteklinik' &&
+    flavor !== 'estestorepro'
+  ) return null
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -33,11 +37,35 @@ export default async function AppFlavorRoleGate() {
     .maybeSingle()
   const isClinic = !!clinic
 
+  // EsteStorePRO için vendor kontrolü
+  let isVendor = false
+  if (flavor === 'estestorepro') {
+    const { data: vendor } = await supabase
+      .from('vendors')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    isVendor = !!vendor
+  }
+
   // Eşleşme — kapı yok
   if (flavor === 'esteklinikpro' && isClinic) return null
   if (flavor === 'esteklinik' && !isClinic) return null
+  if (flavor === 'estestorepro' && isVendor) return null
 
   // Mismatch — kapı göster
+  if (flavor === 'estestorepro' && !isVendor) {
+    return (
+      <GateOverlay
+        eyebrow="EsteStorePRO"
+        title="Bu app satıcılar için"
+        body="EsteStorePRO marketplace satıcıları (vendor) için tasarlandı. Tüketici deneyimi için Estelongy app'lerini indirebilirsin."
+        primary={{ label: 'BiyoAGE app — Play Store', href: 'https://play.google.com/store/apps/details?id=com.estelongy.biyoage' }}
+        secondary={{ label: 'EsteStore app — Play Store', href: 'https://play.google.com/store/apps/details?id=com.estelongy.estestore' }}
+        tertiary={{ label: 'Çıkış yap', formAction: '/api/auth/sign-out' }}
+      />
+    )
+  }
   if (flavor === 'esteklinikpro' && !isClinic) {
     return (
       <GateOverlay

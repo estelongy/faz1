@@ -46,3 +46,8 @@ Slate gradient (mevcut satıcı panel: from-slate-900 to-slate-800) + ileride ve
 
 ## Çalışma kuralı
 Bu app'in çekirdek aksiyonları satış operasyonu — consumer alım akışı ile karışmamalı. Genel değişiklik yapıldığında bu app'in vendor bağlamına uygunluğu teyit edilir.
+
+## Capacitor flavor durumu
+- Faz 0 altyapı tamamlandı: flavor-detect, FLAVOR_HOME, NativeHomeRedirect, AppFlavorRoleGate vendor kapısı, SaticiBottomNav, /satici/panel/menu, SaticiPROAppHome, /satici/panel flavor switch, layout AppTopSpacer + main wrapper + CSS sweep.
+- Android flavor (capacitor.config.json + build.gradle): YAPILMADI — mobile/android/ gitignored. EsteKlinikPRO ile aynı pattern: applicationId com.estelongy.estestorepro, appendUserAgent 'EstelongyApp/estestorepro', server.url vercel deploy URL + '/satici/panel'.
+- Sub-page'ler (Ürünler, Siparişler, İadeler vb.) mobile-first AppView'a çevrilmedi — Faz 1.

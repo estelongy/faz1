@@ -230,6 +230,22 @@ html.is-app .klinik-panel-main {
   padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
 }
 
+/* EsteStorePRO app — satıcı panel sayfaları için aynı full-bleed + alt-nav
+   boşluk paketi. KlinikPRO pattern'inin VENDOR karşılığı. */
+html.is-app .satici-panel-main { padding: 0 !important; }
+html.is-app .satici-panel-main > * > .max-w-7xl,
+html.is-app .satici-panel-main > * > .max-w-6xl,
+html.is-app .satici-panel-main > * > .max-w-5xl,
+html.is-app .satici-panel-main > * > .max-w-4xl,
+html.is-app .satici-panel-main .max-w-7xl,
+html.is-app .satici-panel-main .max-w-6xl,
+html.is-app .satici-panel-main .max-w-5xl,
+html.is-app .satici-panel-main .max-w-4xl {
+  max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important;
+  padding-left: 16px !important; padding-right: 16px !important;
+}
+html.is-app .satici-panel-main { padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important; }
+
 @layer base {
   :root {
     --background: oklch(1 0 0);
