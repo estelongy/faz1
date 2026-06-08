@@ -94,22 +94,32 @@ export default function SaticiPROAppHome({
         </Link>
       </div>
 
-      {/* ŞİMDİ — bekleyen + akış rakamları büyük göster */}
+      {/* ŞİMDİ — 3 ayrı tıklanabilir kart, her biri ilgili filtreye gider */}
       <section className="mt-5 px-5">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Şimdi</p>
-        <Link
-          href="/satici/panel/siparisler"
-          className="block rounded-2xl border border-slate-800 bg-slate-900/60 p-4 active:bg-slate-900 transition"
-        >
-          <div className="grid grid-cols-3 gap-3">
-            <Stat label="Bugün" value={todayOrders} accent="text-white" />
-            <Stat label="Bekleyen" value={pendingOrders} accent={pendingOrders > 0 ? 'text-amber-300' : 'text-white'} />
-            <Stat label="Akışta" value={openReturns + openQuestions} accent={(openReturns + openQuestions) > 0 ? 'text-emerald-300' : 'text-white'} />
-          </div>
-          <p className="mt-3 text-xs text-slate-500">
-            {openReturns} iade · {openQuestions} soru · Siparişleri aç →
-          </p>
-        </Link>
+        <div className="grid grid-cols-3 gap-2.5">
+          <StatLink
+            href="/satici/panel/siparisler"
+            label="Bugün"
+            value={todayOrders}
+            accent="text-white"
+          />
+          <StatLink
+            href="/satici/panel/siparisler?durum=pending"
+            label="Bekleyen"
+            value={pendingOrders}
+            accent={pendingOrders > 0 ? 'text-amber-300' : 'text-white'}
+          />
+          <StatLink
+            href="/satici/panel/iadeler"
+            label="Akışta"
+            value={openReturns + openQuestions}
+            accent={(openReturns + openQuestions) > 0 ? 'text-emerald-300' : 'text-white'}
+          />
+        </div>
+        <p className="mt-2 px-1 text-xs text-slate-500">
+          {openReturns} iade · {openQuestions} soru
+        </p>
       </section>
 
       {/* Hızlı eylemler */}
@@ -141,12 +151,15 @@ export default function SaticiPROAppHome({
   )
 }
 
-function Stat({ label, value, accent }: { label: string; value: number; accent: string }) {
+function StatLink({ href, label, value, accent }: { href: string; label: string; value: number; accent: string }) {
   return (
-    <div>
+    <Link
+      href={href}
+      className="block rounded-2xl border border-slate-800 bg-slate-900/60 px-3 py-3 active:bg-slate-900 transition"
+    >
       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
       <p className={`mt-1 text-2xl font-black tabular-nums ${accent}`}>{value}</p>
-    </div>
+    </Link>
   )
 }
 

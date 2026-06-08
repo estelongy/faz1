@@ -121,7 +121,47 @@ export default async function SaticiPanelPage() {
     notFound()
   }
 
-  // Ürünleri getir
+  // ── EsteStorePRO app — mobil-first ev (web dashboard değil) ──────────
+  // PRO branch erken ayrılır: products listesi + perf metrikleri burada
+  // kullanılmaz, web dashboard sorgularını boşa çekmeyelim (yavaşlık fix).
+  if (flavor === 'estestorepro') {
+    const [stats, openReturns, openQuestions] = await Promise.all([
+      getVendorStats(vendor.id),
+      supabase
+        .from('returns')
+        .select('id, order_items!inner(vendor_id)', { count: 'exact', head: true })
+        .eq('order_items.vendor_id', vendor.id)
+        .in('status', ['pending', 'approved'])
+        .then(r => r.count ?? 0),
+      supabase
+        .from('product_questions')
+        .select('id', { count: 'exact', head: true })
+        .eq('vendor_id', vendor.id)
+        .is('answer', null)
+        .then(r => r.count ?? 0),
+    ])
+
+    const fullName = (user.user_metadata as Record<string, unknown> | undefined)?.full_name as string | undefined
+    const vendorFirstName = (fullName ?? 'Ortak').split(' ')[0]
+    const hour = new Date().getHours()
+    const greeting = hour < 6 ? 'İyi geceler' : hour < 12 ? 'Günaydın' : hour < 18 ? 'İyi günler' : 'İyi akşamlar'
+    const totalEarnings30d = Math.round(stats.thisMonth.net)
+
+    return (
+      <SaticiPROAppHome
+        greeting={greeting}
+        vendorFirstName={vendorFirstName}
+        companyName={vendor.company_name ?? 'İş Ortağı'}
+        pendingOrders={stats.pendingItems}
+        openReturns={openReturns}
+        openQuestions={openQuestions}
+        todayOrders={stats.thisMonth.count}
+        totalEarnings30d={totalEarnings30d}
+      />
+    )
+  }
+
+  // ── Web dashboard sorguları (PRO app'ten sonra) ──
   const { data: products } = await supabase
     .from('products')
     .select('id, name, category, price, stock, final_score, approval_status, treatment_type, is_active, images, created_at')
@@ -132,35 +172,8 @@ export default async function SaticiPanelPage() {
   const approvedCount = products?.filter(p => p.approval_status === 'approved').length ?? 0
   const pendingCount  = products?.filter(p => p.approval_status === 'pending').length ?? 0
 
-  // Satış analitikleri (bu ay, geçen ay, top ürünler)
   const stats = await getVendorStats(vendor.id)
   const perf = await getVendorPerformance(vendor.id)
-
-  // ── EsteStorePRO app — mobil-first ev (web dashboard değil) ──────────
-  if (flavor === 'estestorepro') {
-    const fullName = (user.user_metadata as Record<string, unknown> | undefined)?.full_name as string | undefined
-    const vendorFirstName = (fullName ?? 'Ortak').split(' ')[0]
-    const hour = new Date().getHours()
-    const greeting = hour < 6 ? 'İyi geceler' : hour < 12 ? 'Günaydın' : hour < 18 ? 'İyi günler' : 'İyi akşamlar'
-
-    // Son 30 gün net kazanç ≈ son 12 ay bucket'larından bu ay net (yaklaşık).
-    // Daha keskin "30 gün" hesabı yapmak istersek ayrı sorgu gerekir; şimdilik
-    // bu ayın net'i = "kazanç 30g" yer-tutucu.
-    const totalEarnings30d = Math.round(stats.thisMonth.net)
-
-    return (
-      <SaticiPROAppHome
-        greeting={greeting}
-        vendorFirstName={vendorFirstName}
-        companyName={vendor.company_name ?? 'İş Ortağı'}
-        pendingOrders={stats.pendingItems}
-        openReturns={0}
-        openQuestions={0}
-        todayOrders={stats.thisMonth.count}
-        totalEarnings30d={totalEarnings30d}
-      />
-    )
-  }
 
   const perfColors =
     perf.letter === 'A' ? { bg: 'bg-emerald-500/15', fg: 'text-emerald-300', ring: 'ring-emerald-500/40' } :
