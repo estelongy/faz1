@@ -120,6 +120,31 @@ export default async function SiparisPage({
     itemsByVendor[vname].push(item)
   }
 
+  // Paket = tracking_number bazlı grup. Aynı vendor 1 siparişte birden çok
+  // paket gönderebilir (vendor tek-tek "etiket bas" → her order_item ayrı
+  // tracking_number alır). tracking_number=null kalemler "henüz kargoya
+  // verilmemiş" grubu olarak ayrı bloklanır.
+  type PackageGroup = { key: string; items: OrderItem[] }
+  function groupByPackage(items: OrderItem[]): PackageGroup[] {
+    const map = new Map<string, OrderItem[]>()
+    let unshippedCounter = 0
+    for (const it of items) {
+      const key = it.tracking_number?.trim() || `__unshipped-${unshippedCounter++}`
+      const arr = map.get(key) ?? []
+      arr.push(it)
+      map.set(key, arr)
+    }
+    // Eğer unshipped kalemler 1'den fazlaysa hepsini tek __unshipped grubunda
+    // birleştir (her birini ayrı kart yapmaya gerek yok — hepsi aynı durum)
+    const unshippedKeys = Array.from(map.keys()).filter(k => k.startsWith('__unshipped-'))
+    if (unshippedKeys.length > 1) {
+      const merged: OrderItem[] = []
+      for (const k of unshippedKeys) { merged.push(...(map.get(k) ?? [])); map.delete(k) }
+      map.set('__unshipped', merged)
+    }
+    return Array.from(map.entries()).map(([key, items]) => ({ key, items }))
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       {/* Celebration overlay — sadece ilk başarılı ödeme sonrası */}
@@ -210,17 +235,36 @@ export default async function SiparisPage({
           </div>
         )}
 
-        {/* İş Ortağı bazlı kalemler */}
+        {/* İş Ortağı → paket → kalem hiyerarşisi.
+            Aynı vendor 1 siparişte birden çok pakete bölebilir
+            (tracking_number başına grup). Her paket kendi takip kartını
+            ve "Teslim Aldım" akışını taşır. */}
         <div className="space-y-4 mb-6">
-          {Object.entries(itemsByVendor).map(([vendorName, items]) => (
+          {Object.entries(itemsByVendor).map(([vendorName, vendorItems]) => {
+            const packages = groupByPackage(vendorItems)
+            return (
             <div key={vendorName} className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden">
               <div className="px-5 py-3 border-b border-slate-700 flex items-center justify-between">
                 <span className="text-slate-300 text-sm font-medium">{vendorName}</span>
+                {packages.length > 1 && (
+                  <span className="text-slate-500 text-xs">{packages.length} paket</span>
+                )}
               </div>
+
+              {packages.map((pkg, pkgIdx) => {
+                const head = pkg.items[0]
+                const isUnshipped = pkg.key.startsWith('__unshipped')
+                return (
+                <div key={pkg.key} className={pkgIdx > 0 ? 'border-t-4 border-slate-900/60' : ''}>
+                  {packages.length > 1 && (
+                    <div className="px-5 pt-3 text-slate-500 text-xs font-semibold uppercase tracking-wide">
+                      {isUnshipped ? 'Henüz Kargoya Verilmedi' : `Paket ${pkgIdx + 1}`}
+                    </div>
+                  )}
 
               {/* Kalemler */}
               <div className="divide-y divide-slate-700">
-                {items.map(item => {
+                {pkg.items.map(item => {
                   const snap = item.product_snapshot as { name?: string; image?: string; slug?: string }
                   const { canReturn, deadline, daysLeft } = returnDeadline(item)
                   return (
@@ -277,18 +321,22 @@ export default async function SiparisPage({
                 })}
               </div>
 
-              {/* Kargo durumu + takip + Teslim Aldım */}
+              {/* Paket bazlı kargo durumu + takip + Teslim Aldım */}
               <KargoTakipKart
                 orderNumber={order.order_number}
-                orderItemIds={items.map(i => i.id)}
-                trackingNumber={items[0]?.tracking_number ?? null}
-                carrier={items[0]?.tracking_carrier ?? null}
-                shippedAt={items[0]?.shipped_at ?? null}
-                fulfillmentStatus={items[0]?.fulfillment_status ?? 'pending'}
+                orderItemIds={pkg.items.map(i => i.id)}
+                trackingNumber={isUnshipped ? null : (head?.tracking_number ?? null)}
+                carrier={isUnshipped ? null : (head?.tracking_carrier ?? null)}
+                shippedAt={head?.shipped_at ?? null}
+                fulfillmentStatus={head?.fulfillment_status ?? 'pending'}
                 canConfirmDelivery={!!user && !isGuestAccess && !isAdminAccess && order.payment_status === 'paid'}
               />
+                </div>
+                )
+              })}
             </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Toplam */}
