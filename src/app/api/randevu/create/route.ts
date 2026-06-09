@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { notifyClinicNewAppointment } from '@/lib/clinic-notifications'
 
 /**
  * Randevu oluştur. Oturum açık olmalı — client OTP doğruladıktan sonra buraya post ediyor.
  *
  * Bildirim akışı:
- *   - Burada YOKTUR (randevu pending durumda, klinik henüz kabul etmedi)
- *   - Klinik kabul edip status='confirmed' yapınca: updateAppointmentStatus
- *     server action'ı `appointment_confirmed` + 24h/1h hatırlatma enqueue eder
- *     (src/app/klinik/panel/page.tsx içindeki action)
+ *   - **Klinik tarafı** (yeni): hasta randevu olusturunca klinige email+SMS+push
+ *     ile yeni randevu talebi yollanir (fire-and-forget, notifyClinicNewAppointment).
+ *   - Hasta tarafı: klinik kabul edip status='confirmed' yapinca
+ *     `appointment_confirmed` + 24h/1h hatirlatma enqueue edilir
+ *     (src/app/klinik/panel/page.tsx içindeki action).
  */
 export async function POST(req: NextRequest) {
   try {
@@ -38,6 +40,11 @@ export async function POST(req: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
+
+    // Klinik bildirim — fire-and-forget (yanit gecikmesin)
+    notifyClinicNewAppointment(data.id).catch(err =>
+      console.error('[randevu/create] notifyClinicNewAppointment hata:', err),
+    )
 
     return NextResponse.json({ success: true, appointmentId: data.id })
   } catch (err) {

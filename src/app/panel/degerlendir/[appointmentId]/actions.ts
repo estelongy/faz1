@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { validateReviewInput, type ClinicReviewInput } from '@/lib/clinic-review'
+import { notifyClinicNewPrivateMessage } from '@/lib/clinic-notifications'
 
 export interface ActionResult {
   ok: boolean
@@ -89,6 +90,14 @@ export async function submitReviewAction(input: ClinicReviewInput): Promise<Acti
 
     if (insErr) return { ok: false, error: insErr.message }
     if (!insRows || insRows.length === 0) return { ok: false, error: 'Yorum kaydedilemedi' }
+
+    // Yeni yorum + ozel mesaj varsa → klinige bildir (fire-and-forget).
+    // Anonim olsa bile clinic_reviews.user_id dolu, hekim icin kaynak gosterilmez.
+    if (v.iyilestirmeMetni && v.iyilestirmeMetni.trim().length >= 3 && insRows[0]?.id) {
+      notifyClinicNewPrivateMessage(insRows[0].id).catch(err =>
+        console.error('[degerlendir] notifyClinicNewPrivateMessage hata:', err),
+      )
+    }
   }
 
   revalidatePath(`/panel/degerlendir/${v.appointmentId}`)

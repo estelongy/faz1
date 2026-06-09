@@ -168,3 +168,11 @@ export async function sendPushToVendor(
 ): Promise<void> {
   return sendPushToUser(vendorUserId, payload, 'estestorepro')
 }
+
+/** Klinik user_id ile push gönderme — klinik PRO bildirimleri için kestirme. */
+export async function sendPushToClinic(
+  clinicUserId: string,
+  payload: PushPayload,
+): Promise<void> {
+  return sendPushToUser(clinicUserId, payload, 'esteklinikpro')
+}

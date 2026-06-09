@@ -102,7 +102,19 @@ export default function TakvimApptActions({ apptId, status, onConfirm, onReject,
           Detayı gör →
         </Link>
       )}
-      {err && <p className="text-rose-400 text-xs mt-1 basis-full">{err}</p>}
+      {err && (
+        <div className="basis-full mt-1 flex items-center gap-2 flex-wrap">
+          <p className="text-rose-400 text-xs">{err}</p>
+          {/^.*kredi.*$/i.test(err) && (
+            <Link
+              href="/klinik/panel/kredi"
+              className="text-xs font-bold text-amber-300 active:text-amber-200 underline underline-offset-2"
+            >
+              Kredi yükle →
+            </Link>
+          )}
+        </div>
+      )}
     </div>
   )
 }
