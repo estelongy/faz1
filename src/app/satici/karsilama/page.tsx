@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 import KarsilamaSlider from './KarsilamaSlider'
 
 export const dynamic = 'force-dynamic'
@@ -12,14 +12,17 @@ export const dynamic = 'force-dynamic'
  *  - İş Ortağı başvurusu (yeni başvuru)
  *  - Yanlış geldim (consumer app'lere yönlendir)
  *
- * eg_onboard_seen=1 cookie'si varsa bir daha gösterilmez — doğrudan
- * /satici/panel'e bounce (giriş varsa AppHome, yoksa middleware /giris'e atar).
+ * Mantık (auth-öncelikli, cookie değil):
+ *  - Giriş yapmış vendor → /satici/panel (AppHome doğrudan)
+ *  - Giriş yapmamış → karşılama göster (vendor henüz giriş yapana kadar
+ *    her açılışta tanıtım görür; cookie zinciri giriş ekranına atmaz)
  *
  * 4 app'e klonlanabilir pattern.
  */
 export default async function KarsilamaPage() {
-  const jar = await cookies()
-  if (jar.get('eg_onboard_seen')?.value === '1') {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
     redirect('/satici/panel')
   }
   return <KarsilamaSlider />
