@@ -28,10 +28,13 @@ const SLIDES: Slide[] = [
   },
 ]
 
+// Play Store linkleri yayına çıkana kadar consumer app'lerin web galaksilerine
+// yönlendir — vendor doğru galaksiyi tarayıcıda görür. Play Store yayını
+// başlayınca href'leri play.google.com'a güncelle.
 const ALT_APPS = [
-  { name: 'BiyoAGE', tag: 'Görünüm yaşını hemen öğren', href: 'https://play.google.com/store/apps/details?id=com.estelongy.biyoage' },
-  { name: 'EsteKlinik', tag: 'Bilimi güzelliğe dönüştüren uzmanı bul', href: 'https://play.google.com/store/apps/details?id=com.estelongy.esteklinik' },
-  { name: 'EsteStore', tag: 'Sana özel ürünü al', href: 'https://play.google.com/store/apps/details?id=com.estelongy.estestore' },
+  { name: 'BiyoAGE',    tag: 'Görünüm yaşını hemen öğren',           href: 'https://biyoage.com' },
+  { name: 'EsteKlinik', tag: 'Bilimi güzelliğe dönüştüren uzmanı bul', href: 'https://esteklinik.com' },
+  { name: 'EsteStore',  tag: 'Sana özel ürünü al',                   href: 'https://estelongy.com/estestore' },
 ]
 
 function setOnboardCookie() {
