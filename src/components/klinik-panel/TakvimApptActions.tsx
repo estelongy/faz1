@@ -43,7 +43,7 @@ export default function TakvimApptActions({ apptId, status, onConfirm, onReject,
             type="button"
             onClick={() => run('confirm')}
             disabled={pending}
-            className="flex-1 py-2.5 rounded-xl bg-emerald-600 active:bg-emerald-500 disabled:opacity-40 text-white text-sm font-bold transition-colors"
+            className="flex-1 py-3 rounded-xl bg-emerald-600 active:bg-emerald-500 disabled:opacity-40 text-white text-sm font-bold transition-colors"
           >
             {pending ? '…' : 'Onayla'}
           </button>
@@ -51,7 +51,7 @@ export default function TakvimApptActions({ apptId, status, onConfirm, onReject,
             type="button"
             onClick={() => run('reject')}
             disabled={pending}
-            className="py-2.5 px-4 rounded-xl bg-slate-800 active:bg-rose-500/20 text-slate-400 active:text-rose-300 text-sm font-bold border border-slate-700"
+            className="py-3 px-4 rounded-xl bg-slate-800 active:bg-rose-500/20 text-slate-400 active:text-rose-300 text-sm font-bold border border-slate-700"
             aria-label="Reddet"
           >
             ✕
@@ -62,7 +62,7 @@ export default function TakvimApptActions({ apptId, status, onConfirm, onReject,
         <>
           <Link
             href={`/klinik/panel/randevu/${apptId}`}
-            className="flex-1 text-center py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-sm font-bold active:bg-emerald-500/25"
+            className="flex-1 text-center py-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-sm font-bold active:bg-emerald-500/25"
           >
             Hasta geldi →
           </Link>
@@ -70,7 +70,7 @@ export default function TakvimApptActions({ apptId, status, onConfirm, onReject,
             type="button"
             onClick={() => run('noshow')}
             disabled={pending}
-            className="py-2.5 px-3 rounded-xl bg-slate-800 active:bg-rose-500/20 text-slate-400 text-sm font-bold border border-slate-700"
+            className="py-3 px-3 rounded-xl bg-slate-800 active:bg-rose-500/20 text-slate-400 text-sm font-bold border border-slate-700"
             aria-label="Gelmedi"
           >
             ⊘
@@ -79,7 +79,7 @@ export default function TakvimApptActions({ apptId, status, onConfirm, onReject,
             type="button"
             onClick={() => run('reject')}
             disabled={pending}
-            className="py-2.5 px-3 rounded-xl bg-slate-800 active:bg-rose-500/20 text-slate-400 text-sm font-bold border border-slate-700"
+            className="py-3 px-3 rounded-xl bg-slate-800 active:bg-rose-500/20 text-slate-400 text-sm font-bold border border-slate-700"
             aria-label="İptal"
           >
             ✕
@@ -89,7 +89,7 @@ export default function TakvimApptActions({ apptId, status, onConfirm, onReject,
       {status === 'in_progress' && (
         <Link
           href={`/klinik/panel/randevu/${apptId}`}
-          className="flex-1 text-center py-2.5 rounded-xl bg-emerald-600 active:bg-emerald-500 text-white text-sm font-bold"
+          className="flex-1 text-center py-3 rounded-xl bg-emerald-600 active:bg-emerald-500 text-white text-sm font-bold"
         >
           Akışı sürdür →
         </Link>
@@ -97,7 +97,7 @@ export default function TakvimApptActions({ apptId, status, onConfirm, onReject,
       {status === 'completed' && (
         <Link
           href={`/klinik/panel/randevu/${apptId}`}
-          className="flex-1 text-center py-2.5 rounded-xl bg-slate-800 active:bg-slate-700 text-slate-300 text-sm font-semibold border border-slate-700"
+          className="flex-1 text-center py-3 rounded-xl bg-slate-800 active:bg-slate-700 text-slate-300 text-sm font-semibold border border-slate-700"
         >
           Detayı gör →
         </Link>

@@ -1,4 +1,5 @@
-import { Users } from 'lucide-react'
+import Link from 'next/link'
+import { Users, Clock } from 'lucide-react'
 import HastaSearchList from './HastaSearchList'
 
 export type HastaItem = {
@@ -40,8 +41,15 @@ export default function HastalarimAppView({ clinicName, hastalar }: Props) {
             <Users size={32} className="mx-auto text-slate-600" />
             <p className="mt-2 text-white font-semibold">Henüz hasta yok</p>
             <p className="mt-1 text-sm text-slate-400">
-              İlk randevu geldiğinde burada görünecek.
+              İlk randevu geldiğinde burada görünecek. Hasta gelmesi için önce müsaitlik saatlerinin tanımlı olması gerekiyor.
             </p>
+            <Link
+              href="/klinik/panel/musaitlik"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-emerald-400/30 bg-emerald-500/10 text-emerald-200 text-sm font-bold active:bg-emerald-500/20 transition"
+            >
+              <Clock size={16} />
+              Müsaitlik saatlerini aç
+            </Link>
           </div>
         </section>
       ) : (

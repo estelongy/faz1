@@ -148,6 +148,9 @@ export default async function KlinikPanelPage() {
       patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
       status: a.status as string,
     })
+    // Onboarding — yeni klinik app'i açtığında 4 adım checklist görünür.
+    // Web'deki tam banner yerine app'te kompakt versiyon (KlinikPROAppHome içinde).
+    const onboarding = await computeOnboarding(clinic.id, supabase)
     return (
       <KlinikPROAppHome
         greeting={getGreeting()}
@@ -158,6 +161,7 @@ export default async function KlinikPanelPage() {
         pendingCount={pendingAppts.length}
         inProgressCount={inProgressAppts.length}
         tomorrowApptsCount={tomorrowAppts.length}
+        onboarding={onboarding}
       />
     )
   }

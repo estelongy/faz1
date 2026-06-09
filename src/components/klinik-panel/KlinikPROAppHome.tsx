@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Calendar, ClipboardCheck, Users, MessageCircle, CreditCard, BarChart3, ShoppingBag, Clock } from 'lucide-react'
+import { Calendar, ClipboardCheck, Users, MessageCircle, CreditCard, BarChart3, ShoppingBag, Clock, ChevronRight } from 'lucide-react'
+import type { OnboardingStatus } from '@/lib/clinic-onboarding'
 
 interface AppointmentLite {
   id: string
@@ -17,6 +18,7 @@ interface Props {
   pendingCount: number
   inProgressCount: number
   tomorrowApptsCount: number
+  onboarding?: OnboardingStatus
 }
 
 /**
@@ -38,7 +40,10 @@ export default function KlinikPROAppHome({
   pendingCount,
   inProgressCount,
   tomorrowApptsCount,
+  onboarding,
 }: Props) {
+  const showOnboarding = onboarding && !onboarding.isComplete && onboarding.nextStep
+  const progressPct = onboarding ? Math.round((onboarding.completedCount / onboarding.totalCount) * 100) : 0
   return (
     <div
       // -m-4 lg:-m-8: panel layout'unun main p-4/p-8'ini iptal ederek full-bleed
@@ -57,6 +62,37 @@ export default function KlinikPROAppHome({
           <span className="text-emerald-300">Dr. {hekimFirstName}</span>
         </h1>
       </header>
+
+      {/* Onboarding kompakt banner — kalan adım varsa */}
+      {showOnboarding && onboarding && onboarding.nextStep && (
+        <section className="px-5 mb-3">
+          <Link
+            href={onboarding.nextStep.ctaHref}
+            className="block rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-500/15 to-purple-500/10 px-4 py-3.5 active:from-violet-500/25 active:to-purple-500/15 transition"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-violet-500/20 border border-violet-400/30 flex items-center justify-center shrink-0 text-violet-200 font-bold text-sm tabular-nums">
+                {onboarding.completedCount}/{onboarding.totalCount}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-semibold text-sm leading-tight">
+                  Sıradaki: {onboarding.nextStep.title}
+                </p>
+                <p className="mt-0.5 text-xs text-violet-200/80 truncate">
+                  {onboarding.nextStep.rewardEmoji} {onboarding.nextStep.reward}
+                </p>
+              </div>
+              <ChevronRight size={18} className="text-violet-300 shrink-0" />
+            </div>
+            <div className="mt-2.5 h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-violet-500 to-purple-500"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+          </Link>
+        </section>
+      )}
 
       {/* Çekirdek aksiyon — Müsaitlik aç. Hekim sabah app'i açar, ilk niyet:
           "bugün/yarın boş saatlerimi düzenle". En sık aksiyon → en görünür yer. */}
@@ -125,6 +161,13 @@ export default function KlinikPROAppHome({
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-center">
             <Calendar size={28} className="mx-auto text-slate-600" />
             <p className="mt-2 text-sm text-slate-400">Bugün randevu yok.</p>
+            <Link
+              href="/klinik/panel/musaitlik"
+              className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 active:text-emerald-200"
+            >
+              <Clock size={13} />
+              Müsaitlik saatlerini kontrol et →
+            </Link>
           </div>
         ) : (
           <ul className="space-y-2">

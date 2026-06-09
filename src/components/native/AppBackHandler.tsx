@@ -24,6 +24,7 @@ interface AppPlugin {
 // Path'i 1-1 değil prefix ile karşılaştırırız ki query/hash'e takılmasın.
 const ROOT_PATHS = [
   '/satici/karsilama',
+  '/klinik/karsilama',     // PRO klinik onboarding
   '/satici/panel',         // PRO vendor ev
   '/klinik/panel',         // PRO klinik ev
   '/biyoage',              // consumer ev (BiyoAGE)

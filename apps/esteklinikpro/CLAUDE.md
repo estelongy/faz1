@@ -9,6 +9,9 @@ Randevu hızlı işle, müsaitlik güncelle, hasta dosyası, mesaj. Klinikten ha
 ## Ev
 `/klinik/panel` — bugünün takvimi + bekleyen randevular (hızlı kabul/red), kredi/kazanç özet.
 
+## Karşılama (Capacitor server.url)
+`/klinik/karsilama` — APK ilk açılış (oturum yok) için 3-slayt onboarding + 2 CTA (Giriş / Klinik başvuru) + ekosistem linkleri. Giriş yapmış klinik kullanıcısı server-side `getUser()` ile yakalanıp `/klinik/panel`'e bounce edilir. APK build'te server.url bu sayfaya bakmalı (`mobile/android/app/src/esteklinikpro/assets/capacitor.config.json`).
+
 ## Tab bar
 Panel · Randevu · Hastalar · Mesaj · Menü(drawer)
 
