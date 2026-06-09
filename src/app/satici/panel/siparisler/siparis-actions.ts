@@ -69,15 +69,18 @@ export async function etiketOlusturAction(
     return { ok: false, error: 'Etiket için sipariş seçilmedi.' }
   }
 
-  // Vendor kargo ayarları zorunlu
+  // Vendor kargo ayarları zorunlu — etiket basmak için sender_email + postal_code şart
   const { data: settings } = await supabase
     .from('vendor_shipping_settings')
-    .select('default_carrier')
+    .select('default_carrier, sender_email, sender_postal_code')
     .eq('vendor_id', vendor.id)
     .maybeSingle()
 
   if (!settings) {
     return { ok: false, error: 'Önce kargo ayarlarını doldurmalısın: /satici/panel/kargo' }
+  }
+  if (!settings.sender_email || !settings.sender_postal_code) {
+    return { ok: false, error: 'Kargo ayarlarında gönderici e-posta ve posta kodu eksik. /satici/panel/kargo sayfasından tamamla.' }
   }
 
   const finalCarrier = carrier || settings.default_carrier || 'Yurtiçi Kargo'

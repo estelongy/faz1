@@ -44,12 +44,23 @@ export async function saveShippingSettingsAction(
     return { ok: false, error: 'Satıcı hesabınız henüz onaylanmadı.' }
   }
 
-  // Doğrulama
+  // Doğrulama — server-of-truth (client validation bypass edilse de burada kesilir)
   if (!form.sender_name?.trim())          return { ok: false, error: 'Gönderici adı zorunlu.' }
   if (!form.sender_phone?.trim())         return { ok: false, error: 'Telefon zorunlu.' }
   if (!form.sender_address_line?.trim())  return { ok: false, error: 'Adres zorunlu.' }
   if (!form.sender_district?.trim())      return { ok: false, error: 'İlçe zorunlu.' }
   if (!form.sender_city?.trim())          return { ok: false, error: 'İl zorunlu.' }
+
+  // sender_email: kargo şirketi etiket maili + iade kargo iletişimi için zorunlu
+  const email = form.sender_email?.trim() ?? ''
+  if (!email) return { ok: false, error: 'Gönderici e-posta zorunlu — iade kargosu ve etiket bildirimi için kullanılır.' }
+  // Basit RFC-lite kontrolü — boşluksuz, en az bir @, en az bir nokta
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: 'Geçerli bir e-posta gir.' }
+
+  // sender_postal_code: kargo etiketinde zorunlu (Türkiye 5 hane)
+  const postal = form.sender_postal_code?.trim() ?? ''
+  if (!postal) return { ok: false, error: 'Posta kodu zorunlu — kargo etiketi olmadan basılamaz.' }
+  if (!/^\d{5}$/.test(postal)) return { ok: false, error: 'Posta kodu 5 haneli sayı olmalı (ör. 34000).' }
 
   const cleanCarrier = CARRIERS_VALID.includes(form.default_carrier)
     ? form.default_carrier
@@ -66,11 +77,11 @@ export async function saveShippingSettingsAction(
       vendor_id:                vendor.id,
       sender_name:              form.sender_name.trim(),
       sender_phone:             form.sender_phone.trim(),
-      sender_email:             form.sender_email?.trim() || null,
+      sender_email:             email,
       sender_address_line:      form.sender_address_line.trim(),
       sender_district:          form.sender_district.trim(),
       sender_city:              form.sender_city.trim(),
-      sender_postal_code:       form.sender_postal_code?.trim() || null,
+      sender_postal_code:       postal,
       default_carrier:          cleanCarrier,
       preferred_carriers:       finalPreferred,
       free_shipping_threshold:  form.free_shipping_threshold ?? null,

@@ -98,8 +98,9 @@ export default function KargoAyarForm({ carriers, companyName, companyAddress, e
         </div>
 
         <div>
-          <label className={label}>E-posta (opsiyonel)</label>
+          <label className={label}>E-posta *</label>
           <input type="email" className={input} value={senderEmail} onChange={e => setSenderEmail(e.target.value)} placeholder="iletisim@..." />
+          <p className="text-slate-500 text-sm mt-1">İade kargosu ve kargo şirketi etiket bildirimi için kullanılır.</p>
         </div>
 
         <div>
@@ -117,8 +118,8 @@ export default function KargoAyarForm({ carriers, companyName, companyAddress, e
             <input className={input} value={city} onChange={e => setCity(e.target.value)} />
           </div>
           <div>
-            <label className={label}>Posta Kodu</label>
-            <input className={input} value={postal} onChange={e => setPostal(e.target.value)} />
+            <label className={label}>Posta Kodu *</label>
+            <input className={input} value={postal} onChange={e => setPostal(e.target.value)} placeholder="34000" inputMode="numeric" maxLength={5} />
           </div>
         </div>
       </div>
