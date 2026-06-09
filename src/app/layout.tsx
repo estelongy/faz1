@@ -10,6 +10,7 @@ import KlinikBottomNav from '@/components/native/KlinikBottomNav'
 import SaticiBottomNav from '@/components/native/SaticiBottomNav'
 import NativeAppClass from '@/components/native/NativeAppClass'
 import AppFlavorRoleGate from '@/components/native/AppFlavorRoleGate'
+import AppBackHandler from '@/components/native/AppBackHandler'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -163,6 +164,7 @@ export default function RootLayout({
             <KlinikBottomNav />
             <SaticiBottomNav />
             <AppFlavorRoleGate />
+            <AppBackHandler />
           </GalaxyTransitionProvider>
         </AuthStatusProvider>
       </body>

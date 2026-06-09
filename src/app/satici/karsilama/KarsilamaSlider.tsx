@@ -1,13 +1,8 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { Store, Sparkles, BarChart3 } from 'lucide-react'
-
-interface AppPlugin {
-  addListener: (event: 'backButton', cb: () => void) => Promise<{ remove?: () => void }> | { remove?: () => void }
-  exitApp?: () => Promise<void>
-}
 
 interface Slide {
   Icon: typeof Store
@@ -46,25 +41,9 @@ function setOnboardCookie() {
 export default function KarsilamaSlider() {
   const trackRef = useRef<HTMLDivElement | null>(null)
   const [idx, setIdx] = useState(0)
-  const [showExit, setShowExit] = useState(false)
 
-  // Android geri tuşu: çıkış onayı. Capacitor injected global'i kullanırız
-  // (npm paketi web tarafına yüklü değil). Native değilse no-op.
-  useEffect(() => {
-    const Cap = (window as unknown as { Capacitor?: { Plugins?: { App?: AppPlugin } } }).Capacitor
-    const App = Cap?.Plugins?.App
-    if (!App?.addListener) return
-    let handle: { remove?: () => void } | undefined
-    Promise.resolve(App.addListener('backButton', () => setShowExit(true)))
-      .then(h => { handle = h })
-      .catch(() => { /* ignore */ })
-    return () => { handle?.remove?.() }
-  }, [])
-
-  async function confirmExit() {
-    const Cap = (window as unknown as { Capacitor?: { Plugins?: { App?: AppPlugin } } }).Capacitor
-    try { await Cap?.Plugins?.App?.exitApp?.() } catch { /* noop */ }
-  }
+  // Geri tuşu/çıkış: global AppBackHandler component'i (root layout) yönetir.
+  // Karşılama root path olduğu için geri tuşu çıkış onay modal'ı açar.
 
   function onScroll() {
     const el = trackRef.current
@@ -175,29 +154,6 @@ export default function KarsilamaSlider() {
         </div>
       </div>
 
-      {/* Çıkış onay overlay */}
-      {showExit && (
-        <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <h3 className="text-base font-bold text-white">Uygulamadan çıkılsın mı?</h3>
-            <p className="mt-1 text-sm text-slate-400">EsteStorePRO kapatılacak.</p>
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <button
-                onClick={() => setShowExit(false)}
-                className="py-3 rounded-xl border border-slate-700 text-slate-300 font-medium active:bg-slate-800 transition"
-              >
-                Vazgeç
-              </button>
-              <button
-                onClick={confirmExit}
-                className="py-3 rounded-xl bg-amber-400 text-slate-950 font-bold active:bg-amber-500 transition"
-              >
-                Çık
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
