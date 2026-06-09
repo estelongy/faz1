@@ -27,7 +27,7 @@ const nextConfig = {
       { source: '/klinikler',                   destination: '/esteklinik', permanent: true },
       { source: '/klinikler/:path*',            destination: '/esteklinik/:path*', permanent: true },
       // /klinik/<slug> → /esteklinik/<slug> (admin path'lerini hariç tut)
-      { source: '/klinik/:slug((?!panel$|panel/|muhasebe-ozet$|muhasebe-ozet/|basvur$).+)', destination: '/esteklinik/:slug', permanent: true },
+      { source: '/klinik/:slug((?!panel$|panel/|muhasebe-ozet$|muhasebe-ozet/|basvur$|karsilama$).+)', destination: '/esteklinik/:slug', permanent: true },
     ]
   },
 
