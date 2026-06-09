@@ -34,11 +34,18 @@ interface OrderItem {
 interface Props {
   items: OrderItem[]
   hasShippingSettings: boolean
+  /** Etiket basarken default seçim — vendor'un kargo ayarlarında işaretlediği "varsayılan". */
+  defaultCarrier: string
+  /** Vendor'un anlaşmalı/tercih ettiği kargolar — etiket basarken seçim menüsünde bunlar listelenir. */
+  preferredCarriers: string[]
 }
 
-const CARRIERS = ['Yurtiçi Kargo', 'Aras Kargo', 'MNG Kargo', 'PTT Kargo', 'Sürat Kargo', 'HepsiJet', 'Diğer']
+const ALL_CARRIERS_FALLBACK = ['Yurtiçi Kargo', 'Aras Kargo', 'MNG Kargo', 'PTT Kargo', 'Sürat Kargo', 'HepsiJet', 'Trendyol Express', 'Diğer']
 
-export default function SiparisKartlari({ items, hasShippingSettings }: Props) {
+export default function SiparisKartlari({ items, hasShippingSettings, defaultCarrier, preferredCarriers }: Props) {
+  // Etiket basma & manuel kargo girişi seçim listesi — vendor sadece anlaştığı
+  // kargolarla görünür. preferred yoksa (yeni hesap) tüm CARRIERS fallback.
+  const CARRIERS = preferredCarriers.length > 0 ? preferredCarriers : ALL_CARRIERS_FALLBACK
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -46,6 +53,18 @@ export default function SiparisKartlari({ items, hasShippingSettings }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [bulkError, setBulkError] = useState<string | null>(null)
   const [showManual, setShowManual] = useState<Set<string>>(new Set())
+  // Tek tek etiket basarken her item için seçili carrier (default = vendor settings'teki).
+  // Vendor "bu paketi Sürat'la diğerini Aras'la" derse her item kartında ayrı dropdown'dan seçer.
+  const [carrierByItem, setCarrierByItem] = useState<Record<string, string>>({})
+  // Toplu etiket için tek bir carrier seçimi — hepsi aynı kargo şirketine gider.
+  const [bulkCarrier, setBulkCarrier] = useState<string>(defaultCarrier)
+
+  function carrierFor(itemId: string): string {
+    return carrierByItem[itemId] ?? defaultCarrier
+  }
+  function setCarrier(itemId: string, carrier: string) {
+    setCarrierByItem(p => ({ ...p, [itemId]: carrier }))
+  }
 
   function setDraft(id: string, field: 'no' | 'carrier', value: string) {
     setTrackingDrafts(p => ({
@@ -103,8 +122,9 @@ export default function SiparisKartlari({ items, hasShippingSettings }: Props) {
       return
     }
     setBulkError(null)
+    const carrier = carrierFor(itemId)
     startTransition(async () => {
-      const res = await etiketOlusturAction([itemId])
+      const res = await etiketOlusturAction([itemId], carrier)
       if (!res.ok) { setBulkError(res.error ?? 'Etiket oluşturulamadı.'); return }
       // Print sayfasını yeni sekmede aç
       window.open(`/satici/panel/siparisler/etiket/${itemId}`, '_blank')
@@ -121,7 +141,7 @@ export default function SiparisKartlari({ items, hasShippingSettings }: Props) {
     if (ids.length === 0) return
     setBulkError(null)
     startTransition(async () => {
-      const res = await etiketOlusturAction(ids)
+      const res = await etiketOlusturAction(ids, bulkCarrier)
       if (!res.ok) { setBulkError(res.error ?? 'Toplu etiket oluşturulamadı.'); return }
       window.open(`/satici/panel/siparisler/etiket/toplu?ids=${ids.join(',')}`, '_blank')
       clearSelection()
@@ -157,13 +177,24 @@ export default function SiparisKartlari({ items, hasShippingSettings }: Props) {
               <strong className="text-white">{selected.size}</strong> / {eligibleCount} kargolanmaya hazır
             </span>
           </div>
-          <button
-            onClick={handleEtiketToplu}
-            disabled={selected.size === 0 || isPending}
-            className="px-4 py-2 bg-gradient-to-r from-[#C9A961] to-[#B8964F] disabled:opacity-40 hover:from-[#D4B872] hover:to-[#C9A961] text-slate-900 font-bold rounded-lg text-sm transition-all"
-          >
-            🏷️ Toplu Etiket ({selected.size})
-          </button>
+          <div className="flex items-center gap-2">
+            <select
+              value={bulkCarrier}
+              onChange={e => setBulkCarrier(e.target.value)}
+              disabled={CARRIERS.length <= 1}
+              title="Toplu etiket için kargo şirketi"
+              className="px-2.5 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs font-semibold focus:outline-none focus:border-[#C9A961] disabled:opacity-60"
+            >
+              {CARRIERS.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <button
+              onClick={handleEtiketToplu}
+              disabled={selected.size === 0 || isPending}
+              className="px-4 py-2 bg-gradient-to-r from-[#C9A961] to-[#B8964F] disabled:opacity-40 hover:from-[#D4B872] hover:to-[#C9A961] text-slate-900 font-bold rounded-lg text-sm transition-all"
+            >
+              🏷️ Toplu Etiket ({selected.size})
+            </button>
+          </div>
         </div>
       )}
 
@@ -257,13 +288,27 @@ export default function SiparisKartlari({ items, hasShippingSettings }: Props) {
 
                 {item.fulfillment_status === 'preparing' && (
                   <div className="space-y-3">
+                    {/* Kargo şirketi seçimi (vendor anlaşmalı listeden) — her paket farklı kargo şirketine gidebilir */}
+                    {CARRIERS.length > 1 && (
+                      <div className="flex items-center gap-2 p-2 bg-slate-900/40 rounded-lg">
+                        <span className="text-slate-500 text-xs uppercase tracking-wide shrink-0">Kargo:</span>
+                        <select
+                          value={carrierFor(item.id)}
+                          onChange={e => setCarrier(item.id, e.target.value)}
+                          className="flex-1 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm font-semibold focus:outline-none focus:border-[#C9A961]"
+                        >
+                          {CARRIERS.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                    )}
+
                     {/* Tek tıkla etiket — birincil aksiyon */}
                     <button
                       onClick={() => handleEtiketTekli(item.id)}
                       disabled={isPending || !hasShippingSettings}
                       className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-slate-900 font-bold rounded-xl text-base shadow-lg shadow-[#C9A961]/20 transition-all"
                     >
-                      🏷️ Etiket Oluştur & Yazdır
+                      🏷️ Etiket Oluştur & Yazdır {CARRIERS.length > 1 && <span className="opacity-70 text-sm">({carrierFor(item.id)})</span>}
                     </button>
 
                     {/* Manuel kargo girişi — opsiyonel */}

@@ -44,13 +44,19 @@ export default async function SaticiSiparislerPage({
 
   const { data: items } = await query.limit(100)
 
-  // Kargo ayarları var mı? Etiket butonu için gerekli
+  // Kargo ayarları var mı? Etiket butonu için gerekli.
+  // default_carrier + preferred_carriers da getir — etiket basarken vendor
+  // anlaştığı şirketler arasından seçim yapsın (Aras + Sürat ikisiyle de
+  // anlaşmış olabilir, bu sipariş için Sürat istiyor).
   const { data: shippingSettings } = await supabase
     .from('vendor_shipping_settings')
-    .select('vendor_id')
+    .select('vendor_id, default_carrier, preferred_carriers, sender_email, sender_postal_code')
     .eq('vendor_id', vendor.id)
     .maybeSingle()
-  const hasShippingSettings = !!shippingSettings
+  const hasShippingSettings =
+    !!shippingSettings && !!shippingSettings.sender_email && !!shippingSettings.sender_postal_code
+  const defaultCarrier = shippingSettings?.default_carrier ?? 'Yurtiçi Kargo'
+  const preferredCarriers: string[] = (shippingSettings?.preferred_carriers as string[] | null) ?? [defaultCarrier]
 
   const statusCounts = {
     pending:    0,
@@ -79,6 +85,8 @@ export default async function SaticiSiparislerPage({
         companyName={vendor.company_name ?? 'İş Ortağı'}
         items={(items ?? []) as unknown as Parameters<typeof SiparislerAppView>[0]['items']}
         hasShippingSettings={hasShippingSettings}
+        defaultCarrier={defaultCarrier}
+        preferredCarriers={preferredCarriers}
         durum={durum}
         statusCounts={statusCounts}
       />
@@ -114,7 +122,12 @@ export default async function SaticiSiparislerPage({
 
         {/* Kartlar */}
         {items && items.length > 0 ? (
-          <SiparisKartlari items={items} hasShippingSettings={hasShippingSettings} />
+          <SiparisKartlari
+            items={items}
+            hasShippingSettings={hasShippingSettings}
+            defaultCarrier={defaultCarrier}
+            preferredCarriers={preferredCarriers}
+          />
         ) : (
           <div className="text-center py-24 text-slate-600">
             <div className="text-5xl mb-4">📦</div>

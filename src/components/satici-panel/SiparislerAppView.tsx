@@ -8,6 +8,8 @@ interface Props {
   companyName: string
   items: OrderItem[]
   hasShippingSettings: boolean
+  defaultCarrier: string
+  preferredCarriers: string[]
   durum?: string
   statusCounts: {
     pending: number
@@ -28,6 +30,8 @@ export default function SiparislerAppView({
   companyName,
   items,
   hasShippingSettings,
+  defaultCarrier,
+  preferredCarriers,
   durum,
   statusCounts,
 }: Props) {
@@ -79,7 +83,12 @@ export default function SiparislerAppView({
           </div>
         ) : (
           <div className="rounded-2xl">
-            <SiparisKartlari items={items} hasShippingSettings={hasShippingSettings} />
+            <SiparisKartlari
+              items={items}
+              hasShippingSettings={hasShippingSettings}
+              defaultCarrier={defaultCarrier}
+              preferredCarriers={preferredCarriers}
+            />
           </div>
         )}
       </section>
