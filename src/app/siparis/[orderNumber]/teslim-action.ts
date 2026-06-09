@@ -2,14 +2,15 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { notifyVendorDeliveryConfirmed } from '@/lib/order-notifications'
 
 /**
  * Müşteri "Teslim Aldım" tıklar → seçilen order_items'ları delivered'a çeker.
  * RPC `mark_order_items_delivered_by_customer` owner check + status guard yapar.
  *
  * NOT: Müşteriye notifyOrderDelivered çağırılmaz — kendi "aldım" dediği için
- * "teslim edildi" SMS/email çift bildirim olurdu. Vendor'a "müşteri teslimi
- * onayladı" bildirimi ayrı iş (b1_eksikler).
+ * "teslim edildi" SMS/email çift bildirim olurdu. Vendor'a teslim onayı
+ * bildirimi gönderilir (döngü kapanış: email + SMS + push).
  */
 export async function teslimAldimAction(
   orderItemIds: string[],
@@ -32,6 +33,12 @@ export async function teslimAldimAction(
   const updated = Array.isArray(data) ? (data as string[]) : []
   if (updated.length === 0) {
     return { ok: false, error: 'Bu kalemler için teslim onayı uygulanamadı (kargoya verilmemiş ya da zaten teslim olmuş olabilir).' }
+  }
+
+  // Vendor'a teslim onayı bildirimi (her güncellenen kalem için).
+  // Fire-and-forget — UI'yı bloklamaz, bildirim hatası teslim onayını geri almaz.
+  for (const id of updated) {
+    void notifyVendorDeliveryConfirmed(id)
   }
 
   revalidatePath(`/siparis/${orderNumber}`)

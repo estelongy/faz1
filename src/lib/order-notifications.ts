@@ -7,9 +7,10 @@
  *  - notifyReturnDecision(returnId)         → iadeKararAction sonrası
  *
  * Tetikleyiciler (vendor):
- *  - notifyVendorNewOrder(orderId)          → stripe webhook 'paid' sonrası (her vendor için 1 mail+SMS)
- *  - notifyVendorReturnRequested(returnId)  → müşteri iade açtıktan sonra
- *  - notifyVendorNewQuestion(questionId)    → müşteri ürün sorusu sordu
+ *  - notifyVendorNewOrder(orderId)             → stripe webhook 'paid' sonrası (her vendor için 1 mail+SMS)
+ *  - notifyVendorReturnRequested(returnId)     → müşteri iade açtıktan sonra
+ *  - notifyVendorNewQuestion(questionId)       → müşteri ürün sorusu sordu
+ *  - notifyVendorDeliveryConfirmed(orderItemId) → müşteri "Teslim Aldım" tıkladıktan sonra (döngü kapanış)
  *
  * Hepsi fire-and-forget — başarısızlık UI'yı bloklamaz, console'a yazılır.
  * Email kaynağı: misafir ise orders.guest_email; kayıtlı ise auth.users.
@@ -332,6 +333,9 @@ function smsVendorReturn(p: { orderNumber: string }) {
 function smsVendorQuestion(p: { productName: string }) {
   return `Estelongy: "${p.productName.slice(0, 40)}" urunu icin yeni soru. Yanitla: estelongy.com/satici/panel/sorular`
 }
+function smsVendorDeliveryConfirmed(p: { orderNumber: string; productName: string }) {
+  return `Estelongy: ${p.orderNumber} - "${p.productName.slice(0, 40)}" musteri teslim aldigini onayladi. Tesekkurler!`
+}
 
 export async function notifyVendorNewOrder(orderId: string): Promise<void> {
   try {
@@ -513,5 +517,64 @@ export async function notifyVendorNewQuestion(questionId: string): Promise<void>
     })
   } catch (e) {
     console.error('[order-notifications] vendor-new-question exception:', e)
+  }
+}
+
+/**
+ * Müşteri "Teslim Aldım" tıklayınca vendor'a haber ver — sipariş döngüsü
+ * kapanışı. Vendor için pozitif olay (yeşil): performans skoruna yansır,
+ * Stripe Connect bağlıysa payout süreci başlar.
+ */
+export async function notifyVendorDeliveryConfirmed(orderItemId: string): Promise<void> {
+  try {
+    const admin = createServiceClient()
+    const { data: item } = await admin
+      .from('order_items')
+      .select('id, vendor_id, product_snapshot, orders(order_number)')
+      .eq('id', orderItemId)
+      .single()
+    if (!item || !item.vendor_id) return
+
+    const orderNumber = (item.orders as { order_number?: string } | null)?.order_number ?? '—'
+    const productName = ((item.product_snapshot as { name?: string } | null)?.name) ?? 'Ürün'
+
+    const { data: vendor } = await admin
+      .from('vendors')
+      .select('user_id, company_name, phone')
+      .eq('id', item.vendor_id)
+      .single()
+    if (!vendor) return
+
+    const { data: userData } = await admin.auth.admin.getUserById(vendor.user_id)
+    const email = userData?.user?.email
+    if (email) {
+      const subject = `[Estelongy] Teslim Onaylandı — ${orderNumber}`
+      const html = `
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#fff;color:#111;padding:0;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+          <div style="padding:24px;background:linear-gradient(135deg,#059669,#10b981);color:#fff">
+            <h1 style="margin:0;font-size:22px">✓ Teslim Onaylandı</h1>
+            <p style="margin:6px 0 0;opacity:0.9">Sipariş: <strong>${orderNumber}</strong></p>
+          </div>
+          <div style="padding:24px">
+            <p style="margin:0 0 12px"><strong>${productName}</strong> için müşteri teslim aldığını onayladı.</p>
+            <p style="margin:0 0 16px;color:#4b5563">Sipariş döngüsü tamamlandı. Bu satış performans skoruna pozitif yansır; iade penceresi (14 gün) açıldı.</p>
+            <div style="margin-top:20px;text-align:center">
+              <a href="${baseUrl()}/satici/panel/siparisler" style="display:inline-block;padding:12px 32px;background:#0F172A;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">Siparişleri Aç →</a>
+            </div>
+          </div>
+        </div>
+      `
+      await sendEmail(email, subject, html)
+    }
+    if (vendor.phone) {
+      await sendInfoSms(vendor.phone, smsVendorDeliveryConfirmed({ orderNumber, productName }))
+    }
+    void sendPushToVendor(vendor.user_id, {
+      title: 'Teslim Onaylandı',
+      body: `${orderNumber} · ${productName.slice(0, 50)}`,
+      link: '/satici/panel/siparisler',
+    })
+  } catch (e) {
+    console.error('[order-notifications] vendor-delivery-confirmed exception:', e)
   }
 }
