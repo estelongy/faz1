@@ -1,3 +1,5 @@
+import Link from 'next/link'
+import { Mail } from 'lucide-react'
 import {
   NPS_LABELS,
   TEKRAR_GELIR_LABELS,
@@ -169,6 +171,21 @@ function ReviewCard({
         </div>
       ) : (
         <RespondToReviewForm reviewId={review.id} />
+      )}
+
+      {/* Özel (private) mesaj köprüsü — hasta iyilestirme_metni yazdiysa
+          klinik bu yorumu Mesajlar sekmesine geçip yanıtlamalı (tek seferlik). */}
+      {review.iyilestirme_metni && !review.private_clinic_response && (
+        <Link
+          href="/klinik/panel/mesajlar?f=unread"
+          className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200 text-xs font-bold active:bg-amber-500/20 transition"
+        >
+          <Mail size={14} className="shrink-0" />
+          <span className="flex-1">
+            Bu hastadan sana özel mesaj var — Mesajlardan yanıtla
+          </span>
+          <span className="text-amber-300">→</span>
+        </Link>
       )}
     </article>
   )
