@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
-import { CLINIC_TYPES } from '@/lib/randevu-filters'
+import { CLINIC_TYPES, TITLES } from '@/lib/randevu-filters'
 
 const ALLOWED_IMAGE_MIME = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024 // 5 MB
@@ -65,6 +65,7 @@ export async function updateClinicProfileAction(formData: FormData): Promise<Upd
   if (!clinic) return { ok: false, error: 'Klinik kaydı bulunamadı.' }
 
   const name = (formData.get('name') as string | null)?.trim() ?? ''
+  const title = (formData.get('title') as string | null)?.trim() ?? ''
   const location = (formData.get('location') as string | null)?.trim() ?? ''
   const clinic_type = (formData.get('clinic_type') as string | null)?.trim() ?? ''
   const bio = (formData.get('bio') as string | null)?.trim() ?? ''
@@ -79,6 +80,9 @@ export async function updateClinicProfileAction(formData: FormData): Promise<Upd
   if (clinic_type && !CLINIC_TYPES.includes(clinic_type)) {
     return { ok: false, error: 'Geçersiz klinik tipi.' }
   }
+  if (title && !(TITLES as readonly string[]).includes(title)) {
+    return { ok: false, error: 'Geçersiz unvan.' }
+  }
 
   // Specialties: virgül ile ayrılmış, trim, max 100 etiket (branş + ekstra için), her biri max 80 karakter
   const specialties = Array.from(
@@ -92,6 +96,7 @@ export async function updateClinicProfileAction(formData: FormData): Promise<Upd
 
   const update: Record<string, unknown> = {
     name,
+    title: title || null,
     location: location || null,
     bio: bio || null,
     phone: phone || null,

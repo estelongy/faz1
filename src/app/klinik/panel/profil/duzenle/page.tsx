@@ -19,13 +19,14 @@ export default async function ProfilDuzenlePage() {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, location, bio, specialties, clinic_type, phone, logo_url, cover_image_url')
+    .select('id, name, title, location, bio, specialties, clinic_type, phone, logo_url, cover_image_url')
     .eq('user_id', user.id)
     .single()
   if (!clinic) redirect('/esteklinik/basvur')
 
   const initial = {
     name: clinic.name,
+    title: (clinic as { title?: string | null }).title ?? null,
     location: clinic.location,
     bio: clinic.bio,
     clinic_type: clinic.clinic_type,

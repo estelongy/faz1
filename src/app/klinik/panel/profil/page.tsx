@@ -18,7 +18,7 @@ export default async function KlinikProfilPage() {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, location, bio, specialties, clinic_type, created_at')
+    .select('id, name, title, location, bio, specialties, clinic_type, created_at')
     .eq('user_id', user.id)
     .single()
   if (!clinic) redirect('/esteklinik/basvur')
@@ -29,6 +29,7 @@ export default async function KlinikProfilPage() {
       <ProfilAppView
         clinic={{
           name: clinic.name,
+          title: (clinic as { title?: string | null }).title ?? null,
           location: clinic.location,
           bio: clinic.bio,
           specialties: (clinic.specialties as string[] | null) ?? null,
@@ -56,7 +57,9 @@ export default async function KlinikProfilPage() {
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-black text-white">{clinic.name}</h2>
+              <h2 className="text-xl font-black text-white">
+                {(clinic as { title?: string | null }).title ? `${(clinic as { title?: string | null }).title} ` : ''}{clinic.name}
+              </h2>
               <p className="text-slate-400 text-sm">{clinic.clinic_type ?? 'Klinik'} · {clinic.location ?? '—'}</p>
             </div>
           </div>

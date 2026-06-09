@@ -3,7 +3,7 @@
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { CLINIC_TYPES, ALL_TREATMENTS, TREATMENTS_BY_BRANCH } from '@/lib/randevu-filters'
+import { CLINIC_TYPES, ALL_TREATMENTS, TREATMENTS_BY_BRANCH, TITLES } from '@/lib/randevu-filters'
 import { updateClinicProfileAction } from './actions'
 
 const MAX_SPECIALTIES = 100
@@ -15,6 +15,7 @@ function trNorm(s: string) {
 
 interface Initial {
   name: string
+  title: string | null
   location: string | null
   bio: string | null
   clinic_type: string | null
@@ -37,6 +38,7 @@ export default function EditForm({ initial }: { initial: Initial }) {
   const [success, setSuccess] = useState(false)
 
   const [name, setName] = useState(initial.name)
+  const [title, setTitle] = useState(initial.title ?? '')
   const [location, setLocation] = useState(initial.location ?? '')
   const [clinicType, setClinicType] = useState(initial.clinic_type ?? '')
   const [bio, setBio] = useState(initial.bio ?? '')
@@ -271,20 +273,37 @@ export default function EditForm({ initial }: { initial: Initial }) {
         </div>
       </div>
 
-      {/* Klinik adı */}
-      <div>
-        <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Klinik Adı *</label>
-        <input
-          name="name"
-          required
-          minLength={2}
-          maxLength={120}
-          value={name}
-          onChange={e => setName(e.target.value)}
-          className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
-          placeholder="Örn. Estelongy Beauty Clinic"
-        />
+      {/* Unvan + Klinik adı */}
+      <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-3">
+        <div>
+          <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Unvan</label>
+          <select
+            name="title"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-violet-500 transition-colors"
+          >
+            <option value="">— Yok —</option>
+            {TITLES.map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm uppercase tracking-widest text-slate-500 mb-1.5">Klinik / Hekim Adı *</label>
+          <input
+            name="name"
+            required
+            minLength={2}
+            maxLength={120}
+            value={name}
+            onChange={e => setName(e.target.value)}
+            className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
+            placeholder="Örn. Estelongy Beauty Clinic"
+          />
+        </div>
       </div>
+      <p className="-mt-3 text-sm text-slate-600">Unvan ad ile birlikte kartta gösterilir (ör. <span className="text-slate-400">Op. Dr. {name || 'İsim'}</span>).</p>
 
       {/* Konum */}
       <div>

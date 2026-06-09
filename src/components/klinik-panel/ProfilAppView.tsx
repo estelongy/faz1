@@ -4,6 +4,7 @@ import { Pencil, Calendar, ChevronRight } from 'lucide-react'
 interface Props {
   clinic: {
     name: string
+    title: string | null
     location: string | null
     bio: string | null
     specialties: string[] | null
@@ -39,7 +40,9 @@ export default function ProfilAppView({ clinic }: Props) {
               {clinic.name[0]?.toUpperCase() ?? '?'}
             </div>
             <div className="min-w-0">
-              <h2 className="text-white font-bold text-base truncate">{clinic.name}</h2>
+              <h2 className="text-white font-bold text-base truncate">
+                {clinic.title ? `${clinic.title} ` : ''}{clinic.name}
+              </h2>
               <p className="text-slate-400 text-xs mt-0.5">
                 {clinic.clinic_type ?? 'Klinik'} · {clinic.location ?? '—'}
               </p>

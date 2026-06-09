@@ -22,7 +22,7 @@ interface NavGroup {
 function buildNavGroups(isEducator: boolean, showMuhasebe: boolean): NavGroup[] {
   const main: NavItem[] = [
     { href: '/klinik/panel',           icon: '🏠', label: 'Panel', exact: true },
-    { href: '/klinik/panel/randevular', icon: '📅', label: 'Randevular' },
+    { href: '/klinik/panel/takvim',     icon: '📅', label: 'Randevular' },
     { href: '/klinik/panel/hastalarim', icon: '👥', label: 'Hastalarım' },
     { href: '/klinik/panel/yorumlar',   icon: '💬', label: 'Yorumlar', badge: 'new' },
     { href: '/klinik/panel/mesajlar',   icon: '✉️', label: 'Mesajlar', badge: 'new' },

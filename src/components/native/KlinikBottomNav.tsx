@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react'
  */
 const TABS: Array<{ href: string; label: string; Icon: typeof Home; prefix?: string }> = [
   { href: '/klinik/panel', label: 'Panel', Icon: Home, prefix: undefined },
-  { href: '/klinik/panel/randevular', label: 'Randevu', Icon: Calendar, prefix: '/klinik/panel/randevular' },
+  { href: '/klinik/panel/takvim', label: 'Randevu', Icon: Calendar, prefix: '/klinik/panel/takvim' },
   { href: '/klinik/panel/hastalarim', label: 'Hastalar', Icon: Users, prefix: '/klinik/panel/hasta' },
   { href: '/klinik/panel/mesajlar', label: 'Mesaj', Icon: MessageCircle, prefix: '/klinik/panel/mesajlar' },
   { href: '/klinik/panel/menu', label: 'Menü', Icon: Menu, prefix: '/klinik/panel/menu' },

@@ -104,7 +104,7 @@ export default function KlinikPROAppHome({
       <section className="mt-5 px-5">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Şimdi</p>
         <Link
-          href="/klinik/panel/randevular"
+          href="/klinik/panel/takvim"
           className="block rounded-2xl border border-slate-800 bg-slate-900/60 p-4 active:bg-slate-900 transition"
         >
           <div className="grid grid-cols-3 gap-3">
@@ -131,7 +131,7 @@ export default function KlinikPROAppHome({
             {todayAppts.slice(0, 4).map((a) => (
               <li key={a.id}>
                 <Link
-                  href={`/klinik/panel/randevular`}
+                  href={`/klinik/panel/takvim`}
                   className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-3.5 active:bg-slate-900 transition"
                 >
                   <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
@@ -150,7 +150,7 @@ export default function KlinikPROAppHome({
             {todayAppts.length > 4 && (
               <li>
                 <Link
-                  href="/klinik/panel/randevular"
+                  href="/klinik/panel/takvim"
                   className="block text-center text-xs font-medium text-emerald-400 py-2 active:text-emerald-300"
                 >
                   +{todayAppts.length - 4} randevu — tümünü göster
