@@ -34,6 +34,8 @@ interface OrderItem {
 interface Props {
   items: OrderItem[]
   hasShippingSettings: boolean
+  /** "Ayarlar tamam değil" durumda vendor'a granular mesaj (settings yok / email eksik / postal eksik). */
+  shippingHint?: string | null
   /** Etiket basarken default seçim — vendor'un kargo ayarlarında işaretlediği "varsayılan". */
   defaultCarrier: string
   /** Vendor'un anlaşmalı/tercih ettiği kargolar — etiket basarken seçim menüsünde bunlar listelenir. */
@@ -42,7 +44,7 @@ interface Props {
 
 const ALL_CARRIERS_FALLBACK = ['Yurtiçi Kargo', 'Aras Kargo', 'MNG Kargo', 'PTT Kargo', 'Sürat Kargo', 'HepsiJet', 'Trendyol Express', 'Diğer']
 
-export default function SiparisKartlari({ items, hasShippingSettings, defaultCarrier, preferredCarriers }: Props) {
+export default function SiparisKartlari({ items, hasShippingSettings, shippingHint, defaultCarrier, preferredCarriers }: Props) {
   // Etiket basma & manuel kargo girişi seçim listesi — vendor sadece anlaştığı
   // kargolarla görünür. preferred yoksa (yeni hesap) tüm CARRIERS fallback.
   const CARRIERS = preferredCarriers.length > 0 ? preferredCarriers : ALL_CARRIERS_FALLBACK
@@ -157,8 +159,8 @@ export default function SiparisKartlari({ items, hasShippingSettings, defaultCar
       {/* Toplu işlem barı */}
       {!hasShippingSettings && (
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm flex items-center justify-between flex-wrap gap-2">
-          <span>⚠️ <strong>Kargo ayarların yok.</strong> Tek tıkla etiket üretmek için ayarları doldur.</span>
-          <a href="/satici/panel/kargo" className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-lg text-sm">Ayarları Doldur →</a>
+          <span>⚠️ {shippingHint ?? 'Kargo ayarların eksik — etiket basamazsın.'}</span>
+          <a href="/satici/panel/kargo" className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-lg text-sm shrink-0">Ayarları Aç →</a>
         </div>
       )}
 

@@ -55,6 +55,18 @@ export default async function SaticiSiparislerPage({
     .maybeSingle()
   const hasShippingSettings =
     !!shippingSettings && !!shippingSettings.sender_email && !!shippingSettings.sender_postal_code
+  // Vendor'a "neyin eksik olduğunu" söyle — "ayarlar yok" değil de "şu alan eksik".
+  let shippingHint: string | null = null
+  if (!shippingSettings) {
+    shippingHint = 'Kargo ayarların hiç oluşturulmamış. Tek tıkla etiket üretmek için doldur.'
+  } else {
+    const missing: string[] = []
+    if (!shippingSettings.sender_email) missing.push('gönderici e-posta')
+    if (!shippingSettings.sender_postal_code) missing.push('posta kodu')
+    if (missing.length > 0) {
+      shippingHint = `Kargo ayarlarında ${missing.join(' ve ')} eksik — etiket basamazsın.`
+    }
+  }
   const defaultCarrier = shippingSettings?.default_carrier ?? 'Yurtiçi Kargo'
   const preferredCarriers: string[] = (shippingSettings?.preferred_carriers as string[] | null) ?? [defaultCarrier]
 
@@ -85,6 +97,7 @@ export default async function SaticiSiparislerPage({
         companyName={vendor.company_name ?? 'İş Ortağı'}
         items={(items ?? []) as unknown as Parameters<typeof SiparislerAppView>[0]['items']}
         hasShippingSettings={hasShippingSettings}
+        shippingHint={shippingHint}
         defaultCarrier={defaultCarrier}
         preferredCarriers={preferredCarriers}
         durum={durum}
@@ -125,6 +138,7 @@ export default async function SaticiSiparislerPage({
           <SiparisKartlari
             items={items}
             hasShippingSettings={hasShippingSettings}
+            shippingHint={shippingHint}
             defaultCarrier={defaultCarrier}
             preferredCarriers={preferredCarriers}
           />

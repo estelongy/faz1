@@ -8,6 +8,7 @@ interface Props {
   companyName: string
   items: OrderItem[]
   hasShippingSettings: boolean
+  shippingHint: string | null
   defaultCarrier: string
   preferredCarriers: string[]
   durum?: string
@@ -30,6 +31,7 @@ export default function SiparislerAppView({
   companyName,
   items,
   hasShippingSettings,
+  shippingHint,
   defaultCarrier,
   preferredCarriers,
   durum,
@@ -86,6 +88,7 @@ export default function SiparislerAppView({
             <SiparisKartlari
               items={items}
               hasShippingSettings={hasShippingSettings}
+              shippingHint={shippingHint}
               defaultCarrier={defaultCarrier}
               preferredCarriers={preferredCarriers}
             />
