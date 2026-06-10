@@ -13,7 +13,7 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     Icon: Stethoscope,
-    title: 'EsteKlinikPRO nedir?',
+    title: 'EsteKlinik PRO nedir?',
     body: 'Klinik operasyonunu cebe taşıyan panel. Randevu, hasta dosyası, mesaj, kredi — hareket halinde de yönet.',
   },
   {

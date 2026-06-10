@@ -33,7 +33,8 @@ export default function KlinikBottomNav() {
   useEffect(() => { setMounted(true) }, [])
 
   if (!isApp || !mounted) return null
-  if (!pathname.startsWith('/klinik')) return null
+  // Sadece panel altında — karşılama, başvuru, klinik slug sayfaları nav-free
+  if (!pathname.startsWith('/klinik/panel')) return null
 
   const isActive = (t: typeof TABS[number]) => {
     if (t.prefix) return pathname.startsWith(t.prefix)
