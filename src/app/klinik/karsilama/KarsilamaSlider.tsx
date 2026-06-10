@@ -38,7 +38,7 @@ const SLIDES: Slide[] = [
 const ALT_APPS = [
   { name: 'BiyoAGE',    tag: 'Biyolojik yaşını öğren · sağlıklı yaş al', href: 'https://biyoage.com' },
   { name: 'EsteStore',  tag: 'Cildine doğru olanı al · bilime güven',    href: 'https://estelongy.com/estestore' },
-  { name: 'EsteKlinik', tag: 'Sanatçı hekimi bul · sonucu ölç',          href: 'https://esteklinik.com' },
+  { name: 'EsteKlinik', tag: 'Bilimi Güzelliğe Dönüştüren Uzmanlarla Tanış', href: 'https://esteklinik.com' },
 ]
 
 function setOnboardCookie() {
