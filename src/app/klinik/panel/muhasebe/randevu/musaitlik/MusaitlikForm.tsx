@@ -18,34 +18,57 @@ const GUNLER = [
 
 type DayState = {
   is_active: boolean
-  start_time: string
-  end_time: string
+  start_min: number  // 0..1425
+  end_min: number    // 15..1440  (1440 = 24:00)
   slot_duration_minutes: number
+}
+
+function hhmmToMin(s: string): number {
+  const [h, m] = s.split(':').map(Number)
+  if (Number.isNaN(h) || Number.isNaN(m)) return 0
+  return h * 60 + m
+}
+
+function minToHHMM(m: number): string {
+  if (m >= 1440) return '24:00'
+  const h = Math.floor(m / 60)
+  const mm = m % 60
+  return `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
 }
 
 function buildInitial(week: AvailabilityWeek): Record<number, DayState> {
   const map: Record<number, DayState> = {}
   for (const d of GUNLER) {
-    map[d.id] = { is_active: false, start_time: '09:00', end_time: '19:00', slot_duration_minutes: 30 }
+    map[d.id] = { is_active: false, start_min: 9 * 60, end_min: 19 * 60, slot_duration_minutes: 30 }
   }
   for (const row of week) {
     map[row.day_of_week] = {
       is_active: !row.is_closed,
-      start_time: row.open_time.slice(0, 5),
-      end_time: row.close_time.slice(0, 5),
+      start_min: hhmmToMin(row.open_time.slice(0, 5)),
+      end_min: hhmmToMin(row.close_time.slice(0, 5)) || 1140,
       slot_duration_minutes: row.slot_duration_minutes,
     }
   }
   return map
 }
 
-function slotCount(start: string, end: string, duration: number): number {
-  const [sh, sm] = start.split(':').map(Number)
-  const [eh, em] = end.split(':').map(Number)
-  const totalMins = (eh * 60 + em) - (sh * 60 + sm)
+function slotCount(startMin: number, endMin: number, duration: number): number {
+  const totalMins = endMin - startMin
   if (totalMins <= 0) return 0
   return Math.floor(totalMins / duration)
 }
+
+function formatDuration(mins: number): string {
+  if (mins <= 0) return '—'
+  const h = Math.floor(mins / 60)
+  const m = mins % 60
+  if (h === 0) return `${m} dk`
+  if (m === 0) return `${h} saat`
+  return `${h}s ${m}dk`
+}
+
+const STEP = 15
+const MAX_MIN = 1440
 
 export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
   const router = useRouter()
@@ -55,7 +78,15 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
   const [error, setError] = useState<string | null>(null)
 
   function updateDay(dayId: number, patch: Partial<DayState>) {
-    setDays(prev => ({ ...prev, [dayId]: { ...prev[dayId], ...patch } }))
+    setDays(prev => {
+      const cur = { ...prev[dayId], ...patch }
+      // start < end zorunluluğu (en az 1 step boşluk)
+      if (cur.start_min >= cur.end_min) {
+        if ('start_min' in patch) cur.end_min = Math.min(MAX_MIN, cur.start_min + STEP)
+        if ('end_min' in patch) cur.start_min = Math.max(0, cur.end_min - STEP)
+      }
+      return { ...prev, [dayId]: cur }
+    })
     setSaved(false)
   }
 
@@ -74,8 +105,8 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
     const fd = new FormData()
     for (let dow = 0; dow < 7; dow++) {
       const d = days[dow]
-      fd.set(`open_${dow}`, d.start_time)
-      fd.set(`close_${dow}`, d.end_time)
+      fd.set(`open_${dow}`, minToHHMM(d.start_min))
+      fd.set(`close_${dow}`, minToHHMM(d.end_min))
       fd.set(`closed_${dow}`, d.is_active ? '' : 'on')
       fd.set(`duration_${dow}`, String(d.slot_duration_minutes))
     }
@@ -91,13 +122,13 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
   const activeDays = GUNLER.filter(d => days[d.id]?.is_active)
   const totalSlotsPerWeek = activeDays.reduce((sum, d) => {
     const day = days[d.id]
-    return sum + slotCount(day.start_time, day.end_time, day.slot_duration_minutes)
+    return sum + slotCount(day.start_min, day.end_min, day.slot_duration_minutes)
   }, 0)
 
   return (
     <div className="space-y-4">
       {/* Özet */}
-      <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl flex items-center gap-4">
+      <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl flex items-center gap-4 flex-wrap">
         <div className="text-center">
           <p className="text-3xl font-black text-violet-400">{activeDays.length}</p>
           <p className="text-slate-500 text-sm">Aktif Gün</p>
@@ -111,8 +142,8 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
           <button
             type="button"
             onClick={applyToWeekdays}
-            className="text-base px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors font-semibold">
-            Pazartesi ayarlarını Sal-Cum&apos;a uygula
+            className="text-sm px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors font-semibold">
+            Pzt&apos;yi Sal-Cum&apos;a uygula
           </button>
         </div>
       </div>
@@ -120,7 +151,8 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
       {/* Gün kartları */}
       {GUNLER.map(gun => {
         const d = days[gun.id]
-        const slots = d.is_active ? slotCount(d.start_time, d.end_time, d.slot_duration_minutes) : 0
+        const slots = d.is_active ? slotCount(d.start_min, d.end_min, d.slot_duration_minutes) : 0
+        const duration = d.end_min - d.start_min
         return (
           <div
             key={gun.id}
@@ -142,32 +174,55 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
                 <span className="text-white font-bold">{gun.label}</span>
               </div>
               {d.is_active && (
-                <span className="text-slate-400 text-sm">{slots} slot / gün</span>
+                <span className="text-slate-400 text-xs">{slots} slot · {formatDuration(duration)}</span>
               )}
             </div>
 
             {d.is_active && (
-              <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-4">
+                {/* Saat aralığı seçici */}
                 <div>
-                  <label className="block text-slate-500 text-sm mb-1">Açılış</label>
-                  <input
-                    type="time"
-                    value={d.start_time}
-                    onChange={e => updateDay(gun.id, { start_time: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500"
-                  />
+                  <div className="flex items-end justify-between mb-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Açılış</p>
+                      <p className="text-2xl font-black text-white tabular-nums">{minToHHMM(d.start_min)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Kapanış</p>
+                      <p className="text-2xl font-black text-white tabular-nums">{minToHHMM(d.end_min)}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-[10px] text-slate-500 mb-1">Açılış kaydır</label>
+                      <input
+                        type="range"
+                        min={0}
+                        max={MAX_MIN - STEP}
+                        step={STEP}
+                        value={d.start_min}
+                        onChange={e => updateDay(gun.id, { start_min: Number(e.target.value) })}
+                        className="w-full accent-violet-500 h-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-slate-500 mb-1">Kapanış kaydır</label>
+                      <input
+                        type="range"
+                        min={STEP}
+                        max={MAX_MIN}
+                        step={STEP}
+                        value={d.end_min}
+                        onChange={e => updateDay(gun.id, { end_min: Number(e.target.value) })}
+                        className="w-full accent-emerald-500 h-2"
+                      />
+                    </div>
+                  </div>
                 </div>
+
+                {/* Slot süresi */}
                 <div>
-                  <label className="block text-slate-500 text-sm mb-1">Kapanış</label>
-                  <input
-                    type="time"
-                    value={d.end_time}
-                    onChange={e => updateDay(gun.id, { end_time: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-violet-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-500 text-sm mb-1">Slot Süresi</label>
+                  <label className="block text-slate-500 text-xs mb-1">Slot Süresi</label>
                   <select
                     value={d.slot_duration_minutes}
                     onChange={e => updateDay(gun.id, { slot_duration_minutes: Number(e.target.value) })}
