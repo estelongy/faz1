@@ -66,7 +66,7 @@ export default async function KlinikPanelPage() {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, title, credit_balance, free_appointments_remaining')
+    .select('id, name, title, credit_balance, free_appointments_remaining, clinic_egp, review_count')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -162,6 +162,8 @@ export default async function KlinikPanelPage() {
         pendingCount={pendingAppts.length}
         inProgressCount={inProgressAppts.length}
         tomorrowApptsCount={tomorrowAppts.length}
+        clinicEgp={clinic.clinic_egp ?? null}
+        reviewCount={clinic.review_count ?? 0}
         onboarding={onboarding}
       />
     )
