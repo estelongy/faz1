@@ -128,8 +128,8 @@ export default async function MuhasebePage({
   const remainingAll = totalAll - paidAll
   const debtorCount = rows.filter(r => r.remaining > 0).length
 
-  // ─── Günlük hareket dökümü (son 90 gün) ─────────────────────
-  const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 90).toISOString().slice(0, 10)
+  // ─── Günlük hareket dökümü (son 365 gün — geçmiş ay seçici için) ─
+  const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 365).toISOString().slice(0, 10)
   const dayMap = new Map<string, DayGroup>()
   function ensureDay(d: string): DayGroup {
     let g = dayMap.get(d)

@@ -91,6 +91,38 @@ export default function MuhasebeShellClient({
 }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<'gunluk' | 'hastalar'>('gunluk')
+
+  // Ay seçici — geçmiş 12 ay arası gezinme. Server "bu ay" prop'larını gönderir,
+  // geçmiş ay seçilirse days'den client-side hesaplanır.
+  const today = new Date()
+  const [monthOffset, setMonthOffset] = useState(0) // 0 = bu ay, -1 = geçen ay
+  const selectedMonth = useMemo(() => {
+    const d = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1)
+    return {
+      key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+      label: d.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }),
+      isCurrent: monthOffset === 0,
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monthOffset])
+
+  const monthStats = useMemo(() => {
+    if (monthOffset === 0) {
+      return { billed: monthBilled, collected: monthCollected, label: monthLabel }
+    }
+    const billed = days
+      .filter(d => d.date.startsWith(selectedMonth.key))
+      .reduce((s, d) => s + d.billed, 0)
+    const collected = days
+      .filter(d => d.date.startsWith(selectedMonth.key))
+      .reduce((s, d) => s + d.collected, 0)
+    return { billed, collected, label: selectedMonth.label }
+  }, [monthOffset, monthBilled, monthCollected, monthLabel, days, selectedMonth])
+
+  const monthDays = useMemo(() => {
+    if (monthOffset === 0) return days
+    return days.filter(d => d.date.startsWith(selectedMonth.key))
+  }, [monthOffset, days, selectedMonth])
   const [showQuick, setShowQuick] = useState(!!prefill)
   const [completingAppointmentId, setCompletingAppointmentId] = useState<string | null>(prefill?.appointmentId ?? null)
   const [pending, startTransition] = useTransition()
@@ -204,7 +236,7 @@ export default function MuhasebeShellClient({
     })
   }
 
-  const monthRemaining = monthBilled - monthCollected
+  const monthRemaining = monthStats.billed - monthStats.collected
 
   return (
     <>
@@ -563,14 +595,36 @@ export default function MuhasebeShellClient({
         </form>
       )}
 
-      {/* Aylık yekün banner — her zaman görünür */}
+      {/* Aylık yekün banner — ay seçici ile */}
       <div className="mb-5 rounded-2xl bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 border border-violet-500/30 p-4 sm:p-5">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-sm uppercase tracking-widest text-violet-300/80 font-bold">Bu Ay</p>
-            <p className="text-white font-black text-lg sm:text-xl capitalize">{monthLabel}</p>
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              type="button"
+              onClick={() => setMonthOffset(o => Math.max(o - 1, -11))}
+              disabled={monthOffset <= -11}
+              aria-label="Önceki ay"
+              className="w-9 h-9 shrink-0 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-violet-300 font-bold disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              ‹
+            </button>
+            <div className="min-w-0">
+              <p className="text-sm uppercase tracking-widest text-violet-300/80 font-bold">
+                {selectedMonth.isCurrent ? 'Bu Ay' : 'Geçmiş Ay'}
+              </p>
+              <p className="text-white font-black text-lg sm:text-xl capitalize truncate">{monthStats.label}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMonthOffset(o => Math.min(o + 1, 0))}
+              disabled={monthOffset >= 0}
+              aria-label="Sonraki ay"
+              className="w-9 h-9 shrink-0 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-violet-300 font-bold disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              ›
+            </button>
           </div>
-          <div className="text-right">
+          <div className="text-right shrink-0">
             <p className="text-sm uppercase tracking-widest text-slate-400">Net</p>
             <p className={`font-black text-lg sm:text-xl ${monthRemaining > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
               {monthRemaining > 0 ? '−' : '+'}{formatTRY(Math.abs(monthRemaining))}
@@ -578,10 +632,10 @@ export default function MuhasebeShellClient({
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
-          <MiniStat label="Faturalanan" value={formatTRY(monthBilled)} tone="neutral" />
-          <MiniStat label="Tahsil Edilen" value={formatTRY(monthCollected)} tone="positive" />
+          <MiniStat label="Faturalanan" value={formatTRY(monthStats.billed)} tone="neutral" />
+          <MiniStat label="Tahsil Edilen" value={formatTRY(monthStats.collected)} tone="positive" />
           <MiniStat
-            label="Bu Ay Bekleyen"
+            label={selectedMonth.isCurrent ? 'Bu Ay Bekleyen' : 'Aylık Bekleyen'}
             value={formatTRY(Math.max(0, monthRemaining))}
             tone={monthRemaining > 0 ? 'warning' : 'positive'}
           />
@@ -613,7 +667,7 @@ export default function MuhasebeShellClient({
         </TabButton>
       </div>
 
-      {tab === 'gunluk' && <DailyTimeline days={days} />}
+      {tab === 'gunluk' && <DailyTimeline days={monthDays} />}
       {tab === 'hastalar' && <MuhasebeListClient initialRows={rows} />}
     </>
   )
