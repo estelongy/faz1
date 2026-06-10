@@ -21,7 +21,7 @@ const SLIDES: Slide[] = [
   {
     Icon: Activity,
     eyebrow: 'Estelongy felsefesi',
-    title: 'Genç görünmek değil — sağlıklı görünmek.',
+    title: 'Her Zaman Genç…\nHer Zaman Doğal…\nHer Dem Özünde…',
     body: 'Yorum platformu değiliz, ölçüm platformuyuz. Skor değişimi · doğru endikasyon · hasta tavsiyesi — sanatın puanlanmaz, sonucu ölçülür.',
   },
   {
@@ -103,7 +103,7 @@ export default function KarsilamaSlider() {
               <s.Icon size={36} className="text-emerald-300" />
             </div>
             <p className="text-[10px] uppercase tracking-[0.24em] text-emerald-300/80 font-semibold mb-2">{s.eyebrow}</p>
-            <h2 className="text-[26px] font-black leading-[1.15] mb-3 max-w-sm">{s.title}</h2>
+            <h2 className="text-[26px] font-black leading-[1.2] mb-3 max-w-sm whitespace-pre-line">{s.title}</h2>
             <p className="text-slate-400 text-[15px] leading-relaxed max-w-sm">{s.body}</p>
           </section>
         ))}
