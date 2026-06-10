@@ -2,29 +2,33 @@
 
 import { useRef, useState } from 'react'
 import Link from 'next/link'
-import { Stethoscope, ShieldCheck, BarChart3 } from 'lucide-react'
+import { Microscope, Activity, Users } from 'lucide-react'
 
 interface Slide {
-  Icon: typeof Stethoscope
+  Icon: typeof Microscope
+  eyebrow: string
   title: string
   body: string
 }
 
 const SLIDES: Slide[] = [
   {
-    Icon: Stethoscope,
-    title: 'EsteKlinik PRO nedir?',
-    body: 'Klinik operasyonunu cebe taşıyan panel. Randevu, hasta dosyası, mesaj, kredi — hareket halinde de yönet.',
+    Icon: Microscope,
+    eyebrow: 'Bilimi güzelliğe dönüştüren',
+    title: 'Sen bir sanatçısın.',
+    body: 'Elinin altındaki bilim, hastanın aynasında güzelliğe dönüşür. Estelongy bu dönüşümü görünür kılan ilk platformdur.',
   },
   {
-    Icon: ShieldCheck,
-    title: 'Hekim Dostu Model',
-    body: '"Genç görünmek değil, sağlıklı görünmek." Estelongy yorum platformu değil, ölçüm platformudur. Skor değişimi · NPS · doğru endikasyon — algoritmik EGP rozeti yolda.',
+    Icon: Activity,
+    eyebrow: 'Estelongy felsefesi',
+    title: 'Genç görünmek değil — sağlıklı görünmek.',
+    body: 'Yorum platformu değiliz, ölçüm platformuyuz. Skor değişimi · doğru endikasyon · hasta tavsiyesi — sanatın puanlanmaz, sonucu ölçülür.',
   },
   {
-    Icon: BarChart3,
-    title: 'Performans skoruyla büyü',
-    body: 'Sonuç etkinliği · hasta tavsiyesi · operasyonel kalite — ölçülen klinik vitrinde öne çıkar. ELS sertifika kademeleri (Bronze → Platinum).',
+    Icon: Users,
+    eyebrow: 'İlk 100 hekim',
+    title: 'Kurucu hekimler arasında ol.',
+    body: 'Estelongy bu yolculuğu sıfırdan açan hekimleri rozetler. Topluluk büyüdükçe senin adın hikâyede kalır.',
   },
 ]
 
@@ -32,9 +36,9 @@ const SLIDES: Slide[] = [
 // yönlendir — klinik kullanıcısı doğru galaksiyi tarayıcıda görür. Play Store
 // yayını başlayınca href'leri play.google.com'a güncelle.
 const ALT_APPS = [
-  { name: 'BiyoAGE',    tag: 'Görünüm yaşını hemen öğren',           href: 'https://biyoage.com' },
-  { name: 'EsteStore',  tag: 'Sana özel ürünü al',                   href: 'https://estelongy.com/estestore' },
-  { name: 'EsteKlinik', tag: 'Bilimi güzelliğe dönüştüren uzmanı bul', href: 'https://esteklinik.com' },
+  { name: 'BiyoAGE',    tag: 'Biyolojik yaşını öğren · sağlıklı yaş al', href: 'https://biyoage.com' },
+  { name: 'EsteStore',  tag: 'Cildine doğru olanı al · bilime güven',    href: 'https://estelongy.com/estestore' },
+  { name: 'EsteKlinik', tag: 'Sanatçı hekimi bul · sonucu ölç',          href: 'https://esteklinik.com' },
 ]
 
 function setOnboardCookie() {
@@ -98,8 +102,9 @@ export default function KarsilamaSlider() {
             <div className="w-20 h-20 rounded-2xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center mb-6">
               <s.Icon size={36} className="text-emerald-300" />
             </div>
-            <h2 className="text-2xl font-black leading-tight mb-3">{s.title}</h2>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">{s.body}</p>
+            <p className="text-[10px] uppercase tracking-[0.24em] text-emerald-300/80 font-semibold mb-2">{s.eyebrow}</p>
+            <h2 className="text-[26px] font-black leading-[1.15] mb-3 max-w-sm">{s.title}</h2>
+            <p className="text-slate-400 text-[15px] leading-relaxed max-w-sm">{s.body}</p>
           </section>
         ))}
       </div>
