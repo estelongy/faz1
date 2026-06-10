@@ -66,7 +66,7 @@ export default async function KlinikPanelPage() {
 
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id, name, credit_balance, free_appointments_remaining')
+    .select('id, name, title, credit_balance, free_appointments_remaining')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -154,7 +154,8 @@ export default async function KlinikPanelPage() {
     return (
       <KlinikPROAppHome
         greeting={getGreeting()}
-        hekimFirstName={(profile?.full_name?.split(' ')[0]) ?? 'Hekim'}
+        hekimTitle={clinic.title ?? 'Dr.'}
+        hekimFirstName={(clinic.name?.split(' ')[0]) ?? 'Hekim'}
         clinicName={clinic.name}
         totalCredit={totalCredit}
         todayAppts={todayAppts.map(apptToViewLite)}

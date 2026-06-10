@@ -11,6 +11,7 @@ interface AppointmentLite {
 
 interface Props {
   greeting: string
+  hekimTitle: string
   hekimFirstName: string
   clinicName: string
   totalCredit: number
@@ -33,6 +34,7 @@ interface Props {
  */
 export default function KlinikPROAppHome({
   greeting,
+  hekimTitle,
   hekimFirstName,
   clinicName,
   totalCredit,
@@ -59,7 +61,7 @@ export default function KlinikPROAppHome({
         <p className="text-xs uppercase tracking-[0.18em] text-emerald-400/80">{clinicName}</p>
         <h1 className="mt-1 text-2xl font-bold leading-tight">
           {greeting},<br />
-          <span className="text-emerald-300">Dr. {hekimFirstName}</span>
+          <span className="text-emerald-300">{hekimTitle} {hekimFirstName}</span>
         </h1>
       </header>
 
