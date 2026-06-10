@@ -1,12 +1,14 @@
 import MusaitlikForm from '@/app/klinik/panel/muhasebe/randevu/musaitlik/MusaitlikForm'
+import AutoConfirmCard from '@/app/klinik/panel/muhasebe/randevu/musaitlik/AutoConfirmCard'
 import type { DayAvailability } from '@/app/klinik/panel/muhasebe/randevu/slot-utils'
 
 interface Props {
   week: DayAvailability[]
   doctorName: string
+  autoConfirm: boolean
 }
 
-export default function MuhasebeMusaitlikAppView({ week, doctorName }: Props) {
+export default function MuhasebeMusaitlikAppView({ week, doctorName, autoConfirm }: Props) {
   return (
     <div
       className="-m-4 lg:-m-8 min-h-screen bg-slate-950 text-white"
@@ -18,6 +20,9 @@ export default function MuhasebeMusaitlikAppView({ week, doctorName }: Props) {
           Marketplace klinik müsaitliğinden bağımsız çalışır.
         </p>
       </header>
+      <section className="px-5 mb-4">
+        <AutoConfirmCard initial={autoConfirm} />
+      </section>
       <section className="px-5">
         <MusaitlikForm week={week} />
       </section>

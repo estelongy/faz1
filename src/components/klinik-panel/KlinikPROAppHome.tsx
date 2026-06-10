@@ -13,6 +13,15 @@ interface AppointmentLite {
   status: string
 }
 
+interface WeekDay {
+  iso: string
+  label: string
+  day: number
+  count: number
+  isToday: boolean
+  isPast: boolean
+}
+
 interface Props {
   greeting: string
   hekimTitle: string
@@ -26,6 +35,7 @@ interface Props {
   clinicEgp: number | null
   reviewCount: number
   onboarding?: OnboardingStatus
+  weekSummary?: WeekDay[]
 }
 
 /**
@@ -52,6 +62,7 @@ export default function KlinikPROAppHome({
   clinicEgp,
   reviewCount,
   onboarding,
+  weekSummary,
 }: Props) {
   const showOnboarding = onboarding && !onboarding.isComplete && onboarding.nextStep
   const progressPct = onboarding ? Math.round((onboarding.completedCount / onboarding.totalCount) * 100) : 0
@@ -113,6 +124,43 @@ export default function KlinikPROAppHome({
                 <p className="text-xs text-emerald-300/80 mt-0.5">{statusLabel(nextAppt.status)}</p>
               </div>
               <ChevronRight size={18} className="text-emerald-300 shrink-0" />
+            </div>
+          </Link>
+        </section>
+      )}
+
+      {/* ─── 2.5 Bu Hafta — 6/7 gün şerit ─── */}
+      {weekSummary && weekSummary.length > 0 && (
+        <section className="px-5 mt-1 mb-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Bu Hafta</p>
+          <Link
+            href="/klinik/panel/takvim"
+            className="block rounded-2xl border border-slate-800 bg-slate-900/40 p-2 active:bg-slate-900 transition"
+          >
+            <div
+              className="grid gap-1"
+              style={{ gridTemplateColumns: `repeat(${weekSummary.length}, minmax(0, 1fr))` }}
+            >
+              {weekSummary.map(d => (
+                <div
+                  key={d.iso}
+                  className={`rounded-xl border px-1 py-2 text-center ${
+                    d.isToday
+                      ? 'border-emerald-500/60 bg-emerald-500/10'
+                      : d.isPast
+                      ? 'border-slate-800/60 bg-slate-900/30 opacity-50'
+                      : 'border-slate-800 bg-slate-900/60'
+                  }`}
+                >
+                  <p className="text-[9px] uppercase tracking-[0.08em] text-slate-500 font-bold">{d.label}</p>
+                  <p className={`text-base font-black leading-tight ${d.isToday ? 'text-emerald-300' : 'text-white'}`}>
+                    {d.day}
+                  </p>
+                  <p className={`text-[10px] font-semibold ${d.count > 0 ? 'text-slate-300' : 'text-slate-600'}`}>
+                    {d.count > 0 ? d.count : '·'}
+                  </p>
+                </div>
+              ))}
             </div>
           </Link>
         </section>

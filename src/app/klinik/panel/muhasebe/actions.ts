@@ -614,6 +614,22 @@ export async function saveAvailability(formData: FormData): Promise<Result> {
   return { ok: true }
 }
 
+// ─── Randevu kabul modu: otomatik onay aç/kapa ───────────────────────────
+export async function setAutoConfirmAppointments(value: boolean): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const { error } = await ctx.supabase
+    .from('clinics')
+    .update({ auto_confirm_appointments: value })
+    .eq('user_id', ctx.user.id)
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel')
+  revalidatePath('/klinik/panel/muhasebe/randevu/musaitlik')
+  return { ok: true }
+}
+
 // ─── Seri yönetimi: toplu iptal ───────────────────────────────────────────
 // scope: 'all' = serinin tüm scheduled randevuları, 'future' = pivot tarihinden sonraki scheduled randevular
 export async function cancelRecurrenceSeries(params: {

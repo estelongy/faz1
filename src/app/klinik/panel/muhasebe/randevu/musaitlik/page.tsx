@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, getMuhasebeOwnerProfile } from '@/lib/muhasebe-owner'
 import { normalizeWeek, type DayAvailability } from '../slot-utils'
 import MusaitlikForm from './MusaitlikForm'
+import AutoConfirmCard from './AutoConfirmCard'
 import { getServerFlavor } from '@/lib/server-flavor'
 import MuhasebeMusaitlikAppView from '@/components/klinik-panel/MuhasebeMusaitlikAppView'
 
@@ -22,18 +23,26 @@ export default async function MusaitlikPage() {
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
   const ownerProfile = getMuhasebeOwnerProfile(user.id)
 
-  const { data } = await supabase
-    .from('internal_availability')
-    .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
-    .eq('owner_id', user.id)
-    .order('day_of_week', { ascending: true })
+  const [{ data }, { data: clinicRow }] = await Promise.all([
+    supabase
+      .from('internal_availability')
+      .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
+      .eq('owner_id', user.id)
+      .order('day_of_week', { ascending: true }),
+    supabase
+      .from('clinics')
+      .select('auto_confirm_appointments')
+      .eq('user_id', user.id)
+      .maybeSingle(),
+  ])
 
   const week = normalizeWeek((data ?? []) as Partial<DayAvailability>[])
+  const autoConfirm = clinicRow?.auto_confirm_appointments ?? true
 
   const flavor = await getServerFlavor()
   if (flavor === 'esteklinikpro') {
     return (
-      <MuhasebeMusaitlikAppView week={week} doctorName={ownerProfile.displayName} />
+      <MuhasebeMusaitlikAppView week={week} doctorName={ownerProfile.displayName} autoConfirm={autoConfirm} />
     )
   }
 
@@ -48,6 +57,10 @@ export default async function MusaitlikPage() {
           {ownerProfile.displayName} — Özel pratik için hangi günler ve saatlerde randevu kabul ettiğini belirle.
           Marketplace klinik müsaitliğinden bağımsız çalışır.
         </p>
+      </div>
+
+      <div className="mb-4">
+        <AutoConfirmCard initial={autoConfirm} />
       </div>
 
       <MusaitlikForm week={week} />

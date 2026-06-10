@@ -25,13 +25,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Eksik alan' }, { status: 400 })
     }
 
+    // Klinik randevu kabul modu: auto_confirm true → direkt confirmed, false → pending (klinik onayı bekler)
+    const { data: clinicRow } = await supabase
+      .from('clinics')
+      .select('auto_confirm_appointments')
+      .eq('id', clinicId)
+      .maybeSingle()
+    const initialStatus = clinicRow?.auto_confirm_appointments === false ? 'pending' : 'confirmed'
+
     const { data, error } = await supabase
       .from('appointments')
       .insert({
         user_id: user.id,
         clinic_id: clinicId,
         appointment_date: dateTime,
-        status: 'pending',
+        status: initialStatus,
         notes: notes || null,
       })
       .select('id')

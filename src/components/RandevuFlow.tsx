@@ -249,11 +249,19 @@ export default function RandevuFlow({ embedded = false, preselectedClinicId, pre
       return
     }
 
+    // Klinik randevu kabul modu: auto_confirm true → confirmed, false → pending
+    const { data: clinicRow } = await supabase
+      .from('clinics')
+      .select('auto_confirm_appointments')
+      .eq('id', selectedClinic.id)
+      .maybeSingle()
+    const initialStatus = clinicRow?.auto_confirm_appointments === false ? 'pending' : 'confirmed'
+
     const { error: err } = await supabase.from('appointments').insert({
       user_id: user.id,
       clinic_id: selectedClinic.id,
       appointment_date: dt.toISOString(),
-      status: 'pending',
+      status: initialStatus,
       notes: notes || null,
     })
 

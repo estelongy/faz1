@@ -148,6 +148,65 @@ export default async function KlinikPanelPage() {
       patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
       status: a.status as string,
     })
+
+    // Haftalık özet — bu takvim haftası (Pzt-Paz). Pazar açıksa 7 gün, değilse 6.
+    const nowD = new Date()
+    const dow = nowD.getDay() // 0=Paz, 1=Pzt, ...
+    const monOffset = dow === 0 ? -6 : (1 - dow)
+    const monday = new Date(nowD)
+    monday.setDate(nowD.getDate() + monOffset)
+    monday.setHours(0, 0, 0, 0)
+    const sundayEnd = new Date(monday)
+    sundayEnd.setDate(monday.getDate() + 6)
+    sundayEnd.setHours(23, 59, 59, 999)
+
+    const { data: weekApptsRaw } = await supabase
+      .from('appointments')
+      .select('appointment_date, status')
+      .eq('clinic_id', clinic.id)
+      .gte('appointment_date', monday.toISOString())
+      .lte('appointment_date', sundayEnd.toISOString())
+
+    const dailyCounts = new Map<string, number>()
+    ;(weekApptsRaw ?? []).forEach(a => {
+      if (!a.appointment_date) return
+      if (a.status === 'cancelled') return
+      const d = a.appointment_date.slice(0, 10)
+      dailyCounts.set(d, (dailyCounts.get(d) ?? 0) + 1)
+    })
+
+    // Pazar açık mı? internal_availability varsa oku, yoksa veri-driven (pazar randevu sayısı > 0)
+    const sundayDate = new Date(monday)
+    sundayDate.setDate(monday.getDate() + 6)
+    const sundayIso = sundayDate.toISOString().slice(0, 10)
+    const { data: sundayAvail } = await supabase
+      .from('internal_availability')
+      .select('is_closed')
+      .eq('owner_id', user.id)
+      .eq('day_of_week', 0)
+      .maybeSingle()
+    const sundayOpen = sundayAvail
+      ? !sundayAvail.is_closed
+      : (dailyCounts.get(sundayIso) ?? 0) > 0
+
+    const DAY_LABELS = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt']
+    const weekSummary: { iso: string; label: string; day: number; count: number; isToday: boolean; isPast: boolean }[] = []
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday)
+      d.setDate(monday.getDate() + i)
+      const dWeekDay = d.getDay()
+      if (dWeekDay === 0 && !sundayOpen) continue
+      const iso = d.toISOString().slice(0, 10)
+      weekSummary.push({
+        iso,
+        label: DAY_LABELS[dWeekDay],
+        day: d.getDate(),
+        count: dailyCounts.get(iso) ?? 0,
+        isToday: iso === today,
+        isPast: iso < today,
+      })
+    }
+
     // Onboarding — yeni klinik app'i açtığında 4 adım checklist görünür.
     // Web'deki tam banner yerine app'te kompakt versiyon (KlinikPROAppHome içinde).
     const onboarding = await computeOnboarding(clinic.id, supabase)
@@ -165,6 +224,7 @@ export default async function KlinikPanelPage() {
         clinicEgp={clinic.clinic_egp ?? null}
         reviewCount={clinic.review_count ?? 0}
         onboarding={onboarding}
+        weekSummary={weekSummary}
       />
     )
   }
