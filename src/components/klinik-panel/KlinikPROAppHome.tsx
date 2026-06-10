@@ -1,10 +1,13 @@
 import Link from 'next/link'
 import {
-  Calendar, ClipboardCheck, Users, MessageCircle, CreditCard, Clock, ChevronRight,
+  Users, MessageCircle, CreditCard, Clock, ChevronRight,
   Star, ShoppingBag, Sparkles, Activity,
 } from 'lucide-react'
 import type { OnboardingStatus } from '@/lib/clinic-onboarding'
 import { MIN_REVIEWS_THRESHOLD } from '@/lib/clinic-review'
+import BugunCizelgesi from './BugunCizelgesi'
+
+type ActionResult = { ok: boolean; error?: string }
 
 interface AppointmentLite {
   id: string
@@ -29,13 +32,19 @@ interface Props {
   clinicName: string
   totalCredit: number
   todayAppts: AppointmentLite[]
-  pendingCount: number
-  inProgressCount: number
-  tomorrowApptsCount: number
   clinicEgp: number | null
   reviewCount: number
   onboarding?: OnboardingStatus
   weekSummary?: WeekDay[]
+  todayIso: string
+  todayLabel: string
+  dayOpenTime: string
+  dayCloseTime: string
+  dayStepMinutes: number
+  onConfirmAppointment: (id: string) => Promise<ActionResult>
+  onStartAppointment: (id: string) => Promise<ActionResult>
+  onCompleteAppointment: (id: string) => Promise<ActionResult>
+  onRejectAppointment: (id: string) => Promise<ActionResult>
 }
 
 /**
@@ -56,13 +65,19 @@ export default function KlinikPROAppHome({
   clinicName,
   totalCredit,
   todayAppts,
-  pendingCount,
-  inProgressCount,
-  tomorrowApptsCount,
   clinicEgp,
   reviewCount,
   onboarding,
   weekSummary,
+  todayIso,
+  todayLabel,
+  dayOpenTime,
+  dayCloseTime,
+  dayStepMinutes,
+  onConfirmAppointment,
+  onStartAppointment,
+  onCompleteAppointment,
+  onRejectAppointment,
 }: Props) {
   const showOnboarding = onboarding && !onboarding.isComplete && onboarding.nextStep
   const progressPct = onboarding ? Math.round((onboarding.completedCount / onboarding.totalCount) * 100) : 0
@@ -166,73 +181,19 @@ export default function KlinikPROAppHome({
         </section>
       )}
 
-      {/* ─── 3. ŞİMDİ — kompakt özet ─── */}
-      <section className="px-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Şimdi</p>
-        <Link
-          href="/klinik/panel/takvim"
-          className="block rounded-2xl border border-slate-800 bg-slate-900/60 p-4 active:bg-slate-900 transition"
-        >
-          <div className="grid grid-cols-3 gap-3">
-            <Stat label="Bugün" value={todayAppts.length} accent="text-white" />
-            <Stat label="Bekleyen" value={pendingCount} accent={pendingCount > 0 ? 'text-amber-300' : 'text-white'} />
-            <Stat label="Akışta" value={inProgressCount} accent={inProgressCount > 0 ? 'text-emerald-300' : 'text-white'} />
-          </div>
-          <p className="mt-3 text-xs text-slate-500">
-            Yarın {tomorrowApptsCount} randevu · Tümünü gör →
-          </p>
-        </Link>
-      </section>
-
-      {/* ─── 4. Bugünün akışı ─── */}
-      <section className="mt-5 px-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Bugünün Akışı</p>
-        {todayAppts.length === 0 ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-center">
-            <Calendar size={28} className="mx-auto text-slate-600" />
-            <p className="mt-2 text-sm text-slate-400">Bugün randevu yok.</p>
-            <Link
-              href="/klinik/panel/musaitlik"
-              className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 active:text-emerald-200"
-            >
-              <Clock size={13} />
-              Müsaitlik saatlerini kontrol et →
-            </Link>
-          </div>
-        ) : (
-          <ul className="space-y-2">
-            {todayAppts.slice(0, 5).map((a) => (
-              <li key={a.id}>
-                <Link
-                  href="/klinik/panel/takvim"
-                  className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-3.5 active:bg-slate-900 transition"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
-                    <ClipboardCheck size={20} className="text-emerald-300" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium truncate">{a.patientName}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {formatTime(a.time)} · {statusLabel(a.status)}
-                    </p>
-                  </div>
-                  <span className="text-slate-500">→</span>
-                </Link>
-              </li>
-            ))}
-            {todayAppts.length > 5 && (
-              <li>
-                <Link
-                  href="/klinik/panel/takvim"
-                  className="block text-center text-xs font-medium text-emerald-400 py-2 active:text-emerald-300"
-                >
-                  +{todayAppts.length - 5} randevu — tümünü göster
-                </Link>
-              </li>
-            )}
-          </ul>
-        )}
-      </section>
+      {/* ─── 3. BUGÜN — saat çizelgesi (slot bazlı, inline aksiyonlar) ─── */}
+      <BugunCizelgesi
+        todayIso={todayIso}
+        todayLabel={todayLabel}
+        appts={todayAppts}
+        openTime={dayOpenTime}
+        closeTime={dayCloseTime}
+        stepMinutes={dayStepMinutes}
+        onConfirm={onConfirmAppointment}
+        onStart={onStartAppointment}
+        onComplete={onCompleteAppointment}
+        onReject={onRejectAppointment}
+      />
 
       {/* ─── 5. Hızlı erişim ─── */}
       <section className="mt-5 px-5">
@@ -343,15 +304,6 @@ function computeELS(egp: number | null, reviewCount: number): ELSResult {
     borderClass: 'border-orange-500/40',
     textClass: 'text-orange-300',
   }
-}
-
-function Stat({ label, value, accent }: { label: string; value: number; accent: string }) {
-  return (
-    <div>
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
-      <p className={`mt-1 text-2xl font-black tabular-nums ${accent}`}>{value}</p>
-    </div>
-  )
 }
 
 function QuickAction({

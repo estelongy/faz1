@@ -52,7 +52,49 @@ async function rejectAppointmentAction(apptId: string): Promise<{ ok: boolean; e
     .update({ status: 'cancelled' })
     .eq('id', apptId)
     .eq('clinic_id', clinic.id)
+    .in('status', ['pending', 'confirmed', 'in_progress'])
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel')
+  return { ok: true }
+}
+
+async function startAppointmentAction(apptId: string): Promise<{ ok: boolean; error?: string }> {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: 'Oturum yok' }
+
+  const { data: clinic } = await supabase
+    .from('clinics').select('id').eq('user_id', user.id).single()
+  if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
+
+  const { error } = await supabase.from('appointments')
+    .update({ status: 'in_progress' })
+    .eq('id', apptId)
+    .eq('clinic_id', clinic.id)
     .in('status', ['pending', 'confirmed'])
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel')
+  return { ok: true }
+}
+
+async function completeAppointmentAction(apptId: string): Promise<{ ok: boolean; error?: string }> {
+  'use server'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: 'Oturum yok' }
+
+  const { data: clinic } = await supabase
+    .from('clinics').select('id').eq('user_id', user.id).single()
+  if (!clinic) return { ok: false, error: 'Klinik bulunamadı' }
+
+  const { error } = await supabase.from('appointments')
+    .update({ status: 'completed' })
+    .eq('id', apptId)
+    .eq('clinic_id', clinic.id)
+    .in('status', ['confirmed', 'in_progress'])
 
   if (error) return { ok: false, error: error.message }
   revalidatePath('/klinik/panel')
@@ -207,6 +249,19 @@ export default async function KlinikPanelPage() {
       })
     }
 
+    // Bugünün çalışma saati: internal_availability'den (varsa), yoksa 09:00-19:00 / 30dk default
+    const { data: todayAvail } = await supabase
+      .from('internal_availability')
+      .select('open_time, close_time, slot_duration_minutes, is_closed')
+      .eq('owner_id', user.id)
+      .eq('day_of_week', nowD.getDay())
+      .maybeSingle()
+    const dayOpenTime = todayAvail && !todayAvail.is_closed ? todayAvail.open_time.slice(0, 5) : '09:00'
+    const dayCloseTime = todayAvail && !todayAvail.is_closed ? todayAvail.close_time.slice(0, 5) : '19:00'
+    const dayStepMinutes = todayAvail?.slot_duration_minutes ?? 30
+
+    const todayLabel = nowD.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })
+
     // Onboarding — yeni klinik app'i açtığında 4 adım checklist görünür.
     // Web'deki tam banner yerine app'te kompakt versiyon (KlinikPROAppHome içinde).
     const onboarding = await computeOnboarding(clinic.id, supabase)
@@ -218,13 +273,19 @@ export default async function KlinikPanelPage() {
         clinicName={clinic.name}
         totalCredit={totalCredit}
         todayAppts={todayAppts.map(apptToViewLite)}
-        pendingCount={pendingAppts.length}
-        inProgressCount={inProgressAppts.length}
-        tomorrowApptsCount={tomorrowAppts.length}
         clinicEgp={clinic.clinic_egp ?? null}
         reviewCount={clinic.review_count ?? 0}
         onboarding={onboarding}
         weekSummary={weekSummary}
+        todayIso={today}
+        todayLabel={todayLabel}
+        dayOpenTime={dayOpenTime}
+        dayCloseTime={dayCloseTime}
+        dayStepMinutes={dayStepMinutes}
+        onConfirmAppointment={confirmAppointmentAction}
+        onStartAppointment={startAppointmentAction}
+        onCompleteAppointment={completeAppointmentAction}
+        onRejectAppointment={rejectAppointmentAction}
       />
     )
   }
