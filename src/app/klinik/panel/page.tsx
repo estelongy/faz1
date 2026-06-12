@@ -123,13 +123,17 @@ export default async function KlinikPanelPage() {
     .eq('id', user.id)
     .maybeSingle()
 
-  // Randevular — son 100
+  // Randevular — son 30 gün + gelecek 14 gün (bugün dahil, metrik + çizelge için yeter)
+  const horizonStart = new Date(Date.now() - 30 * 86400_000).toISOString()
+  const horizonEnd = new Date(Date.now() + 14 * 86400_000).toISOString()
   const { data: appointments } = await supabase
     .from('appointments')
     .select('id, user_id, appointment_date, status, profiles(full_name)')
     .eq('clinic_id', clinic.id)
+    .gte('appointment_date', horizonStart)
+    .lte('appointment_date', horizonEnd)
     .order('appointment_date', { ascending: true })
-    .limit(100)
+    .limit(500)
 
   const apptsList = appointments ?? []
 
