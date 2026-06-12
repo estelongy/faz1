@@ -134,42 +134,37 @@ export default async function Home({
               </span>
             </Link>
             <div className="flex items-center gap-3">
-              {isLoggedIn ? (
-                <>
-                  <SafeLink href="/panel"
-                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
-                    Hesabım
-                  </SafeLink>
-                  <GalaxyLink galaxy="esteklinik"
-                    className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
-                    EsteKlinik
-                  </GalaxyLink>
-                  <GalaxyLink galaxy="estestore"
-                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
-                    EsteStore
-                  </GalaxyLink>
-                </>
-              ) : (
-                <>
-                  <GalaxyLink galaxy="biyoage"
-                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
-                    BiyoAGE
-                  </GalaxyLink>
-                  <GalaxyLink galaxy="esteklinik"
-                    className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
-                    EsteKlinik
-                  </GalaxyLink>
-                  <GalaxyLink galaxy="estestore"
-                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
-                    EsteStore
-                  </GalaxyLink>
-                </>
+              <GalaxyLink galaxy="biyoage"
+                className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-medium rounded-lg transition-all shadow-lg shadow-violet-500/20">
+                BiyoAGE
+              </GalaxyLink>
+              <GalaxyLink galaxy="esteklinik"
+                className="hidden sm:block px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-semibold rounded-lg transition-all shadow-lg shadow-emerald-500/20">
+                EsteKlinik
+              </GalaxyLink>
+              <GalaxyLink galaxy="estestore"
+                className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-900 text-base font-bold rounded-lg transition-all shadow-lg shadow-amber-500/20">
+                EsteStore
+              </GalaxyLink>
+              {isLoggedIn && (
+                <SafeLink href="/panel"
+                  className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition-all"
+                  aria-label="Hesabım"
+                  title="Hesabım">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </SafeLink>
               )}
             </div>
           </div>
           {/* Alt bar — sabit yardımcı linkler */}
           <div className="flex items-center gap-5 h-9 border-t border-white/5 text-sm">
-            {!isLoggedIn && (
+            {isLoggedIn ? (
+              <SafeLink href="/panel" className="text-violet-300 hover:text-violet-200 transition-colors font-semibold">
+                Hesabım
+              </SafeLink>
+            ) : (
               <SafeLink href="/giris" className="text-white hover:text-violet-200 transition-colors font-semibold">
                 Giriş Yap
               </SafeLink>
