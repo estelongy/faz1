@@ -23,6 +23,7 @@ interface WeekDay {
   count: number
   isToday: boolean
   isPast: boolean
+  appts: AppointmentLite[]
 }
 
 interface Props {
@@ -37,7 +38,6 @@ interface Props {
   onboarding?: OnboardingStatus
   weekSummary?: WeekDay[]
   todayIso: string
-  todayLabel: string
   dayOpenTime: string
   dayCloseTime: string
   dayStepMinutes: number
@@ -70,7 +70,6 @@ export default function KlinikPROAppHome({
   onboarding,
   weekSummary,
   todayIso,
-  todayLabel,
   dayOpenTime,
   dayCloseTime,
   dayStepMinutes,
@@ -144,48 +143,10 @@ export default function KlinikPROAppHome({
         </section>
       )}
 
-      {/* ─── 2.5 Bu Hafta — 6/7 gün şerit ─── */}
-      {weekSummary && weekSummary.length > 0 && (
-        <section className="px-5 mt-1 mb-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-2">Bu Hafta</p>
-          <Link
-            href="/klinik/panel/takvim"
-            className="block rounded-2xl border border-slate-800 bg-slate-900/40 p-2 active:bg-slate-900 transition"
-          >
-            <div
-              className="grid gap-1"
-              style={{ gridTemplateColumns: `repeat(${weekSummary.length}, minmax(0, 1fr))` }}
-            >
-              {weekSummary.map(d => (
-                <div
-                  key={d.iso}
-                  className={`rounded-xl border px-1 py-2 text-center ${
-                    d.isToday
-                      ? 'border-emerald-500/60 bg-emerald-500/10'
-                      : d.isPast
-                      ? 'border-slate-800/60 bg-slate-900/30 opacity-50'
-                      : 'border-slate-800 bg-slate-900/60'
-                  }`}
-                >
-                  <p className="text-[9px] uppercase tracking-[0.08em] text-slate-500 font-bold">{d.label}</p>
-                  <p className={`text-base font-black leading-tight ${d.isToday ? 'text-emerald-300' : 'text-white'}`}>
-                    {d.day}
-                  </p>
-                  <p className={`text-[10px] font-semibold ${d.count > 0 ? 'text-slate-300' : 'text-slate-600'}`}>
-                    {d.count > 0 ? d.count : '·'}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Link>
-        </section>
-      )}
-
-      {/* ─── 3. BUGÜN — saat çizelgesi (slot bazlı, inline aksiyonlar) ─── */}
+      {/* ─── BUGÜN — Bu Hafta şeridi + saat çizelgesi (in-page gün seçici) ─── */}
       <BugunCizelgesi
         todayIso={todayIso}
-        todayLabel={todayLabel}
-        appts={todayAppts}
+        weekSummary={weekSummary ?? []}
         openTime={dayOpenTime}
         closeTime={dayCloseTime}
         stepMinutes={dayStepMinutes}

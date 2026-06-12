@@ -208,17 +208,28 @@ export default async function KlinikPanelPage() {
 
     const { data: weekApptsRaw } = await supabase
       .from('appointments')
-      .select('appointment_date, status')
+      .select('id, user_id, appointment_date, status, profiles(full_name)')
       .eq('clinic_id', clinic.id)
       .gte('appointment_date', monday.toISOString())
       .lte('appointment_date', sundayEnd.toISOString())
+      .order('appointment_date', { ascending: true })
 
     const dailyCounts = new Map<string, number>()
+    const dailyAppts = new Map<string, { id: string; time: string | null; patientName: string; status: string }[]>()
     ;(weekApptsRaw ?? []).forEach(a => {
       if (!a.appointment_date) return
-      if (a.status === 'cancelled') return
-      const d = a.appointment_date.slice(0, 10)
-      dailyCounts.set(d, (dailyCounts.get(d) ?? 0) + 1)
+      const dKey = new Date(a.appointment_date).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+      const view = {
+        id: a.id,
+        time: a.appointment_date,
+        patientName: (a.profiles as { full_name?: string | null } | null)?.full_name ?? 'Hasta',
+        status: a.status as string,
+      }
+      if (!dailyAppts.has(dKey)) dailyAppts.set(dKey, [])
+      dailyAppts.get(dKey)!.push(view)
+      if (a.status !== 'cancelled') {
+        dailyCounts.set(dKey, (dailyCounts.get(dKey) ?? 0) + 1)
+      }
     })
 
     // Pazar açık mı? internal_availability varsa oku, yoksa veri-driven (pazar randevu sayısı > 0)
@@ -236,13 +247,13 @@ export default async function KlinikPanelPage() {
       : (dailyCounts.get(sundayIso) ?? 0) > 0
 
     const DAY_LABELS = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt']
-    const weekSummary: { iso: string; label: string; day: number; count: number; isToday: boolean; isPast: boolean }[] = []
+    const weekSummary: { iso: string; label: string; day: number; count: number; isToday: boolean; isPast: boolean; appts: { id: string; time: string | null; patientName: string; status: string }[] }[] = []
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday)
       d.setDate(monday.getDate() + i)
       const dWeekDay = d.getDay()
       if (dWeekDay === 0 && !sundayOpen) continue
-      const iso = d.toISOString().slice(0, 10)
+      const iso = d.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
       weekSummary.push({
         iso,
         label: DAY_LABELS[dWeekDay],
@@ -250,6 +261,7 @@ export default async function KlinikPanelPage() {
         count: dailyCounts.get(iso) ?? 0,
         isToday: iso === today,
         isPast: iso < today,
+        appts: dailyAppts.get(iso) ?? [],
       })
     }
 
@@ -263,8 +275,6 @@ export default async function KlinikPanelPage() {
     const dayOpenTime = todayAvail && !todayAvail.is_closed ? todayAvail.open_time.slice(0, 5) : '09:00'
     const dayCloseTime = todayAvail && !todayAvail.is_closed ? todayAvail.close_time.slice(0, 5) : '19:00'
     const dayStepMinutes = todayAvail?.slot_duration_minutes ?? 30
-
-    const todayLabel = nowD.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })
 
     // Onboarding — yeni klinik app'i açtığında 4 adım checklist görünür.
     // Web'deki tam banner yerine app'te kompakt versiyon (KlinikPROAppHome içinde).
@@ -282,7 +292,6 @@ export default async function KlinikPanelPage() {
         onboarding={onboarding}
         weekSummary={weekSummary}
         todayIso={today}
-        todayLabel={todayLabel}
         dayOpenTime={dayOpenTime}
         dayCloseTime={dayCloseTime}
         dayStepMinutes={dayStepMinutes}

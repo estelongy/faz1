@@ -12,12 +12,21 @@ interface AppointmentLite {
   status: string
 }
 
+interface WeekDay {
+  iso: string
+  label: string
+  day: number
+  count: number
+  isToday: boolean
+  isPast: boolean
+  appts: AppointmentLite[]
+}
+
 type ActionResult = { ok: boolean; error?: string }
 
 interface Props {
   todayIso: string  // YYYY-MM-DD
-  todayLabel: string  // "10 Haziran Salı"
-  appts: AppointmentLite[]
+  weekSummary: WeekDay[]
   openTime: string   // "09:00"
   closeTime: string  // "19:00"
   stepMinutes: number  // 30
@@ -56,8 +65,7 @@ function statusMeta(status: string): { label: string; color: string; bg: string;
 
 export default function BugunCizelgesi({
   todayIso,
-  todayLabel,
-  appts,
+  weekSummary,
   openTime,
   closeTime,
   stepMinutes,
@@ -70,7 +78,17 @@ export default function BugunCizelgesi({
   const [busy, setBusy] = useState<string | null>(null)
   const [, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [selectedIso, setSelectedIso] = useState<string>(todayIso)
   const nowRef = useRef<HTMLDivElement | null>(null)
+
+  const selectedDay = useMemo(() => weekSummary.find(d => d.iso === selectedIso) ?? weekSummary.find(d => d.isToday) ?? weekSummary[0], [weekSummary, selectedIso])
+  const appts = useMemo(() => selectedDay?.appts ?? [], [selectedDay])
+  const dayLabel = useMemo(() => {
+    if (!selectedDay) return ''
+    const d = new Date(`${selectedDay.iso}T00:00:00`)
+    return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })
+  }, [selectedDay])
+  const isToday = selectedDay?.isToday ?? false
 
   // Slot grid: 09:00–19:00 step
   const slots = useMemo(() => {
@@ -130,17 +148,73 @@ export default function BugunCizelgesi({
 
   return (
     <section className="px-5">
+      {/* Bu hafta şeridi — tıklanır gün seçici */}
+      {weekSummary.length > 0 && (
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Bu Hafta</p>
+            <Link
+              href="/klinik/panel/takvim"
+              className="text-xs font-semibold text-emerald-300 active:text-emerald-200 flex items-center gap-0.5"
+            >
+              Takvim <ChevronRight size={14} />
+            </Link>
+          </div>
+          <div
+            className="grid gap-1"
+            style={{ gridTemplateColumns: `repeat(${weekSummary.length}, minmax(0, 1fr))` }}
+          >
+            {weekSummary.map(d => {
+              const selected = d.iso === selectedDay?.iso
+              return (
+                <button
+                  key={d.iso}
+                  type="button"
+                  onClick={() => setSelectedIso(d.iso)}
+                  className={`rounded-xl border px-1 py-2 text-center transition ${
+                    selected
+                      ? 'border-emerald-400 bg-emerald-500/20'
+                      : d.isToday
+                      ? 'border-emerald-500/50 bg-emerald-500/5'
+                      : d.isPast
+                      ? 'border-slate-800/60 bg-slate-900/30 opacity-60'
+                      : 'border-slate-800 bg-slate-900/60 active:bg-slate-800'
+                  }`}
+                >
+                  <p className={`text-[9px] uppercase tracking-[0.08em] font-bold ${selected ? 'text-emerald-200' : 'text-slate-500'}`}>{d.label}</p>
+                  <p className={`text-base font-black leading-tight ${selected || d.isToday ? 'text-emerald-300' : 'text-white'}`}>
+                    {d.day}
+                  </p>
+                  <p className={`text-[10px] font-semibold ${d.count > 0 ? (selected ? 'text-emerald-200' : 'text-slate-300') : 'text-slate-600'}`}>
+                    {d.count > 0 ? d.count : '·'}
+                  </p>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Seçili gün başlığı */}
       <div className="flex items-end justify-between mb-2">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Bugün</p>
-          <p className="text-white font-bold text-sm mt-0.5">{todayLabel}</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">
+            {isToday ? 'Bugün' : selectedDay?.isPast ? 'Geçmiş gün' : 'Gelecek gün'}
+          </p>
+          <p className="text-white font-bold text-sm mt-0.5">{dayLabel}</p>
         </div>
-        <Link
-          href="/klinik/panel/takvim"
-          className="text-xs font-semibold text-emerald-300 active:text-emerald-200 flex items-center gap-0.5"
-        >
-          Takvim <ChevronRight size={14} />
-        </Link>
+        {selectedDay && !selectedDay.isToday && (
+          <button
+            type="button"
+            onClick={() => {
+              const todayDay = weekSummary.find(d => d.isToday)
+              if (todayDay) setSelectedIso(todayDay.iso)
+            }}
+            className="text-xs font-semibold text-emerald-300 active:text-emerald-200"
+          >
+            Bugüne dön →
+          </button>
+        )}
       </div>
 
       {error && (
@@ -152,8 +226,10 @@ export default function BugunCizelgesi({
       <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-1.5">
         {slots.map(t => {
           const slotMin = parseHHMM(t)
-          const isPast = slotMin + stepMinutes <= nowMin
-          const isNow = slotMin <= nowMin && nowMin < slotMin + stepMinutes
+          const isPast = isToday
+            ? slotMin + stepMinutes <= nowMin
+            : (selectedDay?.isPast ?? false)
+          const isNow = isToday && slotMin <= nowMin && nowMin < slotMin + stepMinutes
           const appt = apptByTime.get(t)
           return (
             <SlotRow
@@ -163,7 +239,7 @@ export default function BugunCizelgesi({
               isNow={isNow}
               appt={appt}
               busy={busy}
-              todayIso={todayIso}
+              todayIso={selectedDay?.iso ?? todayIso}
               nowRef={isNow ? nowRef : undefined}
               onConfirm={(id) => run(id, onConfirm)}
               onStart={(id) => run(id, onStart)}
@@ -181,7 +257,9 @@ export default function BugunCizelgesi({
             {offGrid.map(a => {
               const hh = a.time ? new Date(a.time).toTimeString().slice(0, 5) : '—'
               const slotMin = parseHHMM(hh)
-              const isPast = slotMin + stepMinutes <= nowMin
+              const isPast = isToday
+                ? slotMin + stepMinutes <= nowMin
+                : (selectedDay?.isPast ?? false)
               return (
                 <SlotRow
                   key={a.id}
@@ -190,7 +268,7 @@ export default function BugunCizelgesi({
                   isNow={false}
                   appt={a}
                   busy={busy}
-                  todayIso={todayIso}
+                  todayIso={selectedDay?.iso ?? todayIso}
                   onConfirm={(id) => run(id, onConfirm)}
                   onStart={(id) => run(id, onStart)}
                   onComplete={(id) => run(id, onComplete)}
