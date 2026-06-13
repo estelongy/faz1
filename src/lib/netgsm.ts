@@ -9,7 +9,6 @@
  */
 
 const NETGSM_URL = 'https://api.netgsm.com.tr/sms/rest/v2/otp'
-const NETGSM_BULK_URL = 'https://api.netgsm.com.tr/sms/rest/v2/send'
 
 export interface NetgsmResult {
   success: boolean
@@ -83,8 +82,7 @@ export async function sendOtpSms(phone: string, code: string): Promise<NetgsmRes
 
   const usercode = process.env.NETGSM_USERCODE
   const password = process.env.NETGSM_PASSWORD
-  // OTP için: NETGSM_MSGHEADER_OTP varsa onu kullan, yoksa NETGSM_MSGHEADER fallback
-  const msgheader = process.env.NETGSM_MSGHEADER_OTP || process.env.NETGSM_MSGHEADER
+  const msgheader = process.env.NETGSM_MSGHEADER
 
   if (!usercode || !password || !msgheader) {
     return { success: false, error: 'Netgsm env degiskenleri tanimli degil' }
@@ -138,10 +136,10 @@ export async function sendOtpSms(phone: string, code: string): Promise<NetgsmRes
 }
 
 /**
- * Normal (bilgilendirme) SMS gönder.
- * Türkçe karakter OLMAMALI — OTP endpoint gibi GSM-7 bandı.
- * Randevu hatırlatma, bildirim vb. için.
- * @returns success bool — failed olsa da çağıran kuyrukta retry yönetir.
+ * Bilgilendirme SMS gönder (kargo bildirimi, randevu hatırlatma, vb.).
+ * Aynı OTP endpoint'ini kullanır — bulk send yetkisi yokken bilgilendirme
+ * SMS'leri OTP kanalı üzerinden DRIGOK header'ıyla geçer.
+ * Türkçe karakter ASCII'ye indirgenir (OTP endpoint GSM-7 bandı).
  */
 export async function sendInfoSms(phone: string, message: string): Promise<NetgsmResult> {
   const normalized = normalizePhone(phone)
@@ -151,14 +149,13 @@ export async function sendInfoSms(phone: string, message: string): Promise<Netgs
 
   const usercode = process.env.NETGSM_USERCODE
   const password = process.env.NETGSM_PASSWORD
-  // Bilgilendirme için: NETGSM_MSGHEADER_INFO varsa onu kullan, yoksa NETGSM_MSGHEADER fallback
-  const msgheader = process.env.NETGSM_MSGHEADER_INFO || process.env.NETGSM_MSGHEADER
+  const msgheader = process.env.NETGSM_MSGHEADER
 
   if (!usercode || !password || !msgheader) {
     return { success: false, error: 'Netgsm env degiskenleri tanimli degil' }
   }
 
-  // Türkçe karakterleri ASCII'ye düşür (güvenli mesaj)
+  // Türkçe karakterleri ASCII'ye düşür (OTP endpoint GSM-7 bandı, TR karakter yok)
   const cleaned = message
     .replace(/ı/g, 'i').replace(/İ/g, 'I')
     .replace(/ş/g, 's').replace(/Ş/g, 'S')
@@ -171,7 +168,7 @@ export async function sendInfoSms(phone: string, message: string): Promise<Netgs
   const auth = Buffer.from(`${usercode}:${password}`).toString('base64')
 
   try {
-    const res = await fetch(NETGSM_BULK_URL, {
+    const res = await fetch(NETGSM_URL, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${auth}`,
@@ -179,8 +176,8 @@ export async function sendInfoSms(phone: string, message: string): Promise<Netgs
       },
       body: JSON.stringify({
         msgheader,
-        encoding: 'TR',
-        messages: [{ msg: cleaned, no: normalized }],
+        msg: cleaned,
+        no: normalized,
       }),
     })
 
