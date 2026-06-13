@@ -83,7 +83,8 @@ export async function sendOtpSms(phone: string, code: string): Promise<NetgsmRes
 
   const usercode = process.env.NETGSM_USERCODE
   const password = process.env.NETGSM_PASSWORD
-  const msgheader = process.env.NETGSM_MSGHEADER
+  // OTP için: NETGSM_MSGHEADER_OTP varsa onu kullan, yoksa NETGSM_MSGHEADER fallback
+  const msgheader = process.env.NETGSM_MSGHEADER_OTP || process.env.NETGSM_MSGHEADER
 
   if (!usercode || !password || !msgheader) {
     return { success: false, error: 'Netgsm env degiskenleri tanimli degil' }
@@ -150,7 +151,8 @@ export async function sendInfoSms(phone: string, message: string): Promise<Netgs
 
   const usercode = process.env.NETGSM_USERCODE
   const password = process.env.NETGSM_PASSWORD
-  const msgheader = process.env.NETGSM_MSGHEADER
+  // Bilgilendirme için: NETGSM_MSGHEADER_INFO varsa onu kullan, yoksa NETGSM_MSGHEADER fallback
+  const msgheader = process.env.NETGSM_MSGHEADER_INFO || process.env.NETGSM_MSGHEADER
 
   if (!usercode || !password || !msgheader) {
     return { success: false, error: 'Netgsm env degiskenleri tanimli degil' }
