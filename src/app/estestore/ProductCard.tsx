@@ -44,13 +44,15 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride, i
     ? Math.round(product.price * (1 - firstTier.discount_rate) * 100) / 100
     : null
 
+  const initial = (product.name?.trim()[0] ?? '✦').toUpperCase()
+
   return (
     <Link
       href={href}
-      className="group flex flex-col bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-[#C9A961]/60 hover:shadow-xl hover:shadow-slate-900/10 hover:-translate-y-0.5 transition-all"
+      className="group flex flex-col bg-white border border-slate-200 rounded-2xl overflow-hidden active:border-[#C9A961]/60 hover:border-[#C9A961]/60 hover:shadow-xl hover:shadow-slate-900/10 hover:-translate-y-0.5 transition-all"
     >
       {/* Görsel */}
-      <div className="aspect-square bg-slate-50 overflow-hidden relative">
+      <div className="aspect-square bg-gradient-to-br from-[#FAFAF7] via-white to-[#F5F0E5] overflow-hidden relative">
         {showWishlist && (
           <WishlistButton
             productId={product.id}
@@ -69,8 +71,15 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride, i
             }`}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl opacity-20">
-            {product.category === 'sarf_medikal' ? '💉' : '🧴'}
+          <div className="w-full h-full flex items-center justify-center relative">
+            {/* Subtle radial */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(201,169,97,0.10),transparent_55%)]" />
+            <span className="relative font-black text-[#8B7339]/30 select-none leading-none text-[96px] tracking-tight">
+              {initial}
+            </span>
+            <span className="absolute bottom-2 right-2 text-[9px] uppercase tracking-[0.18em] font-bold text-[#8B7339]/50">
+              EsteStore
+            </span>
           </div>
         )}
 
@@ -84,20 +93,20 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride, i
       </div>
 
       {/* Bilgi */}
-      <div className="p-4 flex-1 flex flex-col">
+      <div className="p-3 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-2 mb-1">
           {product.subcategory ? (
-            <p className="text-sm uppercase tracking-wider text-slate-500 font-semibold">
+            <span className="inline-block text-[10px] uppercase tracking-[0.14em] text-[#8B7339] font-bold bg-[#C9A961]/10 px-2 py-0.5 rounded-md">
               {product.subcategory}
-            </p>
+            </span>
           ) : <span />}
           {isPro && product.klinik_only && (
-            <span className="shrink-0 bg-emerald-500/15 text-emerald-300 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold">
+            <span className="shrink-0 bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold border border-emerald-200">
               Kliniğe Özel
             </span>
           )}
         </div>
-        <h3 className="text-slate-900 text-sm font-semibold leading-snug line-clamp-2 mb-3">
+        <h3 className="text-slate-900 text-sm font-semibold leading-snug line-clamp-2 mb-2">
           {product.name}
         </h3>
 
