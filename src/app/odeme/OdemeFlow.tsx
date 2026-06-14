@@ -69,6 +69,17 @@ export default function OdemeFlow({ initialAddresses, isGuest }: { initialAddres
   const [couponLoading, setCouponLoading] = useState(false)
   const [couponError, setCouponError] = useState<string | null>(null)
 
+  // Sepetten bekleyen kupon kodunu pre-fill et (varsa)
+  useEffect(() => {
+    try {
+      const pending = window.localStorage.getItem('estelongy_pending_coupon')
+      if (pending) {
+        setCouponInput(pending)
+        window.localStorage.removeItem('estelongy_pending_coupon')
+      }
+    } catch { /* noop */ }
+  }, [])
+
   const empty = hydrated && items.length === 0
 
   // Kargo: ₺200 ve üstü ücretsiz, altı ₺29

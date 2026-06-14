@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart, groupByVendor } from '@/lib/cart'
+import SepetKuponInput from './SepetKuponInput'
 
 export default function SepetPage() {
   const router = useRouter()
@@ -159,6 +160,8 @@ export default function SepetPage() {
                   className="w-full py-4 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] text-[#0F172A] font-bold rounded-xl transition-all text-base shadow-lg shadow-[#C9A961]/20">
                   Ödemeye Geç →
                 </button>
+
+                <SepetKuponInput />
 
                 <div className="mt-4 flex items-start gap-2 text-slate-600 text-sm font-bold leading-relaxed">
                   <svg className="w-4 h-4 text-[#10876B] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
