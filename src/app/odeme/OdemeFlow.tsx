@@ -234,12 +234,14 @@ export default function OdemeFlow({ initialAddresses, isGuest }: { initialAddres
                       <label className="block text-slate-700 text-sm font-semibold mb-1">Ad Soyad *</label>
                       <input type="text" value={guestName} onChange={e => setGuestName(e.target.value)}
                         placeholder="Ad Soyad"
+                        autoComplete="name"
                         className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
                     </div>
                     <div>
                       <label className="block text-slate-700 text-sm font-semibold mb-1">Email *</label>
                       <input type="email" value={guestEmail} onChange={e => setGuestEmail(e.target.value)}
                         placeholder="ornek@mail.com"
+                        autoComplete="email" inputMode="email"
                         className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
                       <p className="text-slate-500 text-xs mt-1">Sipariş takip linki bu adrese gönderilir.</p>
                     </div>
@@ -248,6 +250,7 @@ export default function OdemeFlow({ initialAddresses, isGuest }: { initialAddres
                     <label className="block text-slate-700 text-sm font-semibold mb-1">Cep Telefonu *</label>
                     <input type="tel" value={guestPhone} onChange={e => setGuestPhone(e.target.value)}
                       placeholder="05XX XXX XX XX"
+                      autoComplete="tel" inputMode="tel"
                       className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -255,12 +258,14 @@ export default function OdemeFlow({ initialAddresses, isGuest }: { initialAddres
                       <label className="block text-slate-700 text-sm font-semibold mb-1">Şehir *</label>
                       <input type="text" value={guestCity} onChange={e => setGuestCity(e.target.value)}
                         placeholder="İstanbul"
+                        autoComplete="address-level1"
                         className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
                     </div>
                     <div>
                       <label className="block text-slate-700 text-sm font-semibold mb-1">İlçe *</label>
                       <input type="text" value={guestDistrict} onChange={e => setGuestDistrict(e.target.value)}
                         placeholder="Kadıköy"
+                        autoComplete="address-level2"
                         className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
                     </div>
                   </div>
@@ -269,12 +274,14 @@ export default function OdemeFlow({ initialAddresses, isGuest }: { initialAddres
                     <textarea value={guestAddressLine} onChange={e => setGuestAddressLine(e.target.value)}
                       placeholder="Mahalle, sokak, bina no, daire no"
                       rows={2}
+                      autoComplete="street-address"
                       className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961] resize-none" />
                   </div>
                   <div>
                     <label className="block text-slate-700 text-sm font-semibold mb-1">Posta Kodu (opsiyonel)</label>
                     <input type="text" value={guestPostalCode} onChange={e => setGuestPostalCode(e.target.value)}
                       placeholder="34000"
+                      autoComplete="postal-code" inputMode="numeric"
                       className="w-full md:w-1/3 px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961]" />
                   </div>
                 </div>
@@ -322,11 +329,11 @@ export default function OdemeFlow({ initialAddresses, isGuest }: { initialAddres
               ))}
 
               {/* KVKK + Mesafeli Satış onayları — yasal zorunluluk (KVK Kanunu 6698 / Tüketicinin Korunması 6502) */}
-              <div className="space-y-2.5 pt-3 border-t border-slate-200">
-                <label className="flex items-start gap-2.5 cursor-pointer group">
+              <div className="space-y-1.5 pt-3 border-t border-slate-200">
+                <label className="flex items-start gap-3 cursor-pointer p-2 -mx-2 rounded-lg active:bg-slate-50 transition-colors">
                   <input type="checkbox" checked={kvkkConsent}
                     onChange={e => setKvkkConsent(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 accent-[#C9A961] cursor-pointer shrink-0" />
+                    className="mt-0.5 w-5 h-5 accent-[#C9A961] cursor-pointer shrink-0" />
                   <span className="text-slate-700 text-sm leading-relaxed">
                     <Link href="/hakkinda/aydinlatma" target="_blank" className="text-[#8B7339] font-semibold hover:underline">
                       KVKK Aydınlatma Metni
@@ -334,10 +341,10 @@ export default function OdemeFlow({ initialAddresses, isGuest }: { initialAddres
                     ’ni okudum, kişisel verilerimin bu kapsamda işlenmesini kabul ediyorum.
                   </span>
                 </label>
-                <label className="flex items-start gap-2.5 cursor-pointer group">
+                <label className="flex items-start gap-3 cursor-pointer p-2 -mx-2 rounded-lg active:bg-slate-50 transition-colors">
                   <input type="checkbox" checked={mesafeliConsent}
                     onChange={e => setMesafeliConsent(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 accent-[#C9A961] cursor-pointer shrink-0" />
+                    className="mt-0.5 w-5 h-5 accent-[#C9A961] cursor-pointer shrink-0" />
                   <span className="text-slate-700 text-sm leading-relaxed">
                     <Link href="/hakkinda/sozlesme" target="_blank" className="text-[#8B7339] font-semibold hover:underline">
                       Mesafeli Satış Sözleşmesi ve Ön Bilgilendirme Formu
