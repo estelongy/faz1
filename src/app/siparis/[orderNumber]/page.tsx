@@ -152,7 +152,7 @@ export default async function SiparisPage({
         <SiparisSuccessOverlay orderNumber={order.order_number} total={Number(order.total ?? order.total_amount ?? 0)} />
       )}
 
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+      <header className="web-only fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
           <BackButton
             href={isAdminAccess ? '/admin/siparisler' : isGuestAccess ? '/estestore' : '/panel'}
@@ -162,7 +162,7 @@ export default async function SiparisPage({
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 pt-24 pb-16">
+      <div className="max-w-4xl mx-auto px-4 pt-6 lg:pt-24 pb-24 lg:pb-16">
         {/* Başarı banner */}
         {success === '1' && order.payment_status === 'paid' && (
           <div className="mb-6 p-5 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rounded-2xl">

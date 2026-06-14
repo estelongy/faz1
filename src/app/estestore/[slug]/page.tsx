@@ -704,10 +704,40 @@ export default async function UrunDetayPage({
         </div>
 
         {/* Son baktıkların — localStorage'dan */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pb-14">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pb-14 lg:pb-14" style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom))' }}>
           <RecentlyViewedShelf excludeId={product.id} />
         </div>
       </div>
+
+      {/* Mobile sticky bottom CTA — sadece mobil/app; tedavi randevu ürünleri için gizli */}
+      {product.price && product.treatment_type !== 'treatment' && !(product.stock != null && product.stock < 1) && (
+        <div
+          className="lg:hidden fixed inset-x-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]"
+          style={{ bottom: 'calc(60px + env(safe-area-inset-bottom))' }}
+        >
+          <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Fiyat</p>
+              <p className="text-slate-900 font-black text-lg tabular-nums leading-tight">
+                ₺{Number(product.price).toLocaleString('tr-TR')}
+              </p>
+            </div>
+            <div className="shrink-0">
+              <AddToCartButton
+                product={{
+                  productId: product.id,
+                  name: product.name,
+                  slug: product.slug ?? null,
+                  price: Number(product.price ?? 0),
+                  image: product.images?.[0] ?? null,
+                  vendorId: product.vendor_id ?? null,
+                  vendorName: (product.vendors as { company_name?: string } | null)?.company_name ?? null,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

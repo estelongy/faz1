@@ -26,7 +26,7 @@ export default function SepetPage() {
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 pt-24 pb-16">
+      <div className="max-w-5xl mx-auto px-4 pt-6 lg:pt-24 pb-32 lg:pb-16">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-black text-slate-900 tracking-[-0.02em]">Sepetim</h1>
@@ -135,8 +135,8 @@ export default function SepetPage() {
               })}
             </div>
 
-            {/* Sağ — Özet */}
-            <div className="lg:col-span-1">
+            {/* Sağ — Özet (desktop) */}
+            <div className="hidden lg:block lg:col-span-1">
               <div className="sticky top-24 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                 <h2 className="text-slate-900 font-bold text-lg mb-4">Sipariş Özeti</h2>
 
@@ -173,6 +173,29 @@ export default function SepetPage() {
           </div>
         )}
       </div>
+
+      {/* Mobile sticky bottom bar — yalnız mobile/app */}
+      {hydrated && items.length > 0 && (
+        <div
+          className="lg:hidden fixed inset-x-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]"
+          style={{ bottom: 'calc(60px + env(safe-area-inset-bottom))' }}
+        >
+          <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Toplam</p>
+              <p className="text-slate-900 font-black text-lg tabular-nums leading-tight">
+                ₺{subtotal.toLocaleString('tr-TR')}
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/odeme')}
+              className="px-5 py-3.5 bg-gradient-to-r from-[#C9A961] to-[#B8964F] active:from-[#D4B872] active:to-[#C9A961] text-[#0F172A] font-bold rounded-xl text-sm shadow-md shadow-[#C9A961]/30"
+            >
+              Ödemeye Geç →
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

@@ -61,7 +61,7 @@ export default async function SiparislerimPage() {
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 pt-24 pb-16">
+      <div className="max-w-3xl mx-auto px-4 pt-6 lg:pt-24 pb-24 lg:pb-16">
         <h1 className="text-2xl font-black text-white mb-6">Siparişlerim</h1>
 
         {!orders || orders.length === 0 ? (
