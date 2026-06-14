@@ -3,7 +3,7 @@
 import { useState, useTransition, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Plus, Check, Play, X, ChevronRight, Clock, CheckCircle2 } from 'lucide-react'
+import { Check, Play, X, ChevronRight, Clock, CheckCircle2 } from 'lucide-react'
 
 interface AppointmentLite {
   id: string
@@ -239,8 +239,7 @@ export default function BugunCizelgesi({
               isNow={isNow}
               appt={appt}
               busy={busy}
-              todayIso={selectedDay?.iso ?? todayIso}
-              nowRef={isNow ? nowRef : undefined}
+nowRef={isNow ? nowRef : undefined}
               onConfirm={(id) => run(id, onConfirm)}
               onStart={(id) => run(id, onStart)}
               onComplete={(id) => run(id, onComplete)}
@@ -268,8 +267,7 @@ export default function BugunCizelgesi({
                   isNow={false}
                   appt={a}
                   busy={busy}
-                  todayIso={selectedDay?.iso ?? todayIso}
-                  onConfirm={(id) => run(id, onConfirm)}
+        onConfirm={(id) => run(id, onConfirm)}
                   onStart={(id) => run(id, onStart)}
                   onComplete={(id) => run(id, onComplete)}
                   onReject={(id) => run(id, onReject)}
@@ -289,7 +287,6 @@ interface SlotRowProps {
   isNow: boolean
   appt?: AppointmentLite
   busy: string | null
-  todayIso: string
   nowRef?: React.RefObject<HTMLDivElement>
   onConfirm: (id: string) => void
   onStart: (id: string) => void
@@ -297,7 +294,7 @@ interface SlotRowProps {
   onReject: (id: string) => void
 }
 
-function SlotRow({ time, isPast, isNow, appt, busy, todayIso, nowRef, onConfirm, onStart, onComplete, onReject }: SlotRowProps) {
+function SlotRow({ time, isPast, isNow, appt, busy, nowRef, onConfirm, onStart, onComplete, onReject }: SlotRowProps) {
   const meta = appt ? statusMeta(appt.status) : null
   const apptBusy = appt && busy === appt.id
 
@@ -381,15 +378,8 @@ function SlotRow({ time, isPast, isNow, appt, busy, todayIso, nowRef, onConfirm,
               </div>
             )}
           </div>
-        ) : !isPast ? (
-          <Link
-            href={`/klinik/panel/muhasebe/randevu/yeni?date=${todayIso}&time=${time}`}
-            className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-slate-700 active:border-emerald-500/50 active:bg-emerald-500/5 text-slate-500 active:text-emerald-300 text-xs font-semibold"
-          >
-            <Plus size={13} /> Yeni randevu
-          </Link>
         ) : (
-          <div className="flex items-center gap-1.5 py-2.5 text-slate-700 text-xs">
+          <div className={`flex items-center gap-1.5 py-2.5 text-xs ${isPast ? 'text-slate-700' : 'text-slate-600'}`}>
             <Clock size={11} /> boş
           </div>
         )}
