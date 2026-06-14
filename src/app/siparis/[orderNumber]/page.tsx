@@ -361,10 +361,17 @@ export default async function SiparisPage({
           </div>
         </div>
 
-        <div className="mt-6 text-center">
-          <Link href="/estestore" className="text-[#C9A961] hover:text-[#C9A961] text-base transition-colors font-semibold">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <Link href="/estestore"
+            className="flex items-center justify-center py-3 rounded-xl bg-gradient-to-r from-[#C9A961] to-[#B8964F] active:from-[#D4B872] text-[#0F172A] font-bold text-sm shadow-md shadow-[#C9A961]/20">
             Alışverişe Devam Et →
           </Link>
+          {!isGuestAccess && !isAdminAccess && (
+            <Link href="/panel/siparislerim"
+              className="flex items-center justify-center py-3 rounded-xl bg-slate-800/60 active:bg-slate-700 border border-slate-700 text-slate-300 font-semibold text-sm">
+              Tüm Siparişlerim
+            </Link>
+          )}
         </div>
       </div>
     </main>
