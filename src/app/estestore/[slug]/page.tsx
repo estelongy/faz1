@@ -11,6 +11,7 @@ import WishlistButton from '@/components/WishlistButton'
 import RecentlyViewedTracker from '@/components/RecentlyViewedTracker'
 import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
 import QaSection from './QaSection'
+import ProductGallery from './ProductGallery'
 
 import SafeLink from '@/components/SafeLink'
 const SITE_URL = 'https://estelongy.com'
@@ -379,14 +380,7 @@ export default async function UrunDetayPage({
 
           {/* Sol: Görsel + Puan */}
           <div>
-            <div className="rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 h-80 flex items-center justify-center mb-6">
-              {product.images?.[0] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-slate-300 text-8xl">✦</div>
-              )}
-            </div>
+            <ProductGallery images={product.images ?? []} alt={product.name} />
 
             {/* Estelongy Puanı (EP) */}
             <div className="bg-[#FAFAF7] border border-slate-200 rounded-2xl p-6">
