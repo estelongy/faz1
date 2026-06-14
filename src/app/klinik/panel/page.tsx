@@ -252,8 +252,9 @@ export default async function KlinikPanelPage() {
       const d = new Date(monday)
       d.setDate(monday.getDate() + i)
       const dWeekDay = d.getDay()
-      if (dWeekDay === 0 && !sundayOpen) continue
       const iso = d.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+      // Pazar kapalıysa atla — AMA bugün Pazar ise yine de göster, yoksa "geçmiş gün" yanılgısı
+      if (dWeekDay === 0 && !sundayOpen && iso !== today) continue
       weekSummary.push({
         iso,
         label: DAY_LABELS[dWeekDay],
