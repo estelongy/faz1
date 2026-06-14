@@ -133,26 +133,34 @@ export default function StoreAppHome({
         <section className="px-5 py-3">
           <h2 className="text-lg font-bold text-slate-900 tracking-[-0.01em] mb-3">Tekrar Sipariş Ver</h2>
           <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-5 px-5">
-            {reorder.map((p) => (
-              <Link
-                key={p.id}
-                href={`/estestore/${p.slug ?? p.id}`}
-                className="shrink-0 w-32 rounded-xl border border-slate-200 bg-white overflow-hidden active:bg-slate-50 transition-colors"
-              >
-                <div className="aspect-square bg-slate-50 overflow-hidden">
-                  {p.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl opacity-20">🧴</div>
-                  )}
-                </div>
-                <div className="p-2">
-                  <p className="text-xs font-semibold text-slate-900 line-clamp-2 leading-snug mb-1">{p.name}</p>
-                  <p className="text-xs font-bold text-[#8B7339]">{formatTRY(p.price)}</p>
-                </div>
-              </Link>
-            ))}
+            {reorder.map((p) => {
+              const initial = (p.name?.trim()[0] ?? '✦').toUpperCase()
+              return (
+                <Link
+                  key={p.id}
+                  href={`/estestore/${p.slug ?? p.id}`}
+                  className="shrink-0 w-32 rounded-xl border border-slate-200 bg-white overflow-hidden active:bg-slate-50 transition-colors"
+                >
+                  <div className="aspect-square bg-gradient-to-br from-[#FAFAF7] via-white to-[#F5F0E5] overflow-hidden">
+                    {p.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center relative">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(201,169,97,0.10),transparent_55%)]" />
+                        <span className="relative font-black text-[#8B7339]/30 select-none leading-none text-[56px] tracking-tight">
+                          {initial}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-2">
+                    <p className="text-xs font-semibold text-slate-900 line-clamp-2 leading-snug mb-1">{p.name}</p>
+                    <p className="text-xs font-bold text-[#8B7339]">{formatTRY(p.price)}</p>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </section>
       )}

@@ -58,36 +58,46 @@ export default function RecentlyViewedShelf({
         </button>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        {items.map(p => (
-          <Link
-            key={p.id}
-            href={`/estestore/${p.slug ?? p.id}`}
-            className={`group block overflow-hidden rounded-xl border transition-all hover:-translate-y-0.5 ${
-              dark
-                ? 'bg-slate-800/50 border-slate-700 hover:border-[#C9A961]/60'
-                : 'bg-white border-slate-200 hover:border-[#C9A961]/60 hover:shadow-md'
-            }`}
-          >
-            <div className={`aspect-square overflow-hidden ${dark ? 'bg-slate-900' : 'bg-slate-50'}`}>
-              {p.cover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.cover} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-3xl opacity-20">
-                  {p.category === 'sarf_medikal' ? '💉' : '🧴'}
-                </div>
-              )}
-            </div>
-            <div className="p-2.5">
-              <p className={`text-xs font-semibold line-clamp-2 leading-snug mb-1 ${dark ? 'text-white' : 'text-slate-900'}`}>
-                {p.name}
-              </p>
-              <p className={`text-xs font-bold ${dark ? 'text-[#C9A961]' : 'text-slate-700'}`}>
-                {formatTRY(p.price)}
-              </p>
-            </div>
-          </Link>
-        ))}
+        {items.map(p => {
+          const initial = (p.name?.trim()[0] ?? '✦').toUpperCase()
+          return (
+            <Link
+              key={p.id}
+              href={`/estestore/${p.slug ?? p.id}`}
+              className={`group block overflow-hidden rounded-xl border transition-all hover:-translate-y-0.5 ${
+                dark
+                  ? 'bg-slate-800/50 border-slate-700 hover:border-[#C9A961]/60'
+                  : 'bg-white border-slate-200 hover:border-[#C9A961]/60 hover:shadow-md'
+              }`}
+            >
+              <div className={`aspect-square overflow-hidden ${
+                dark
+                  ? 'bg-slate-900'
+                  : 'bg-gradient-to-br from-[#FAFAF7] via-white to-[#F5F0E5]'
+              }`}>
+                {p.cover ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.cover} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center relative">
+                    {!dark && <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(201,169,97,0.10),transparent_55%)]" />}
+                    <span className={`relative font-black select-none leading-none text-[64px] tracking-tight ${dark ? 'text-slate-700' : 'text-[#8B7339]/30'}`}>
+                      {initial}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="p-2.5">
+                <p className={`text-xs font-semibold line-clamp-2 leading-snug mb-1 ${dark ? 'text-white' : 'text-slate-900'}`}>
+                  {p.name}
+                </p>
+                <p className={`text-xs font-bold ${dark ? 'text-[#C9A961]' : 'text-slate-700'}`}>
+                  {formatTRY(p.price)}
+                </p>
+              </div>
+            </Link>
+          )
+        })}
       </div>
     </section>
   )
