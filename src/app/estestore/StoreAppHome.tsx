@@ -1,9 +1,16 @@
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Search } from 'lucide-react'
 import { formatTRY } from '@/lib/estestore'
 import ProductCard, { type ProductCardData } from './ProductCard'
 import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
 import AuthRefreshGate from '@/components/native/AuthRefreshGate'
+
+const QUICK_CATEGORIES = [
+  { slug: 'kozmetik',          label: 'Kozmetik',        icon: '🧴', accent: '#8B7339' },
+  { slug: 'longevity',         label: 'Longevity',        icon: '⏳', accent: '#C9A961' },
+  { slug: 'islem-sonrasi',     label: 'İşlem Sonrası',    icon: '🩹', accent: '#10876B' },
+  { slug: 'biyohacking-olcum', label: 'Biyohacking',      icon: '📊', accent: '#C9A961' },
+]
 
 /**
  * EsteStore app-özel EV ekranı (App Başrol Modeli — Stage 2).
@@ -83,12 +90,42 @@ export default function StoreAppHome({
       {/* Cold-start auth race: server guest gördüyse ama client girişliyse tazele */}
       <AuthRefreshGate serverAuthed={serverAuthed} />
       {/* Sakin "senin için" ev başlığı — dark cinematic vitrin yerine */}
-      <section className="px-5 pt-4 pb-1">
+      <section className="px-5 pt-4 pb-3">
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#8B7339]">EsteStore</p>
         <h1 className="text-2xl font-bold text-slate-900 tracking-[-0.01em]">
           {userName ? `Merhaba, ${userName}` : 'Senin için'}
         </h1>
         <p className="text-slate-600 text-sm mt-1">Estelongy Puanlı seçkiler · kaldığın yerden devam</p>
+      </section>
+
+      {/* Arama hero — kullanıcı en sık "şu ürünü ara" akışı için */}
+      <section className="px-5 pb-3">
+        <form action="/estestore/ara" method="GET" className="relative">
+          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="search"
+            name="q"
+            placeholder="Krem, takviye, cihaz ara..."
+            className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-2xl text-slate-900 text-sm placeholder:text-slate-500 focus:outline-none focus:border-[#C9A961] focus:bg-white transition-colors"
+            aria-label="Ürün arama"
+          />
+        </form>
+      </section>
+
+      {/* Kategori grid — 4 hızlı erişim */}
+      <section className="px-5 pb-2">
+        <div className="grid grid-cols-4 gap-2.5">
+          {QUICK_CATEGORIES.map((c) => (
+            <Link
+              key={c.slug}
+              href={`/estestore/kategori/${c.slug}`}
+              className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white active:bg-slate-50 py-3 px-1 transition-colors"
+            >
+              <span className="text-2xl leading-none">{c.icon}</span>
+              <span className="text-[11px] font-semibold text-slate-700 text-center leading-tight">{c.label}</span>
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* Tekrar Sipariş — web'de "Siparişlerim"de gömülü; app'te öne çıkar */}
