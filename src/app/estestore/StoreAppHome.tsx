@@ -5,11 +5,30 @@ import ProductCard, { type ProductCardData } from './ProductCard'
 import RecentlyViewedShelf from '@/components/RecentlyViewedShelf'
 import AuthRefreshGate from '@/components/native/AuthRefreshGate'
 
-const QUICK_CATEGORIES = [
-  { slug: 'kozmetik',          label: 'Kozmetik',        icon: '🧴', accent: '#8B7339' },
-  { slug: 'longevity',         label: 'Longevity',        icon: '⏳', accent: '#C9A961' },
-  { slug: 'islem-sonrasi',     label: 'İşlem Sonrası',    icon: '🩹', accent: '#10876B' },
-  { slug: 'biyohacking-olcum', label: 'Biyohacking',      icon: '📊', accent: '#C9A961' },
+/**
+ * 18 hasta kategorisi (sıra: estestore_kategoriler memory'sine göre).
+ * `slug` doluysa /estestore/kategori/[slug] sayfasına; yoksa /estestore/ara?q=
+ * üzerinden arama. Backend SECTIONS'a kademe kademe geldikçe slug eklenir.
+ */
+const QUICK_CATEGORIES: { label: string; icon: string; slug?: string; q?: string }[] = [
+  { label: 'Longevity',         icon: '⏳', slug: 'longevity' },
+  { label: 'Biyohacking',       icon: '📊', slug: 'biyohacking-olcum' },
+  { label: 'Anti-Aging',        icon: '✨', q: 'anti-aging' },
+  { label: 'Cilt Bakımı',       icon: '🧴', q: 'cilt bakımı' },
+  { label: 'Güneş Koruma',      icon: '☀️', q: 'güneş koruma' },
+  { label: 'Göz Çevresi',       icon: '👁️', q: 'göz çevresi' },
+  { label: 'Leke & Aydınlatma', icon: '🌟', q: 'leke aydınlatma' },
+  { label: 'Hassas Cilt',       icon: '🌿', q: 'hassas cilt' },
+  { label: 'İşlem Sonrası',     icon: '🩹', slug: 'islem-sonrasi' },
+  { label: 'Cihazlar',          icon: '📱', q: 'cihaz' },
+  { label: 'Dermo-Makyaj',      icon: '💄', q: 'makyaj' },
+  { label: 'Vücut Bakımı',      icon: '🧖', q: 'vücut bakımı' },
+  { label: 'Saç & Sakal',       icon: '💇', q: 'saç' },
+  { label: 'Erkek Bakımı',      icon: '🧔', q: 'erkek' },
+  { label: 'Suplement',         icon: '💊', q: 'suplement vitamin' },
+  { label: 'Diş & Ağız',        icon: '🦷', q: 'diş ağız' },
+  { label: 'Kişisel Kullanım',  icon: '🧴', q: 'kişisel kullanım' },
+  { label: 'Hediye Setleri',    icon: '🎁', q: 'set' },
 ]
 
 /**
@@ -112,19 +131,24 @@ export default function StoreAppHome({
         </form>
       </section>
 
-      {/* Kategori grid — 4 hızlı erişim */}
-      <section className="px-5 pb-2">
-        <div className="grid grid-cols-4 gap-2.5">
-          {QUICK_CATEGORIES.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/estestore/kategori/${c.slug}`}
-              className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white active:bg-slate-50 py-3 px-1 transition-colors"
-            >
-              <span className="text-2xl leading-none">{c.icon}</span>
-              <span className="text-[11px] font-semibold text-slate-700 text-center leading-tight">{c.label}</span>
-            </Link>
-          ))}
+      {/* Kategori şeridi — 18 kategori yatay scroll */}
+      <section className="pb-2">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar px-5 pb-2 snap-x">
+          {QUICK_CATEGORIES.map((c) => {
+            const href = c.slug
+              ? `/estestore/kategori/${c.slug}`
+              : `/estestore/ara?q=${encodeURIComponent(c.q ?? c.label)}`
+            return (
+              <Link
+                key={c.label}
+                href={href}
+                className="shrink-0 snap-start flex flex-col items-center justify-center gap-1 rounded-2xl border border-slate-200 bg-white active:bg-slate-50 py-2.5 px-3 min-w-[78px] transition-colors"
+              >
+                <span className="text-xl leading-none">{c.icon}</span>
+                <span className="text-[10.5px] font-semibold text-slate-700 text-center leading-tight whitespace-nowrap">{c.label}</span>
+              </Link>
+            )
+          })}
         </div>
       </section>
 
