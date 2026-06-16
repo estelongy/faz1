@@ -27,7 +27,7 @@ export default function SepetPage() {
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 pt-[calc(56px+env(safe-area-inset-top)+12px)] lg:pt-24 pb-32 lg:pb-16">
+      <div className="max-w-5xl mx-auto px-4 pt-6 lg:pt-24 pb-32 lg:pb-16">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-black text-slate-900 tracking-[-0.02em]">Sepetim</h1>
