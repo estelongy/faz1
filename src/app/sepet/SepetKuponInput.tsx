@@ -50,14 +50,14 @@ export default function SepetKuponInput() {
           value={code}
           onChange={(e) => { setCode(e.target.value); setSaved(false) }}
           placeholder="ESTELONGY10"
-          className="flex-1 px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961] uppercase placeholder:normal-case placeholder:text-slate-400"
+          className="flex-1 min-w-0 px-3 py-2 bg-[#FAFAF7] border border-slate-300 rounded-lg text-slate-900 text-base focus:outline-none focus:border-[#C9A961] uppercase placeholder:normal-case placeholder:text-slate-400"
           autoCapitalize="characters"
         />
         <button
           type="button"
           onClick={save}
           disabled={!code.trim() || saved}
-          className="px-4 py-2 bg-slate-900 active:bg-slate-700 text-white text-sm font-bold rounded-lg disabled:opacity-50 disabled:bg-emerald-600 disabled:text-white"
+          className="shrink-0 px-4 py-2 bg-slate-900 active:bg-slate-700 text-white text-sm font-bold rounded-lg disabled:opacity-50 disabled:bg-emerald-600 disabled:text-white"
         >
           {saved ? <Check size={16} /> : 'Hazırla'}
         </button>
