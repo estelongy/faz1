@@ -140,96 +140,96 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
     <div className="space-y-6">
 
       {/* PROFİL BİLGİLERİ */}
-      <section className="rounded-2xl border border-slate-700 bg-slate-800/50 p-6">
-        <h2 className="text-white font-bold text-lg mb-1">Profil Bilgileri</h2>
-        <p className="text-slate-400 text-sm mb-5">Kişisel bilgilerinizi güncelleyin</p>
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-slate-900 font-bold text-lg mb-1">Profil Bilgileri</h2>
+        <p className="text-slate-500 text-sm mb-5">Kişisel bilgilerinizi güncelleyin</p>
         <form onSubmit={handleProfileSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Ad</label>
+              <label className="block text-sm text-slate-700 font-semibold mb-2">Ad</label>
               <input type="text" required value={firstName} onChange={e => setFirstName(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                className="w-full px-4 py-3 bg-[#FAFAF7] border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C9A961] transition-colors" />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Soyad</label>
+              <label className="block text-sm text-slate-700 font-semibold mb-2">Soyad</label>
               <input type="text" required value={lastName} onChange={e => setLastName(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+                className="w-full px-4 py-3 bg-[#FAFAF7] border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C9A961] transition-colors" />
             </div>
           </div>
           <div>
-            <label className="block text-sm text-slate-400 mb-2">Doğum Yılı</label>
+            <label className="block text-sm text-slate-700 font-semibold mb-2">Doğum Yılı</label>
             <input type="number" min={1900} max={new Date().getFullYear() - 18} value={birthYear} onChange={e => setBirthYear(e.target.value)}
               placeholder={String(new Date().getFullYear() - 30)}
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+              className="w-full px-4 py-3 bg-[#FAFAF7] border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C9A961] transition-colors" />
           </div>
           <div>
-            <label className="block text-sm text-slate-400 mb-2">E-posta</label>
+            <label className="block text-sm text-slate-700 font-semibold mb-2">E-posta</label>
             <div className="flex gap-2">
               <input type="email" disabled value={email}
-                className="flex-1 min-w-0 px-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-slate-500 cursor-not-allowed" />
+                className="flex-1 min-w-0 px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 cursor-not-allowed" />
               {emailStep === 'idle' && (
                 <button type="button" onClick={() => { setEmailStep('enter'); setNewEmail(''); setEmailErr(null) }}
-                  className="shrink-0 px-4 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors">
+                  className="shrink-0 px-4 rounded-xl bg-slate-900 hover:bg-slate-700 text-white text-sm font-semibold transition-colors">
                   Değiştir
                 </button>
               )}
             </div>
             {emailStep === 'enter' && (
-              <div className="mt-3 p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-3">
-                <p className="text-slate-400 text-sm">
+              <div className="mt-3 p-4 rounded-xl bg-[#FAFAF7] border border-slate-200 space-y-3">
+                <p className="text-slate-600 text-sm">
                   Yeni e-posta adresinize bir onay bağlantısı gönderilir. Onaylanana kadar mevcut adresiniz aktif kalır.
                 </p>
                 <input type="email" value={newEmail} onChange={ev => setNewEmail(ev.target.value)}
                   placeholder="yeni@email.com" autoFocus
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500" />
-                {emailErr && <p className="text-red-400 text-sm">{emailErr}</p>}
+                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C9A961]" />
+                {emailErr && <p className="text-red-600 text-sm">{emailErr}</p>}
                 <div className="flex gap-2">
                   <button type="button" onClick={() => { setEmailStep('idle'); setEmailErr(null) }}
-                    className="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                    className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg transition-colors">
                     Vazgeç
                   </button>
                   <button type="button" onClick={handleEmailChange} disabled={emailSaving}
-                    className="flex-1 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 text-white text-base font-semibold rounded-lg transition-all">
+                    className="flex-1 py-2.5 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-50 text-[#0F172A] text-base font-bold rounded-lg transition-all">
                     {emailSaving ? 'Gönderiliyor…' : 'Onay maili gönder'}
                   </button>
                 </div>
               </div>
             )}
             {emailStep === 'sent' && (
-              <div className="mt-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
+              <div className="mt-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
                 ✓ <strong>{newEmail}</strong> adresine onay bağlantısı gönderildi. Linke tıkladıktan sonra yeni e-posta aktif olur. Spam&apos;a düşmüş olabilir.
                 <button type="button" onClick={() => { setEmailStep('idle'); setNewEmail('') }}
-                  className="mt-3 w-full py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                  className="mt-3 w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg transition-colors">
                   Tamam
                 </button>
               </div>
             )}
           </div>
           {profileMsg && (
-            <div className={`p-3 rounded-xl text-sm ${profileMsg.type === 'ok' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-300' : 'bg-red-500/10 border border-red-500/20 text-red-300'}`}>
+            <div className={`p-3 rounded-xl text-sm ${profileMsg.type === 'ok' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
               {profileMsg.text}
             </div>
           )}
           <button type="submit" disabled={profileSaving}
-            className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 text-white font-semibold rounded-xl transition-all">
+            className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-50 text-[#0F172A] font-bold rounded-xl transition-all shadow-lg shadow-[#C9A961]/20">
             {profileSaving ? 'Kaydediliyor…' : 'Bilgileri Güncelle'}
           </button>
         </form>
       </section>
 
       {/* TELEFON */}
-      <section className="rounded-2xl border border-slate-700 bg-slate-800/50 p-6">
-        <h2 className="text-white font-bold text-lg mb-1">Telefon</h2>
-        <p className="text-slate-400 text-sm mb-5">Bildirimler ve hesap güvenliği için</p>
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-slate-900 font-bold text-lg mb-1">Telefon</h2>
+        <p className="text-slate-500 text-sm mb-5">Bildirimler ve hesap güvenliği için</p>
 
         {phoneStep === 'idle' && (
-          <div className="flex items-center justify-between p-4 rounded-xl bg-slate-900 border border-slate-700">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-[#FAFAF7] border border-slate-200">
             <div>
               <p className="text-slate-500 text-sm">Mevcut numara</p>
-              <p className="text-white font-mono">{phone ?? '—'}</p>
+              <p className="text-slate-900 font-mono">{phone ?? '—'}</p>
             </div>
             <button onClick={startPhoneChange}
-              className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-base font-semibold transition-colors">
+              className="px-4 py-2 rounded-lg bg-[#C9A961] hover:bg-[#D4B872] text-[#0F172A] text-base font-bold transition-colors">
               Değiştir
             </button>
           </div>
@@ -237,24 +237,24 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
 
         {phoneStep === 'enter' && (
           <div className="space-y-3">
-            <p className="text-slate-400 text-sm">Yeni telefon numaranızı girin. SMS ile kod gönderilecek.</p>
+            <p className="text-slate-600 text-sm">Yeni telefon numaranızı girin. SMS ile kod gönderilecek.</p>
             <div className="flex gap-2">
-              <div className="flex items-center gap-1.5 px-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 text-sm shrink-0 select-none">
+              <div className="flex items-center gap-1.5 px-3 bg-[#FAFAF7] border border-slate-200 rounded-xl text-slate-700 text-sm shrink-0 select-none">
                 🇹🇷 <span>+90</span>
               </div>
               <input type="tel" value={newPhone}
                 onChange={e => setNewPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                 placeholder="5xx xxx xx xx" autoFocus
-                className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500" />
+                className="flex-1 px-4 py-3 bg-[#FAFAF7] border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C9A961]" />
             </div>
-            {phoneError && <p className="text-red-400 text-sm">{phoneError}</p>}
+            {phoneError && <p className="text-red-600 text-sm">{phoneError}</p>}
             <div className="flex gap-2">
               <button onClick={() => setPhoneStep('idle')}
-                className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors">
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors">
                 Vazgeç
               </button>
               <button onClick={submitNewPhone}
-                className="flex-1 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white font-semibold rounded-xl transition-all">
+                className="flex-1 py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] text-[#0F172A] font-bold rounded-xl transition-all">
                 Kod Gönder →
               </button>
             </div>
@@ -273,10 +273,10 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
         )}
 
         {phoneStep === 'done' && (
-          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
+          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
             ✓ Telefon numaranız güncellendi: <span className="font-mono">{formatPhone(newPhone)}</span>
             <button onClick={() => setPhoneStep('idle')}
-              className="mt-3 w-full py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+              className="mt-3 w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-lg transition-colors">
               Tamam
             </button>
           </div>
@@ -284,59 +284,59 @@ export default function HesabimClient({ email, firstName: initialFirst, lastName
       </section>
 
       {/* ŞİFRE DEĞİŞTİR */}
-      <section className="rounded-2xl border border-slate-700 bg-slate-800/50 p-6">
-        <h2 className="text-white font-bold text-lg mb-1">Şifre Değiştir</h2>
-        <p className="text-slate-400 text-sm mb-5">En az 6 karakter olmalı</p>
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-slate-900 font-bold text-lg mb-1">Şifre Değiştir</h2>
+        <p className="text-slate-500 text-sm mb-5">En az 6 karakter olmalı</p>
         <form onSubmit={handlePasswordSubmit} className="space-y-3">
           <input type="password" placeholder="Yeni şifre" value={newPassword} onChange={e => setNewPassword(e.target.value)} minLength={8} required
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+            className="w-full px-4 py-3 bg-[#FAFAF7] border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C9A961] transition-colors" />
           <input type="password" placeholder="Yeni şifre (tekrar)" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} minLength={8} required
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+            className="w-full px-4 py-3 bg-[#FAFAF7] border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C9A961] transition-colors" />
           {pwMsg && (
-            <div className={`p-3 rounded-xl text-sm ${pwMsg.type === 'ok' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-300' : 'bg-red-500/10 border border-red-500/20 text-red-300'}`}>
+            <div className={`p-3 rounded-xl text-sm ${pwMsg.type === 'ok' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
               {pwMsg.text}
             </div>
           )}
           <button type="submit" disabled={pwSaving}
-            className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 text-white font-semibold rounded-xl transition-all">
+            className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-50 text-[#0F172A] font-bold rounded-xl transition-all shadow-lg shadow-[#C9A961]/20">
             {pwSaving ? 'Güncelleniyor…' : 'Şifreyi Güncelle'}
           </button>
         </form>
       </section>
 
       {/* HESABI SİL */}
-      <section className="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
-        <h2 className="text-red-300 font-bold text-lg mb-1">Hesabı Kalıcı Sil</h2>
-        <p className="text-slate-400 text-sm mb-3">
-          KVKK ve GDPR kapsamındaki <strong className="text-slate-300">unutulma hakkınız</strong>:
+      <section className="rounded-2xl border border-red-200 bg-red-50/40 p-6">
+        <h2 className="text-red-700 font-bold text-lg mb-1">Hesabı Kalıcı Sil</h2>
+        <p className="text-slate-600 text-sm mb-3">
+          KVKK ve GDPR kapsamındaki <strong className="text-slate-900">unutulma hakkınız</strong>:
         </p>
-        <ul className="text-slate-400 text-sm space-y-1 mb-5 list-disc pl-5">
-          <li><strong className="text-slate-300">Silinir:</strong> Profil, telefon, e-posta, analizler, randevular, skorlar, adresler, sepet, yorumlar (anonimleşir), bildirimler.</li>
-          <li><strong className="text-slate-300">Anonim kalır:</strong> Tamamlanmış siparişler, faturalar (vergi mevzuatı 5 yıl saklama zorunlu) — kişisel bağ kopar.</li>
-          <li><strong className="text-slate-300">Aktif sipariş varsa:</strong> Önce teslimat/iptal tamamlanmalı.</li>
+        <ul className="text-slate-600 text-sm space-y-1 mb-5 list-disc pl-5">
+          <li><strong className="text-slate-900">Silinir:</strong> Profil, telefon, e-posta, analizler, randevular, skorlar, adresler, sepet, yorumlar (anonimleşir), bildirimler.</li>
+          <li><strong className="text-slate-900">Anonim kalır:</strong> Tamamlanmış siparişler, faturalar (vergi mevzuatı 5 yıl saklama zorunlu) — kişisel bağ kopar.</li>
+          <li><strong className="text-slate-900">Aktif sipariş varsa:</strong> Önce teslimat/iptal tamamlanmalı.</li>
         </ul>
         {!showDeleteConfirm ? (
           <button onClick={() => setShowDeleteConfirm(true)}
-            className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 font-semibold rounded-xl transition-colors">
+            className="w-full py-3 bg-white hover:bg-red-50 border border-red-300 text-red-700 font-bold rounded-xl transition-colors">
             Hesabımı Sil
           </button>
         ) : (
           <div className="space-y-3">
-            <p className="text-slate-300 text-sm">Onay için aşağıya <strong className="text-red-400 font-mono">SİL</strong> yazın:</p>
+            <p className="text-slate-700 text-sm">Onay için aşağıya <strong className="text-red-700 font-mono">SİL</strong> yazın:</p>
             <input type="text" value={deleteText} onChange={e => setDeleteText(e.target.value)} placeholder="SİL"
-              className="w-full px-4 py-3 bg-slate-900 border border-red-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-red-500" />
+              className="w-full px-4 py-3 bg-white border border-red-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-500" />
             {deleteError && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
                 {deleteError}
               </div>
             )}
             <div className="flex gap-2">
               <button onClick={() => { setShowDeleteConfirm(false); setDeleteText(''); setDeleteError(null) }}
-                className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-colors">
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors">
                 Vazgeç
               </button>
               <button onClick={handleDelete} disabled={deleteText !== 'SİL' || deleting}
-                className="flex-1 py-3 bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white font-semibold rounded-xl transition-colors">
+                className="flex-1 py-3 bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white font-bold rounded-xl transition-colors">
                 {deleting ? 'Siliniyor…' : 'Hesabımı Kalıcı Olarak Sil'}
               </button>
             </div>

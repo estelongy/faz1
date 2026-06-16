@@ -78,29 +78,30 @@ export default async function FavorilerimPage() {
     }))
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+    <main className="min-h-screen bg-[#FAFAF7]">
+      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
+      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center gap-3">
           <BackButton href="/panel" label="Panelim" />
-          <span className="text-slate-700">|</span>
-          <span className="text-white text-sm font-bold">Favorilerim</span>
+          <span className="text-slate-300">|</span>
+          <span className="text-slate-900 text-sm font-bold">Favorilerim</span>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 lg:pt-24 pb-24 lg:pb-16 space-y-6">
         <div className="flex items-baseline justify-between flex-wrap gap-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-            <span className="text-rose-400">♥</span>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-2">
+            <span className="text-rose-500">♥</span>
             Favorilerim
           </h1>
-          <p className="text-slate-400 text-sm">{products.length} ürün</p>
+          <p className="text-slate-500 text-sm">{products.length} ürün</p>
         </div>
 
         {products.length === 0 ? (
-          <div className="text-center py-20 px-6 rounded-3xl border border-dashed border-rose-400/30 bg-slate-800/50">
+          <div className="text-center py-20 px-6 rounded-3xl border border-dashed border-rose-300 bg-white shadow-sm">
             <div className="text-6xl mb-4">💝</div>
-            <p className="text-xl font-bold text-white mb-2">Henüz favori ürün yok</p>
-            <p className="text-base text-slate-400 max-w-md mx-auto mb-6">
+            <p className="text-xl font-bold text-slate-900 mb-2">Henüz favori ürün yok</p>
+            <p className="text-base text-slate-600 max-w-md mx-auto mb-6">
               EsteStore&apos;da beğendiğin ürünlerin sağ üst köşesindeki kalp ikonuna tıklayarak buraya kaydet.
             </p>
             <Link

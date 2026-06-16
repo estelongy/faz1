@@ -41,11 +41,11 @@ export default function AdresListe({ addresses }: { addresses: Adres[] }) {
 
   if (addresses.length === 0 && !adding) {
     return (
-      <div className="text-center py-12 bg-slate-800/30 border border-dashed border-slate-700 rounded-2xl">
-        <div className="text-slate-700 text-5xl mb-3">📍</div>
-        <p className="text-slate-400 mb-4">Henüz kayıtlı adres yok</p>
+      <div className="text-center py-12 bg-white border border-dashed border-slate-300 rounded-2xl shadow-sm">
+        <div className="text-slate-300 text-5xl mb-3">📍</div>
+        <p className="text-slate-600 mb-4">Henüz kayıtlı adres yok</p>
         <button onClick={() => setAdding(true)}
-          className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl transition-all">
+          className="px-5 py-2.5 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] text-[#0F172A] text-sm font-bold rounded-xl transition-all">
           + İlk Adresi Ekle
         </button>
       </div>
@@ -60,12 +60,12 @@ export default function AdresListe({ addresses }: { addresses: Adres[] }) {
             onClose={() => setEditingId(null)}
             onSaved={() => setEditingId(null)} />
         ) : (
-          <div key={a.id} className="p-5 bg-slate-800/50 border border-slate-700 rounded-2xl">
+          <div key={a.id} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
             <div className="flex items-start justify-between gap-3 mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-white font-bold text-sm">{a.title}</span>
+                <span className="text-slate-900 font-bold text-sm">{a.title}</span>
                 {a.is_default && (
-                  <span className="text-sm font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                  <span className="text-sm font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
                     VARSAYILAN
                   </span>
                 )}
@@ -73,23 +73,23 @@ export default function AdresListe({ addresses }: { addresses: Adres[] }) {
               <div className="flex items-center gap-2 shrink-0">
                 {!a.is_default && (
                   <button onClick={() => handleSetDefault(a.id)} disabled={isPending}
-                    className="text-sm text-slate-500 hover:text-emerald-400 transition-colors">
+                    className="text-sm text-slate-500 hover:text-emerald-700 transition-colors">
                     Varsayılan yap
                   </button>
                 )}
                 <button onClick={() => setEditingId(a.id)}
-                  className="text-sm text-slate-500 hover:text-violet-400 transition-colors">
+                  className="text-sm text-slate-500 hover:text-[#8B7339] transition-colors">
                   Düzenle
                 </button>
                 <button onClick={() => handleDelete(a.id)} disabled={isPending}
-                  className="text-sm text-slate-500 hover:text-red-400 transition-colors">
+                  className="text-sm text-slate-500 hover:text-red-600 transition-colors">
                   Sil
                 </button>
               </div>
             </div>
-            <p className="text-slate-300 text-sm">{a.full_name}</p>
+            <p className="text-slate-700 text-sm">{a.full_name}</p>
             <p className="text-slate-500 text-sm mt-0.5">{a.phone}</p>
-            <p className="text-slate-400 text-sm mt-2 leading-relaxed">
+            <p className="text-slate-600 text-sm mt-2 leading-relaxed">
               {a.address_line}
               {a.neighborhood && <>, {a.neighborhood}</>}
               , {a.district} / {a.city}
@@ -103,7 +103,7 @@ export default function AdresListe({ addresses }: { addresses: Adres[] }) {
         <AdresForm onClose={() => setAdding(false)} onSaved={() => setAdding(false)} />
       ) : (
         <button onClick={() => setAdding(true)}
-          className="w-full py-4 border border-dashed border-slate-600 hover:border-violet-500 rounded-2xl text-slate-400 hover:text-violet-400 transition-all text-sm font-medium">
+          className="w-full py-4 bg-white border border-dashed border-slate-300 hover:border-[#C9A961] rounded-2xl text-slate-500 hover:text-[#8B7339] transition-all text-sm font-semibold">
           + Yeni Adres Ekle
         </button>
       )}

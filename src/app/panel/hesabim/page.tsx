@@ -29,19 +29,20 @@ export default async function HesabimPage() {
   const lastName = rest.join(' ')
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+    <main className="min-h-screen bg-[#FAFAF7]">
+      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
+      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
-          <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
+          <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 hover:text-slate-900 text-base font-semibold transition-colors">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
           </SafeLink>
-          <span className="text-white font-bold text-sm">Hesabım</span>
+          <span className="text-slate-900 font-bold text-sm">Hesabım</span>
           <span className="w-12" />
         </div>
       </header>
 
-      <div className="max-w-2xl mx-auto px-4 pt-24 pb-16">
+      <div className="max-w-2xl mx-auto px-4 pt-6 lg:pt-24 pb-24 lg:pb-16">
         <HesabimClient
           email={user.email ?? ''}
           firstName={firstName ?? ''}

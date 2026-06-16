@@ -9,11 +9,11 @@ import SafeLink from '@/components/SafeLink'
 export const metadata: Metadata = { title: 'İadelerim — Estelongy' }
 
 const STATUS_BADGE: Record<string, { label: string; color: string }> = {
-  pending:   { label: 'İnceleniyor', color: 'bg-amber-500/20 text-amber-400' },
-  approved:  { label: 'Onaylandı',   color: 'bg-emerald-500/20 text-emerald-400' },
-  rejected:  { label: 'Reddedildi',  color: 'bg-red-500/20 text-red-400' },
-  completed: { label: 'Tamamlandı',  color: 'bg-blue-500/20 text-blue-400' },
-  cancelled: { label: 'İptal',       color: 'bg-slate-700 text-slate-500' },
+  pending:   { label: 'İnceleniyor', color: 'bg-amber-100 text-amber-700 border border-amber-200' },
+  approved:  { label: 'Onaylandı',   color: 'bg-emerald-100 text-emerald-700 border border-emerald-200' },
+  rejected:  { label: 'Reddedildi',  color: 'bg-red-100 text-red-700 border border-red-200' },
+  completed: { label: 'Tamamlandı',  color: 'bg-blue-100 text-blue-700 border border-blue-200' },
+  cancelled: { label: 'İptal',       color: 'bg-slate-100 text-slate-600 border border-slate-200' },
 }
 
 export default async function IadelerimPage() {
@@ -28,23 +28,24 @@ export default async function IadelerimPage() {
     .order('created_at', { ascending: false })
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+    <main className="min-h-screen bg-[#FAFAF7]">
+      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
+      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center gap-3">
           <BackButton href="/panel" label="Panelim" />
-          <span className="text-slate-700">|</span>
-          <span className="text-white text-sm font-bold">İadelerim</span>
+          <span className="text-slate-300">|</span>
+          <span className="text-slate-900 text-sm font-bold">İadelerim</span>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 pt-24 pb-16">
-        <h1 className="text-2xl font-black text-white mb-6">İade Taleplerim</h1>
+      <div className="max-w-3xl mx-auto px-4 pt-6 lg:pt-24 pb-24 lg:pb-16">
+        <h1 className="text-2xl font-black text-slate-900 mb-6">İade Taleplerim</h1>
 
         {!returns || returns.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-20 bg-white border border-dashed border-slate-200 rounded-2xl">
             <div className="text-5xl mb-4">↩</div>
-            <p className="text-slate-400">Henüz iade talebinde bulunmadın</p>
-            <SafeLink href="/panel" className="mt-4 inline-block text-[#C9A961] hover:text-[#C9A961] text-base transition-colors font-semibold">
+            <p className="text-slate-600">Henüz iade talebinde bulunmadın</p>
+            <SafeLink href="/panel" className="mt-4 inline-block text-[#8B7339] hover:text-[#6B5828] text-base transition-colors font-semibold">
               Panelime Dön
             </SafeLink>
           </div>
@@ -52,15 +53,15 @@ export default async function IadelerimPage() {
           <div className="space-y-4">
             {returns.map(ret => {
               const item = ret.order_items as unknown as { product_snapshot?: { name?: string }; line_total?: number; orders?: { order_number?: string } } | null
-              const badge = STATUS_BADGE[ret.status] ?? { label: ret.status, color: 'bg-slate-700 text-slate-400' }
+              const badge = STATUS_BADGE[ret.status] ?? { label: ret.status, color: 'bg-slate-100 text-slate-600 border border-slate-200' }
               return (
-                <div key={ret.id} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+                <div key={ret.id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div>
-                      <p className="text-white font-bold text-sm">{item?.product_snapshot?.name ?? 'Ürün'}</p>
+                      <p className="text-slate-900 font-bold text-sm">{item?.product_snapshot?.name ?? 'Ürün'}</p>
                       {item?.orders?.order_number && (
                         <SafeLink href={`/siparis/${item.orders.order_number}`}
-                          className="text-[#C9A961] hover:text-[#C9A961] text-base transition-colors font-semibold">
+                          className="text-[#8B7339] hover:text-[#6B5828] text-base transition-colors font-semibold">
                           Sipariş #{item.orders.order_number}
                         </SafeLink>
                       )}
@@ -70,16 +71,16 @@ export default async function IadelerimPage() {
                     </span>
                   </div>
 
-                  <div className="space-y-1 text-sm text-slate-500">
-                    <p><span className="text-slate-400">Sebep:</span> {ret.reason}</p>
-                    {ret.description && <p><span className="text-slate-400">Açıklama:</span> {ret.description}</p>}
-                    <p><span className="text-slate-400">Talep Tarihi:</span> {new Date(ret.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  <div className="space-y-1 text-sm text-slate-600">
+                    <p><span className="text-slate-500">Sebep:</span> {ret.reason}</p>
+                    {ret.description && <p><span className="text-slate-500">Açıklama:</span> {ret.description}</p>}
+                    <p><span className="text-slate-500">Talep Tarihi:</span> {new Date(ret.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                     {ret.refund_amount && (
-                      <p><span className="text-slate-400">İade Tutarı:</span> <span className="text-emerald-400 font-bold">₺{Number(ret.refund_amount).toLocaleString('tr-TR')}</span></p>
+                      <p><span className="text-slate-500">İade Tutarı:</span> <span className="text-emerald-700 font-bold">₺{Number(ret.refund_amount).toLocaleString('tr-TR')}</span></p>
                     )}
                     {ret.resolver_note && (
-                      <p className="mt-2 p-2 bg-slate-900/50 rounded-lg">
-                        <span className="text-slate-400">İş Ortağı Notu:</span> {ret.resolver_note}
+                      <p className="mt-2 p-2 bg-[#FAFAF7] border border-slate-200 rounded-lg">
+                        <span className="text-slate-500">İş Ortağı Notu:</span> {ret.resolver_note}
                       </p>
                     )}
                   </div>

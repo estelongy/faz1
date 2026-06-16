@@ -75,81 +75,81 @@ export default function AdresForm({ initial, onClose, onSaved }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-5 bg-slate-800/50 border border-violet-500/30 rounded-2xl space-y-4">
+    <form onSubmit={handleSubmit} className="p-5 bg-white border border-[#C9A961]/40 rounded-2xl space-y-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <h3 className="text-white font-bold text-sm">{initial?.id ? 'Adresi Düzenle' : 'Yeni Adres'}</h3>
+        <h3 className="text-slate-900 font-bold text-sm">{initial?.id ? 'Adresi Düzenle' : 'Yeni Adres'}</h3>
         {onClose && (
-          <button type="button" onClick={onClose} className="text-slate-500 hover:text-white text-base font-semibold">İptal</button>
+          <button type="button" onClick={onClose} className="text-slate-500 hover:text-slate-700 text-base font-semibold">İptal</button>
         )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-400 text-sm mb-1">Adres Başlığı *</label>
+          <label className="block text-slate-700 text-sm font-semibold mb-1">Adres Başlığı *</label>
           <input type="text" required value={title} onChange={e => setTitle(e.target.value)}
             placeholder="Ev / İş"
-            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+            className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:border-[#C9A961]" />
         </div>
         <div>
-          <label className="block text-slate-400 text-sm mb-1">Ad Soyad *</label>
+          <label className="block text-slate-700 text-sm font-semibold mb-1">Ad Soyad *</label>
           <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+            className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:border-[#C9A961]" />
         </div>
       </div>
 
       <div>
-        <label className="block text-slate-400 text-sm mb-1">Telefon *</label>
+        <label className="block text-slate-700 text-sm font-semibold mb-1">Telefon *</label>
         <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)}
           placeholder="+90 5XX XXX XX XX"
-          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+          className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:border-[#C9A961]" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-400 text-sm mb-1">İl *</label>
+          <label className="block text-slate-700 text-sm font-semibold mb-1">İl *</label>
           <input type="text" required value={city} onChange={e => setCity(e.target.value)}
             placeholder="İstanbul"
-            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+            className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:border-[#C9A961]" />
         </div>
         <div>
-          <label className="block text-slate-400 text-sm mb-1">İlçe *</label>
+          <label className="block text-slate-700 text-sm font-semibold mb-1">İlçe *</label>
           <input type="text" required value={district} onChange={e => setDistrict(e.target.value)}
             placeholder="Kadıköy"
-            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+            className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:border-[#C9A961]" />
         </div>
       </div>
 
       <div>
-        <label className="block text-slate-400 text-sm mb-1">Mahalle</label>
+        <label className="block text-slate-700 text-sm font-semibold mb-1">Mahalle</label>
         <input type="text" value={hood} onChange={e => setHood(e.target.value)}
-          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+          className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:border-[#C9A961]" />
       </div>
 
       <div>
-        <label className="block text-slate-400 text-sm mb-1">Açık Adres *</label>
+        <label className="block text-slate-700 text-sm font-semibold mb-1">Açık Adres *</label>
         <textarea required value={addr} onChange={e => setAddr(e.target.value)}
           rows={2} placeholder="Sokak, No, Daire"
           className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500 resize-none" />
       </div>
 
       <div>
-        <label className="block text-slate-400 text-sm mb-1">Posta Kodu</label>
+        <label className="block text-slate-700 text-sm font-semibold mb-1">Posta Kodu</label>
         <input type="text" value={postal} onChange={e => setPostal(e.target.value)}
-          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500" />
+          className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:border-[#C9A961]" />
       </div>
 
       <label className="flex items-center gap-2 cursor-pointer">
         <input type="checkbox" checked={isDefault} onChange={e => setIsDefault(e.target.checked)}
-          className="w-4 h-4 accent-violet-600" />
-        <span className="text-sm text-slate-300">Varsayılan adres olarak ayarla</span>
+          className="w-5 h-5 accent-[#C9A961]" />
+        <span className="text-sm text-slate-700">Varsayılan adres olarak ayarla</span>
       </label>
 
       {error && (
-        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">{error}</div>
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
       )}
 
       <button type="submit" disabled={isPending}
-        className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 text-white font-semibold rounded-xl transition-all text-base">
+        className="w-full py-3 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-[#0F172A] font-bold rounded-xl transition-all text-base shadow-lg shadow-[#C9A961]/20">
         {isPending ? 'Kaydediliyor...' : 'Adresi Kaydet'}
       </button>
     </form>
