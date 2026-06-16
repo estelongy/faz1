@@ -123,16 +123,9 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride, i
               )}
             </>
           ) : (
-            <>
-              <div className="text-slate-900 font-bold text-lg mb-1">
-                {formatTRY(product.price)}
-              </div>
-              {firstTier && proPriceFromFirstTier !== null && (
-                <p className="text-sm text-slate-500">
-                  Profesyonel: <span className="text-[#10876B] font-medium">{formatTRY(proPriceFromFirstTier)}</span> ({formatPercent(firstTier.discount_rate)} indirim)
-                </p>
-              )}
-            </>
+            <div className="text-slate-900 font-bold text-lg mb-1">
+              {formatTRY(product.price)}
+            </div>
           )}
         </div>
       </div>
