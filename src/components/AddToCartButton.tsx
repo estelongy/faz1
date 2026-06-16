@@ -8,13 +8,15 @@ interface Props {
   product: Omit<CartItem, 'quantity'>
   disabled?: boolean
   fullWidth?: boolean
+  /** Sıkışık alan (mobil sticky bar) — "Sepete Ekle" text gizli, ikon kalır */
+  compact?: boolean
 }
 
 /**
  * EsteStore ürün kartı / detay sayfası alış butonları.
  * Tema: krem-altın (#C9A961). 'Hemen Al' → /sepet (sepet/ödeme akışı galaxy-aware redirect yapar).
  */
-export default function AddToCartButton({ product, disabled, fullWidth }: Props) {
+export default function AddToCartButton({ product, disabled, fullWidth, compact }: Props) {
   const router = useRouter()
   const { add } = useCart()
   const [added, setAdded] = useState(false)
@@ -47,7 +49,7 @@ export default function AddToCartButton({ product, disabled, fullWidth }: Props)
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
-            Eklendi
+            <span className={compact ? 'hidden' : ''}>Eklendi</span>
           </>
         ) : (
           <>
@@ -55,7 +57,7 @@ export default function AddToCartButton({ product, disabled, fullWidth }: Props)
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            Sepete Ekle
+            <span className={compact ? 'hidden' : ''}>Sepete Ekle</span>
           </>
         )}
       </button>

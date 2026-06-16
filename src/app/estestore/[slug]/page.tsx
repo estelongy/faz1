@@ -718,6 +718,7 @@ export default async function UrunDetayPage({
             </div>
             <div className="shrink-0">
               <AddToCartButton
+                compact
                 product={{
                   productId: product.id,
                   name: product.name,
