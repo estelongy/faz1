@@ -153,10 +153,6 @@ export default function NativeTopBar() {
   const showCart = pathname.startsWith('/estestore')
 
   return (
-    <>
-      {/* Fixed bar'ın altına spacer — sayfa içeriği bar arkasında kalmasın.
-          AppBottomNav aynı kalıbı kullanıyor. app-only utility'si web'de gizler. */}
-      <div className="app-only" aria-hidden style={{ height: 'calc(56px + env(safe-area-inset-top))' }} />
     <header
       className="app-only fixed top-0 inset-x-0 z-[45] bg-[#160F28]/95 backdrop-blur-lg border-b border-violet-500/15"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
@@ -193,6 +189,5 @@ export default function NativeTopBar() {
         )}
       </div>
     </header>
-    </>
   )
 }
