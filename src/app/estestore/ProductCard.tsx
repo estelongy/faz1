@@ -7,6 +7,7 @@ import {
   type PricingTiers,
 } from '@/lib/estestore'
 import WishlistButton from '@/components/WishlistButton'
+import ProductCardImage from './ProductCardImage'
 
 export interface ProductCardData {
   id: string
@@ -44,8 +45,6 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride, i
     ? Math.round(product.price * (1 - firstTier.discount_rate) * 100) / 100
     : null
 
-  const initial = (product.name?.trim()[0] ?? '✦').toUpperCase()
-
   return (
     <Link
       href={href}
@@ -61,27 +60,7 @@ export default function ProductCard({ product, isPro, showPrice, hrefOverride, i
             variant="card"
           />
         )}
-        {product.cover_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={product.cover_image_url}
-            alt={product.name}
-            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${
-              !showPrice ? 'blur-[2px] opacity-80' : ''
-            }`}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center relative">
-            {/* Subtle radial */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(201,169,97,0.10),transparent_55%)]" />
-            <span className="relative font-black text-[#8B7339]/30 select-none leading-none text-[96px] tracking-tight">
-              {initial}
-            </span>
-            <span className="absolute bottom-2 right-2 text-[9px] uppercase tracking-[0.18em] font-bold text-[#8B7339]/50">
-              EsteStore
-            </span>
-          </div>
-        )}
+        <ProductCardImage src={product.cover_image_url} alt={product.name} dim={!showPrice} />
 
         {!showPrice && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center">

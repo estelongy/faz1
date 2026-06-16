@@ -7,6 +7,25 @@ import type { RecentlyViewedItem } from './RecentlyViewedTracker'
 
 const KEY = 'estestore.recentlyViewed.v1'
 
+function RVImage({ src, alt, dark }: { src: string; alt: string; dark: boolean }) {
+  const [failed, setFailed] = useState(false)
+  if (failed) {
+    const initial = (alt?.trim()[0] ?? '✦').toUpperCase()
+    return (
+      <div className="w-full h-full flex items-center justify-center relative">
+        {!dark && <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(201,169,97,0.10),transparent_55%)]" />}
+        <span className={`relative font-black select-none leading-none text-[64px] tracking-tight ${dark ? 'text-slate-700' : 'text-[#8B7339]/30'}`}>
+          {initial}
+        </span>
+      </div>
+    )
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} onError={() => setFailed(true)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+  )
+}
+
 interface Props {
   /** Hariç tutulacak ürün ID — ürün detay sayfasında o ürünü gösterme */
   excludeId?: string
@@ -76,8 +95,7 @@ export default function RecentlyViewedShelf({
                   : 'bg-gradient-to-br from-[#FAFAF7] via-white to-[#F5F0E5]'
               }`}>
                 {p.cover ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.cover} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <RVImage src={p.cover} alt={p.name} dark={dark} />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center relative">
                     {!dark && <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(201,169,97,0.10),transparent_55%)]" />}
