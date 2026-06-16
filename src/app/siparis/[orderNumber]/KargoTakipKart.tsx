@@ -16,12 +16,12 @@ interface Props {
 }
 
 const STATUS_META: Record<string, { label: string; chip: string; line: string }> = {
-  pending:    { label: 'Hazırlanacak',     chip: 'bg-amber-500/15 text-amber-300 border-amber-500/30',     line: 'İş Ortağı kısa süre içinde hazırlığa başlayacak.' },
-  preparing:  { label: 'Hazırlanıyor',     chip: 'bg-blue-500/15 text-blue-300 border-blue-500/30',         line: 'İş Ortağı paketi hazırlıyor — yakında kargoya verilecek.' },
-  shipped:    { label: 'Kargoya Verildi',  chip: 'bg-[#C9A961]/20 text-[#C9A961] border-[#C9A961]/40',     line: 'Paket yola çıktı. Aşağıdaki takip numarasıyla kargo şirketinden anlık konumu görebilirsin.' },
-  delivered:  { label: 'Teslim Edildi',    chip: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', line: 'Paket teslim alındı. İade hakkın 14 gün boyunca açık.' },
-  cancelled:  { label: 'İptal Edildi',     chip: 'bg-red-500/15 text-red-300 border-red-500/30',           line: 'Bu kalem iptal edildi.' },
-  returned:   { label: 'İade',             chip: 'bg-slate-700/50 text-slate-300 border-slate-600',         line: 'Bu kalem için iade tamamlandı.' },
+  pending:    { label: 'Hazırlanacak',     chip: 'bg-amber-50 text-amber-700 border-amber-200',     line: 'İş Ortağı kısa süre içinde hazırlığa başlayacak.' },
+  preparing:  { label: 'Hazırlanıyor',     chip: 'bg-blue-50 text-blue-700 border-blue-200',         line: 'İş Ortağı paketi hazırlıyor — yakında kargoya verilecek.' },
+  shipped:    { label: 'Kargoya Verildi',  chip: 'bg-[#C9A961]/15 text-[#8B7339] border-[#C9A961]/40',     line: 'Paket yola çıktı. Aşağıdaki takip numarasıyla kargo şirketinden anlık konumu görebilirsin.' },
+  delivered:  { label: 'Teslim Edildi',    chip: 'bg-emerald-50 text-emerald-700 border-emerald-200', line: 'Paket teslim alındı. İade hakkın 14 gün boyunca açık.' },
+  cancelled:  { label: 'İptal Edildi',     chip: 'bg-red-50 text-red-700 border-red-200',           line: 'Bu kalem iptal edildi.' },
+  returned:   { label: 'İade',             chip: 'bg-slate-100 text-slate-700 border-slate-300',         line: 'Bu kalem için iade tamamlandı.' },
 }
 
 export default function KargoTakipKart({
@@ -67,20 +67,20 @@ export default function KargoTakipKart({
   // shipped'dan önceki aşamalar — sadece durum satırı
   if (fulfillmentStatus !== 'shipped' && fulfillmentStatus !== 'delivered') {
     return (
-      <div className="px-5 py-3 bg-slate-900/40 border-t border-slate-700">
+      <div className="px-5 py-3 bg-[#FAFAF7] border-t border-slate-200">
         <div className="flex items-center gap-2">
           <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full border ${meta.chip}`}>
             {meta.label}
           </span>
         </div>
-        <p className="text-slate-400 text-sm mt-2">{meta.line}</p>
+        <p className="text-slate-600 text-sm mt-2">{meta.line}</p>
       </div>
     )
   }
 
   // shipped veya delivered — kargo takip kartı
   return (
-    <div className="px-5 py-4 bg-slate-900/40 border-t border-slate-700">
+    <div className="px-5 py-4 bg-[#FAFAF7] border-t border-slate-200">
       <div className="flex items-center justify-between gap-2 mb-3">
         <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full border ${meta.chip}`}>
           {meta.label}
@@ -93,13 +93,13 @@ export default function KargoTakipKart({
       </div>
 
       {trackingNumber && (
-        <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-4 space-y-3">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
           <div>
             <p className="text-slate-500 text-xs uppercase tracking-wide mb-1">{label}</p>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[#C9A961] font-mono text-base font-bold break-all">{trackingNumber}</span>
+              <span className="text-[#8B7339] font-mono text-base font-bold break-all">{trackingNumber}</span>
               <button type="button" onClick={copy}
-                className="shrink-0 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-semibold transition-colors">
+                className="shrink-0 px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold transition-colors">
                 {copied ? '✓ Kopyalandı' : 'Kopyala'}
               </button>
             </div>
@@ -110,7 +110,7 @@ export default function KargoTakipKart({
 
           {url && (
             <a href={url} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#C9A961]/15 hover:bg-[#C9A961]/25 border border-[#C9A961]/40 text-[#C9A961] text-sm font-bold transition-colors">
+              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#C9A961]/10 hover:bg-[#C9A961]/20 border border-[#C9A961]/40 text-[#8B7339] text-sm font-bold transition-colors">
               🔗 {carrier} sitesinde takip et
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -129,10 +129,10 @@ export default function KargoTakipKart({
       {fulfillmentStatus === 'shipped' && canConfirmDelivery && (
         <div className="mt-3">
           <button type="button" onClick={handleTeslimAldim} disabled={isPending}
-            className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all ${
+            className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all border ${
               confirm
-                ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                : 'bg-slate-800 hover:bg-emerald-500/10 border border-slate-700 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300'
+                ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-600'
+                : 'bg-white hover:bg-emerald-50 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700'
             } ${isPending ? 'opacity-60' : ''}`}>
             {isPending ? 'Onaylanıyor...' : confirm ? '✓ Teslim aldığını onaylamak için tekrar tıkla' : 'Teslim Aldım'}
           </button>
@@ -140,7 +140,7 @@ export default function KargoTakipKart({
             Teslim aldığını onayladığında 14 günlük iade pencereni başlatır.
           </p>
           {error && (
-            <p className="text-red-400 text-xs mt-2 text-center">{error}</p>
+            <p className="text-red-600 text-xs mt-2 text-center">{error}</p>
           )}
         </div>
       )}
