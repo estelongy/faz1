@@ -697,8 +697,8 @@ export default async function UrunDetayPage({
           />
         </div>
 
-        {/* Son baktıkların — localStorage'dan */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pb-14 lg:pb-14" style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom))' }}>
+        {/* Son baktıkların — localStorage'dan. Mobilde sticky CTA + bottom nav için bol pb. */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pb-14 lg:pb-14" style={{ paddingBottom: 'calc(180px + env(safe-area-inset-bottom))' }}>
           <RecentlyViewedShelf excludeId={product.id} />
         </div>
       </div>
