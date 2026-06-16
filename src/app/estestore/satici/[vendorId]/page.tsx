@@ -229,7 +229,8 @@ export default async function SaticiMagazaPage({ params }: { params: Promise<{ v
                       {p.final_score && (
                         <span className={`font-bold text-sm ${
                           p.final_score >= 9 ? 'text-[#10876B]' :
-                          p.final_score >= 7 ? 'text-[#8B7339]' : 'text-red-500'
+                          p.final_score >= 7 ? 'text-[#8B7339]' :
+                          p.final_score >= 5 ? 'text-amber-600' : 'text-red-500'
                         }`}>★ {Number(p.final_score).toFixed(1)}</span>
                       )}
                     </div>

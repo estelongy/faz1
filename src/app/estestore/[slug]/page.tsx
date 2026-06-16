@@ -392,7 +392,8 @@ export default async function UrunDetayPage({
                   <div className="flex items-end gap-1">
                     <span className={`text-5xl font-black ${
                       (product.ep_score ?? product.final_score ?? 0) >= 9 ? 'text-[#10876B]' :
-                      (product.ep_score ?? product.final_score ?? 0) >= 7 ? 'text-[#8B7339]' : 'text-red-500'
+                      (product.ep_score ?? product.final_score ?? 0) >= 7 ? 'text-[#8B7339]' :
+                      (product.ep_score ?? product.final_score ?? 0) >= 5 ? 'text-amber-600' : 'text-red-500'
                     }`}>
                       {product.ep_score != null ? Number(product.ep_score).toFixed(2) :
                        product.final_score ? Number(product.final_score).toFixed(1) : '—'}
@@ -599,7 +600,8 @@ export default async function UrunDetayPage({
                     <div className="text-right shrink-0">
                       <span className={`font-black text-lg ${
                         score >= 9 ? 'text-[#10876B]' :
-                        score >= 7 ? 'text-[#8B7339]' : 'text-red-500'
+                        score >= 7 ? 'text-[#8B7339]' :
+                        score >= 5 ? 'text-amber-600' : 'text-red-500'
                       }`}>{score.toFixed(1)}</span>
                       <span className="text-slate-400 text-sm">/10</span>
                     </div>
