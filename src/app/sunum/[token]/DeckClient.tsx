@@ -28,12 +28,13 @@ const SENARYO = [
   { ad: 'Bull',         factor: 1.5,  renk: '#10B981' },
 ]
 
+// Marka galaksi paleti: EsteKlinik=emerald, EsteStore=altın, BiyoAGE=mor
 const MUSLUK_RENK = {
-  komisyon:    GOLD_DEEP,
-  marketplace: GOLD,
-  lead:        GOLD_LIGHT,
-  saas:        '#7C8B6F',
-  akademi:     '#A89878',
+  komisyon:    '#10876B', // EsteKlinik emerald — randevu komisyonu klinik tarafı
+  marketplace: '#C9A961', // EsteStore altın — pazaryeri komisyonu
+  lead:        '#9F8CE0', // BiyoAGE mor — AI analiz çıktısından lead
+  saas:        '#4C9DC2', // teal-mavi — PRO suite (yazılım/altyapı kimliği)
+  akademi:     '#D97F4D', // terra-cotta — eğitim, sıcak ayırt edilir
 }
 
 export default function DeckClient() {
