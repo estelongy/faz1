@@ -185,7 +185,7 @@ function Slide2() {
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="01 · PROBLEM"
           title="Estetik tıp, kanıtlanamayan bir sektördür."
-          lead="Dünyada 50 milyar dolar, Türkiye&apos;de 2 milyar dolar; yıllık büyüme yüzde 18-22. Sektör hızla büyüyor — ancak ortak bir skor, doğrulanmış orijinallik ve ölçülebilir sonuç metriği yok." />
+          lead="Küresel estetik tıp pazarı yaklaşık 109 milyar dolar (2026), yıllık büyüme %12–14; Türkiye sağlık turizminde 4,6 milyar dolarlık hacimle dünya birincisi. Sektör hızla büyüyor — ancak ortak bir skor, doğrulanmış orijinallik ve ölçülebilir sonuç metriği yok." />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
           <ProblemCard icon="👤" who="KULLANICI"
             pain="“Hangi klinik gerçekten iyi? Hangi ürün orijinal? Yaptırdığım işlem işe yaradı mı?”"
