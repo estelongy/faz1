@@ -428,12 +428,12 @@ function Slide10() {
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="09 · PAZAR"
           title="Yerel kırılma noktasından küresel kategoriye."
-          lead="Türkiye estetik turizmde dünyada birinci. Yerel pazar, küresel kategoriye açılan ön kapımız." />
+          lead="Estelongy üç bitişik pazarı tek altyapıda topluyor: estetik tıp, longevity & wellness, klinik kalite ürün. Türkiye estetik turizmde dünya birincisi — küresel kategoriye açılan ön kapımız." />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
           <MarketCircle size="lg" tier="TAM" amount="$200B+"
-            label="Küresel estetik tıp + longevity wellness" />
+            label="Küresel estetik tıp + longevity & wellness birleşik kategorisi" />
           <MarketCircle size="md" tier="SAM" amount="$25B"
-            label="TR + EMEA estetik medikal ve ürün pazaryeri" />
+            label="TR + EMEA estetik medikal hizmet ve ürün pazaryeri" />
           <MarketCircle size="sm" tier="SOM" amount="$2B"
             label="Beş yıl içinde ulaşılabilir hedef pazar payı" />
         </div>
