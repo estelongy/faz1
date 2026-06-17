@@ -214,14 +214,14 @@ function Slide3() {
           lead="Üç bağımsız markayı — BiyoAGE, EsteKlinik, EsteStore — tek bir veri ve kimlik altyapısı altında birleştirir." />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
           <BenefitCard icon="👤" who="KULLANICIYA"
-            headline="Hekim onaylı Estelongy Gençlik Skoru"
-            body="Doğru klinik, doğru ürün, doğru zaman: yolculuğun her noktası bu skorun etrafında konumlandırılır. AI ön analizden hekim onayına, ev rejiminden klinik müdahalesine tek bir hesap üzerinde ilerler." />
+            headline="Biyolojik ve görünüm yaşı yönetimi"
+            body="Hekim onaylı Estelongy Gençlik Skoru ile görünüm yaşının ölçümü ve takibi; longevity protokolleriyle biyolojik yaşın yönetimi. AI ön analizinden hekim onayına, ev rejiminden klinik müdahalesine kadar tüm yolculuk tek bir hesap üzerinde." />
           <BenefitCard icon="🏥" who="KLİNİĞE"
-            headline="Yeni hasta akışı, ürün satış kanalı, tek panel"
-            body="Takvim, hasta dosyası, finans ve ürün satışı tek panelde yönetilir. Yorumlar yalnızca gerçek hastalardan; doğrulama altyapı seviyesinde sağlanır." />
+            headline="Niyetli hasta yönlendirmesi ve tek panel yönetimi"
+            body="AI analizinden geçmiş, satın alma niyeti netleşmiş hasta akışı. Takvim, hasta dosyası, finans ve ürün satışı tek panelde yönetilir. Yorumlar yalnızca gerçek hastalardan; doğrulama altyapı seviyesinde sağlanır." />
           <BenefitCard icon="🤝" who="İŞ ORTAĞINA"
-            headline="EsteVerify orijinallik doğrulaması ve dağıtım kanalı"
-            body="Sahte muadillere karşı zincir doğrulamalı orijinallik damgası. Doğru klinik segmentine doğrudan erişim ve birinci el kullanıcı geri bildirimi." />
+            headline="Bakanlık onaylı, doğrulanmış ürün satış altyapısı"
+            body="EsteVerify ile ÜTS ve Sağlık Bakanlığı onaylı orijinallik kanıtı. Hem son tüketiciye (B2C) hem kliniklere (B2B) doğrudan iki kanallı satış. Birinci el kullanıcı ve klinik geri bildirimi." />
         </div>
       </div>
     </Section>
@@ -272,8 +272,8 @@ function Slide5() {
           />
           <BrandCard
             name="EsteStore"
-            role="Sürdürme katmanı"
-            desc="EsteVerify damgalı klinik kalite kozmetik ve longevity marketplace. Skorun ev rejiminde sürdürüldüğü katman."
+            role="Sürdürme katmanı · Çift kanal"
+            desc="EsteVerify damgalı, Bakanlık onaylı kozmetik ve longevity pazaryeri. Son tüketiciye (B2C) ve kliniklere özgü tedarik sistemiyle (B2B) çift kanallı satış. Skorun ev rejiminde ve klinik tedarikinde sürdürüldüğü katman."
             kpi="“Ürün Değil, Sana Özel Çözüm.”"
           />
         </div>
