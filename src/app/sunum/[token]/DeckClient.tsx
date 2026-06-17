@@ -340,9 +340,9 @@ function Slide8() {
   return (
     <Section>
       <div className="max-w-6xl w-full">
-        <SlideHeader kicker="07 · ÜRÜN DURUMU"
-          title="Slayt değil — çalışan ürün."
-          lead="estelongy.com yayında. Üç mobil uygulama uçtan uca akıyor. Kimlik doğrulama ve marketplace altyapısı canlı. Bu sunum dahi sistemin içinden sunuluyor." />
+        <SlideHeader kicker="07 · SİSTEM DURUMU"
+          title="Bugünkü altyapı."
+          lead="estelongy.com yayında. Üç mobil uygulama uçtan uca akıyor. Kimlik doğrulama ve marketplace altyapısı canlı. Bu sunum da aynı altyapı üzerinde çalışıyor." />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
           <PhoneFrame label="BiyoAGE" sub="Ölçüm" />
           <PhoneFrame label="EsteKlinik" sub="Pazaryeri" />
