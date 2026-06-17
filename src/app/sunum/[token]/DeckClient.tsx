@@ -257,7 +257,7 @@ function Slide5() {
             name="BiyoAGE"
             role="Ölçüm motoru"
             desc="AI yüz analizi, longevity anketi ve Estelongy Gençlik Skoru motoru. Kullanıcının sisteme giriş noktası."
-            kpi="“Biyolojik Yaşını Öğren.”"
+            kpi="“Zamansız Güzellik Mimarlığı.”"
           />
           <BrandCard
             name="EsteKlinik"
