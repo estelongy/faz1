@@ -959,7 +959,7 @@ function MarketCircle({ size, tier, amount, label }:
 
 function RevenueChart() {
   const maxTotal = Math.max(...TOTAL_BASE)
-  const W = 800, H = 280, P = 40
+  const W = 800, H = 180, P = 30
   const barW = (W - 2 * P) / REVENUE_BASE.length * 0.55
   const gap = (W - 2 * P) / REVENUE_BASE.length
 
