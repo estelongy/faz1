@@ -306,34 +306,43 @@ function Slide6() {
   )
 }
 
-/* ─── Slayt 7: Why Now ──────────────────────────────────── */
+/* ─── Slayt 7: Zamanlama ──────────────────────────────── */
 function Slide7() {
   return (
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="06 · ZAMANLAMA"
-          title="Üç eğri ilk kez 2026&apos;da kesişiyor."
-          lead="Estelongy&apos;nin uygulanabilir olması için bu üç eğrinin aynı anda olgunlaşması gerekti. Pencere şimdi açıldı." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <CurveCard
-            yil="2023 →"
-            baslik="LLM yüz analizi"
-            metin="Yüz noktası çıkarma ve cilt durum modelleri maliyet olarak yüz kat düştü, klinik hassasiyetine yaklaştı. Üç yıl önce uygulanabilir değildi."
+          title="Pazar büyürken talep yön değiştiriyor."
+          lead="Estetik tıp küresel ve yerelde çift haneli büyüyor; ancak tüketicinin pusulası ‘daha fazla dolgu’dan ‘ölçülebilir, doğal, sürdürülebilir gençleşme’ye dönüyor. Estelongy tam bu yön değişiminin altyapısı." />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+          <TrendCard
+            tag="PAZAR HACMİ"
+            stat="$109 milyar"
+            yil="2026"
+            metin="Küresel estetik tıp ~109 milyar dolara ulaşıyor; yıllık bileşik büyüme %12–14 aralığında. Türkiye sağlık turizmi pazarı 4,6 milyar dolar, CAGR %15–17 — küresel ortalamayı geride bırakıyor."
           />
-          <CurveCard
-            yil="2024 →"
-            baslik="Longevity ana akım"
-            metin="Biyolojik yaş ve yaşlanma hızı ölçümü niş bilimden çıktı; tüketici ilgisi son iki yılda katlanarak büyüdü."
-          />
-          <CurveCard
+          <TrendCard
+            tag="DİREKSİYON"
+            stat="Longevity"
             yil="2025 →"
-            baslik="Estetik turizm yoğunluğu"
-            metin="Türkiye, küresel estetik turizmde birinci. İstanbul tek başına yılda 1,5 milyon estetik turisti ağırlıyor."
+            metin="Biyolojik yaş ve yaşlanma hızı ölçümü niş bilimden ana akıma geçti. Longevity klinikleri yıllık %37 personel büyütüyor; epigenetik test pazarı 2034’e kadar 4,3 milyar dolara koşuyor. Tüketici artık ‘genç görünmek’ değil, ‘sağlıklı yaşlanmak’ istiyor."
+          />
+          <TrendCard
+            tag="BİLİM SINIRI"
+            stat="Eksozom · Kök hücre"
+            yil="Düzensiz alan"
+            metin="Eksozom ve kök hücre tedavileri agresif şekilde pazarlanıyor; oysa FDA hâlâ estetik kullanım için onay vermedi, klinik kanıt sınırlı, advers olay raporları artıyor. Tüketici doğru hekimi ve doğrulanmış protokolü ayırt edemiyor."
+          />
+          <TrendCard
+            tag="ESTETİK YÖN"
+            stat="Doğal geri dönüş"
+            yil="2026"
+            metin="‘Filler Fatigue’ — aşırı dolguyu erittirmek küresel akım. Tüketici ‘daha az ama doğru’ diyor: doğru hekim, doğru zamanlama, doğru kombinasyon. Doğal güzellik kabulü artık bir endüstri yönü."
           />
         </div>
-        <p className="text-center mt-12 text-base md:text-lg font-light max-w-3xl mx-auto"
+        <p className="text-center mt-6 text-base md:text-lg font-light max-w-4xl mx-auto"
           style={{ color: GOLD_LIGHT }}>
-          Olgunlaşma penceresi açık; kategoriyi tanımlayan, ilk hareket eden olacak.
+          Büyüyen pazar, olgunlaşan bilim, dönüşen estetik anlayışı — kategoriyi tanımlayan altyapı bu kesişimde inşa edilir.
         </p>
       </div>
     </Section>
@@ -900,6 +909,19 @@ function CurveCard({ yil, baslik, metin }: { yil: string; baslik: string; metin:
       <div className="text-xs tracking-widest font-mono mb-3" style={{ color: GOLD }}>{yil}</div>
       <h3 className="text-xl font-light mb-3" style={{ color: CREAM }}>{baslik}</h3>
       <p className="text-sm font-light leading-relaxed" style={{ color: CREAM, opacity: 0.75 }}>{metin}</p>
+    </div>
+  )
+}
+
+function TrendCard({ tag, stat, yil, metin }:
+  { tag: string; stat: string; yil: string; metin: string }) {
+  return (
+    <div className="p-5 rounded-2xl h-full flex flex-col"
+      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,169,97,0.2)' }}>
+      <div className="text-[11px] tracking-[0.3em] font-light mb-2" style={{ color: GOLD_DEEP }}>{tag}</div>
+      <div className="text-xl md:text-2xl font-light leading-tight mb-1" style={{ color: GOLD }}>{stat}</div>
+      <div className="text-xs font-mono mb-3" style={{ color: CREAM, opacity: 0.5 }}>{yil}</div>
+      <p className="text-sm font-light leading-relaxed" style={{ color: CREAM, opacity: 0.78 }}>{metin}</p>
     </div>
   )
 }
