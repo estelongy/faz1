@@ -414,7 +414,7 @@ function Slide10() {
         <SlideHeader kicker="09 · PAZAR"
           title="Yerel kırılma noktasından küresel kategoriye."
           lead="Türkiye estetik turizmde dünyada birinci. Yerel pazar, küresel kategoriye açılan ön kapımız." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
           <MarketCircle size="lg" tier="TAM" amount="$200B+"
             label="Küresel estetik tıp + longevity wellness" />
           <MarketCircle size="md" tier="SAM" amount="$25B"
@@ -447,9 +447,9 @@ function Slide11() {
         <SlideHeader kicker="10 · İŞ MODELİ"
           title="Beş gelir katmanı, paylaşılan tek kullanıcı tabanı."
           lead="Çapraz beslenen gelir kanalları edinme maliyetini düşürür, tek bir kanala bağımlılığı ortadan kaldırır." />
-        <div className="mt-8 space-y-3">
+        <div className="mt-6 space-y-2">
           {muslukler.map(m => (
-            <div key={m.no} className="grid grid-cols-12 gap-4 items-center p-5 rounded-xl"
+            <div key={m.no} className="grid grid-cols-12 gap-4 items-center p-4 rounded-xl"
               style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,169,97,0.18)' }}>
               <div className="col-span-1 text-3xl font-light" style={{ color: GOLD }}>{m.no}</div>
               <div className="col-span-5">
@@ -697,7 +697,7 @@ function Section({ children, dark }: { children: React.ReactNode; dark?: boolean
           ? `radial-gradient(ellipse at center, #14182A 0%, ${BG} 70%)`
           : BG,
       }}
-      className="relative h-screen w-full flex items-center justify-center px-6 md:px-16 pt-24 pb-24 md:pt-28 md:pb-28"
+      className="relative min-h-screen w-full flex items-center justify-center px-6 md:px-16 pt-24 pb-24 md:pt-28 md:pb-28"
     >
       {children}
     </section>
@@ -920,7 +920,7 @@ function ProofTile({ k, v }: { k: string; v: string }) {
 
 function MarketCircle({ size, tier, amount, label }:
   { size: 'lg' | 'md' | 'sm'; tier: string; amount: string; label: string }) {
-  const dim = size === 'lg' ? 'h-56 w-56 md:h-64 md:w-64' : size === 'md' ? 'h-48 w-48 md:h-56 md:w-56' : 'h-40 w-40 md:h-44 md:w-44'
+  const dim = size === 'lg' ? 'h-44 w-44 md:h-52 md:w-52' : size === 'md' ? 'h-36 w-36 md:h-44 md:w-44' : 'h-32 w-32 md:h-36 md:w-36'
   const opacity = size === 'lg' ? 0.4 : size === 'md' ? 0.65 : 1
   return (
     <div className="flex flex-col items-center">
