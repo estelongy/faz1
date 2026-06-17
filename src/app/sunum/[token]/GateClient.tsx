@@ -59,7 +59,7 @@ export default function GateClient() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
-                onClick={() => setMode('password')}
+                onClick={() => setUnlocked(true)}
                 className="group relative px-6 py-5 rounded-xl transition-all"
                 style={{
                   background: `linear-gradient(160deg, ${GOLD}22, transparent)`,
@@ -71,7 +71,7 @@ export default function GateClient() {
                   YATIRIMCI GİRİŞİ
                 </div>
                 <div className="text-base font-light" style={{ color: CREAM, opacity: 0.85 }}>
-                  Sunumu açmak için şifre giriniz
+                  Sunumu açmak için tıklayınız
                 </div>
               </button>
 
