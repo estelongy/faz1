@@ -64,11 +64,20 @@ export default function DeckClient() {
       const idx = Math.round(el.scrollTop / window.innerHeight)
       setCurrent(idx)
     }
+    function updateScale() {
+      const sx = (window.innerWidth - 24) / 1280
+      const sy = (window.innerHeight - 24) / 720
+      const s = Math.min(sx, sy, 1)
+      document.documentElement.style.setProperty('--deck-scale', String(s))
+    }
     window.addEventListener('keydown', onKey)
+    window.addEventListener('resize', updateScale)
+    updateScale()
     const el = containerRef.current
     el?.addEventListener('scroll', onScroll, { passive: true })
     return () => {
       window.removeEventListener('keydown', onKey)
+      window.removeEventListener('resize', updateScale)
       el?.removeEventListener('scroll', onScroll)
     }
   }, [])
@@ -142,30 +151,26 @@ function Slide1() {
   return (
     <Section dark>
       <div className="text-center max-w-4xl">
-        <div className="mb-6 text-sm tracking-[0.5em] font-light" style={{ color: GOLD_DEEP }}>
+        <div className="mb-4 text-xs md:text-sm tracking-[0.5em] font-light" style={{ color: GOLD_DEEP }}>
           ZAMANSIZ GÜZELLİK MİMARLIĞI
         </div>
-        <h1 className="font-light leading-none mb-8"
-          style={{ fontSize: 'clamp(56px, 8vw, 120px)', color: CREAM, letterSpacing: '-0.04em' }}>
+        <h1 className="font-light leading-none mb-6"
+          style={{ fontSize: 'clamp(48px, 7vw, 100px)', color: CREAM, letterSpacing: '-0.04em' }}>
           Estelongy
         </h1>
-        <div className="h-px w-32 mx-auto mb-8" style={{ background: GOLD }} />
-        <p className="text-lg md:text-xl font-light mb-2" style={{ color: CREAM, opacity: 0.85 }}>
+        <div className="h-px w-24 mx-auto mb-6" style={{ background: GOLD }} />
+        <p className="text-base md:text-lg font-light mb-2" style={{ color: CREAM, opacity: 0.85 }}>
           Bilimi güzelliğe dönüştüren ölçüm, kanıt ve simülasyon altyapısı.
         </p>
-        <p className="text-sm mt-8 tracking-widest" style={{ color: GOLD }}>
+        <p className="text-xs md:text-sm mt-6 tracking-widest" style={{ color: GOLD }}>
           YATIRIMCI SUNUMU · HAZİRAN 2026
         </p>
-        <p className="mt-3 text-sm font-light" style={{ color: CREAM, opacity: 0.55 }}>
+        <p className="mt-2 text-xs md:text-sm font-light" style={{ color: CREAM, opacity: 0.55 }}>
           Dr. İzzet Gök · Kurucu · CTO
         </p>
       </div>
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs tracking-widest"
-        style={{ color: GOLD_DEEP, opacity: 0.7 }}>
-        ↓ kaydır · ok tuşları
-      </div>
-      <div className="absolute bottom-6 right-6 text-xs font-light tracking-wider"
-        style={{ color: GOLD_DEEP, opacity: 0.7 }}>
+      <div className="absolute bottom-3 right-4 text-[10px] font-light tracking-wider"
+        style={{ color: GOLD_DEEP, opacity: 0.6 }}>
         ÖZEL ERİŞİM · PAYLAŞMAYINIZ
       </div>
     </Section>
@@ -180,7 +185,7 @@ function Slide2() {
         <SlideHeader kicker="01 · PROBLEM"
           title="Estetik tıp, kanıtlanamayan bir sektördür."
           lead="Dünyada 50 milyar dolar, Türkiye&apos;de 2 milyar dolar; yıllık büyüme yüzde 18-22. Sektör hızla büyüyor — ancak ortak bir skor, doğrulanmış orijinallik ve ölçülebilir sonuç metriği yok." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
           <ProblemCard icon="👤" who="KULLANICI"
             pain="“Hangi klinik gerçekten iyi? Hangi ürün orijinal? Yaptırdığım işlem işe yaradı mı?”"
             note="Karar Instagram akışına, fiyat sözlü pazarlığa, sonuç gözleme bırakılıyor." />
@@ -191,7 +196,7 @@ function Slide2() {
             pain="“Sahte muadiller orijinal ürünün önünü kesiyor. Klinik dağıtımı opak, performans verisi yok.”"
             note="Klinik dağıtım, orijinallik doğrulaması ve birinci el kullanıcı geri bildirimi — üçü de eksik." />
         </div>
-        <p className="text-center mt-10 text-base md:text-lg font-light" style={{ color: GOLD_LIGHT }}>
+        <p className="text-center mt-5 text-sm md:text-base font-light" style={{ color: GOLD_LIGHT }}>
           Üç sorun, tek bir altyapı eksikliğinin üç farklı yansımasıdır.
         </p>
       </div>
@@ -207,7 +212,7 @@ function Slide3() {
         <SlideHeader kicker="02 · ÇÖZÜM"
           title="Estelongy estetik tıbbı ölçülebilir, tekrar edilebilir, kanıtlanabilir bir akışa dönüştürür."
           lead="Üç bağımsız markayı — BiyoAGE, EsteKlinik, EsteStore — tek bir veri ve kimlik altyapısı altında birleştirir." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
           <BenefitCard icon="👤" who="KULLANICIYA"
             headline="Hekim onaylı Estelongy Gençlik Skoru"
             body="Doğru klinik, doğru ürün, doğru zaman: yolculuğun her noktası bu skorun etrafında konumlandırılır. AI ön analizden hekim onayına, ev rejiminden klinik müdahalesine tek bir hesap üzerinde ilerler." />
@@ -231,7 +236,7 @@ function Slide4() {
         <SlideHeader kicker="03 · TEMEL ÖNERME"
           title="Estelongy Gençlik Skoru bir özellik değil — birikim grafiğidir."
           lead="Her selfie, her klinik ziyareti, her ürün kullanımı skoru günceller. Zaman ilerledikçe veri sertleşir, model derinleşir, kullanıcının platformdaki değeri artar." />
-        <div className="mt-12 mb-10">
+        <div className="mt-8 mb-6">
           <ScoreTimeline />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -252,7 +257,7 @@ function Slide5() {
         <SlideHeader kicker="04 · ÜÇ AYAK"
           title="Tek mimari, üç bağımsız marka."
           lead="Estelongy vitrinde tek marka; onu inşa eden üç bağımsız iş kolu, her biri kendi pazarına hizmet eder ve hepsi tek bir veri kuyusunu besler." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
           <BrandCard
             name="BiyoAGE"
             role="Ölçüm motoru"
@@ -272,7 +277,7 @@ function Slide5() {
             kpi="“Ürün Değil, Sana Özel Çözüm.”"
           />
         </div>
-        <p className="text-center mt-10 text-base md:text-lg font-light" style={{ color: GOLD_LIGHT }}>
+        <p className="text-center mt-5 text-sm md:text-base font-light" style={{ color: GOLD_LIGHT }}>
           Üç vitrin, tek veri kuyusu, tek mimari.
         </p>
       </div>
@@ -285,9 +290,9 @@ function Slide6() {
   return (
     <Section>
       <div className="max-w-6xl w-full">
-        <SlideHeader kicker="05 · ÇARPAN ETKİSİ"
-          title="Üç katmanın bileşik kazancı."
-          lead="Bir kullanıcının üç ayakta da aktif olması, yaşam boyu değerini tek ayağa kıyasla yaklaşık dört kat artırır." />
+        <SlideHeader kicker="05 · KULLANICI DÖNGÜSÜ"
+          title="Kapanmayan halka."
+          lead="Skor ölçümü → hekim değerlendirmesi → işlem ve uygun ürün → yeniden skor ölçümü. Her döngüde veri sertleşir, kullanıcı katılımı derinleşir, yaşam boyu değer dört kat artar." />
         <div className="mt-6">
           <Flywheel />
         </div>
@@ -343,12 +348,12 @@ function Slide8() {
         <SlideHeader kicker="07 · SİSTEM DURUMU"
           title="Bugünkü altyapı."
           lead="estelongy.com yayında. Üç mobil uygulama uçtan uca akıyor. Kimlik doğrulama ve marketplace altyapısı canlı. Bu sunum da aynı altyapı üzerinde çalışıyor." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
+        <div className="grid grid-cols-3 gap-4 md:gap-6 mt-6">
           <PhoneFrame label="BiyoAGE" sub="Ölçüm" />
           <PhoneFrame label="EsteKlinik" sub="Pazaryeri" />
           <PhoneFrame label="EsteStore" sub="Marketplace" />
         </div>
-        <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
           <ProofTile k="3" v="canlı mobil uygulama" />
           <ProofTile k="1" v="server, 5 katman" />
           <ProofTile k="✓" v="OTP + kimlik doğrulama" />
@@ -414,7 +419,7 @@ function Slide10() {
         <SlideHeader kicker="09 · PAZAR"
           title="Yerel kırılma noktasından küresel kategoriye."
           lead="Türkiye estetik turizmde dünyada birinci. Yerel pazar, küresel kategoriye açılan ön kapımız." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
           <MarketCircle size="lg" tier="TAM" amount="$200B+"
             label="Küresel estetik tıp + longevity wellness" />
           <MarketCircle size="md" tier="SAM" amount="$25B"
@@ -697,9 +702,20 @@ function Section({ children, dark }: { children: React.ReactNode; dark?: boolean
           ? `radial-gradient(ellipse at center, #14182A 0%, ${BG} 70%)`
           : BG,
       }}
-      className="relative min-h-screen w-full flex items-center justify-center px-6 md:px-16 pt-20 pb-16 md:pt-20 md:pb-16"
+      className="relative h-screen w-full flex items-center justify-center overflow-hidden"
     >
-      {children}
+      <div
+        className="relative flex items-center justify-center px-16 py-16"
+        style={{
+          width: '1280px',
+          height: '720px',
+          transform: 'scale(var(--deck-scale, 1))',
+          transformOrigin: 'center center',
+          flexShrink: 0,
+        }}
+      >
+        {children}
+      </div>
     </section>
   )
 }
@@ -707,15 +723,15 @@ function Section({ children, dark }: { children: React.ReactNode; dark?: boolean
 function SlideHeader({ kicker, title, lead }: { kicker: string; title: string; lead?: string }) {
   return (
     <div className="max-w-4xl">
-      <div className="text-sm tracking-[0.4em] mb-4 font-light" style={{ color: GOLD_DEEP }}>
+      <div className="text-xs md:text-sm tracking-[0.4em] mb-2 font-light" style={{ color: GOLD_DEEP }}>
         {kicker}
       </div>
-      <h2 className="font-light leading-tight mb-3"
-        style={{ fontSize: 'clamp(24px, 3.4vw, 44px)', color: CREAM, letterSpacing: '-0.02em' }}>
+      <h2 className="font-light leading-tight mb-2"
+        style={{ fontSize: 'clamp(22px, 3vw, 38px)', color: CREAM, letterSpacing: '-0.02em' }}>
         {title}
       </h2>
       {lead && (
-        <p className="text-base md:text-lg font-light leading-relaxed max-w-3xl"
+        <p className="text-sm md:text-base font-light leading-snug max-w-3xl"
           style={{ color: CREAM, opacity: 0.7 }}>
           {lead}
         </p>
@@ -799,7 +815,7 @@ function ScoreTimeline() {
     { x: 92, y: 32, score: 86, label: '3 ay sonra' },
   ]
   return (
-    <svg viewBox="0 0 100 90" className="w-full h-44 md:h-56" style={{ overflow: 'visible' }}>
+    <svg viewBox="0 0 100 90" className="w-full h-36 md:h-44" style={{ overflow: 'visible' }}>
       <defs>
         <linearGradient id="scoreLine" x1="0" x2="100%" y1="0" y2="0">
           <stop offset="0%" stopColor={GOLD_DEEP} />
@@ -843,9 +859,9 @@ function Flywheel() {
           <path d="M0,0 L10,5 L0,10 z" fill={GOLD} />
         </marker>
       </defs>
-      <FlywheelNode cx={80}  cy={120} title="BiyoAGE" sub="ölç" />
-      <FlywheelNode cx={200} cy={60}  title="EsteKlinik" sub="işlem" />
-      <FlywheelNode cx={320} cy={120} title="EsteStore" sub="sürdür" />
+      <FlywheelNode cx={80}  cy={120} title="Skor ölçümü" sub="BiyoAGE" />
+      <FlywheelNode cx={200} cy={60}  title="Hekim değerlendirmesi" sub="EsteKlinik" />
+      <FlywheelNode cx={320} cy={120} title="İşlem + ürün" sub="EsteKlinik / EsteStore" />
       <FlywheelNode cx={200} cy={200} title="Estelongy" sub="veri kuyusu" center />
       <path d="M 110 105 Q 150 70 175 65" fill="none" stroke={GOLD} strokeWidth="1.5" markerEnd="url(#arrow)" />
       <path d="M 225 65  Q 270 75 295 105" fill="none" stroke={GOLD} strokeWidth="1.5" markerEnd="url(#arrow)" />
@@ -862,14 +878,14 @@ function FlywheelNode({ cx, cy, title, sub, center }:
   { cx: number; cy: number; title: string; sub: string; center?: boolean }) {
   return (
     <g>
-      <circle cx={cx} cy={cy} r={center ? 26 : 22}
+      <circle cx={cx} cy={cy} r={center ? 28 : 24}
         fill={center ? GOLD : 'transparent'}
         stroke={center ? GOLD : GOLD_LIGHT} strokeWidth={center ? 0 : 1.5} />
-      <text x={cx} y={cy - 2} textAnchor="middle" fontSize="9"
-        fill={center ? BG : CREAM} fontWeight={center ? 700 : 400}>
+      <text x={cx} y={cy - 1} textAnchor="middle" fontSize={center ? 9 : 7}
+        fill={center ? BG : CREAM} fontWeight={center ? 700 : 500}>
         {title}
       </text>
-      <text x={cx} y={cy + 9} textAnchor="middle" fontSize="6"
+      <text x={cx} y={cy + 9} textAnchor="middle" fontSize="5"
         fill={center ? BG : CREAM} opacity={center ? 0.75 : 0.6}>
         {sub}
       </text>
@@ -891,7 +907,7 @@ function CurveCard({ yil, baslik, metin }: { yil: string; baslik: string; metin:
 function PhoneFrame({ label, sub }: { label: string; sub: string }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="w-40 h-72 md:w-44 md:h-80 rounded-[2rem] p-2"
+      <div className="w-32 h-56 md:w-36 md:h-64 rounded-[2rem] p-2"
         style={{ background: 'rgba(201,169,97,0.1)', border: `1px solid ${GOLD}55` }}>
         <div className="w-full h-full rounded-[1.7rem] flex flex-col items-center justify-center"
           style={{ background: `linear-gradient(180deg, #14182A, ${BG})` }}>
