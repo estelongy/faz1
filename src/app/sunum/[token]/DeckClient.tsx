@@ -39,8 +39,24 @@ const MUSLUK_RENK = {
 
 export default function DeckClient() {
   const [current, setCurrent] = useState(0)
+  const [isPortraitMobile, setIsPortraitMobile] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const TOTAL_SLIDES = 16
+
+  useEffect(() => {
+    function checkOrientation() {
+      const w = window.innerWidth
+      const h = window.innerHeight
+      setIsPortraitMobile(w < 900 && h > w)
+    }
+    checkOrientation()
+    window.addEventListener('resize', checkOrientation)
+    window.addEventListener('orientationchange', checkOrientation)
+    return () => {
+      window.removeEventListener('resize', checkOrientation)
+      window.removeEventListener('orientationchange', checkOrientation)
+    }
+  }, [])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -102,6 +118,32 @@ export default function DeckClient() {
       style={{ background: BG, color: CREAM, scrollSnapType: 'y mandatory' }}
       className="h-screen overflow-y-scroll overflow-x-hidden"
     >
+      {isPortraitMobile && (
+        <div
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-8 text-center"
+          style={{ background: 'rgba(10,15,26,0.97)' }}
+        >
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke={GOLD}
+            strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+            style={{ marginBottom: 20, animation: 'rotate-hint 2.4s ease-in-out infinite' }}>
+            <rect x="5" y="2" width="14" height="20" rx="2" />
+            <path d="M12 18h.01" />
+          </svg>
+          <p className="text-base font-light mb-2" style={{ color: CREAM }}>
+            En iyi deneyim için cihazınızı yatay tutunuz.
+          </p>
+          <p className="text-sm font-light" style={{ color: GOLD_DEEP }}>
+            ya da masaüstü tarayıcıdan görüntüleyiniz.
+          </p>
+          <style>{`
+            @keyframes rotate-hint {
+              0%, 100% { transform: rotate(0deg); }
+              50% { transform: rotate(90deg); }
+            }
+          `}</style>
+        </div>
+      )}
+
       <div className="fixed top-5 right-5 z-50 px-3 py-1.5 rounded-full text-sm tracking-widest font-mono"
         style={{ color: GOLD, ...pillStyle }}>
         {String(current + 1).padStart(2, '0')} / {String(TOTAL_SLIDES).padStart(2, '0')}
