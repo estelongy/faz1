@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 
 /* ─── Estelongy yatırımcı sunumu — Zamansız Güzellik Mimarlığı ───
    16 slayt · full-viewport scroll-snap · klavye nav · dark luxury
-   Dr. İzzet Gök · Kurucu Hekim-Mimar · Haziran 2026
+   Dr. İzzet Gök · Kurucu · CTO · Haziran 2026
 */
 
 const GOLD = '#C9A961'
@@ -13,7 +13,6 @@ const GOLD_DEEP = '#8B7339'
 const BG = '#0A0F1A'
 const CREAM = '#F5F1E8'
 
-// Gelir projeksiyonu — Base senaryo (milyon ₺)
 const REVENUE_BASE = [
   { yil: 'Y1', komisyon: 3.6, marketplace: 0.72, lead: 0.9, saas: 0.9, akademi: 0.6 },
   { yil: 'Y2', komisyon: 23,  marketplace: 9.7,  lead: 6.4, saas: 5.5, akademi: 5.3 },
@@ -22,7 +21,6 @@ const REVENUE_BASE = [
   { yil: 'Y5', komisyon: 700, marketplace: 400,  lead: 294, saas: 110, akademi: 200 },
 ]
 const TOTAL_BASE = REVENUE_BASE.map(r => r.komisyon + r.marketplace + r.lead + r.saas + r.akademi)
-// Y1:6.72  Y2:49.9  Y3:252  Y4:757  Y5:1704
 
 const SENARYO = [
   { ad: 'Conservative', factor: 0.5,  renk: '#6B7280' },
@@ -81,26 +79,30 @@ export default function DeckClient() {
     el.scrollTo({ top: idx * window.innerHeight, behavior: 'smooth' })
   }
 
+  const pillStyle: React.CSSProperties = {
+    background: 'rgba(10,15,26,0.55)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
+    border: '1px solid rgba(201,169,97,0.18)',
+  }
+
   return (
     <div
       ref={containerRef}
       style={{ background: BG, color: CREAM, scrollSnapType: 'y mandatory' }}
       className="h-screen overflow-y-scroll overflow-x-hidden"
     >
-      {/* Sağ üst — slayt sayacı */}
-      <div className="fixed top-6 right-6 z-50 text-sm tracking-widest font-mono"
-        style={{ color: GOLD }}>
+      <div className="fixed top-5 right-5 z-50 px-3 py-1.5 rounded-full text-sm tracking-widest font-mono"
+        style={{ color: GOLD, ...pillStyle }}>
         {String(current + 1).padStart(2, '0')} / {String(TOTAL_SLIDES).padStart(2, '0')}
       </div>
 
-      {/* Sol üst — marka */}
-      <div className="fixed top-6 left-6 z-50 text-sm tracking-[0.3em] font-light"
-        style={{ color: GOLD_DEEP }}>
+      <div className="fixed top-5 left-5 z-50 px-3 py-1.5 rounded-full text-sm tracking-[0.3em] font-light"
+        style={{ color: GOLD_DEEP, ...pillStyle }}>
         ESTELONGY
       </div>
 
-      {/* Sağ kenar — progress noktaları */}
-      <div className="fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2">
+      <div className="fixed right-3 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2">
         {Array.from({ length: TOTAL_SLIDES }).map((_, i) => (
           <button
             key={i}
@@ -115,7 +117,6 @@ export default function DeckClient() {
         ))}
       </div>
 
-      {/* Slaytlar */}
       <Slide1 />
       <Slide2 />
       <Slide3 />
@@ -156,14 +157,14 @@ function Slide1() {
           YATIRIMCI SUNUMU · HAZİRAN 2026
         </p>
         <p className="mt-4 text-sm font-light" style={{ color: CREAM, opacity: 0.55 }}>
-          Dr. İzzet Gök · Kurucu Hekim-Mimar
+          Dr. İzzet Gök · Kurucu · CTO
         </p>
       </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-sm tracking-widest"
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-sm tracking-widest"
         style={{ color: GOLD_DEEP, opacity: 0.7 }}>
         ↓ kaydır · ok tuşları
       </div>
-      <div className="absolute bottom-8 right-8 text-sm font-light tracking-wider"
+      <div className="absolute bottom-10 right-8 text-sm font-light tracking-wider"
         style={{ color: GOLD_DEEP, opacity: 0.7 }}>
         ÖZEL ERİŞİM · PAYLAŞMAYINIZ
       </div>
@@ -177,21 +178,21 @@ function Slide2() {
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="01 · PROBLEM"
-          title="Güzelliğin değer kuyusu yer altında."
-          lead="Estetik tıp dünyada $50 milyar, Türkiye'de $2 milyar. Yıllık büyüme %18-22. Ama sektör hala 1990&apos;lardan kalma bir karmaşa: ölçüm yok, kanıt yok, ortak skor yok." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          title="Estetik tıp, kanıtlanamayan bir sektördür."
+          lead="Dünyada 50 milyar dolar, Türkiye&apos;de 2 milyar dolar; yıllık büyüme yüzde 18-22. Sektör hızla büyüyor — ancak ortak bir skor, doğrulanmış orijinallik ve ölçülebilir sonuç metriği yok." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
           <ProblemCard icon="👤" who="KULLANICI"
-            pain="“Hangi klinik gerçekten iyi? Hangi ürün orijinal? Yaptırdığım iş işe yaradı mı?”"
-            note="Karar Instagram'a, fiyat sözlü pazarlığa, sonuç ölçümsüz teslim ediliyor." />
+            pain="“Hangi klinik gerçekten iyi? Hangi ürün orijinal? Yaptırdığım işlem işe yaradı mı?”"
+            note="Karar Instagram akışına, fiyat sözlü pazarlığa, sonuç gözleme bırakılıyor." />
           <ProblemCard icon="🏥" who="KLİNİK"
-            pain="“Reklam veriyoruz, sonuç ölçemiyoruz. Hasta verisi 4 yerde dağınık. Sahte yorum markamızı düşürüyor.”"
-            note="Sezonluk talep, sabit gider, ölçülemeyen pazarlama. Kanıtsız büyüme." />
+            pain="“Pazarlamaya bütçe ayırıyoruz, sonucu ölçemiyoruz. Hasta verisi parçalı. Sahte yorumlar marka değerini aşındırıyor.”"
+            note="Sezonluk talep, sabit gider, ölçülemeyen edinme. Kanıtsız büyüme planı." />
           <ProblemCard icon="🤝" who="İŞ ORTAĞI" subtitle="(marka / vendor)"
-            pain="“Sahte muadiller orijinalimi öldürüyor. Hangi kliniğe satabileceğimi bilmiyorum. Bütçem nereye gidiyor belirsiz.”"
-            note="Klinik dağıtım, orijinallik kanıtı, kullanıcı geri bildirimi — üçü de eksik." />
+            pain="“Sahte muadiller orijinal ürünün önünü kesiyor. Klinik dağıtımı opak, performans verisi yok.”"
+            note="Klinik dağıtım, orijinallik doğrulaması ve birinci el kullanıcı geri bildirimi — üçü de eksik." />
         </div>
-        <p className="text-center mt-12 text-lg font-light" style={{ color: GOLD_LIGHT }}>
-          Üç sorun tek bir altyapı eksikliğinin yansıması.
+        <p className="text-center mt-10 text-base md:text-lg font-light" style={{ color: GOLD_LIGHT }}>
+          Üç sorun, tek bir altyapı eksikliğinin üç farklı yansımasıdır.
         </p>
       </div>
     </Section>
@@ -204,18 +205,18 @@ function Slide3() {
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="02 · ÇÖZÜM"
-          title="Estelongy estetik tıbbı ölçülebilir, tekrar edilebilir, kanıtlanabilir hale getiriyor."
-          lead="Estetik tıbbın IMDb'si, Amazon'u ve Verified'ı — tek kimlik altında." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          title="Estelongy estetik tıbbı ölçülebilir, tekrar edilebilir, kanıtlanabilir bir akışa dönüştürür."
+          lead="Üç bağımsız markayı — BiyoAGE, EsteKlinik, EsteStore — tek bir veri ve kimlik altyapısı altında birleştirir." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
           <BenefitCard icon="👤" who="KULLANICIYA"
             headline="Hekim onaylı Estelongy Gençlik Skoru"
-            body="Doğru klinik, doğru ürün, doğru zaman — her şey senin skorunun etrafında dönüyor. AI ön analizden hekim onayına; ev rejiminden klinik müdahalesine: tek hesap, tek skor, tek yolculuk." />
+            body="Doğru klinik, doğru ürün, doğru zaman: yolculuğun her noktası bu skorun etrafında konumlandırılır. AI ön analizden hekim onayına, ev rejiminden klinik müdahalesine tek bir hesap üzerinde ilerler." />
           <BenefitCard icon="🏥" who="KLİNİĞE"
-            headline="Yeni hasta + ürün satışı + tek panel"
-            body="Hekim onaylı yorumlarla güven inşa et. Takvim, hasta dosyası, finans, ürün satışı tek panelde. Sahte yorum yok — sadece tedavi olmuş hastanın verdiği skor." />
+            headline="Yeni hasta akışı, ürün satış kanalı, tek panel"
+            body="Takvim, hasta dosyası, finans ve ürün satışı tek panelde yönetilir. Yorumlar yalnızca gerçek hastalardan; doğrulama altyapı seviyesinde sağlanır." />
           <BenefitCard icon="🤝" who="İŞ ORTAĞINA"
-            headline="Vitrin + EsteVerify + dağıtım kanalı"
-            body="EsteVerify orijinallik damgası ile sahte ürünle savaş. Doğru klinik segmentine doğrudan eriş. Birinci el kullanıcı geri bildirimini kazan — bütçeni ölçülebilir kanala harca." />
+            headline="EsteVerify orijinallik doğrulaması ve dağıtım kanalı"
+            body="Sahte muadillere karşı zincir doğrulamalı orijinallik damgası. Doğru klinik segmentine doğrudan erişim ve birinci el kullanıcı geri bildirimi." />
         </div>
       </div>
     </Section>
@@ -227,16 +228,16 @@ function Slide4() {
   return (
     <Section>
       <div className="max-w-6xl w-full">
-        <SlideHeader kicker="03 · AHA"
-          title="Estelongy Gençlik Skoru bir feature değil."
-          lead="Birikim grafiği. Her selfie, her klinik ziyareti, her ürün, her ay — skoru günceller." />
-        <div className="mt-16 mb-12">
+        <SlideHeader kicker="03 · TEMEL ÖNERME"
+          title="Estelongy Gençlik Skoru bir özellik değil — birikim grafiğidir."
+          lead="Her selfie, her klinik ziyareti, her ürün kullanımı skoru günceller. Zaman ilerledikçe veri sertleşir, model derinleşir, kullanıcının platformdaki değeri artar." />
+        <div className="mt-12 mb-10">
           <ScoreTimeline />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <MiniPoint big="1×" small="Kullanıcı bir kez skor aldı → geri çıkamıyor (sunk cost + güncellenen veri)" />
-          <MiniPoint big="N×" small="Her yeni veri noktası modeli sertleştirir — rakip kopyalayamaz, çünkü zaman birikiyor" />
-          <MiniPoint big="∞" small="Skor → klinik öner → işlem → ürün → bakım → tekrar ölç. Sonsuz halka." />
+          <MiniPoint big="1×" small="Kullanıcı bir kez skor aldıktan sonra geri çıkmaz; veri güncellendikçe katılım sürer." />
+          <MiniPoint big="N×" small="Her yeni veri noktası modeli sertleştirir. Birikim rakip için kopyalanamaz çünkü zaman birikiyor." />
+          <MiniPoint big="∞" small="Skor → klinik → işlem → ürün → bakım → yeniden ölçüm. Kapanmayan halka." />
         </div>
       </div>
     </Section>
@@ -249,30 +250,30 @@ function Slide5() {
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="04 · ÜÇ AYAK"
-          title="Tek bir mimari, üç bağımsız marka."
-          lead="Estelongy vitrine yazılı tek marka. Onu ayakta tutan üç bağımsız markadır — her biri kendi pazarına hizmet eder, hepsi tek veri kuyusunu besler." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          title="Tek mimari, üç bağımsız marka."
+          lead="Estelongy vitrinde tek marka; onu inşa eden üç bağımsız iş kolu, her biri kendi pazarına hizmet eder ve hepsi tek bir veri kuyusunu besler." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
           <BrandCard
             name="BiyoAGE"
             role="Ölçüm motoru"
-            desc="AI yüz analizi + longevity anketi + Estelongy Gençlik Skoru. Kullanıcı edinmenin sıfır noktası — her yeni kullanıcı buradan giriyor."
-            kpi="Kullanıcı tabanını üretir"
+            desc="AI yüz analizi, longevity anketi ve Estelongy Gençlik Skoru motoru. Kullanıcının sisteme giriş noktası."
+            kpi="Kullanıcı tabanını üretir."
           />
           <BrandCard
             name="EsteKlinik"
-            role="Maddeleştirici"
-            desc="Hekim onaylı klinik pazaryeri. Randevu, prosedür, hekim onayı, sertifikalı sonuç. Skoru somut bir tedaviye dönüştürür."
-            kpi="Geliri maddeleştirir"
+            role="Maddeleştirme katmanı"
+            desc="Hekim onaylı klinik pazaryeri. Randevu, prosedür, hekim onayı ve doğrulanmış sonuç. Skorun klinik tedaviye dönüştüğü katman."
+            kpi="Geliri maddeleştirir."
           />
           <BrandCard
             name="EsteStore"
-            role="Sürdürücü"
-            desc="Klinik kalite kozmetik & longevity marketplace. EsteVerify orijinallik damgalı. Skoru evde sürdürür."
-            kpi="Yaşam boyu değeri uzatır"
+            role="Sürdürme katmanı"
+            desc="EsteVerify damgalı klinik kalite kozmetik ve longevity marketplace. Skorun ev rejiminde sürdürüldüğü katman."
+            kpi="Yaşam boyu değeri uzatır."
           />
         </div>
-        <p className="text-center mt-12 text-lg font-light" style={{ color: GOLD_LIGHT }}>
-          Üç bağımsız vitrin. Tek veri kuyusu. Hepsi Estelongy&apos;yi inşa ediyor.
+        <p className="text-center mt-10 text-base md:text-lg font-light" style={{ color: GOLD_LIGHT }}>
+          Üç vitrin, tek veri kuyusu, tek mimari.
         </p>
       </div>
     </Section>
@@ -284,16 +285,16 @@ function Slide6() {
   return (
     <Section>
       <div className="max-w-6xl w-full">
-        <SlideHeader kicker="05 · FLYWHEEL"
-          title="Üç ayak nasıl çarpan üretir."
-          lead="Bir kullanıcının üç ayakta da olması, tek ayakta olma ihtimalinden 4× değerlidir (LTV, retention)." />
-        <div className="mt-12">
+        <SlideHeader kicker="05 · ÇARPAN ETKİSİ"
+          title="Üç katmanın bileşik kazancı."
+          lead="Bir kullanıcının üç ayakta da aktif olması, yaşam boyu değerini tek ayağa kıyasla yaklaşık dört kat artırır." />
+        <div className="mt-10">
           <Flywheel />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <MiniPoint big="↓" small="BiyoAGE: skor düşük → EsteKlinik önerisi" />
-          <MiniPoint big="✓" small="EsteKlinik: işlem → skor yükselir → EsteStore önerisi" />
-          <MiniPoint big="↑" small="EsteStore: bakım → skor sürdür → BiyoAGE tekrar ölç" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+          <MiniPoint big="↓" small="BiyoAGE skoru ölçer; ihtiyaç tespit edildiğinde EsteKlinik öne çıkar." />
+          <MiniPoint big="✓" small="EsteKlinik işlemi tamamlar; skor güncellenir, EsteStore rejimi devreye girer." />
+          <MiniPoint big="↑" small="EsteStore bakımı sürdürür; BiyoAGE yeniden ölçer, döngü kapanır." />
         </div>
       </div>
     </Section>
@@ -305,28 +306,29 @@ function Slide7() {
   return (
     <Section>
       <div className="max-w-6xl w-full">
-        <SlideHeader kicker="06 · WHY NOW"
-          title="Üç eğri 2026&apos;da kesişti."
-          lead="Bu üç dalga aynı anda akmadan Estelongy yapılamazdı. Şimdi tam zamanı." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+        <SlideHeader kicker="06 · ZAMANLAMA"
+          title="Üç eğri ilk kez 2026&apos;da kesişiyor."
+          lead="Estelongy&apos;nin uygulanabilir olması için bu üç eğrinin aynı anda olgunlaşması gerekti. Pencere şimdi açıldı." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
           <CurveCard
-            yil="2023→"
+            yil="2023 →"
             baslik="LLM yüz analizi"
-            metin="Yüz noktası çıkarma + cilt durum modelleri 100× ucuzladı, klinik hassasiyetine yaklaştı. 3 yıl önce mümkün değildi."
+            metin="Yüz noktası çıkarma ve cilt durum modelleri maliyet olarak yüz kat düştü, klinik hassasiyetine yaklaştı. Üç yıl önce uygulanabilir değildi."
           />
           <CurveCard
-            yil="2024→"
+            yil="2024 →"
             baslik="Longevity ana akım"
-            metin="Bryan Johnson efekti. Biyolojik yaş ölçümü artık niş bilim değil — milyonlarca tüketicinin ilgi alanı."
+            metin="Biyolojik yaş ve yaşlanma hızı ölçümü niş bilimden çıktı; tüketici ilgisi son iki yılda katlanarak büyüdü."
           />
           <CurveCard
-            yil="2025→"
-            baslik="Aesthetic tourism"
-            metin="Türkiye dünya 1.&apos;si. İstanbul&apos;a yılda 1.5M estetik turisti geliyor. Yerli + global pazara açılan körfez."
+            yil="2025 →"
+            baslik="Estetik turizm yoğunluğu"
+            metin="Türkiye, küresel estetik turizmde birinci. İstanbul tek başına yılda 1,5 milyon estetik turisti ağırlıyor."
           />
         </div>
-        <p className="text-center mt-14 text-lg font-light" style={{ color: GOLD_LIGHT }}>
-          Üç dalga + bir hekim-mimar = Estelongy.
+        <p className="text-center mt-12 text-base md:text-lg font-light max-w-3xl mx-auto"
+          style={{ color: GOLD_LIGHT }}>
+          Olgunlaşma penceresi açık; kategoriyi tanımlayan, ilk hareket eden olacak.
         </p>
       </div>
     </Section>
@@ -338,19 +340,19 @@ function Slide8() {
   return (
     <Section>
       <div className="max-w-6xl w-full">
-        <SlideHeader kicker="07 · ÜRÜN"
-          title="Slayt değil — ürün."
-          lead="estelongy.com canlı. 3 mobil app emülatörde uçtan uca çalışıyor. OTP/auth canlı. Marketplace iskeleti yayında. Bu sunumu da Estelongy&apos;nin içinden okuyorsunuz." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        <SlideHeader kicker="07 · ÜRÜN DURUMU"
+          title="Slayt değil — çalışan ürün."
+          lead="estelongy.com yayında. Üç mobil uygulama uçtan uca akıyor. Kimlik doğrulama ve marketplace altyapısı canlı. Bu sunum dahi sistemin içinden sunuluyor." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
           <PhoneFrame label="BiyoAGE" sub="Ölçüm" />
           <PhoneFrame label="EsteKlinik" sub="Pazaryeri" />
           <PhoneFrame label="EsteStore" sub="Marketplace" />
         </div>
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <ProofTile k="3" v="canlı mobil app" />
+        <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <ProofTile k="3" v="canlı mobil uygulama" />
           <ProofTile k="1" v="server, 5 katman" />
-          <ProofTile k="✓" v="OTP + Auth canlı" />
-          <ProofTile k="✓" v="Marketplace iskelet" />
+          <ProofTile k="✓" v="OTP + kimlik doğrulama" />
+          <ProofTile k="✓" v="marketplace altyapısı" />
         </div>
       </div>
     </Section>
@@ -371,11 +373,11 @@ function Slide9() {
   return (
     <Section>
       <div className="max-w-6xl w-full">
-        <SlideHeader kicker="08 · MİMARİ ASİMETRİ"
-          title="Rakipler bir dikey. Biz bütünsel mimari."
-          lead="Moat tek bir özellikte değil — özelliklerin birbirine bağlandığı yerde." />
-        <div className="mt-12 overflow-hidden rounded-2xl"
-          style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid rgba(201,169,97,0.2)` }}>
+        <SlideHeader kicker="08 · ASİMETRİ"
+          title="Rakipler tek dikey. Estelongy bütünsel mimari."
+          lead="Savunma alanı tekil özellikte değil, özelliklerin birbirine bağlandığı katmandadır." />
+        <div className="mt-10 overflow-hidden rounded-2xl"
+          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,169,97,0.2)' }}>
           <table className="w-full text-sm md:text-base">
             <thead>
               <tr style={{ background: 'rgba(201,169,97,0.08)' }}>
@@ -410,15 +412,15 @@ function Slide10() {
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="09 · PAZAR"
-          title="Bir Türkiye sorunundan global bir kategoriye."
-          lead="Türkiye estetik turizmde dünya 1.&apos;si. Bizim için bu yerel pazar değil — global pazara açılan körfez." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+          title="Yerel kırılma noktasından küresel kategoriye."
+          lead="Türkiye estetik turizmde dünyada birinci. Yerel pazar, küresel kategoriye açılan ön kapımız." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           <MarketCircle size="lg" tier="TAM" amount="$200B+"
-            label="Global estetik tıp + longevity wellness" />
+            label="Küresel estetik tıp + longevity wellness" />
           <MarketCircle size="md" tier="SAM" amount="$25B"
-            label="TR + EMEA estetik medikal + ürün marketplace" />
+            label="TR + EMEA estetik medikal ve ürün marketplace" />
           <MarketCircle size="sm" tier="SOM" amount="$2B"
-            label="5 yıl ulaşılabilir — TR pazaryeri + AI lead + marketplace" />
+            label="Beş yıl içinde ulaşılabilir hedef pazar" />
         </div>
       </div>
     </Section>
@@ -429,26 +431,26 @@ function Slide10() {
 function Slide11() {
   const muslukler = [
     { no: '1', ad: 'Hekim onaylı randevu komisyonu', metric: '%8-15', who: '🏥 👤',
-      desc: 'Klinik kazanır, kullanıcı güvenle alır, biz oran alırız.' },
+      desc: 'Klinik tarafı işlemi tamamlar; platform doğrulama ve aracılık karşılığında oran alır.' },
     { no: '2', ad: 'EsteStore marketplace mark-up', metric: '%15-20', who: '👤 🤝',
-      desc: 'Orijinal ürün → güvenli alıcı → marka için ölçülebilir kanal.' },
-    { no: '3', ad: 'AI-kvalifiye lead satışı', metric: '₺300-800/lead', who: '🏥 🤝',
-      desc: 'AI analiz çıktısı → satın alma niyet sinyali → klinik/markaya sıcak lead. Yüksek marj, stok yok.' },
-    { no: '4', ad: 'EsteKlinikPRO / EsteStorePRO SaaS', metric: '₺2.5-5K/ay', who: '🏥 🤝',
-      desc: 'PMS + finans + analitik. Tekrarlı, defansif, tahmin edilebilir gelir.' },
-    { no: '5', ad: 'Estelongy Akademi — eğitim & sertifika', metric: '₺3-5K/kursiyer', who: '👤 🏥 🤝',
-      desc: 'Klinik personeli, öğrenci, vendor için kurs satışı + sertifika.' },
+      desc: 'Orijinal ürün, güvenli alıcı ve marka için ölçülebilir kanal.' },
+    { no: '3', ad: 'AI kvalifiye lead satışı', metric: '₺300-800/lead', who: '🏥 🤝',
+      desc: 'AI analiz çıktısı satın alma niyeti üretir; klinik ve markalara sıcak lead olarak iletilir. Yüksek marj, stoksuz operasyon.' },
+    { no: '4', ad: 'EsteKlinikPRO / EsteStorePRO SaaS', metric: '₺2,5-5K/ay', who: '🏥 🤝',
+      desc: 'Klinik ve vendor için PMS, finans ve analitik. Tekrarlı, tahmin edilebilir gelir.' },
+    { no: '5', ad: 'Estelongy Akademi — eğitim ve sertifika', metric: '₺3-5K/kursiyer', who: '👤 🏥 🤝',
+      desc: 'Klinik personeli, öğrenci ve vendor için kurs ve sertifika programları.' },
   ]
   return (
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="10 · İŞ MODELİ"
-          title="Beş gelir musluğu. Her biri diğer dördünden besleniyor."
-          lead="Diversifiye. Defansif. Çapraz. Bir musluğa şok geldiğinde diğerleri taşır." />
-        <div className="mt-10 space-y-3">
+          title="Beş gelir katmanı, paylaşılan tek kullanıcı tabanı."
+          lead="Çapraz beslenen gelir kanalları edinme maliyetini düşürür, tek bir kanala bağımlılığı ortadan kaldırır." />
+        <div className="mt-8 space-y-3">
           {muslukler.map(m => (
             <div key={m.no} className="grid grid-cols-12 gap-4 items-center p-5 rounded-xl"
-              style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid rgba(201,169,97,0.18)` }}>
+              style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,169,97,0.18)' }}>
               <div className="col-span-1 text-3xl font-light" style={{ color: GOLD }}>{m.no}</div>
               <div className="col-span-5">
                 <div className="font-medium text-base md:text-lg" style={{ color: CREAM }}>{m.ad}</div>
@@ -472,12 +474,12 @@ function Slide12() {
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="11 · PROJEKSİYON"
-          title="5 yıllık projeksiyon — üç senaryo."
-          lead="Base senaryo: Y5&apos;te ₺1.7B (~$56M) toplam gelir, 5 musluktan dengeli dağılım. Conservative = ½ × Base, Bull = 1.5 × Base." />
-        <div className="mt-10">
+          title="Beş yıllık ciro projeksiyonu."
+          lead="Base senaryo beşinci yılda 1,7 milyar TL toplam ciroya ulaşır. Conservative senaryo bu rakamın yarısı, Bull senaryo bir buçuk katı olarak modellenir." />
+        <div className="mt-8">
           <RevenueChart />
         </div>
-        <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+        <div className="mt-6 grid grid-cols-3 gap-4 text-center">
           {SENARYO.map(s => {
             const y5 = TOTAL_BASE[4] * s.factor
             return (
@@ -505,35 +507,36 @@ function Slide13() {
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="12 · VİZYON"
-          title="Estelongy bugün ölçüyor. Yarın simüle edecek."
-          lead="Pazaryeri ilk dönem motoru. Asıl ürün: geleceği bilimsel olarak modelleyen tek platform." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
+          title="Estelongy bugün ölçer; yarın simüle eder."
+          lead="Pazaryeri ilk dönem büyüme motorudur. Asıl ürün, güzelliği ve longevity&apos;yi bilimsel olarak modelleyen tek platform olmaktır." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
           <VisionTier
             tag="BUGÜN"
             yil="2026"
             baslik="Görünüm yaşı"
             altyazi="Estelongy Gençlik Skoru"
-            metin="Selfie + longevity anketi + tetkik + hekim onayı. Şu anki halinin sayısal karşılığı."
+            metin="Selfie, longevity anketi, tetkik ve hekim onayı. Mevcut durumun sayısal karşılığı."
             light
           />
           <VisionTier
             tag="YAKIN GELECEK"
             yil="2027 — 2028"
             baslik="Yaşlanma hızı"
-            altyazi="Senin biyolojik ivmen"
-            metin="Skor durağan değil — değişim ivmesi. Horvath clock, telomer modelleri, longevity biomarker entegrasyonu."
+            altyazi="Biyolojik ivmenin ölçümü"
+            metin="Skor durağan değildir; değişim ivmesidir. Epigenetik saat modelleri ve longevity biyobelirteçlerinin entegrasyonu."
           />
           <VisionTier
             tag="UZAK VİZYON"
             yil="2028 +"
             baslik="Bilimsel Güzellik Simülatörü"
-            altyazi="Geleceğini gör, sonra seç"
-            metin="“Bu işlemi yaptırırsam 6 ay sonra nasıl görünürüm? Bu rejimi uygulasam 5 yıl sonra biyolojik yaşım ne olur? Bu hekim bu prosedürde başarı olasılığım ne?”"
+            altyazi="Geleceği gör, sonra seç"
+            metin="“Bu işlemi yaptırırsam altı ay sonra nasıl görünürüm? Bu rejimi uygularsam beş yıl sonra biyolojik yaşım nedir? Bu hekimde bu prosedürün başarı olasılığı nedir?”"
             highlight
           />
         </div>
-        <p className="text-center mt-12 text-lg font-light max-w-3xl mx-auto" style={{ color: GOLD_LIGHT }}>
-          Pazaryeri Trojan horse. Asıl kategori: <span style={{ color: GOLD }}>geleceğin güzellik & longevity simülasyon platformu.</span>
+        <p className="text-center mt-10 text-base md:text-lg font-light max-w-3xl mx-auto"
+          style={{ color: GOLD_LIGHT }}>
+          Pazaryeri başlangıç motoru; hedef kategori bilimsel güzellik ve longevity simülasyon platformudur.
         </p>
       </div>
     </Section>
@@ -543,18 +546,38 @@ function Slide13() {
 /* ─── Slayt 14: Yol Haritası ────────────────────────────── */
 function Slide14() {
   const yol = [
-    { ne: 'ŞU AN', ic: ['Web canlı (estelongy.com)', '3 mobil app emülatörde uçtan uca', 'OTP / Auth canlı', 'Marketplace iskeleti yayında'] },
-    { ne: '+6 AY',  ic: ['Stripe ödeme canlı', 'İlk 50 ortak klinik', 'İlk 1.000 aktif kullanıcı', 'EsteVerify pilot'] },
-    { ne: '+12 AY', ic: ['200 klinik · 25.000 kullanıcı', 'AI lead motoru canlı', 'Akademi 5 kurs', 'EsteKlinikPRO ölçeklenir'] },
-    { ne: '+24 AY', ic: ['600 klinik · 100.000 kullanıcı', 'EsteVerify sektör standardı', 'Yaşlanma hızı modülü beta', 'Series A hazırlığı'] },
+    { ne: 'ŞU AN', ic: [
+      'estelongy.com canlı',
+      'Üç mobil uygulama uçtan uca akıyor',
+      'OTP ve kimlik doğrulama yayında',
+      'Marketplace altyapısı canlı',
+    ]},
+    { ne: '+6 AY',  ic: [
+      'Stripe ödeme canlı',
+      'İlk 50 ortak klinik',
+      'İlk 1.000 aktif kullanıcı',
+      'EsteVerify pilot uygulaması',
+    ]},
+    { ne: '+12 AY', ic: [
+      '200 klinik · 25.000 kullanıcı',
+      'AI lead motoru canlı',
+      'Akademi ilk beş kurs',
+      'EsteKlinikPRO ölçeklenir',
+    ]},
+    { ne: '+24 AY', ic: [
+      '600 klinik · 100.000 kullanıcı',
+      'EsteVerify sektör standardı adayı',
+      'Yaşlanma hızı modülü beta',
+      'Series A hazırlığı',
+    ]},
   ]
   return (
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="13 · YOL HARİTASI"
-          title="Para nereye, ne hızla."
-          lead="Doğrulanmış akış: bir önceki milestone tamamlanmadan bir sonrakine geçilmez." />
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-12">
+          title="Sermayenin yön ve hızı."
+          lead="Doğrulanmış akış: her milestone bir öncekinin kanıtı olmadan başlamaz." />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
           {yol.map((y, i) => (
             <div key={i} className="p-6 rounded-xl"
               style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${i === 0 ? GOLD : 'rgba(201,169,97,0.2)'}` }}>
@@ -584,9 +607,9 @@ function Slide15() {
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="14 · EKİP"
-          title="Hekim + Mimar = Founder-Market Fit."
-          lead="Sektör içinden gelen + bütün ekosistemi tek başına inşa eden tek kişi." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+          title="Kurucu ekip."
+          lead="Dr. İzzet Gök inşayı tek başına yürütüyor. Sermaye sonrası dört kritik pozisyon açılıyor." />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
           <div className="md:col-span-1 p-8 rounded-2xl"
             style={{ background: 'rgba(201,169,97,0.06)', border: `1px solid ${GOLD}55` }}>
             <div className="w-24 h-24 rounded-full mb-6 flex items-center justify-center text-4xl"
@@ -597,11 +620,10 @@ function Slide15() {
               Dr. İzzet Gök
             </div>
             <div className="text-sm tracking-widest mb-4" style={{ color: GOLD }}>
-              KURUCU · HEKİM-MİMAR
+              KURUCU · CTO
             </div>
             <p className="text-sm font-light leading-relaxed" style={{ color: CREAM, opacity: 0.8 }}>
-              Hekim olduğu için ürünün pazarına, mimar olduğu için ürünün koduna sahip.
-              Mimari + strateji + ürün + ilk satış: hepsi tek elden.
+              Hekim olarak ürünün pazarına, CTO olarak ürünün koduna sahip. Strateji, mimari, ürün ve ilk satış tek elden yürütülüyor.
             </p>
           </div>
           <div className="md:col-span-2">
@@ -609,10 +631,10 @@ function Slide15() {
               YATIRIM SONRASI AÇILACAK POZİSYONLAR
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <RoleCard title="CTO / Tech Lead"     note="Yığını ölçekle. Vizyon: Bilimsel Güzellik Simülatörü." />
-              <RoleCard title="Klinik Network Lead" note="B2B satış. Y1 sonu 50 klinik, Y2 sonu 200." />
-              <RoleCard title="Marketing & Brand"   note="Estelongy ana marka + 3 alt marka pozisyonlama." />
-              <RoleCard title="Akademi Director"    note="Eğitim ekosistemi, kurs üretim ve sertifika programı." />
+              <RoleCard title="VP Engineering"     note="Yığını ölçeklendirme; uzun vadeli vizyon Bilimsel Güzellik Simülatörü." />
+              <RoleCard title="Klinik Network Lead" note="B2B satış. Birinci yıl 50 klinik, ikinci yıl 200." />
+              <RoleCard title="Marketing & Brand"   note="Estelongy ana marka ve üç alt marka konumlandırması." />
+              <RoleCard title="Akademi Director"    note="Eğitim ekosistemi, kurs üretimi ve sertifika programı." />
             </div>
           </div>
         </div>
@@ -626,7 +648,7 @@ function Slide16() {
   return (
     <Section dark>
       <div className="max-w-5xl w-full text-center">
-        <div className="text-sm tracking-[0.5em] mb-8" style={{ color: GOLD_DEEP }}>15 · ASK</div>
+        <div className="text-sm tracking-[0.5em] mb-8" style={{ color: GOLD_DEEP }}>15 · YATIRIM TEKLİFİ</div>
         <h2 className="font-light leading-tight mb-12"
           style={{ fontSize: 'clamp(40px, 6vw, 80px)', color: CREAM, letterSpacing: '-0.02em' }}>
           Mimariyi <span style={{ color: GOLD }}>birlikte</span> inşa edelim.
@@ -641,16 +663,16 @@ function Slide16() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 text-left">
           <WhyTile title="Why now"
-            body="LLM yüz analizi + longevity ana akımı + estetik turizm. Üç eğri 2026&apos;da kesişti." />
+            body="LLM yüz analizi, longevity ana akımı ve estetik turizm yoğunluğu — üç eğri ilk kez 2026'da kesişiyor." />
           <WhyTile title="Why us"
-            body="Hekim + Mimar tek kişide (Dr. İzzet Gök). Ürün slaytta değil; canlı." highlight />
+            body="Hekim ve kurucu CTO tek kişide (Dr. İzzet Gök). Ürün sunum slaytında değil; sistemin içinde çalışıyor." highlight />
           <WhyTile title="Why this"
-            body="Pazaryerinden başlayıp Bilimsel Güzellik Simülatörü olmak. Trojan horse → kategori liderliği." />
+            body="Pazaryerinden başlayarak güzelliği ve longevity'yi bilimsel olarak modelleyen platforma uzanan kategori." />
         </div>
 
         <div className="pt-8 border-t" style={{ borderColor: 'rgba(201,169,97,0.25)' }}>
           <p className="text-base font-light mb-2" style={{ color: CREAM, opacity: 0.7 }}>
-            Sonraki adım: 45 dk yüz yüze + canlı ürün demo
+            Sonraki adım: kırk beş dakikalık görüşme ve canlı ürün demosu.
           </p>
           <p className="text-lg" style={{ color: GOLD }}>
             estelongy.com  ·  Dr. İzzet Gök
@@ -675,7 +697,7 @@ function Section({ children, dark }: { children: React.ReactNode; dark?: boolean
           ? `radial-gradient(ellipse at center, #14182A 0%, ${BG} 70%)`
           : BG,
       }}
-      className="relative h-screen w-full flex items-center justify-center px-6 md:px-16 py-20"
+      className="relative h-screen w-full flex items-center justify-center px-6 md:px-16 pt-24 pb-24 md:pt-28 md:pb-28"
     >
       {children}
     </section>
@@ -689,7 +711,7 @@ function SlideHeader({ kicker, title, lead }: { kicker: string; title: string; l
         {kicker}
       </div>
       <h2 className="font-light leading-tight mb-4"
-        style={{ fontSize: 'clamp(32px, 4.5vw, 56px)', color: CREAM, letterSpacing: '-0.02em' }}>
+        style={{ fontSize: 'clamp(28px, 4vw, 52px)', color: CREAM, letterSpacing: '-0.02em' }}>
         {title}
       </h2>
       {lead && (
@@ -707,7 +729,7 @@ function ProblemCard({ icon, who, subtitle, pain, note }:
   return (
     <div className="p-6 rounded-2xl h-full flex flex-col"
       style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,169,97,0.18)' }}>
-      <div className="flex items-baseline gap-3 mb-4">
+      <div className="flex items-baseline gap-3 mb-4 flex-wrap">
         <span className="text-3xl">{icon}</span>
         <span className="text-sm tracking-widest" style={{ color: GOLD }}>{who}</span>
         {subtitle && <span className="text-sm font-light" style={{ color: CREAM, opacity: 0.5 }}>{subtitle}</span>}
@@ -777,7 +799,7 @@ function ScoreTimeline() {
     { x: 92, y: 32, score: 86, label: '3 ay sonra' },
   ]
   return (
-    <svg viewBox="0 0 100 90" className="w-full h-48 md:h-64" style={{ overflow: 'visible' }}>
+    <svg viewBox="0 0 100 90" className="w-full h-44 md:h-56" style={{ overflow: 'visible' }}>
       <defs>
         <linearGradient id="scoreLine" x1="0" x2="100%" y1="0" y2="0">
           <stop offset="0%" stopColor={GOLD_DEEP} />
@@ -815,18 +837,16 @@ function ScoreTimeline() {
 
 function Flywheel() {
   return (
-    <svg viewBox="0 0 400 240" className="w-full h-64 md:h-80">
+    <svg viewBox="0 0 400 240" className="w-full h-56 md:h-72">
       <defs>
         <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
           <path d="M0,0 L10,5 L0,10 z" fill={GOLD} />
         </marker>
       </defs>
-      {/* daireler */}
       <FlywheelNode cx={80}  cy={120} title="BiyoAGE" sub="ölç" />
       <FlywheelNode cx={200} cy={60}  title="EsteKlinik" sub="işlem" />
       <FlywheelNode cx={320} cy={120} title="EsteStore" sub="sürdür" />
       <FlywheelNode cx={200} cy={200} title="Estelongy" sub="veri kuyusu" center />
-      {/* okları */}
       <path d="M 110 105 Q 150 70 175 65" fill="none" stroke={GOLD} strokeWidth="1.5" markerEnd="url(#arrow)" />
       <path d="M 225 65  Q 270 75 295 105" fill="none" stroke={GOLD} strokeWidth="1.5" markerEnd="url(#arrow)" />
       <path d="M 295 135 Q 270 180 225 195" fill="none" stroke={GOLD} strokeWidth="1.5" markerEnd="url(#arrow)" />
@@ -871,7 +891,7 @@ function CurveCard({ yil, baslik, metin }: { yil: string; baslik: string; metin:
 function PhoneFrame({ label, sub }: { label: string; sub: string }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="w-44 h-80 rounded-[2rem] p-2"
+      <div className="w-40 h-72 md:w-44 md:h-80 rounded-[2rem] p-2"
         style={{ background: 'rgba(201,169,97,0.1)', border: `1px solid ${GOLD}55` }}>
         <div className="w-full h-full rounded-[1.7rem] flex flex-col items-center justify-center"
           style={{ background: `linear-gradient(180deg, #14182A, ${BG})` }}>
@@ -900,8 +920,8 @@ function ProofTile({ k, v }: { k: string; v: string }) {
 
 function MarketCircle({ size, tier, amount, label }:
   { size: 'lg' | 'md' | 'sm'; tier: string; amount: string; label: string }) {
-  const dim = size === 'lg' ? 'h-72 w-72' : size === 'md' ? 'h-60 w-60' : 'h-48 w-48'
-  const opacity = size === 'lg' ? 0.35 : size === 'md' ? 0.55 : 1
+  const dim = size === 'lg' ? 'h-56 w-56 md:h-64 md:w-64' : size === 'md' ? 'h-48 w-48 md:h-56 md:w-56' : 'h-40 w-40 md:h-44 md:w-44'
+  const opacity = size === 'lg' ? 0.4 : size === 'md' ? 0.65 : 1
   return (
     <div className="flex flex-col items-center">
       <div className={`${dim} rounded-full flex flex-col items-center justify-center mb-4`}
@@ -911,10 +931,10 @@ function MarketCircle({ size, tier, amount, label }:
           opacity,
         }}>
         <div className="text-sm tracking-[0.4em]" style={{ color: GOLD }}>{tier}</div>
-        <div className="text-4xl font-light my-3" style={{ color: CREAM }}>{amount}</div>
+        <div className="text-3xl md:text-4xl font-light my-3" style={{ color: CREAM }}>{amount}</div>
       </div>
       <p className="text-center text-sm font-light max-w-[220px]"
-        style={{ color: CREAM, opacity: 0.7 }}>
+        style={{ color: CREAM, opacity: 0.75 }}>
         {label}
       </p>
     </div>
@@ -922,16 +942,14 @@ function MarketCircle({ size, tier, amount, label }:
 }
 
 function RevenueChart() {
-  // Stacked bar — 5 musluk, 5 yıl, Base senaryo
   const maxTotal = Math.max(...TOTAL_BASE)
-  const W = 800, H = 320, P = 40
+  const W = 800, H = 280, P = 40
   const barW = (W - 2 * P) / REVENUE_BASE.length * 0.55
   const gap = (W - 2 * P) / REVENUE_BASE.length
 
   return (
     <div>
       <svg viewBox={`0 0 ${W} ${H + 60}`} className="w-full" style={{ overflow: 'visible' }}>
-        {/* grid */}
         {[0, 0.25, 0.5, 0.75, 1].map((p, i) => (
           <g key={i}>
             <line
@@ -946,17 +964,16 @@ function RevenueChart() {
             </text>
           </g>
         ))}
-        {/* bars */}
         {REVENUE_BASE.map((row, i) => {
           const cx = P + gap * i + gap / 2
           const x = cx - barW / 2
           let yCursor = H - P
           const segments = [
-            { val: row.komisyon,    renk: MUSLUK_RENK.komisyon,    ad: 'Komisyon' },
-            { val: row.marketplace, renk: MUSLUK_RENK.marketplace, ad: 'Marketplace' },
-            { val: row.lead,        renk: MUSLUK_RENK.lead,        ad: 'AI Lead' },
-            { val: row.saas,        renk: MUSLUK_RENK.saas,        ad: 'SaaS' },
-            { val: row.akademi,     renk: MUSLUK_RENK.akademi,     ad: 'Akademi' },
+            { val: row.komisyon,    renk: MUSLUK_RENK.komisyon },
+            { val: row.marketplace, renk: MUSLUK_RENK.marketplace },
+            { val: row.lead,        renk: MUSLUK_RENK.lead },
+            { val: row.saas,        renk: MUSLUK_RENK.saas },
+            { val: row.akademi,     renk: MUSLUK_RENK.akademi },
           ]
           return (
             <g key={i}>
@@ -975,7 +992,6 @@ function RevenueChart() {
           )
         })}
       </svg>
-      {/* legend */}
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 text-sm">
         {[
           { renk: MUSLUK_RENK.komisyon, ad: 'Randevu komisyonu' },
