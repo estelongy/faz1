@@ -902,17 +902,6 @@ function FlywheelNode({ cx, cy, title, sub, center }:
   )
 }
 
-function CurveCard({ yil, baslik, metin }: { yil: string; baslik: string; metin: string }) {
-  return (
-    <div className="p-6 rounded-2xl h-full"
-      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,169,97,0.18)' }}>
-      <div className="text-xs tracking-widest font-mono mb-3" style={{ color: GOLD }}>{yil}</div>
-      <h3 className="text-xl font-light mb-3" style={{ color: CREAM }}>{baslik}</h3>
-      <p className="text-sm font-light leading-relaxed" style={{ color: CREAM, opacity: 0.75 }}>{metin}</p>
-    </div>
-  )
-}
-
 function TrendCard({ tag, stat, yil, metin }:
   { tag: string; stat: string; yil: string; metin: string }) {
   return (
