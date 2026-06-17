@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import DeckClient from './DeckClient'
+import GateClient from './GateClient'
 
 const VALID_TOKENS = new Set(['zamansiz-2026'])
 
@@ -13,5 +13,5 @@ export const metadata: Metadata = {
 export default async function SunumPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
   if (!VALID_TOKENS.has(token)) notFound()
-  return <DeckClient />
+  return <GateClient />
 }
