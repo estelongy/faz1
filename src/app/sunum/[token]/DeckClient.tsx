@@ -151,7 +151,7 @@ function Slide1() {
         </h1>
         <div className="h-px w-32 mx-auto mb-12" style={{ background: GOLD }} />
         <p className="text-xl md:text-2xl font-light mb-3" style={{ color: CREAM, opacity: 0.85 }}>
-          Estetik tıbbın ölçüm, kanıt ve simülasyon altyapısı.
+          Bilimi güzelliğe dönüştüren ölçüm, kanıt ve simülasyon altyapısı.
         </p>
         <p className="text-base mt-12 tracking-widest" style={{ color: GOLD }}>
           YATIRIMCI SUNUMU · HAZİRAN 2026
@@ -257,19 +257,19 @@ function Slide5() {
             name="BiyoAGE"
             role="Ölçüm motoru"
             desc="AI yüz analizi, longevity anketi ve Estelongy Gençlik Skoru motoru. Kullanıcının sisteme giriş noktası."
-            kpi="Kullanıcı tabanını üretir."
+            kpi="“Biyolojik Yaşını Öğren.”"
           />
           <BrandCard
             name="EsteKlinik"
             role="Maddeleştirme katmanı"
             desc="Hekim onaylı klinik pazaryeri. Randevu, prosedür, hekim onayı ve doğrulanmış sonuç. Skorun klinik tedaviye dönüştüğü katman."
-            kpi="Geliri maddeleştirir."
+            kpi="“Bilimi Güzelliğe Çeviren Klinikler.”"
           />
           <BrandCard
             name="EsteStore"
             role="Sürdürme katmanı"
             desc="EsteVerify damgalı klinik kalite kozmetik ve longevity marketplace. Skorun ev rejiminde sürdürüldüğü katman."
-            kpi="Yaşam boyu değeri uzatır."
+            kpi="“Ürün Değil, Sana Özel Çözüm.”"
           />
         </div>
         <p className="text-center mt-10 text-base md:text-lg font-light" style={{ color: GOLD_LIGHT }}>
