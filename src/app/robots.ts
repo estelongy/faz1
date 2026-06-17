@@ -12,6 +12,7 @@ export default function robots(): MetadataRoute.Robots {
           '/satici/panel/',
           '/admin/',
           '/api/',
+          '/sunum/',
           '/analiz',
           '/skor',
           '/sepet',
@@ -28,7 +29,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: ['GPTBot', 'PerplexityBot', 'ClaudeBot', 'Google-Extended'],
         allow: ['/', '/rehber/', '/estestore', '/hakkinda/'],
-        disallow: ['/panel/', '/klinik/panel/', '/admin/', '/api/'],
+        disallow: ['/panel/', '/klinik/panel/', '/admin/', '/api/', '/sunum/'],
       },
     ],
     sitemap: 'https://estelongy.com/sitemap.xml',

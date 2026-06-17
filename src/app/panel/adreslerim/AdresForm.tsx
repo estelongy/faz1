@@ -129,7 +129,7 @@ export default function AdresForm({ initial, onClose, onSaved }: Props) {
         <label className="block text-slate-700 text-sm font-semibold mb-1">Açık Adres *</label>
         <textarea required value={addr} onChange={e => setAddr(e.target.value)}
           rows={2} placeholder="Sokak, No, Daire"
-          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-violet-500 resize-none" />
+          className="w-full px-3 py-2 bg-[#FAFAF7] border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:border-[#C9A961] resize-none" />
       </div>
 
       <div>
