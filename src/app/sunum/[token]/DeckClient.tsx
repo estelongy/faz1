@@ -241,7 +241,7 @@ function Slide4() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <MiniPoint big="1×" small="Kullanıcı bir kez skor aldıktan sonra geri çıkmaz; veri güncellendikçe katılım sürer." />
-          <MiniPoint big="N×" small="Her yeni veri noktası modeli sertleştirir. Birikim rakip için kopyalanamaz çünkü zaman birikiyor." />
+          <MiniPoint big="N×" small="Her yeni veri noktası modeli sertleştirir; birikim kopyalanamaz, çünkü zaman birikiyor." />
           <MiniPoint big="∞" small="Skor → klinik → işlem → ürün → bakım → yeniden ölçüm. Kapanmayan halka." />
         </div>
       </div>
@@ -347,7 +347,7 @@ function Slide8() {
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="07 · SİSTEM DURUMU"
           title="Bugünkü altyapı."
-          lead="estelongy.com yayında. Üç mobil uygulama uçtan uca akıyor. Kimlik doğrulama ve marketplace altyapısı canlı. Bu sunum da aynı altyapı üzerinde çalışıyor." />
+          lead="estelongy.com yayında. Üç mobil uygulama uçtan uca akıyor. Kimlik doğrulama ve pazaryeri altyapısı canlı. Bu sunum da aynı altyapı üzerinde çalışıyor." />
         <div className="grid grid-cols-3 gap-4 md:gap-6 mt-6">
           <PhoneFrame label="BiyoAGE" sub="Ölçüm" />
           <PhoneFrame label="EsteKlinik" sub="Pazaryeri" />
@@ -357,7 +357,7 @@ function Slide8() {
           <ProofTile k="3" v="canlı mobil uygulama" />
           <ProofTile k="1" v="server, 5 katman" />
           <ProofTile k="✓" v="OTP + kimlik doğrulama" />
-          <ProofTile k="✓" v="marketplace altyapısı" />
+          <ProofTile k="✓" v="pazaryeri altyapısı" />
         </div>
       </div>
     </Section>
@@ -371,7 +371,7 @@ function Slide9() {
     { label: 'Randevu + komisyon',             e: true, a: true,  b: false, c: false },
     { label: 'Marketplace + orijinallik',      e: true, a: false, b: true,  c: false },
     { label: 'Klinik SaaS (PMS)',              e: true, a: false, b: false, c: false },
-    { label: 'AI kvalifiye lead motoru',       e: true, a: false, b: false, c: true  },
+    { label: 'AI kalifiye lead motoru',       e: true, a: false, b: false, c: true  },
     { label: 'Akademi (eğitim/sertifika)',     e: true, a: false, b: false, c: false },
     { label: 'Yaşlanma hızı + simülatör',      e: true, a: false, b: false, c: false },
   ]
@@ -423,9 +423,9 @@ function Slide10() {
           <MarketCircle size="lg" tier="TAM" amount="$200B+"
             label="Küresel estetik tıp + longevity wellness" />
           <MarketCircle size="md" tier="SAM" amount="$25B"
-            label="TR + EMEA estetik medikal ve ürün marketplace" />
+            label="TR + EMEA estetik medikal ve ürün pazaryeri" />
           <MarketCircle size="sm" tier="SOM" amount="$2B"
-            label="Beş yıl içinde ulaşılabilir hedef pazar" />
+            label="Beş yıl içinde ulaşılabilir hedef pazar payı" />
         </div>
       </div>
     </Section>
@@ -435,15 +435,15 @@ function Slide10() {
 /* ─── Slayt 11: İş Modeli — 5 Musluk ──────────────────────── */
 function Slide11() {
   const muslukler = [
-    { no: '1', ad: 'Hekim onaylı randevu komisyonu', metric: '%8-15', who: '🏥 👤',
+    { no: '1', ad: 'Hekim onaylı randevu komisyonu', metric: '%8–15', who: '🏥 👤',
       desc: 'Klinik tarafı işlemi tamamlar; platform doğrulama ve aracılık karşılığında oran alır.' },
-    { no: '2', ad: 'EsteStore marketplace mark-up', metric: '%15-20', who: '👤 🤝',
+    { no: '2', ad: 'EsteStore pazaryeri komisyonu', metric: '%15–20', who: '👤 🤝',
       desc: 'Orijinal ürün, güvenli alıcı ve marka için ölçülebilir kanal.' },
-    { no: '3', ad: 'AI kvalifiye lead satışı', metric: '₺300-800/lead', who: '🏥 🤝',
+    { no: '3', ad: 'AI kalifiye lead satışı', metric: '₺300–800/lead', who: '🏥 🤝',
       desc: 'AI analiz çıktısı satın alma niyeti üretir; klinik ve markalara sıcak lead olarak iletilir. Yüksek marj, stoksuz operasyon.' },
-    { no: '4', ad: 'EsteKlinikPRO / EsteStorePRO SaaS', metric: '₺2,5-5K/ay', who: '🏥 🤝',
+    { no: '4', ad: 'EsteKlinikPRO / EsteStorePRO SaaS', metric: '₺2,5–5K/ay', who: '🏥 🤝',
       desc: 'Klinik ve vendor için PMS, finans ve analitik. Tekrarlı, tahmin edilebilir gelir.' },
-    { no: '5', ad: 'Estelongy Akademi — eğitim ve sertifika', metric: '₺3-5K/kursiyer', who: '👤 🏥 🤝',
+    { no: '5', ad: 'Estelongy Akademi — eğitim ve sertifika', metric: '₺3–5K/kursiyer', who: '👤 🏥 🤝',
       desc: 'Klinik personeli, öğrenci ve vendor için kurs ve sertifika programları.' },
   ]
   return (
@@ -555,7 +555,7 @@ function Slide14() {
       'estelongy.com canlı',
       'Üç mobil uygulama uçtan uca akıyor',
       'OTP ve kimlik doğrulama yayında',
-      'Marketplace altyapısı canlı',
+      'Pazaryeri altyapısı canlı',
     ]},
     { ne: '+6 AY',  ic: [
       'Stripe ödeme canlı',
@@ -660,19 +660,19 @@ function Slide16() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-          <AskTile k="$2.5M"   v="Değerleme (post-money)" />
+          <AskTile k="$2,5M"   v="Değerleme (post-money)" />
           <AskTile k="$500K"   v="Aranan tutar" big />
           <AskTile k="%20"     v="Dilution" />
           <AskTile k="18 ay"   v="Runway" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 text-left">
-          <WhyTile title="Why now"
-            body="LLM yüz analizi, longevity ana akımı ve estetik turizm yoğunluğu — üç eğri ilk kez 2026'da kesişiyor." />
-          <WhyTile title="Why us"
-            body="Hekim ve kurucu CTO tek kişide (Dr. İzzet Gök). Ürün sunum slaytında değil; sistemin içinde çalışıyor." highlight />
-          <WhyTile title="Why this"
-            body="Pazaryerinden başlayarak güzelliği ve longevity'yi bilimsel olarak modelleyen platforma uzanan kategori." />
+          <WhyTile title="Neden şimdi"
+            body="LLM yüz analizi, longevity ana akımı ve estetik turizm yoğunluğu — üç eğri ilk kez 2026&apos;da kesişiyor." />
+          <WhyTile title="Neden biz"
+            body="Hekim ve kurucu CTO tek kişide (Dr. İzzet Gök). Ürün sunum slaytında değil, sistemin içinde çalışıyor." highlight />
+          <WhyTile title="Neden bu"
+            body="Pazaryerinden başlayarak güzelliği ve longevity&apos;yi bilimsel olarak modelleyen platforma uzanan kategori." />
         </div>
 
         <div className="pt-8 border-t" style={{ borderColor: 'rgba(201,169,97,0.25)' }}>
@@ -723,16 +723,16 @@ function Section({ children, dark }: { children: React.ReactNode; dark?: boolean
 function SlideHeader({ kicker, title, lead }: { kicker: string; title: string; lead?: string }) {
   return (
     <div className="max-w-4xl">
-      <div className="text-xs md:text-sm tracking-[0.4em] mb-2 font-light" style={{ color: GOLD_DEEP }}>
+      <div className="text-sm tracking-[0.4em] mb-3 font-light" style={{ color: GOLD_DEEP }}>
         {kicker}
       </div>
-      <h2 className="font-light leading-tight mb-2"
-        style={{ fontSize: 'clamp(22px, 3vw, 38px)', color: CREAM, letterSpacing: '-0.02em' }}>
+      <h2 className="font-light leading-tight mb-4"
+        style={{ fontSize: 'clamp(28px, 3.4vw, 44px)', color: CREAM, letterSpacing: '-0.02em' }}>
         {title}
       </h2>
       {lead && (
-        <p className="text-sm md:text-base font-light leading-snug max-w-3xl"
-          style={{ color: CREAM, opacity: 0.7 }}>
+        <p className="text-base md:text-lg font-light leading-relaxed max-w-3xl"
+          style={{ color: CREAM, opacity: 0.78 }}>
           {lead}
         </p>
       )}
