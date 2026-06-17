@@ -445,16 +445,16 @@ function Slide11() {
     <Section>
       <div className="max-w-6xl w-full">
         <SlideHeader kicker="10 · İŞ MODELİ"
-          title="Beş gelir katmanı, paylaşılan tek kullanıcı tabanı."
-          lead="Çapraz beslenen gelir kanalları edinme maliyetini düşürür, tek bir kanala bağımlılığı ortadan kaldırır." />
+          title="Beş gelir katmanı."
+          lead="Tek kullanıcı tabanı, çapraz beslenen kanallar; edinme maliyeti düşer, tek kanala bağımlılık ortadan kalkar." />
         <div className="mt-6 space-y-2">
           {muslukler.map(m => (
             <div key={m.no} className="grid grid-cols-12 gap-4 items-center p-4 rounded-xl"
               style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,169,97,0.18)' }}>
               <div className="col-span-1 text-3xl font-light" style={{ color: GOLD }}>{m.no}</div>
               <div className="col-span-5">
-                <div className="font-medium text-base md:text-lg" style={{ color: CREAM }}>{m.ad}</div>
-                <div className="text-sm font-light mt-1" style={{ color: CREAM, opacity: 0.65 }}>{m.desc}</div>
+                <div className="font-medium text-sm md:text-base" style={{ color: CREAM }}>{m.ad}</div>
+                <div className="text-xs md:text-sm font-light mt-1 leading-snug" style={{ color: CREAM, opacity: 0.65 }}>{m.desc}</div>
               </div>
               <div className="col-span-3 text-sm font-mono tracking-wider" style={{ color: GOLD_LIGHT }}>
                 {m.metric}
