@@ -288,10 +288,10 @@ function Slide6() {
         <SlideHeader kicker="05 · ÇARPAN ETKİSİ"
           title="Üç katmanın bileşik kazancı."
           lead="Bir kullanıcının üç ayakta da aktif olması, yaşam boyu değerini tek ayağa kıyasla yaklaşık dört kat artırır." />
-        <div className="mt-10">
+        <div className="mt-6">
           <Flywheel />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
           <MiniPoint big="↓" small="BiyoAGE skoru ölçer; ihtiyaç tespit edildiğinde EsteKlinik öne çıkar." />
           <MiniPoint big="✓" small="EsteKlinik işlemi tamamlar; skor güncellenir, EsteStore rejimi devreye girer." />
           <MiniPoint big="↑" small="EsteStore bakımı sürdürür; BiyoAGE yeniden ölçer, döngü kapanır." />
@@ -766,10 +766,10 @@ function BenefitCard({ icon, who, headline, body }:
 
 function MiniPoint({ big, small }: { big: string; small: string }) {
   return (
-    <div className="p-5 rounded-xl"
+    <div className="p-4 rounded-xl"
       style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,169,97,0.15)' }}>
-      <div className="text-4xl font-light mb-2" style={{ color: GOLD }}>{big}</div>
-      <div className="text-sm font-light leading-relaxed" style={{ color: CREAM, opacity: 0.75 }}>{small}</div>
+      <div className="text-3xl font-light mb-1" style={{ color: GOLD }}>{big}</div>
+      <div className="text-sm font-light leading-snug" style={{ color: CREAM, opacity: 0.75 }}>{small}</div>
     </div>
   )
 }
