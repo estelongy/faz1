@@ -837,7 +837,7 @@ function ScoreTimeline() {
 
 function Flywheel() {
   return (
-    <svg viewBox="0 0 400 240" className="w-full h-56 md:h-72">
+    <svg viewBox="0 0 400 240" className="w-full h-44 md:h-56">
       <defs>
         <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
           <path d="M0,0 L10,5 L0,10 z" fill={GOLD} />
