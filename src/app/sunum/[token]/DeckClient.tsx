@@ -142,29 +142,29 @@ function Slide1() {
   return (
     <Section dark>
       <div className="text-center max-w-4xl">
-        <div className="mb-8 text-sm tracking-[0.5em] font-light" style={{ color: GOLD_DEEP }}>
+        <div className="mb-6 text-sm tracking-[0.5em] font-light" style={{ color: GOLD_DEEP }}>
           ZAMANSIZ GÜZELLİK MİMARLIĞI
         </div>
-        <h1 className="font-light leading-none mb-12"
-          style={{ fontSize: 'clamp(64px, 11vw, 160px)', color: CREAM, letterSpacing: '-0.04em' }}>
+        <h1 className="font-light leading-none mb-8"
+          style={{ fontSize: 'clamp(56px, 8vw, 120px)', color: CREAM, letterSpacing: '-0.04em' }}>
           Estelongy
         </h1>
-        <div className="h-px w-32 mx-auto mb-12" style={{ background: GOLD }} />
-        <p className="text-xl md:text-2xl font-light mb-3" style={{ color: CREAM, opacity: 0.85 }}>
+        <div className="h-px w-32 mx-auto mb-8" style={{ background: GOLD }} />
+        <p className="text-lg md:text-xl font-light mb-2" style={{ color: CREAM, opacity: 0.85 }}>
           Bilimi güzelliğe dönüştüren ölçüm, kanıt ve simülasyon altyapısı.
         </p>
-        <p className="text-base mt-12 tracking-widest" style={{ color: GOLD }}>
+        <p className="text-sm mt-8 tracking-widest" style={{ color: GOLD }}>
           YATIRIMCI SUNUMU · HAZİRAN 2026
         </p>
-        <p className="mt-4 text-sm font-light" style={{ color: CREAM, opacity: 0.55 }}>
+        <p className="mt-3 text-sm font-light" style={{ color: CREAM, opacity: 0.55 }}>
           Dr. İzzet Gök · Kurucu · CTO
         </p>
       </div>
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-sm tracking-widest"
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs tracking-widest"
         style={{ color: GOLD_DEEP, opacity: 0.7 }}>
         ↓ kaydır · ok tuşları
       </div>
-      <div className="absolute bottom-10 right-8 text-sm font-light tracking-wider"
+      <div className="absolute bottom-6 right-6 text-xs font-light tracking-wider"
         style={{ color: GOLD_DEEP, opacity: 0.7 }}>
         ÖZEL ERİŞİM · PAYLAŞMAYINIZ
       </div>
@@ -509,7 +509,7 @@ function Slide13() {
         <SlideHeader kicker="12 · VİZYON"
           title="Estelongy bugün ölçer; yarın simüle eder."
           lead="Pazaryeri ilk dönem büyüme motorudur. Asıl ürün, güzelliği ve longevity&apos;yi bilimsel olarak modelleyen tek platform olmaktır." />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
           <VisionTier
             tag="BUGÜN"
             yil="2026"
@@ -523,18 +523,18 @@ function Slide13() {
             yil="2027 — 2028"
             baslik="Yaşlanma hızı"
             altyazi="Biyolojik ivmenin ölçümü"
-            metin="Skor durağan değildir; değişim ivmesidir. Epigenetik saat modelleri ve longevity biyobelirteçlerinin entegrasyonu."
+            metin="Skor durağan değil, değişim ivmesidir. Epigenetik saat ve longevity biyobelirteçlerinin entegrasyonu."
           />
           <VisionTier
             tag="UZAK VİZYON"
             yil="2028 +"
             baslik="Bilimsel Güzellik Simülatörü"
             altyazi="Geleceği gör, sonra seç"
-            metin="“Bu işlemi yaptırırsam altı ay sonra nasıl görünürüm? Bu rejimi uygularsam beş yıl sonra biyolojik yaşım nedir? Bu hekimde bu prosedürün başarı olasılığı nedir?”"
+            metin="“Bu işlemi yaptırırsam altı ay sonra nasıl görünürüm? Bu rejim beş yıl sonra biyolojik yaşımı kaça düşürür? Bu hekimde başarı olasılığım nedir?”"
             highlight
           />
         </div>
-        <p className="text-center mt-10 text-base md:text-lg font-light max-w-3xl mx-auto"
+        <p className="text-center mt-6 text-sm md:text-base font-light max-w-3xl mx-auto"
           style={{ color: GOLD_LIGHT }}>
           Pazaryeri başlangıç motoru; hedef kategori bilimsel güzellik ve longevity simülasyon platformudur.
         </p>
@@ -697,7 +697,7 @@ function Section({ children, dark }: { children: React.ReactNode; dark?: boolean
           ? `radial-gradient(ellipse at center, #14182A 0%, ${BG} 70%)`
           : BG,
       }}
-      className="relative min-h-screen w-full flex items-center justify-center px-6 md:px-16 pt-24 pb-24 md:pt-28 md:pb-28"
+      className="relative min-h-screen w-full flex items-center justify-center px-6 md:px-16 pt-20 pb-16 md:pt-20 md:pb-16"
     >
       {children}
     </section>
@@ -710,8 +710,8 @@ function SlideHeader({ kicker, title, lead }: { kicker: string; title: string; l
       <div className="text-sm tracking-[0.4em] mb-4 font-light" style={{ color: GOLD_DEEP }}>
         {kicker}
       </div>
-      <h2 className="font-light leading-tight mb-4"
-        style={{ fontSize: 'clamp(28px, 4vw, 52px)', color: CREAM, letterSpacing: '-0.02em' }}>
+      <h2 className="font-light leading-tight mb-3"
+        style={{ fontSize: 'clamp(24px, 3.4vw, 44px)', color: CREAM, letterSpacing: '-0.02em' }}>
         {title}
       </h2>
       {lead && (
@@ -920,7 +920,7 @@ function ProofTile({ k, v }: { k: string; v: string }) {
 
 function MarketCircle({ size, tier, amount, label }:
   { size: 'lg' | 'md' | 'sm'; tier: string; amount: string; label: string }) {
-  const dim = size === 'lg' ? 'h-44 w-44 md:h-52 md:w-52' : size === 'md' ? 'h-36 w-36 md:h-44 md:w-44' : 'h-32 w-32 md:h-36 md:w-36'
+  const dim = size === 'lg' ? 'h-36 w-36 md:h-44 md:w-44' : size === 'md' ? 'h-32 w-32 md:h-36 md:w-36' : 'h-28 w-28 md:h-32 md:w-32'
   const opacity = size === 'lg' ? 0.4 : size === 'md' ? 0.65 : 1
   return (
     <div className="flex flex-col items-center">
@@ -931,7 +931,7 @@ function MarketCircle({ size, tier, amount, label }:
           opacity,
         }}>
         <div className="text-sm tracking-[0.4em]" style={{ color: GOLD }}>{tier}</div>
-        <div className="text-3xl md:text-4xl font-light my-3" style={{ color: CREAM }}>{amount}</div>
+        <div className="text-2xl md:text-3xl font-light my-2" style={{ color: CREAM }}>{amount}</div>
       </div>
       <p className="text-center text-sm font-light max-w-[220px]"
         style={{ color: CREAM, opacity: 0.75 }}>
@@ -1013,19 +1013,19 @@ function RevenueChart() {
 function VisionTier({ tag, yil, baslik, altyazi, metin, light, highlight }:
   { tag: string; yil: string; baslik: string; altyazi: string; metin: string; light?: boolean; highlight?: boolean }) {
   return (
-    <div className="p-6 rounded-2xl h-full flex flex-col"
+    <div className="p-5 rounded-2xl h-full flex flex-col"
       style={{
         background: highlight ? `linear-gradient(160deg, ${GOLD}22, transparent)` : 'rgba(255,255,255,0.02)',
         border: highlight ? `1px solid ${GOLD}` : light ? `1px solid ${GOLD}55` : '1px solid rgba(201,169,97,0.18)',
       }}>
-      <div className="text-xs tracking-[0.4em] mb-2"
+      <div className="text-xs tracking-[0.4em] mb-1"
         style={{ color: highlight ? GOLD : GOLD_DEEP }}>
         {tag}
       </div>
-      <div className="text-sm font-mono mb-4" style={{ color: GOLD }}>{yil}</div>
-      <h3 className="text-2xl font-light mb-1" style={{ color: CREAM }}>{baslik}</h3>
-      <div className="text-sm italic mb-4" style={{ color: GOLD_LIGHT }}>{altyazi}</div>
-      <p className="text-sm font-light leading-relaxed mt-auto" style={{ color: CREAM, opacity: 0.8 }}>
+      <div className="text-xs font-mono mb-3" style={{ color: GOLD }}>{yil}</div>
+      <h3 className="text-xl font-light mb-1" style={{ color: CREAM }}>{baslik}</h3>
+      <div className="text-xs italic mb-3" style={{ color: GOLD_LIGHT }}>{altyazi}</div>
+      <p className="text-sm font-light leading-snug mt-auto" style={{ color: CREAM, opacity: 0.8 }}>
         {metin}
       </p>
     </div>
