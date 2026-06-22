@@ -11,6 +11,7 @@ import SaticiBottomNav from '@/components/native/SaticiBottomNav'
 import NativeAppClass from '@/components/native/NativeAppClass'
 import AppFlavorRoleGate from '@/components/native/AppFlavorRoleGate'
 import AppBackHandler from '@/components/native/AppBackHandler'
+import CookieConsent from '@/components/CookieConsent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -165,6 +166,7 @@ export default function RootLayout({
             <SaticiBottomNav />
             <AppFlavorRoleGate />
             <AppBackHandler />
+            <CookieConsent />
           </GalaxyTransitionProvider>
         </AuthStatusProvider>
       </body>

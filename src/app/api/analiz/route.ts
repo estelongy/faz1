@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { rateLimitAnaliz, rateLimitResponse } from '@/lib/ratelimit'
 import { clamp, colorZone } from '@/lib/egs'
 import { getOrCreateActiveJourney } from '@/lib/journeys'
+import { hasActiveConsent } from '@/lib/consent'
 
 // ─── Tipler ───────────────────────────────────────────────────────────────────
 
@@ -191,6 +192,15 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Oturum açık değil' }, { status: 401 })
+
+    // KVKK m.6/2 — selfie analizi için açık rıza zorunlu (ABD'ye veri aktarımı: OpenAI)
+    const consentOk = await hasActiveConsent(user.id, 'selfie_ai_analiz')
+    if (!consentOk) {
+      return NextResponse.json({
+        error: 'consent_required',
+        message: 'Selfie analizi için açık rıza vermeniz gerekiyor.',
+      }, { status: 451 })
+    }
 
     // Profil: birth_year oku
     const { data: profile } = await supabase

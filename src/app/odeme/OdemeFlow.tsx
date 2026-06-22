@@ -546,6 +546,7 @@ function StripePaymentForm({ orderNumber, guestEmail, guestToken, onSuccess }: {
   const elements = useElements()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [acceptTerms, setAcceptTerms] = useState(false)
 
   const returnUrl = useMemo(() => {
     if (typeof window === 'undefined') return ''
@@ -560,6 +561,10 @@ function StripePaymentForm({ orderNumber, guestEmail, guestToken, onSuccess }: {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!stripe || !elements) return
+    if (!acceptTerms) {
+      setError('Mesafeli satış sözleşmesini ve ön bilgilendirmeyi onaylamanız gerekiyor.')
+      return
+    }
     setLoading(true)
     setError(null)
 
@@ -585,11 +590,28 @@ function StripePaymentForm({ orderNumber, guestEmail, guestToken, onSuccess }: {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <PaymentElement />
+
+      <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={acceptTerms}
+          onChange={e => setAcceptTerms(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded accent-[#C9A961] shrink-0"
+          required
+        />
+        <span className="text-sm text-slate-700 leading-snug">
+          <Link href="/hakkinda/mesafeli-satis" target="_blank" className="text-[#8B7339] hover:text-[#6F5C2E] underline font-semibold">Mesafeli Satış Sözleşmesi</Link>
+          {' '}ve{' '}
+          <Link href="/hakkinda/iade" target="_blank" className="text-[#8B7339] hover:text-[#6F5C2E] underline font-semibold">Ön Bilgilendirme Formu</Link>
+          &apos;nu okudum, onaylıyorum.
+        </span>
+      </label>
+
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-base font-semibold">{error}</div>
       )}
-      <button type="submit" disabled={!stripe || loading}
-        className="w-full py-4 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 text-[#0F172A] font-bold rounded-xl transition-all text-base shadow-lg shadow-[#C9A961]/20">
+      <button type="submit" disabled={!stripe || loading || !acceptTerms}
+        className="w-full py-4 bg-gradient-to-r from-[#C9A961] to-[#B8964F] hover:from-[#D4B872] hover:to-[#C9A961] disabled:opacity-40 disabled:cursor-not-allowed text-[#0F172A] font-bold rounded-xl transition-all text-base shadow-lg shadow-[#C9A961]/20">
         {loading ? 'Ödeme işleniyor...' : 'Ödemeyi Tamamla'}
       </button>
       <p className="text-slate-500 text-sm font-bold text-center">

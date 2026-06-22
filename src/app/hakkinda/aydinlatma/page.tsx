@@ -19,7 +19,7 @@ export default function AydinlatmaPage() {
           <h1 className="text-2xl font-bold text-white mb-2">Aydınlatma Metni & Gizlilik Politikası</h1>
           <p className="text-slate-500 text-sm mb-8">
             6698 sayılı KVKK (Türkiye) ve 2016/679 sayılı GDPR (AB) kapsamında —
-            Yürürlük: Mayıs 2026 · Sürüm 1.1
+            Yürürlük: 22 Haziran 2026 · Sürüm 1.2
           </p>
 
           <div className="space-y-7 text-slate-300 text-sm leading-relaxed">

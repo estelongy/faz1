@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import ScoreBar from '@/components/ScoreBar'
 import type { AnalizResult } from '@/app/api/analiz/route'
 import { createClient } from '@/lib/supabase/client'
+import SelfieConsentGate from '@/components/SelfieConsentGate'
 
 import SafeLink from '@/components/SafeLink'
 type Step = 'upload' | 'processing' | 'result'
@@ -60,6 +61,8 @@ export default function AnalizPage() {
   const [error, setError]         = useState<string | null>(null)
   const [stageIdx, setStageIdx]   = useState(0)
   const [usedFallback, setUsedFallback] = useState(false)
+  const [showConsent, setShowConsent] = useState(false)
+  const [consentGranted, setConsentGranted] = useState(false)
 
   // Doğum yılı kontrolü
   const [hasBirthYear, setHasBirthYear] = useState<boolean | null>(null)
@@ -128,6 +131,13 @@ export default function AnalizPage() {
   async function startAnalysis() {
     const file = fileRef.current
     if (!file || !previewUrl) return
+
+    // Açık rıza zorunlu — onaylı değilse gate'i göster, çağrı consent sonrası tekrar gelir
+    if (!consentGranted) {
+      setShowConsent(true)
+      return
+    }
+
     setError(null)
     setStep('processing')
     setStageIdx(0)
@@ -158,6 +168,13 @@ export default function AnalizPage() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
+        if (res.status === 451 && body.error === 'consent_required') {
+          // Sunucu açık rıza yok diyor — gate'i tekrar göster
+          setConsentGranted(false)
+          setShowConsent(true)
+          setStep('upload')
+          return
+        }
         throw new Error(body.error ?? `HTTP ${res.status}`)
       }
 
@@ -180,6 +197,20 @@ export default function AnalizPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#1B1330] via-[#241942] to-[#1B1330]">
+      {showConsent && (
+        <SelfieConsentGate
+          onGranted={() => {
+            setConsentGranted(true)
+            setShowConsent(false)
+            // Otomatik başlatma — kullanıcı zaten "Analizi Başlat"a basmıştı
+            if (fileRef.current && previewUrl) {
+              // setTimeout ile state güncellemesi cevap aldıktan sonra başlasın
+              setTimeout(() => startAnalysis(), 0)
+            }
+          }}
+          onDeclined={() => setShowConsent(false)}
+        />
+      )}
       {/* Header — BiyoAGE mor signature */}
       <header className="web-only fixed top-0 left-0 right-0 z-50 bg-[#1B1330]/85 backdrop-blur-md border-b border-violet-500/20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
