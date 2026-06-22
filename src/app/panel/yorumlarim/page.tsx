@@ -76,21 +76,21 @@ export default async function YorumlarimPage() {
   const bekleyen = appts.length - totalReviews
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+    <main className="min-h-screen bg-[#FAFAF7]">
+      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
+          <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 hover:text-slate-900 text-base font-medium transition-colors">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
           </SafeLink>
-          <span className="text-white font-bold text-sm">Deneyim</span>
+          <span className="text-slate-900 font-bold text-sm">Deneyim</span>
           <span className="w-[68px]" />
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 pt-24 pb-16 space-y-6">
 
-        <GecmisTabs active="yorumlar" yorumCount={totalReviews} unrespondedReplyCount={bekleyen > 0 ? bekleyen : undefined} />
+        <GecmisTabs active="yorumlar" yorumCount={totalReviews} unrespondedReplyCount={bekleyen > 0 ? bekleyen : undefined} light />
 
         {/* Özet */}
         <section className="grid grid-cols-3 gap-3">
@@ -100,19 +100,19 @@ export default async function YorumlarimPage() {
         </section>
 
         {/* Lansman özet metni */}
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-          <p className="text-sm text-slate-400 leading-relaxed">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+          <p className="text-sm text-slate-700 leading-relaxed">
             Tamamlanmış randevuların burada listelenir. Her birine{' '}
-            <strong className="text-white">7 gün</strong> içinde yorum yazabilirsin —
+            <strong className="text-slate-900">7 gün</strong> içinde yorum yazabilirsin —
             sonrasında yorumun kalıcılaşır. Klinikten gelen{' '}
-            <strong className="text-[#C9A961]">özel yanıtlar</strong> da burada görünür.
+            <strong className="text-[#8B7339]">özel yanıtlar</strong> da burada görünür.
           </p>
         </div>
 
         {appts.length === 0 ? (
-          <div className="text-center py-16 bg-slate-900/40 rounded-2xl border border-slate-800">
+          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
             <div className="text-5xl opacity-40 mb-3">💬</div>
-            <p className="text-white font-semibold">Tamamlanmış randevun yok</p>
+            <p className="text-slate-900 font-semibold">Tamamlanmış randevun yok</p>
             <p className="text-slate-500 text-sm mt-1">Klinik ziyareti tamamlandığında burada listelenir.</p>
           </div>
         ) : (
@@ -137,11 +137,11 @@ function StatBox({
   label, value, accent,
 }: { label: string; value: string; accent?: 'emerald' | 'amber' }) {
   const accentText =
-    accent === 'emerald' ? 'text-emerald-400' :
-    accent === 'amber' ? 'text-amber-400' :
-    'text-white'
+    accent === 'emerald' ? 'text-emerald-600' :
+    accent === 'amber' ? 'text-amber-600' :
+    'text-slate-900'
   return (
-    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+    <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
       <p className="text-slate-500 text-sm uppercase tracking-widest mb-1">{label}</p>
       <p className={`text-2xl font-black ${accentText}`}>{value}</p>
     </div>
@@ -160,16 +160,16 @@ function RandevuYorumKarti({
 
   if (!review) {
     return (
-      <article className="p-5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-4">
+      <article className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-white font-bold text-sm">{clinicName}</p>
-            <span className="text-sm px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold uppercase">
+            <p className="text-slate-900 font-bold text-sm">{clinicName}</p>
+            <span className="text-sm px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-bold uppercase">
               Yorum Bekliyor
             </span>
           </div>
           <p className="text-slate-500 text-sm mt-0.5">{dateLabel}</p>
-          <p className="text-slate-400 text-sm mt-2">
+          <p className="text-slate-700 text-sm mt-2">
             Bu ziyareti henüz değerlendirmedin. Deneyimini paylaşmak ister misin?
           </p>
         </div>
@@ -189,32 +189,32 @@ function RandevuYorumKarti({
   const hasPrivateMessage = !!review.iyilestirme_metni
 
   return (
-    <article className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+    <article className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-white font-bold text-sm">{clinicName}</p>
+            <p className="text-slate-900 font-bold text-sm">{clinicName}</p>
             {!editLocked && (
-              <span className="text-sm px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold uppercase">
+              <span className="text-sm px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-bold uppercase">
                 Düzenlenebilir
               </span>
             )}
             {(hasPublicResponse || hasPrivateResponse) && (
-              <span className="text-sm px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold uppercase">
+              <span className="text-sm px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold uppercase">
                 Yanıt Geldi
               </span>
             )}
           </div>
           <p className="text-slate-500 text-sm mt-0.5">
-            {dateLabel} · Tavsiye: <span className="text-slate-300">{NPS_LABELS[review.nps] ?? '—'}</span>
-            {review.is_anonymous && <span className="ml-2 text-slate-600">· Anonim</span>}
+            {dateLabel} · Tavsiye: <span className="text-slate-700">{NPS_LABELS[review.nps] ?? '—'}</span>
+            {review.is_anonymous && <span className="ml-2 text-slate-400">· Anonim</span>}
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           {!editLocked && (
             <SafeLink
               href={`/panel/degerlendir/${appt.id}`}
-              className="px-3 py-1 text-base uppercase tracking-wider rounded-md border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-white transition-colors font-semibold"
+              className="px-3 py-1 text-base uppercase tracking-wider rounded-md border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 transition-colors font-semibold"
             >
               Düzenle
             </SafeLink>
@@ -222,7 +222,7 @@ function RandevuYorumKarti({
           {clinicSlug && (
             <Link
               href={`/esteklinik/${clinicSlug}`}
-              className="text-base text-slate-500 hover:text-emerald-400 font-semibold"
+              className="text-base text-slate-500 hover:text-emerald-600 font-semibold"
             >
               Klinik sayfası →
             </Link>
@@ -232,41 +232,41 @@ function RandevuYorumKarti({
 
       {/* Public yorum */}
       {review.pozitif_metin && (
-        <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-          <p className="text-emerald-300 text-sm uppercase tracking-wider font-bold mb-1">
+        <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+          <p className="text-emerald-700 text-sm uppercase tracking-wider font-bold mb-1">
             Public Yorumun
           </p>
-          <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.pozitif_metin}</p>
+          <p className="text-slate-800 text-sm whitespace-pre-wrap">{review.pozitif_metin}</p>
         </div>
       )}
 
       {/* Public yoruma klinik yanıtı */}
       {hasPublicResponse && (
-        <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 ml-4">
+        <div className="p-3 rounded-lg bg-emerald-100 border border-emerald-200 ml-4">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-emerald-300 text-sm uppercase tracking-wider font-bold">
+            <p className="text-emerald-700 text-sm uppercase tracking-wider font-bold">
               ↳ {clinicName} yanıtladı
             </p>
             {review.clinic_responded_at && (
-              <p className="text-slate-600 text-sm">
+              <p className="text-slate-500 text-sm">
                 {new Date(review.clinic_responded_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
               </p>
             )}
           </div>
-          <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.clinic_response}</p>
+          <p className="text-slate-800 text-sm whitespace-pre-wrap">{review.clinic_response}</p>
         </div>
       )}
 
       {/* Private mesaj */}
       {hasPrivateMessage && (
-        <div className="p-3 rounded-lg bg-[#D4B872]/5 border border-[#C9A961]/20">
+        <div className="p-3 rounded-lg bg-[#FAF6EC] border border-[#C9A961]/30">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-[#C9A961] text-sm uppercase tracking-wider font-bold">
+            <p className="text-[#8B7339] text-sm uppercase tracking-wider font-bold">
               🔒 Özel Mesajın
             </p>
           </div>
-          <p className="text-slate-300 text-sm whitespace-pre-wrap">{review.iyilestirme_metni}</p>
-          <p className="text-sm text-slate-600 mt-1.5 italic">
+          <p className="text-slate-700 text-sm whitespace-pre-wrap">{review.iyilestirme_metni}</p>
+          <p className="text-sm text-slate-500 mt-1.5 italic">
             Bu mesaj sadece kliniğe gönderildi.
           </p>
         </div>
@@ -274,18 +274,18 @@ function RandevuYorumKarti({
 
       {/* Private yanıt */}
       {hasPrivateResponse && (
-        <div className="p-3 rounded-lg bg-[#C9A961]/10 border border-[#C9A961]/30 ml-4">
+        <div className="p-3 rounded-lg bg-[#F5EFD8] border border-[#C9A961]/40 ml-4">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-[#C9A961] text-sm uppercase tracking-wider font-bold">
+            <p className="text-[#8B7339] text-sm uppercase tracking-wider font-bold">
               ↳ {clinicName} özel yanıt verdi
             </p>
             {review.private_responded_at && (
-              <p className="text-slate-600 text-sm">
+              <p className="text-slate-500 text-sm">
                 {new Date(review.private_responded_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
               </p>
             )}
           </div>
-          <p className="text-slate-200 text-sm whitespace-pre-wrap">{review.private_clinic_response}</p>
+          <p className="text-slate-800 text-sm whitespace-pre-wrap">{review.private_clinic_response}</p>
         </div>
       )}
     </article>

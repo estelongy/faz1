@@ -38,21 +38,21 @@ export default async function ReferralPage() {
     .limit(30)
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+    <main className="min-h-screen bg-[#FAFAF7]">
+      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BackButton href="/panel" label="Panelim" />
-            <span className="text-slate-700">|</span>
-            <span className="text-white font-bold text-sm">Davet & Puan</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-slate-900 font-bold text-sm">Davet & Puan</span>
           </div>
         </div>
       </header>
 
       <div className="max-w-3xl mx-auto px-4 pt-24 pb-16">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Arkadaşını Davet Et, Puan Kazan</h1>
-          <p className="text-slate-400 mt-1 text-sm">
+          <h1 className="text-2xl font-black text-slate-900">Arkadaşını Davet Et, Puan Kazan</h1>
+          <p className="text-slate-600 mt-1 text-sm">
             Referans kodunla davet et — arkadaşın kayıt olunca, randevu yapınca ve alışveriş yapınca puan kazan.
           </p>
         </div>

@@ -10,6 +10,7 @@ export interface ScorePoint {
 
 interface ScoreChartProps {
   points: ScorePoint[]
+  light?: boolean
 }
 
 // ── Sabitler ────────────────────────────────────────────────────
@@ -50,14 +51,22 @@ function buildPolyline(pts: { x: number; y: number }[]) {
 }
 
 // ── Bileşen ──────────────────────────────────────────────────────
-export default function ScoreChart({ points }: ScoreChartProps) {
+export default function ScoreChart({ points, light }: ScoreChartProps) {
   const [tooltip, setTooltip] = useState<{
     x: number; y: number; score: number; date: string; type: ScorePoint['type']
   } | null>(null)
 
+  const gridColor    = light ? '#e2e8f0' : '#1e293b'
+  const axisText     = light ? '#94a3b8' : '#475569'
+  const legendText   = light ? 'text-slate-600' : 'text-slate-400'
+  const emptyText    = light ? 'text-slate-400' : 'text-slate-600'
+  const dotInnerFill = light ? '#ffffff' : '#0f172a'
+  const tooltipFill  = light ? '#ffffff' : '#0f172a'
+  const tooltipMeta  = light ? '#94a3b8' : '#64748b'
+
   if (points.length === 0) {
     return (
-      <div className="flex items-center justify-center h-32 text-slate-600 text-sm">
+      <div className={`flex items-center justify-center h-32 ${emptyText} text-sm`}>
         Grafik için analiz verisi yok
       </div>
     )
@@ -90,12 +99,12 @@ export default function ScoreChart({ points }: ScoreChartProps) {
         <div className="flex items-center gap-1.5">
           <div className="w-6 h-0.5 rounded-full" style={{ background: AI_COLOR }} />
           <div className="w-1.5 h-1.5 rounded-full" style={{ background: AI_COLOR }} />
-          <span className="text-sm text-slate-400">Ön Analiz</span>
+          <span className={`text-sm ${legendText}`}>Ön Analiz</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-6 h-0.5 rounded-full" style={{ background: CLINIC_COLOR }} />
           <div className="w-1.5 h-1.5 rounded-full" style={{ background: CLINIC_COLOR }} />
-          <span className="text-sm text-slate-400">Klinik Onaylı</span>
+          <span className={`text-sm ${legendText}`}>Klinik Onaylı</span>
         </div>
       </div>
 
@@ -124,20 +133,20 @@ export default function ScoreChart({ points }: ScoreChartProps) {
         {/* 2. Yatay grid */}
         {Y_TICKS.map(t => (
           <line key={t} x1={PAD.left} x2={PAD.left + CW} y1={sy(t)} y2={sy(t)}
-            stroke="#1e293b" strokeWidth={t === 0 ? 1 : 0.8}
+            stroke={gridColor} strokeWidth={t === 0 ? 1 : 0.8}
             strokeDasharray={t === 0 ? undefined : '4 4'} />
         ))}
 
         {/* 3. Y ekseni */}
         {Y_TICKS.map(t => (
           <text key={t} x={PAD.left - 8} y={sy(t)}
-            textAnchor="end" dominantBaseline="middle" fill="#475569" fontSize="10">{t}</text>
+            textAnchor="end" dominantBaseline="middle" fill={axisText} fontSize="10">{t}</text>
         ))}
 
         {/* 4. X ekseni */}
         {xLabels.map(d => (
           <text key={d} x={dateToX.get(d)!} y={PAD.top + CH + 18}
-            textAnchor="middle" fill="#475569" fontSize="10">{fmtDate(d)}</text>
+            textAnchor="middle" fill={axisText} fontSize="10">{fmtDate(d)}</text>
         ))}
 
         {/* 5a. AI dolgu */}
@@ -177,7 +186,7 @@ export default function ScoreChart({ points }: ScoreChartProps) {
           <g key={i}>
             <circle cx={p.x} cy={p.y} r={8} fill="transparent"
               onMouseEnter={() => setTooltip({ x: p.x, y: p.y, score: aiPts[i].score, date: aiPts[i].date, type: 'ai_analiz' })} />
-            <circle cx={p.x} cy={p.y} r={4} fill="#0f172a" stroke={AI_COLOR} strokeWidth={2}
+            <circle cx={p.x} cy={p.y} r={4} fill={dotInnerFill} stroke={AI_COLOR} strokeWidth={2}
               style={{ filter: `drop-shadow(0 0 4px ${AI_COLOR})` }} />
           </g>
         ))}
@@ -187,7 +196,7 @@ export default function ScoreChart({ points }: ScoreChartProps) {
           <g key={i}>
             <circle cx={p.x} cy={p.y} r={8} fill="transparent"
               onMouseEnter={() => setTooltip({ x: p.x, y: p.y, score: clinicPts[i].score, date: clinicPts[i].date, type: 'klinik_onayli' })} />
-            <circle cx={p.x} cy={p.y} r={4} fill="#0f172a" stroke={CLINIC_COLOR} strokeWidth={2.5}
+            <circle cx={p.x} cy={p.y} r={4} fill={dotInnerFill} stroke={CLINIC_COLOR} strokeWidth={2.5}
               style={{ filter: `drop-shadow(0 0 5px ${CLINIC_COLOR})` }} />
           </g>
         ))}
@@ -202,11 +211,11 @@ export default function ScoreChart({ points }: ScoreChartProps) {
           return (
             <g>
               <rect x={tx} y={ty} width={bw} height={bh} rx={6}
-                fill="#0f172a" stroke={col} strokeWidth={0.8} opacity={0.95} />
+                fill={tooltipFill} stroke={col} strokeWidth={0.8} opacity={0.95} />
               <text x={tx + bw / 2} y={ty + 14} textAnchor="middle" fill={col} fontSize="14" fontWeight="700">
                 {tooltip.score}
               </text>
-              <text x={tx + bw / 2} y={ty + 28} textAnchor="middle" fill="#64748b" fontSize="9">
+              <text x={tx + bw / 2} y={ty + 28} textAnchor="middle" fill={tooltipMeta} fontSize="9">
                 {lbl} · {fmtDate(tooltip.date)}
               </text>
             </g>

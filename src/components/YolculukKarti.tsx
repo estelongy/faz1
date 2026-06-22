@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -43,19 +43,12 @@ export interface YolculukView {
   status: 'active' | 'clinic_done' | 'completed' | 'abandoned'
   startedAt: string
   completedAt: string | null
-  /** Klinik öncesi en güncel ön analiz */
   preAnalysis: YolculukAnalysis | null
-  /** Klinik randevusu */
   appointment: YolculukAppointment | null
-  /** Klinik onaylı analiz (genelde appointment ile aynı analiz) */
   clinicAnalysis: YolculukAnalysis | null
-  /** Klinik sonrası "son analiz" (varsa) */
   postAnalysis: YolculukAnalysis | null
-  /** Yolculuk numarası (en eski 1, en yeni N) */
   index: number
-  /** Toplam yolculuk sayısı (numaralandırma için) */
   total: number
-  /** Klinik deneyim yorumu durumu */
   reviewState?: 'none' | 'editable' | 'locked'
 }
 
@@ -71,10 +64,74 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-export default function YolculukKarti({ y }: { y: YolculukView }) {
+// Tema haritaları — dark (klinik panel) ve light (hasta panel) için.
+interface Theme {
+  cardActive: string
+  cardCompleted: string
+  cardDefault: string
+  surfaceHover: string
+  innerBox: string
+  innerBoxBorder: string
+  titleText: string
+  mutedText: string
+  bodyText: string
+  fadedText: string
+  divider: string
+  iconBoxDefault: string
+  stageDoneBg: string
+  stageActiveBg: string
+  stageIdleBg: string
+  stageIdleText: string
+  stageScoreDoneText: string
+  stageScoreIdleText: string
+}
+
+const DARK: Theme = {
+  cardActive: 'border-violet-500/40 bg-gradient-to-br from-violet-950/30 to-slate-900',
+  cardCompleted: 'border-emerald-700/40 bg-slate-900',
+  cardDefault: 'border-slate-800 bg-slate-900',
+  surfaceHover: 'hover:bg-white/[0.02]',
+  innerBox: 'bg-slate-800/40',
+  innerBoxBorder: 'border-slate-800/60',
+  titleText: 'text-white',
+  mutedText: 'text-slate-500',
+  bodyText: 'text-slate-300',
+  fadedText: 'text-slate-600',
+  divider: 'border-slate-800/60',
+  iconBoxDefault: 'bg-slate-700/30 text-slate-500',
+  stageDoneBg: 'bg-emerald-500/10 border-emerald-500/30',
+  stageActiveBg: 'bg-violet-500/10 border-violet-500/30',
+  stageIdleBg: 'bg-slate-800/40 border-slate-800',
+  stageIdleText: 'text-slate-600',
+  stageScoreDoneText: 'text-white',
+  stageScoreIdleText: 'text-slate-700',
+}
+
+const LIGHT: Theme = {
+  cardActive: 'border-violet-200 bg-gradient-to-br from-violet-50 to-white',
+  cardCompleted: 'border-emerald-200 bg-white',
+  cardDefault: 'border-slate-200 bg-white',
+  surfaceHover: 'hover:bg-slate-50',
+  innerBox: 'bg-slate-50',
+  innerBoxBorder: 'border-slate-200',
+  titleText: 'text-slate-900',
+  mutedText: 'text-slate-500',
+  bodyText: 'text-slate-700',
+  fadedText: 'text-slate-400',
+  divider: 'border-slate-200',
+  iconBoxDefault: 'bg-slate-100 text-slate-500',
+  stageDoneBg: 'bg-emerald-50 border-emerald-200',
+  stageActiveBg: 'bg-violet-50 border-violet-200',
+  stageIdleBg: 'bg-slate-50 border-slate-200',
+  stageIdleText: 'text-slate-400',
+  stageScoreDoneText: 'text-slate-900',
+  stageScoreIdleText: 'text-slate-300',
+}
+
+export default function YolculukKarti({ y, light }: { y: YolculukView; light?: boolean }) {
+  const t = light ? LIGHT : DARK
   const [open, setOpen] = useState(false)
 
-  // ── Aşamalar ────────────────────────────────────────────
   const stage1Done = y.preAnalysis != null
   const stage2Done = y.clinicAnalysis?.final_overall != null
   const stage3Done = y.postAnalysis != null
@@ -88,28 +145,25 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
   const isClinicDone = y.status === 'clinic_done'
   const isActive    = y.status === 'active' || isClinicDone
 
-  // En büyük delta (start → en son skor)
   const startScore = preScore
   const lastScore  = postScore ?? finalScore ?? preScore
   const totalDelta = startScore != null && lastScore != null && lastScore !== startScore
     ? Math.round((lastScore - startScore) * 10) / 10
     : null
 
-  // ── Renk teması ─────────────────────────────────────────
   const accent = isActive
-    ? 'border-violet-500/40 bg-gradient-to-br from-violet-950/30 to-slate-900'
+    ? t.cardActive
     : isCompleted
-      ? 'border-emerald-700/40 bg-slate-900'
-      : 'border-slate-800 bg-slate-900'
+      ? t.cardCompleted
+      : t.cardDefault
 
   const statusBadge = (() => {
-    if (y.status === 'completed') return { label: '✓ Tamamlandı', cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' }
-    if (y.status === 'clinic_done') return { label: 'Son analiz bekleniyor', cls: 'bg-amber-500/15 text-amber-400 border-amber-500/30' }
-    if (y.status === 'active') return { label: 'Devam ediyor', cls: 'bg-violet-500/15 text-violet-400 border-violet-500/30' }
-    return { label: 'İptal', cls: 'bg-slate-700/40 text-slate-500 border-slate-700' }
+    if (y.status === 'completed') return { label: '✓ Tamamlandı', cls: light ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' }
+    if (y.status === 'clinic_done') return { label: 'Son analiz bekleniyor', cls: light ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-amber-500/15 text-amber-400 border-amber-500/30' }
+    if (y.status === 'active') return { label: 'Devam ediyor', cls: light ? 'bg-violet-50 text-violet-700 border-violet-200' : 'bg-violet-500/15 text-violet-400 border-violet-500/30' }
+    return { label: 'İptal', cls: light ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-slate-700/40 text-slate-500 border-slate-700' }
   })()
 
-  // ── Sıradaki adım CTA ──────────────────────────────────
   const nextStep = (() => {
     if (isCompleted || y.status === 'abandoned') return null
     if (!stage1Done) return { label: 'Ön analiz yap', href: '/analiz' }
@@ -119,20 +173,24 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
     return null
   })()
 
+  const iconBoxCls = isCompleted
+    ? (light ? 'bg-emerald-50 text-emerald-600' : 'bg-emerald-500/15 text-emerald-400')
+    : isActive
+      ? (light ? 'bg-violet-50 text-violet-600' : 'bg-violet-500/15 text-violet-400')
+      : t.iconBoxDefault
+
+  const deltaPosCls = light ? 'bg-emerald-50 text-emerald-700' : 'bg-emerald-500/15 text-emerald-400'
+  const deltaNegCls = light ? 'bg-red-50 text-red-700' : 'bg-red-500/15 text-red-400'
+
   return (
     <div className={`rounded-2xl border ${accent} overflow-hidden transition-all`}>
-      {/* Başlık çubuğu */}
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-full px-5 py-4 flex items-center justify-between gap-3 text-left hover:bg-white/[0.02] transition-colors"
+        className={`w-full px-5 py-4 flex items-center justify-between gap-3 text-left ${t.surfaceHover} transition-colors`}
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-            isCompleted ? 'bg-emerald-500/15 text-emerald-400'
-            : isActive ? 'bg-violet-500/15 text-violet-400'
-            : 'bg-slate-700/30 text-slate-500'
-          }`}>
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBoxCls}`}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
                 d={isCompleted
@@ -142,10 +200,10 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
             </svg>
           </div>
           <div className="min-w-0">
-            <div className="text-white font-bold text-sm">
+            <div className={`${t.titleText} font-bold text-sm`}>
               {isCompleted ? `Yolculuk #${y.index}` : 'Aktif Yolculuğun'}
             </div>
-            <div className="text-slate-500 text-sm">
+            <div className={`${t.mutedText} text-sm`}>
               {formatDate(y.startedAt)}
               {y.completedAt && ` — ${formatDate(y.completedAt)}`}
             </div>
@@ -155,7 +213,7 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
         <div className="flex items-center gap-2 shrink-0">
           {totalDelta != null && (
             <span className={`text-sm font-bold px-2 py-0.5 rounded-full ${
-              totalDelta > 0 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
+              totalDelta > 0 ? deltaPosCls : deltaNegCls
             }`}>
               {totalDelta > 0 ? '↑+' : '↓'}{Math.abs(totalDelta).toFixed(1)}
             </span>
@@ -163,48 +221,53 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
           <span className={`text-sm font-semibold px-2 py-0.5 rounded-full border ${statusBadge.cls}`}>
             {statusBadge.label}
           </span>
-          <svg className={`w-4 h-4 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`}
+          <svg className={`w-4 h-4 ${t.mutedText} transition-transform ${open ? 'rotate-180' : ''}`}
             fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
       </button>
 
-      {/* 3 aşamalı progress */}
       <div className="px-5 pb-4">
         <div className="grid grid-cols-3 gap-2">
-          <StageDot label="Ön Analiz"    score={preScore}   done={stage1Done} active={!stage1Done && isActive} />
-          <StageDot label="Klinik Onayı" score={finalScore} done={stage2Done} active={stage1Done && !stage2Done && isActive} />
-          <StageDot label="Son Analiz"   score={postScore}  done={stage3Done} active={isClinicDone} optional />
+          <StageDot t={t} label="Ön Analiz"    score={preScore}   done={stage1Done} active={!stage1Done && isActive} />
+          <StageDot t={t} label="Klinik Onayı" score={finalScore} done={stage2Done} active={stage1Done && !stage2Done && isActive} />
+          <StageDot t={t} label="Son Analiz"   score={postScore}  done={stage3Done} active={isClinicDone} optional />
         </div>
-        <p className="text-slate-500 text-sm mt-2 text-center">
+        <p className={`${t.mutedText} text-sm mt-2 text-center`}>
           {stagesDone}/3 aşama tamamlandı
         </p>
       </div>
 
-      {/* Sıradaki adım CTA */}
       {nextStep && nextStep.href && (
         <div className="px-5 pb-4">
           <Link href={nextStep.href}
-            className="block w-full text-center py-2.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-base font-bold transition-colors">
+            className={`block w-full text-center py-2.5 rounded-xl border font-bold text-base transition-colors ${
+              light
+                ? 'bg-violet-50 hover:bg-violet-100 border-violet-200 text-violet-700'
+                : 'bg-violet-600/20 hover:bg-violet-600/30 border-violet-500/30 text-violet-300'
+            }`}>
             {nextStep.label} →
           </Link>
         </div>
       )}
 
-      {/* Klinik deneyim değerlendirme CTA */}
       {y.appointment?.status === 'completed' && y.reviewState === 'none' && (
         <div className="px-5 pb-4">
           <SafeLink
             href={`/panel/degerlendir/${y.appointment.id}`}
-            className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 hover:border-amber-400/60 transition-colors"
+            className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
+              light
+                ? 'bg-amber-50 border-amber-200 hover:border-amber-300'
+                : 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 hover:border-amber-400/60'
+            }`}
           >
             <span className="text-xl shrink-0">⭐</span>
             <div className="flex-1 min-w-0">
-              <p className="text-amber-200 text-sm font-bold leading-tight">Deneyimini paylaş</p>
-              <p className="text-amber-300/70 text-sm mt-0.5">Klinik için 1 dakikalık değerlendirme</p>
+              <p className={`text-sm font-bold leading-tight ${light ? 'text-amber-800' : 'text-amber-200'}`}>Deneyimini paylaş</p>
+              <p className={`text-sm mt-0.5 ${light ? 'text-amber-700' : 'text-amber-300/70'}`}>Klinik için 1 dakikalık değerlendirme</p>
             </div>
-            <svg className="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-4 h-4 shrink-0 ${light ? 'text-amber-700' : 'text-amber-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </SafeLink>
@@ -214,27 +277,28 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
         <div className="px-5 pb-4">
           <SafeLink
             href={`/panel/degerlendir/${y.appointment.id}`}
-            className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700 hover:border-slate-600 transition-colors"
+            className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
+              light ? 'bg-slate-50 border-slate-200 hover:border-slate-300' : 'bg-slate-800/40 border-slate-700 hover:border-slate-600'
+            }`}
           >
             <span className="text-xl shrink-0">✏️</span>
             <div className="flex-1 min-w-0">
-              <p className="text-slate-200 text-sm font-medium leading-tight">Yorumunu düzenle</p>
-              <p className="text-slate-500 text-sm mt-0.5">7 günlük düzenleme penceresi açık</p>
+              <p className={`text-sm font-medium leading-tight ${light ? 'text-slate-700' : 'text-slate-200'}`}>Yorumunu düzenle</p>
+              <p className={`text-sm mt-0.5 ${t.mutedText}`}>7 günlük düzenleme penceresi açık</p>
             </div>
-            <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-4 h-4 shrink-0 ${t.mutedText}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </SafeLink>
         </div>
       )}
 
-      {/* Detay (expanded) */}
       {open && (
-        <div className="px-5 pb-5 space-y-3 border-t border-slate-800/60">
-          <DetayBlok title="🎯 Ön Analiz" empty="Henüz yapılmadı" data={y.preAnalysis} kind="pre" />
-          <DetayBlok title="🏥 Klinik Onayı" empty="Henüz tamamlanmadı"
+        <div className={`px-5 pb-5 space-y-3 border-t ${t.divider}`}>
+          <DetayBlok t={t} title="🎯 Ön Analiz" empty="Henüz yapılmadı" data={y.preAnalysis} kind="pre" />
+          <DetayBlok t={t} title="🏥 Klinik Onayı" empty="Henüz tamamlanmadı"
             data={y.clinicAnalysis} kind="clinic" appointment={y.appointment} />
-          <DetayBlok title="📊 Son Analiz" empty="Henüz yapılmadı (opsiyonel)"
+          <DetayBlok t={t} title="📊 Son Analiz" empty="Henüz yapılmadı (opsiyonel)"
             data={y.postAnalysis} kind="post" />
         </div>
       )}
@@ -242,7 +306,8 @@ export default function YolculukKarti({ y }: { y: YolculukView }) {
   )
 }
 
-function StageDot({ label, score, done, active, optional }: {
+function StageDot({ t, label, score, done, active, optional }: {
+  t: Theme
   label: string
   score: number | null
   done: boolean
@@ -250,18 +315,16 @@ function StageDot({ label, score, done, active, optional }: {
   optional?: boolean
 }) {
   return (
-    <div className={`p-3 rounded-xl text-center ${
-      done ? 'bg-emerald-500/10 border border-emerald-500/30'
-      : active ? 'bg-violet-500/10 border border-violet-500/30'
-      : 'bg-slate-800/40 border border-slate-800'
+    <div className={`p-3 rounded-xl text-center border ${
+      done ? t.stageDoneBg : active ? t.stageActiveBg : t.stageIdleBg
     }`}>
       <div className={`text-sm font-semibold uppercase tracking-wide mb-1 ${
-        done ? 'text-emerald-400' : active ? 'text-violet-400' : 'text-slate-600'
+        done ? 'text-emerald-600' : active ? 'text-violet-600' : t.stageIdleText
       }`}>
         {label}{optional && !done ? ' (ops.)' : ''}
       </div>
       <div className={`text-lg font-black ${
-        done ? 'text-white' : 'text-slate-700'
+        done ? t.stageScoreDoneText : t.stageScoreIdleText
       }`}>
         {score != null ? Math.round(score) : '—'}
       </div>
@@ -269,7 +332,8 @@ function StageDot({ label, score, done, active, optional }: {
   )
 }
 
-function DetayBlok({ title, empty, data, kind, appointment }: {
+function DetayBlok({ t, title, empty, data, kind, appointment }: {
+  t: Theme
   title: string
   empty: string
   data: YolculukAnalysis | null
@@ -279,8 +343,8 @@ function DetayBlok({ title, empty, data, kind, appointment }: {
   if (!data && !appointment) {
     return (
       <div className="pt-3">
-        <h4 className="text-slate-300 font-bold text-sm mb-1.5">{title}</h4>
-        <p className="text-slate-600 text-sm italic">{empty}</p>
+        <h4 className={`${t.bodyText} font-bold text-sm mb-1.5`}>{title}</h4>
+        <p className={`${t.fadedText} text-sm italic`}>{empty}</p>
       </div>
     )
   }
@@ -294,14 +358,13 @@ function DetayBlok({ title, empty, data, kind, appointment }: {
 
   return (
     <div className="pt-3">
-      <h4 className="text-slate-300 font-bold text-sm mb-2">{title}</h4>
+      <h4 className={`${t.bodyText} font-bold text-sm mb-2`}>{title}</h4>
 
-      {/* Klinik blok: randevu detayı */}
       {kind === 'clinic' && appointment && (
-        <div className="bg-slate-800/40 rounded-lg p-3 mb-2 text-sm">
+        <div className={`${t.innerBox} rounded-lg p-3 mb-2 text-sm`}>
           <div className="flex justify-between mb-1">
-            <span className="text-slate-400">{appointment.clinic_name ?? 'Klinik'}</span>
-            <span className="text-slate-500">
+            <span className={t.bodyText}>{appointment.clinic_name ?? 'Klinik'}</span>
+            <span className={t.mutedText}>
               {appointment.appointment_date
                 ? new Date(appointment.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })
                 : '—'}
@@ -309,44 +372,42 @@ function DetayBlok({ title, empty, data, kind, appointment }: {
           </div>
           {appointment.procedure_notes && (
             <div className="mt-2">
-              <div className="text-violet-400 text-sm uppercase tracking-wide mb-0.5">Yapılan İşlem</div>
-              <p className="text-slate-300 whitespace-pre-wrap">{appointment.procedure_notes}</p>
+              <div className="text-violet-600 text-sm uppercase tracking-wide mb-0.5">Yapılan İşlem</div>
+              <p className={`${t.bodyText} whitespace-pre-wrap`}>{appointment.procedure_notes}</p>
             </div>
           )}
           {appointment.recommendations && (
             <div className="mt-2">
-              <div className="text-amber-400 text-sm uppercase tracking-wide mb-0.5">Hekim Önerileri</div>
-              <p className="text-slate-300 whitespace-pre-wrap">{appointment.recommendations}</p>
+              <div className="text-amber-600 text-sm uppercase tracking-wide mb-0.5">Hekim Önerileri</div>
+              <p className={`${t.bodyText} whitespace-pre-wrap`}>{appointment.recommendations}</p>
             </div>
           )}
         </div>
       )}
 
-      {/* Selfie skorları (web_scores) */}
       {Object.keys(ws).length > 0 && (
-        <div className="bg-slate-800/40 rounded-lg p-3 mb-2">
+        <div className={`${t.innerBox} rounded-lg p-3 mb-2`}>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
             {C250_LABELS.map(([k, label]) => ws[k] != null && (
               <div key={k} className="flex justify-between">
-                <span className="text-slate-500">{label}</span>
-                <span className="text-slate-300 font-medium">{ws[k]}</span>
+                <span className={t.mutedText}>{label}</span>
+                <span className={`${t.bodyText} font-medium`}>{ws[k]}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Tetkik */}
       {tetkik.length > 0 && (
-        <div className="bg-slate-800/40 rounded-lg p-3 mb-2">
-          <div className="text-emerald-400 text-sm uppercase tracking-wide mb-1.5">Tetkik</div>
+        <div className={`${t.innerBox} rounded-lg p-3 mb-2`}>
+          <div className="text-emerald-600 text-sm uppercase tracking-wide mb-1.5">Tetkik</div>
           <div className="space-y-0.5 text-sm">
             {tetkik.map(r => {
               const inRange = r.value! >= r.min && r.value! <= r.max
               return (
                 <div key={r.key} className="flex justify-between">
-                  <span className="text-slate-500">{r.label}</span>
-                  <span className={inRange ? 'text-emerald-400' : 'text-amber-400'}>
+                  <span className={t.mutedText}>{r.label}</span>
+                  <span className={inRange ? 'text-emerald-600' : 'text-amber-600'}>
                     {r.value} {r.unit}
                   </span>
                 </div>
@@ -356,18 +417,17 @@ function DetayBlok({ title, empty, data, kind, appointment }: {
         </div>
       )}
 
-      {/* İleri analiz */}
       {ileri && (
-        <div className="bg-slate-800/40 rounded-lg p-3 mb-2">
-          <div className="text-cyan-400 text-sm uppercase tracking-wide mb-1.5">İleri Analiz (Cihaz)</div>
+        <div className={`${t.innerBox} rounded-lg p-3 mb-2`}>
+          <div className="text-cyan-600 text-sm uppercase tracking-wide mb-1.5">İleri Analiz (Cihaz)</div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
             {C250_LABELS.map(([k, label]) => {
               const v = ileri[k as keyof typeof ileri]
               if (v == null) return null
               return (
                 <div key={k} className="flex justify-between">
-                  <span className="text-slate-500">{label}</span>
-                  <span className="text-cyan-300 font-medium">{v}</span>
+                  <span className={t.mutedText}>{label}</span>
+                  <span className="text-cyan-700 font-medium">{v}</span>
                 </div>
               )
             })}
@@ -375,18 +435,17 @@ function DetayBlok({ title, empty, data, kind, appointment }: {
         </div>
       )}
 
-      {/* Hekim notu */}
       {(das?.hekim_skoru != null || data?.doctor_notes) && (
-        <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3">
-          <div className="text-amber-400 text-sm uppercase tracking-wide mb-1">Hekim Değerlendirmesi</div>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <div className="text-amber-700 text-sm uppercase tracking-wide mb-1">Hekim Değerlendirmesi</div>
           {das?.hekim_skoru != null && (
             <div className="flex items-baseline gap-2 mb-1">
-              <span className="text-2xl font-black text-amber-400">{das.hekim_skoru}</span>
-              <span className="text-slate-500 text-sm">/ 100</span>
+              <span className="text-2xl font-black text-amber-700">{das.hekim_skoru}</span>
+              <span className={`${t.mutedText} text-sm`}>/ 100</span>
             </div>
           )}
           {data?.doctor_notes && (
-            <p className="text-slate-300 text-sm whitespace-pre-wrap">{data.doctor_notes}</p>
+            <p className={`${t.bodyText} text-sm whitespace-pre-wrap`}>{data.doctor_notes}</p>
           )}
         </div>
       )}

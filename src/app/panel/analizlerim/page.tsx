@@ -172,30 +172,30 @@ export default async function GecmisimPage() {
   }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+    <main className="min-h-screen bg-[#FAFAF7]">
+      <header className="web-only fixed top-0 left-0 lg:left-[72px] right-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800/40 text-slate-300 hover:text-white text-base font-medium transition-colors">
+          <SafeLink href="/panel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 hover:text-slate-900 text-base font-medium transition-colors">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Panel
           </SafeLink>
-          <span className="text-white font-bold text-sm">Geçmişim</span>
-          <Link href="/analiz" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-violet-500/30 hover:border-violet-400 hover:bg-violet-500/10 text-violet-400 hover:text-violet-300 text-base font-medium transition-colors">+ Yeni</Link>
+          <span className="text-slate-900 font-bold text-sm">Geçmişim</span>
+          <Link href="/analiz" className="inline-flex items-center px-3 py-1.5 rounded-lg border border-violet-200 hover:border-violet-300 hover:bg-violet-50 text-violet-700 hover:text-violet-800 text-base font-medium transition-colors">+ Yeni</Link>
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 pt-24 pb-16 space-y-6">
 
-        <GecmisTabs active="yolculuklar" />
+        <GecmisTabs active="yolculuklar" light />
 
         {/* Skor Geçmişi Grafiği */}
         {chartPoints.length > 0 && (
-          <section className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+          <section className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-white">Skor Geçmişi</h2>
+              <h2 className="text-lg font-bold text-slate-900">Skor Geçmişi</h2>
               <span className="text-sm text-slate-500">{chartPoints.length} veri noktası</span>
             </div>
-            <ScoreChart points={chartPoints} />
+            <ScoreChart points={chartPoints} light />
           </section>
         )}
 
@@ -203,7 +203,7 @@ export default async function GecmisimPage() {
         {journeyViews.length > 0 ? (
           <section className="space-y-3">
             <div className="flex items-baseline justify-between px-1">
-              <h2 className="text-white font-bold text-lg">Gençleşme Yolculukların</h2>
+              <h2 className="text-slate-900 font-bold text-lg">Gençleşme Yolculukların</h2>
               <span className="text-slate-500 text-sm">
                 Son {journeyViews.length} yolculuk
               </span>
@@ -212,14 +212,14 @@ export default async function GecmisimPage() {
               Her yolculuk: Ön Analiz → Klinik Onayı → Son Analiz (ops.)
             </p>
             {journeyViews.map(j => (
-              <YolculukKarti key={j.id} y={j} />
+              <YolculukKarti key={j.id} y={j} light />
             ))}
           </section>
         ) : (
           <div className="text-center py-16">
-            <div className="w-20 h-20 mx-auto rounded-2xl bg-slate-800 flex items-center justify-center mb-4 text-4xl">🎯</div>
-            <p className="text-white font-semibold mb-2">Henüz yolculuğun yok</p>
-            <p className="text-slate-400 text-sm mb-5">Selfie ile ilk gençleşme yolculuğunu başlat</p>
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-4 text-4xl">🎯</div>
+            <p className="text-slate-900 font-semibold mb-2">Henüz yolculuğun yok</p>
+            <p className="text-slate-600 text-sm mb-5">Selfie ile ilk gençleşme yolculuğunu başlat</p>
             <Link href="/analiz" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-base font-semibold rounded-xl">
               Analizi Başlat →
             </Link>

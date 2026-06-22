@@ -45,10 +45,10 @@ export default async function KurslarimPage() {
   }
 
   return (
-    <main className="min-h-screen">
-      <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5 h-14 flex items-center justify-between px-4 lg:px-8">
+    <main className="min-h-screen bg-[#FAFAF7]">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 h-14 flex items-center justify-between px-4 lg:px-8">
         <div className="lg:hidden w-10" />
-        <h1 className="text-white font-bold text-sm">🎓 Kurslarım</h1>
+        <h1 className="text-slate-900 font-bold text-sm">🎓 Kurslarım</h1>
         <div className="w-10" />
       </header>
 
@@ -56,8 +56,8 @@ export default async function KurslarimPage() {
         {!purchases || purchases.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🎓</div>
-            <h2 className="text-xl font-bold text-white mb-2">Henüz kursun yok</h2>
-            <p className="text-slate-400 mb-6">Estelongy Akademi&apos;de keşfet, mesleki gelişimine yatırım yap.</p>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">Henüz kursun yok</h2>
+            <p className="text-slate-600 mb-6">Estelongy Akademi&apos;de keşfet, mesleki gelişimine yatırım yap.</p>
             <Link
               href="/akademi"
               className="inline-block px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl transition-all"
@@ -83,9 +83,9 @@ export default async function KurslarimPage() {
                 <SafeLink
                   key={purchase.id}
                   href={`/panel/kurslarim/${pkg.slug}`}
-                  className="group bg-slate-900 rounded-2xl border border-slate-800 hover:border-emerald-500/40 overflow-hidden transition-all"
+                  className="group bg-white rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-md overflow-hidden transition-all"
                 >
-                  <div className="aspect-video bg-slate-800 relative overflow-hidden">
+                  <div className="aspect-video bg-slate-100 relative overflow-hidden">
                     {pkg.cover_image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={pkg.cover_image_url} alt={pkg.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -93,29 +93,29 @@ export default async function KurslarimPage() {
                       <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">🎓</div>
                     )}
                     {progressPct === 100 && (
-                      <div className="absolute top-2 right-2 px-2 py-1 rounded-md bg-emerald-500 text-white text-sm font-bold">
+                      <div className="absolute top-2 right-2 px-2 py-1 rounded-md bg-emerald-600 text-white text-sm font-bold">
                         ✓ Tamamlandı
                       </div>
                     )}
                   </div>
                   <div className="p-4 space-y-3">
-                    <h3 className="text-white font-bold text-sm line-clamp-2 group-hover:text-emerald-400 transition-colors min-h-[2.5rem]">
+                    <h3 className="text-slate-900 font-bold text-sm line-clamp-2 group-hover:text-emerald-700 transition-colors min-h-[2.5rem]">
                       {pkg.title}
                     </h3>
                     {pkg.clinics && (
                       <div className="text-slate-500 text-sm">{pkg.clinics.name}</div>
                     )}
-                    <div className="flex items-center gap-3 text-sm text-slate-400">
+                    <div className="flex items-center gap-3 text-sm text-slate-600">
                       <span>📹 {totalVideos} video</span>
                       <span>⏱ {formatDuration(pkg.total_duration_seconds ?? 0)}</span>
                     </div>
                     {/* İlerleme barı */}
                     <div>
                       <div className="flex items-center justify-between text-sm mb-1.5">
-                        <span className="text-slate-400">İlerleme</span>
-                        <span className="text-emerald-400 font-medium">{completedCount}/{totalVideos}</span>
+                        <span className="text-slate-600">İlerleme</span>
+                        <span className="text-emerald-700 font-medium">{completedCount}/{totalVideos}</span>
                       </div>
-                      <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all"
                           style={{ width: `${progressPct}%` }}
