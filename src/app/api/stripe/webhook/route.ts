@@ -199,6 +199,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
+  // ─── Idempotency: event.id dedupe ────────────────────────────────
+  // Stripe aynı event'i retry edebilir. İşlenmişse no-op döner.
+  // INSERT ... ON CONFLICT DO NOTHING — race-safe.
+  {
+    const admin = createServiceClient()
+    const { error: insertErr } = await admin
+      .from('stripe_webhook_events')
+      .insert({
+        event_id:   event.id,
+        event_type: event.type,
+        livemode:   event.livemode,
+      })
+    if (insertErr) {
+      // PostgreSQL unique_violation: 23505 — zaten işlendi, no-op
+      if (insertErr.code === '23505') {
+        return NextResponse.json({ received: true, note: 'duplicate event ignored' })
+      }
+      // Diğer DB hataları: log ama event'i kaybetme — Stripe retry edecek
+      console.error('[Webhook] event ledger insert error (will allow):', insertErr)
+    }
+  }
+
   // ─── Klinik Kredi Ödemesi VEYA Akademi Paket Satın Alma ──────────
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
@@ -466,6 +488,102 @@ export async function POST(req: NextRequest) {
         .from('orders')
         .update({ payment_status: 'failed' })
         .eq('id', pi.metadata.order_id)
+    }
+  }
+
+  // ─── Refund (Stripe Dashboard'dan veya kart bankası iadesi) ──────
+  // Bizim iade akışımız (iadeIptalAction/iadeKararAction) zaten DB'yi günceller
+  // ama Stripe Dashboard'dan veya kart bankasından gelen iadeleri yakalar.
+  if (event.type === 'charge.refunded') {
+    const charge = event.data.object as Stripe.Charge
+    const piId = typeof charge.payment_intent === 'string' ? charge.payment_intent : null
+    if (piId) {
+      const admin = createServiceClient()
+      const { data: order } = await admin
+        .from('orders')
+        .select('id, order_number, payment_status')
+        .eq('stripe_payment_intent_id', piId)
+        .maybeSingle()
+
+      if (order && order.payment_status !== 'refunded') {
+        const fullyRefunded = charge.amount_refunded >= charge.amount
+        await admin
+          .from('orders')
+          .update({
+            payment_status: fullyRefunded ? 'refunded' : 'partially_refunded',
+            status: fullyRefunded ? 'refunded' : order.payment_status,
+          })
+          .eq('id', order.id)
+        console.log(`[Webhook] charge.refunded → order ${order.order_number}: ${fullyRefunded ? 'full' : 'partial'}`)
+      }
+    }
+  }
+
+  // ─── Chargeback / Dispute (kart sahibi bankadan itiraz açtı) ────
+  if (event.type === 'charge.dispute.created') {
+    const dispute = event.data.object as Stripe.Dispute
+    const piId = typeof dispute.payment_intent === 'string' ? dispute.payment_intent : null
+    if (piId) {
+      const admin = createServiceClient()
+      const { data: order } = await admin
+        .from('orders')
+        .select('id, order_number, user_id, guest_email, total')
+        .eq('stripe_payment_intent_id', piId)
+        .maybeSingle()
+
+      if (order) {
+        await admin
+          .from('orders')
+          .update({
+            dispute_status: dispute.status,
+            dispute_reason: dispute.reason,
+            dispute_opened_at: new Date().toISOString(),
+            dispute_resolved_at: null,
+          })
+          .eq('id', order.id)
+
+        // Admin'e uyarı maili — fail-open
+        try {
+          const adminEmail = process.env.ADMIN_ALERT_EMAIL ?? 'kvkk@estelongy.com'
+          const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com').replace(/\/$/, '')
+          await sendEmail(
+            adminEmail,
+            `[Estelongy] CHARGEBACK açıldı — ${order.order_number}`,
+            `<div style="font-family:sans-serif">
+              <h2 style="color:#dc2626">⚠️ Chargeback (kart itirazı) açıldı</h2>
+              <p>Sipariş: <strong>${order.order_number}</strong></p>
+              <p>Tutar: ₺${Number(order.total).toLocaleString('tr-TR')}</p>
+              <p>Sebep: <strong>${dispute.reason}</strong></p>
+              <p>Durum: ${dispute.status}</p>
+              <p>Yanıt için Stripe Dashboard'a girin — yanıt süresi sınırlı.</p>
+              <a href="https://dashboard.stripe.com/disputes/${dispute.id}"
+                 style="display:inline-block;margin-top:12px;padding:10px 20px;background:#7c3aed;color:#fff;border-radius:6px;text-decoration:none">
+                Stripe Dispute Detayı
+              </a>
+              <p style="margin-top:16px"><a href="${baseUrl}/admin/siparisler">Sipariş yönetim paneli</a></p>
+            </div>`
+          )
+        } catch (e) {
+          console.error('[Webhook] dispute admin alert error:', e)
+        }
+        console.warn(`[Webhook] DISPUTE açıldı: order ${order.order_number}, reason=${dispute.reason}`)
+      }
+    }
+  }
+
+  if (event.type === 'charge.dispute.closed') {
+    const dispute = event.data.object as Stripe.Dispute
+    const piId = typeof dispute.payment_intent === 'string' ? dispute.payment_intent : null
+    if (piId) {
+      const admin = createServiceClient()
+      await admin
+        .from('orders')
+        .update({
+          dispute_status: dispute.status, // 'won', 'lost', vs.
+          dispute_resolved_at: new Date().toISOString(),
+        })
+        .eq('stripe_payment_intent_id', piId)
+      console.log(`[Webhook] dispute closed: status=${dispute.status}`)
     }
   }
 
