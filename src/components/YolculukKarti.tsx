@@ -449,6 +449,20 @@ function DetayBlok({ t, title, empty, data, kind, appointment }: {
           )}
         </div>
       )}
+
+      {/* PDF rapor linki — KVKK m.11 veri taşınabilirlik */}
+      {data && (
+        <div className="pt-2">
+          <Link
+            href={`/skor/rapor/${data.id}`}
+            className={`inline-flex items-center gap-1.5 text-sm font-semibold ${
+              t === DARK ? 'text-violet-400 hover:text-violet-300' : 'text-violet-700 hover:text-violet-800'
+            }`}
+          >
+            🖨️ Rapor indir / yazdır
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
