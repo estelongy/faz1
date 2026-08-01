@@ -8,6 +8,7 @@ import KlinikPanelDashboard from '@/components/klinik-panel/KlinikPanelDashboard
 import KlinikPROAppHome from '@/components/klinik-panel/KlinikPROAppHome'
 import { getServerFlavor } from '@/lib/server-flavor'
 import { computeAccreditation } from '@/lib/clinic-accreditation'
+import { clinicOwnerIdFor } from '@/lib/muhasebe-owner'
 import { computeOnboarding } from '@/lib/clinic-onboarding'
 import { fetchEditorialPosts } from '@/lib/editorial-posts'
 import { fetchApprovedCases } from '@/lib/shared-cases'
@@ -239,7 +240,7 @@ export default async function KlinikPanelPage() {
     const { data: sundayAvail } = await supabase
       .from('internal_availability')
       .select('is_closed')
-      .eq('owner_id', user.id)
+      .eq('owner_id', clinicOwnerIdFor(user.id) ?? user.id)
       .eq('day_of_week', 0)
       .maybeSingle()
     const sundayOpen = sundayAvail
@@ -270,7 +271,7 @@ export default async function KlinikPanelPage() {
     const { data: todayAvail } = await supabase
       .from('internal_availability')
       .select('open_time, close_time, slot_duration_minutes, is_closed')
-      .eq('owner_id', user.id)
+      .eq('owner_id', clinicOwnerIdFor(user.id) ?? user.id)
       .eq('day_of_week', nowD.getDay())
       .maybeSingle()
     const dayOpenTime = todayAvail && !todayAvail.is_closed ? todayAvail.open_time.slice(0, 5) : '09:00'

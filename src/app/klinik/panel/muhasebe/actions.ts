@@ -2,22 +2,23 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
+import { getKlinikStaff, type KlinikRole } from '@/lib/muhasebe-owner'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
 
 type Result = { ok: true } | { ok: false; error: string }
 
 type OwnerCtx =
-  | { ok: true; user: User; supabase: SupabaseClient }
+  | { ok: true; user: User; supabase: SupabaseClient; clinicOwnerId: string; role: KlinikRole }
   | { ok: false; error: string }
 
 async function requireOwner(): Promise<OwnerCtx> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user || !isMuhasebeOwner(user.id)) {
+  const staff = getKlinikStaff(user?.id)
+  if (!user || !staff) {
     return { ok: false, error: 'Yetkisiz' }
   }
-  return { ok: true, user, supabase }
+  return { ok: true, user, supabase, clinicOwnerId: staff.clinicOwnerId, role: staff.role }
 }
 
 // ─── Hasta ────────────────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ export async function addPatient(formData: FormData): Promise<Result> {
   if (name.length > 120) return { ok: false, error: 'Hasta adı çok uzun.' }
 
   const { error } = await ctx.supabase.from('internal_patient').insert({
-    owner_id: ctx.user.id, name, phone, notes,
+    owner_id: ctx.clinicOwnerId, name, phone, notes, created_by: ctx.user.id,
   })
   if (error) return { ok: false, error: error.message }
   revalidatePath('/klinik/panel/muhasebe')
@@ -85,12 +86,13 @@ export async function addTreatment(patientId: string, formData: FormData): Promi
   if (!Number.isFinite(amount) || amount < 0) return { ok: false, error: 'Geçersiz ücret.' }
 
   const { error } = await ctx.supabase.from('internal_treatment').insert({
-    owner_id: ctx.user.id,
+    owner_id: ctx.clinicOwnerId,
     patient_id: patientId,
     name,
     treatment_date: dateStr || new Date().toISOString().slice(0, 10),
     amount,
     notes,
+    created_by: ctx.user.id,
   })
   if (error) return { ok: false, error: error.message }
   revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
@@ -124,7 +126,7 @@ export async function addProduct(treatmentId: string, patientId: string, formDat
   if (!Number.isFinite(quantity) || quantity <= 0) return { ok: false, error: 'Geçersiz miktar.' }
 
   const { error } = await ctx.supabase.from('internal_product').insert({
-    owner_id: ctx.user.id,
+    owner_id: ctx.clinicOwnerId,
     treatment_id: treatmentId,
     name, quantity, unit, notes,
   })
@@ -158,12 +160,13 @@ export async function addPayment(patientId: string, formData: FormData): Promise
   if (!Number.isFinite(amount) || amount <= 0) return { ok: false, error: 'Geçersiz tutar.' }
 
   const { error } = await ctx.supabase.from('internal_payment').insert({
-    owner_id: ctx.user.id,
+    owner_id: ctx.clinicOwnerId,
     patient_id: patientId,
     treatment_id: treatmentId,
     amount,
     paid_at: dateStr || new Date().toISOString().slice(0, 10),
     method, notes,
+    created_by: ctx.user.id,
   })
   if (error) return { ok: false, error: error.message }
   revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
@@ -202,9 +205,10 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
     if (newPatientName.length < 2) return { ok: false, error: 'Hasta adı en az 2 karakter.' }
     if (newPatientName.length > 120) return { ok: false, error: 'Hasta adı çok uzun.' }
     const { data, error } = await ctx.supabase.from('internal_patient').insert({
-      owner_id: ctx.user.id,
+      owner_id: ctx.clinicOwnerId,
       name: newPatientName,
       phone: newPatientPhone || null,
+      created_by: ctx.user.id,
     }).select('id').single()
     if (error || !data) return { ok: false, error: error?.message ?? 'Hasta oluşturulamadı.' }
     patientId = data.id
@@ -230,19 +234,20 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
       .from('internal_treatment_catalog')
       .select('id')
       .eq('id', treatmentCatalogId)
-      .eq('owner_id', ctx.user.id)
+      .eq('owner_id', ctx.clinicOwnerId)
       .maybeSingle()
     if (cat) safeCatalogId = cat.id
   }
 
   const { data: treatmentData, error: treatmentErr } = await ctx.supabase.from('internal_treatment').insert({
-    owner_id: ctx.user.id,
+    owner_id: ctx.clinicOwnerId,
     patient_id: patientId,
     name: treatmentName,
     catalog_id: safeCatalogId,
     treatment_date: treatmentDateStr || new Date().toISOString().slice(0, 10),
     amount: treatmentAmount,
     notes: treatmentNotes,
+    created_by: ctx.user.id,
   }).select('id').single()
   if (treatmentErr) return { ok: false, error: treatmentErr.message }
 
@@ -255,12 +260,13 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
     const paymentMethod = (formData.get('payment_method') as string | null)?.trim() || null
 
     const { error: payErr } = await ctx.supabase.from('internal_payment').insert({
-      owner_id: ctx.user.id,
+      owner_id: ctx.clinicOwnerId,
       patient_id: patientId,
       treatment_id: treatmentData?.id ?? null,
       amount: paymentAmount,
       paid_at: paymentDateStr || new Date().toISOString().slice(0, 10),
       method: paymentMethod,
+      created_by: ctx.user.id,
     })
     if (payErr) return { ok: false, error: payErr.message }
   }
@@ -275,7 +281,7 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
       if (pName.length < 2) continue
       const pQty = Number(pQtyStr.replace(',', '.'))
       await ctx.supabase.from('internal_product').insert({
-        owner_id: ctx.user.id,
+        owner_id: ctx.clinicOwnerId,
         treatment_id: treatmentData.id,
         name: pName,
         quantity: Number.isFinite(pQty) && pQty > 0 ? pQty : 1,
@@ -291,7 +297,7 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
       .from('internal_appointment')
       .update({ status: 'completed', updated_at: new Date().toISOString() })
       .eq('id', completeApptId)
-      .eq('owner_id', ctx.user.id)
+      .eq('owner_id', ctx.clinicOwnerId)
     revalidatePath('/klinik/panel/muhasebe/randevu')
   }
 
@@ -393,7 +399,7 @@ export async function createAppointment(formData: FormData): Promise<Appointment
   const { data: existing } = await ctx.supabase
     .from('internal_patient')
     .select('id, name')
-    .eq('owner_id', ctx.user.id)
+    .eq('owner_id', ctx.clinicOwnerId)
     .eq('phone', phone)
     .maybeSingle()
 
@@ -403,7 +409,7 @@ export async function createAppointment(formData: FormData): Promise<Appointment
   } else {
     const { data: created, error: pErr } = await ctx.supabase
       .from('internal_patient')
-      .insert({ owner_id: ctx.user.id, name: fullName, phone })
+      .insert({ owner_id: ctx.clinicOwnerId, name: fullName, phone, created_by: ctx.user.id })
       .select('id')
       .single()
     if (pErr || !created) return { ok: false, error: pErr?.message ?? 'Hasta kaydı oluşturulamadı.' }
@@ -415,7 +421,8 @@ export async function createAppointment(formData: FormData): Promise<Appointment
   const groupId = occurrences.length > 1 ? crypto.randomUUID() : null
 
   const rows = occurrences.map((occ, idx) => ({
-    owner_id: ctx.user.id,
+    owner_id: ctx.clinicOwnerId,
+    created_by: ctx.user.id,
     patient_id: patientId,
     start_at: occ.toISOString(),
     duration_minutes: durationMin,
@@ -438,6 +445,41 @@ export async function createAppointment(formData: FormData): Promise<Appointment
   return { ok: true, count: rows.length, groupId }
 }
 
+// ─── Mevcut hastaya randevu (tek ekran akışı) ────────────────────────────
+export async function createAppointmentForPatient(formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const patientId = (formData.get('patient_id') as string | null)?.trim() ?? ''
+  const dateStr = (formData.get('date') as string | null)?.trim() ?? ''
+  const timeStr = (formData.get('time') as string | null)?.trim() ?? ''
+  const durationMin = Number(formData.get('duration_minutes') ?? 30)
+  const treatmentType = ((formData.get('treatment_type') as string | null)?.trim() || null)
+
+  if (!patientId) return { ok: false, error: 'Hasta seçilmedi.' }
+  if (!dateStr || !timeStr) return { ok: false, error: 'Tarih ve saat zorunlu.' }
+  if (!Number.isFinite(durationMin) || durationMin < 5 || durationMin > 480) {
+    return { ok: false, error: 'Geçersiz randevu süresi.' }
+  }
+  const startAt = new Date(`${dateStr}T${timeStr}:00`)
+  if (Number.isNaN(startAt.getTime())) return { ok: false, error: 'Geçersiz tarih/saat.' }
+
+  const { error } = await ctx.supabase.from('internal_appointment').insert({
+    owner_id: ctx.clinicOwnerId,
+    created_by: ctx.user.id,
+    patient_id: patientId,
+    start_at: startAt.toISOString(),
+    duration_minutes: durationMin,
+    treatment_type: treatmentType,
+    status: 'scheduled',
+  })
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
+  return { ok: true }
+}
+
 // ─── İşleme Al ────────────────────────────────────────────────────────────
 // Randevuyu tamamla + tedavi (gelir) kaydı aç. Ödeme ayrı eklenir.
 export async function processAppointment(formData: FormData): Promise<Result> {
@@ -457,7 +499,7 @@ export async function processAppointment(formData: FormData): Promise<Result> {
     .from('internal_appointment')
     .select('id, patient_id, start_at, treatment_type, status')
     .eq('id', id)
-    .eq('owner_id', ctx.user.id)
+    .eq('owner_id', ctx.clinicOwnerId)
     .single()
   if (aErr || !appt) return { ok: false, error: 'Randevu bulunamadı.' }
   if (appt.status === 'completed') return { ok: false, error: 'Randevu zaten tamamlanmış.' }
@@ -466,11 +508,12 @@ export async function processAppointment(formData: FormData): Promise<Result> {
   const treatmentDate = new Date(appt.start_at).toISOString().slice(0, 10)
 
   const { error: tErr } = await ctx.supabase.from('internal_treatment').insert({
-    owner_id: ctx.user.id,
+    owner_id: ctx.clinicOwnerId,
     patient_id: appt.patient_id,
     name: treatmentName,
     treatment_date: treatmentDate,
     amount,
+    created_by: ctx.user.id,
   })
   if (tErr) return { ok: false, error: tErr.message }
 
@@ -478,7 +521,7 @@ export async function processAppointment(formData: FormData): Promise<Result> {
     .from('internal_appointment')
     .update({ status: 'completed', updated_at: new Date().toISOString() })
     .eq('id', id)
-    .eq('owner_id', ctx.user.id)
+    .eq('owner_id', ctx.clinicOwnerId)
   if (uErr) return { ok: false, error: uErr.message }
 
   revalidatePath('/klinik/panel/muhasebe')
@@ -497,7 +540,7 @@ export async function setAppointmentStatus(id: string, status: 'scheduled' | 'no
     .from('internal_appointment')
     .update({ status, updated_at: new Date().toISOString() })
     .eq('id', id)
-    .eq('owner_id', ctx.user.id)
+    .eq('owner_id', ctx.clinicOwnerId)
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/klinik/panel/muhasebe')
@@ -513,7 +556,7 @@ export async function deleteAppointment(id: string): Promise<Result> {
     .from('internal_appointment')
     .delete()
     .eq('id', id)
-    .eq('owner_id', ctx.user.id)
+    .eq('owner_id', ctx.clinicOwnerId)
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/klinik/panel/muhasebe')
@@ -556,7 +599,7 @@ export async function updateAppointment(formData: FormData): Promise<Result> {
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
-    .eq('owner_id', ctx.user.id)
+    .eq('owner_id', ctx.clinicOwnerId)
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/klinik/panel/muhasebe')
@@ -592,7 +635,7 @@ export async function saveAvailability(formData: FormData): Promise<Result> {
       }
     }
     rows.push({
-      owner_id: ctx.user.id,
+      owner_id: ctx.clinicOwnerId,
       day_of_week: dow,
       open_time: open,
       close_time: close,
@@ -622,7 +665,7 @@ export async function setAutoConfirmAppointments(value: boolean): Promise<Result
   const { error } = await ctx.supabase
     .from('clinics')
     .update({ auto_confirm_appointments: value })
-    .eq('user_id', ctx.user.id)
+    .eq('user_id', ctx.clinicOwnerId)
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/klinik/panel')
@@ -649,7 +692,7 @@ export async function cancelRecurrenceSeries(params: {
       .from('internal_appointment')
       .select('start_at')
       .eq('id', fromAppointmentId)
-      .eq('owner_id', ctx.user.id)
+      .eq('owner_id', ctx.clinicOwnerId)
       .single()
     if (!ref) return { ok: false, error: 'Referans randevu bulunamadı.' }
     pivot = ref.start_at
@@ -658,7 +701,7 @@ export async function cancelRecurrenceSeries(params: {
   let q = ctx.supabase
     .from('internal_appointment')
     .update({ status: 'cancelled', updated_at: new Date().toISOString() }, { count: 'exact' })
-    .eq('owner_id', ctx.user.id)
+    .eq('owner_id', ctx.clinicOwnerId)
     .eq('recurrence_group_id', groupId)
     .eq('status', 'scheduled')
   if (pivot) q = q.gte('start_at', pivot)

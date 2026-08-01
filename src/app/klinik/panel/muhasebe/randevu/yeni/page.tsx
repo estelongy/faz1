@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { isMuhasebeOwner, getMuhasebeOwnerProfile } from '@/lib/muhasebe-owner'
+import { isMuhasebeOwner, getMuhasebeOwnerProfile, clinicOwnerIdFor } from '@/lib/muhasebe-owner'
 import { normalizeWeek, type DayAvailability } from '../slot-utils'
 import YeniRandevuForm from './YeniRandevuForm'
 import { getServerFlavor } from '@/lib/server-flavor'
@@ -22,6 +22,7 @@ export default async function YeniRandevuPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
+  const clinicOwner = clinicOwnerIdFor(user.id) ?? user.id
   const ownerProfile = getMuhasebeOwnerProfile(user.id)
 
   const initialDate = typeof searchParams.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(searchParams.date) ? searchParams.date : undefined
@@ -30,7 +31,7 @@ export default async function YeniRandevuPage({
   const { data: availabilityRows } = await supabase
     .from('internal_availability')
     .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
-    .eq('owner_id', user.id)
+    .eq('owner_id', clinicOwner)
   const week = normalizeWeek((availabilityRows ?? []) as Partial<DayAvailability>[])
 
   const flavor = await getServerFlavor()

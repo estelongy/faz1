@@ -4,7 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
+import { isMuhasebeOwner, clinicOwnerIdFor } from '@/lib/muhasebe-owner'
 import { normalizeWeek, type DayAvailability } from '../../slot-utils'
 import RandevuEditForm from './RandevuEditForm'
 import { getServerFlavor } from '@/lib/server-flavor'
@@ -20,19 +20,20 @@ export default async function RandevuEditPage({ params }: { params: { id: string
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
+  const clinicOwner = clinicOwnerIdFor(user.id) ?? user.id
 
   const { data: appt } = await supabase
     .from('internal_appointment')
     .select('id, patient_id, start_at, duration_minutes, appointment_type, treatment_type, reason, detail, status, recurrence_group_id')
     .eq('id', params.id)
-    .eq('owner_id', user.id)
+    .eq('owner_id', clinicOwner)
     .maybeSingle()
 
   if (!appt) notFound()
 
   const [patientRes, availabilityRes] = await Promise.all([
     supabase.from('internal_patient').select('name, phone').eq('id', appt.patient_id).maybeSingle(),
-    supabase.from('internal_availability').select('day_of_week, open_time, close_time, is_closed').eq('owner_id', user.id),
+    supabase.from('internal_availability').select('day_of_week, open_time, close_time, is_closed').eq('owner_id', clinicOwner),
   ])
   const patient = patientRes.data
   const week = normalizeWeek((availabilityRes.data ?? []) as Partial<DayAvailability>[])

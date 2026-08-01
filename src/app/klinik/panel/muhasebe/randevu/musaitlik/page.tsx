@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { isMuhasebeOwner, getMuhasebeOwnerProfile } from '@/lib/muhasebe-owner'
+import { isMuhasebeOwner, getMuhasebeOwnerProfile, clinicOwnerIdFor } from '@/lib/muhasebe-owner'
 import { normalizeWeek, type DayAvailability } from '../slot-utils'
 import MusaitlikForm from './MusaitlikForm'
 import AutoConfirmCard from './AutoConfirmCard'
@@ -21,13 +21,14 @@ export default async function MusaitlikPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
+  const clinicOwner = clinicOwnerIdFor(user.id) ?? user.id
   const ownerProfile = getMuhasebeOwnerProfile(user.id)
 
   const [{ data }, { data: clinicRow }] = await Promise.all([
     supabase
       .from('internal_availability')
       .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
-      .eq('owner_id', user.id)
+      .eq('owner_id', clinicOwner)
       .order('day_of_week', { ascending: true }),
     supabase
       .from('clinics')

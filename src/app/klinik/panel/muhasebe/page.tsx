@@ -4,9 +4,10 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { isMuhasebeOwner } from '@/lib/muhasebe-owner'
-import MuhasebeShellClient, { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
-import RandevuListClient, { type AppointmentRow } from './randevu/RandevuListClient'
+import { isMuhasebeOwner, clinicOwnerIdFor, getKlinikStaff } from '@/lib/muhasebe-owner'
+import TekEkranKlinik, { type ApptRow, type TxRow } from './TekEkranKlinik'
+import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
+import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
 import MuhasebeAppView from '@/components/klinik-panel/MuhasebeAppView'
 
@@ -22,12 +23,16 @@ export default async function MuhasebePage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/giris')
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
+  const clinicOwner = clinicOwnerIdFor(user.id) ?? user.id
 
-  // Yaklaşan randevular: bugünden itibaren 14 gün, planlı olanlar
+  // Yaklaşan randevular: bugünden itibaren 14 gün, planlı olanlar (app view için)
   const nowIso = new Date().toISOString()
   const horizonIso = new Date(Date.now() + 14 * 86_400_000).toISOString()
+  // Tek ekran gün gezgini için geniş aralık: -30 / +90 gün, tüm durumlar
+  const rangeStartIso = new Date(Date.now() - 30 * 86_400_000).toISOString()
+  const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
@@ -40,12 +45,19 @@ export default async function MuhasebePage({
     supabase
       .from('internal_appointment')
       .select('id, patient_id, start_at, duration_minutes, appointment_type, treatment_type, reason, detail, status, recurrence_group_id')
-      .eq('owner_id', user.id)
+      .eq('owner_id', clinicOwner)
       .eq('status', 'scheduled')
       .gte('start_at', nowIso)
       .lte('start_at', horizonIso)
       .order('start_at', { ascending: true })
       .limit(20),
+    supabase
+      .from('internal_appointment')
+      .select('id, patient_id, start_at, duration_minutes, appointment_type, treatment_type, status')
+      .eq('owner_id', clinicOwner)
+      .gte('start_at', rangeStartIso)
+      .lte('start_at', rangeEndIso)
+      .order('start_at', { ascending: true }),
   ])
 
   const patients = patientsRes.data ?? []
@@ -78,7 +90,7 @@ export default async function MuhasebePage({
       .from('internal_appointment')
       .select('id, patient_id, start_at, treatment_type, status')
       .eq('id', fromApptId)
-      .eq('owner_id', user.id)
+      .eq('owner_id', clinicOwner)
       .maybeSingle()
     if (appt && appt.status !== 'completed') {
       const p = patients.find(pp => pp.id === appt.patient_id)
@@ -186,69 +198,46 @@ export default async function MuhasebePage({
     )
   }
 
+  // ─── Tek ekran veri hazırlığı ───────────────────────────────
+  const staff = getKlinikStaff(user.id)!
+  const rangeAppts: ApptRow[] = (rangeRes.data ?? []).map(a => ({
+    id: a.id,
+    patient_id: a.patient_id,
+    start_at: a.start_at,
+    duration_minutes: a.duration_minutes,
+    appointment_type: a.appointment_type,
+    treatment_type: a.treatment_type,
+    status: a.status,
+  }))
+  const txs: TxRow[] = [
+    ...treatments.map(t => ({
+      id: t.id, patient_id: t.patient_id, kind: 'islem' as const,
+      date: t.treatment_date, label: t.name, amount: Number(t.amount ?? 0),
+    })),
+    ...payments.map(p => ({
+      id: p.id, patient_id: p.patient_id, kind: 'tahsilat' as const,
+      date: p.paid_at, label: p.method ?? '', amount: Number(p.amount ?? 0),
+    })),
+  ]
+
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
-          <nav className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-            <Link href="/klinik/panel" className="hover:text-white transition-colors">Klinik Panel</Link>
-            <span>›</span>
-            <span className="text-slate-300">Muhasebe</span>
-          </nav>
-          <h1 className="text-2xl font-black text-white">Muhasebe</h1>
-          <p className="text-slate-400 mt-0.5 text-sm">Günlük hareket — hasta bazlı işlem ve tahsilat takibi.</p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Link
-            href="/klinik/panel/muhasebe/randevu/musaitlik"
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold rounded-xl"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Müsaitlik
-          </Link>
-          <Link
-            href="/klinik/panel/muhasebe/randevu/yeni"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-base font-bold rounded-xl transition-all shadow-lg shadow-violet-500/20"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 5v14M5 12h14" />
-            </svg>
-            Yeni Randevu
-          </Link>
-        </div>
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-4">
+        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-1">
+          <Link href="/klinik/panel" className="hover:text-white transition-colors">Klinik Panel</Link>
+          <span>›</span>
+          <span className="text-slate-300">Klinik Yönetim</span>
+        </nav>
+        <h1 className="text-2xl font-black text-white">Klinik Yönetim</h1>
       </div>
 
-      {/* Yaklaşan randevular paneli */}
-      {upcomingAppts.length > 0 && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-white text-lg font-bold flex items-center gap-2">
-              <span>Yaklaşan Randevular</span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                {upcomingAppts.length}
-              </span>
-            </h2>
-            <Link href="/klinik/panel/muhasebe/randevu" className="text-sm font-semibold text-violet-300 hover:text-violet-200">
-              Tümünü gör →
-            </Link>
-          </div>
-          <RandevuListClient rows={upcomingAppts} variant="compact" showFilters={false} />
-        </div>
-      )}
-
-      <MuhasebeShellClient
-        rows={rows}
-        days={days}
+      <TekEkranKlinik
+        role={staff.role}
+        displayName={staff.displayName}
+        patients={rows}
+        appointments={rangeAppts}
+        txs={txs}
         catalog={catalog as CatalogItem[]}
-        monthLabel={monthLabel}
-        monthBilled={monthBilled}
-        monthCollected={monthCollected}
-        totalRemaining={remainingAll}
-        debtorCount={debtorCount}
-        patientCount={rows.length}
-        prefill={prefill}
       />
     </div>
   )
