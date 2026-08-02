@@ -227,6 +227,15 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
   const treatmentAmount = Number(treatmentAmountStr.replace(',', '.'))
   if (!Number.isFinite(treatmentAmount) || treatmentAmount < 0) return { ok: false, error: 'Geçersiz işlem ücreti.' }
 
+  // Paket: seans sayısı (1 = tek seans → null bırak)
+  const sessionTotalStr = (formData.get('session_total') as string | null)?.trim() ?? ''
+  let sessionTotal: number | null = null
+  if (sessionTotalStr) {
+    const n = Number(sessionTotalStr)
+    if (!Number.isInteger(n) || n < 1 || n > 60) return { ok: false, error: 'Geçersiz seans sayısı.' }
+    if (n > 1) sessionTotal = n
+  }
+
   // Güvenlik: catalog_id verilmişse, kayıt sahibinin owner_id'sine ait olduğunu doğrula (FK + RLS yeterli ama yine de açık kontrol).
   let safeCatalogId: string | null = null
   if (treatmentCatalogId) {
@@ -247,6 +256,7 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
     treatment_date: treatmentDateStr || new Date().toISOString().slice(0, 10),
     amount: treatmentAmount,
     notes: treatmentNotes,
+    session_total: sessionTotal,
     created_by: ctx.user.id,
   }).select('id').single()
   if (treatmentErr) return { ok: false, error: treatmentErr.message }
@@ -464,6 +474,21 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
   const startAt = new Date(`${dateStr}T${timeStr}:00`)
   if (Number.isNaN(startAt.getTime())) return { ok: false, error: 'Geçersiz tarih/saat.' }
 
+  // Pakete bağlama (opsiyonel) — paket işlemi bu hastaya ve bu kliniğe ait olmalı
+  const packageTreatmentId = (formData.get('package_treatment_id') as string | null)?.trim() || null
+  let safePackageId: string | null = null
+  if (packageTreatmentId) {
+    const { data: pkg } = await ctx.supabase
+      .from('internal_treatment')
+      .select('id, session_total')
+      .eq('id', packageTreatmentId)
+      .eq('owner_id', ctx.clinicOwnerId)
+      .eq('patient_id', patientId)
+      .maybeSingle()
+    if (!pkg || !pkg.session_total) return { ok: false, error: 'Paket bulunamadı.' }
+    safePackageId = pkg.id
+  }
+
   const { error } = await ctx.supabase.from('internal_appointment').insert({
     owner_id: ctx.clinicOwnerId,
     created_by: ctx.user.id,
@@ -471,6 +496,7 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
     start_at: startAt.toISOString(),
     duration_minutes: durationMin,
     treatment_type: treatmentType,
+    package_treatment_id: safePackageId,
     status: 'scheduled',
   })
   if (error) return { ok: false, error: error.message }

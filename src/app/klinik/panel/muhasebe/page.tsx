@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, clinicOwnerIdFor, getKlinikStaff } from '@/lib/muhasebe-owner'
-import TekEkranKlinik, { type ApptRow, type TxRow } from './TekEkranKlinik'
+import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow } from './TekEkranKlinik'
 import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
 import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
@@ -32,9 +32,9 @@ export default async function MuhasebePage({
   const rangeStartIso = new Date(Date.now() - 30 * 86_400_000).toISOString()
   const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
-    supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date'),
+    supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date, session_total'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
     supabase
       .from('internal_treatment_catalog')
@@ -53,11 +53,17 @@ export default async function MuhasebePage({
       .limit(20),
     supabase
       .from('internal_appointment')
-      .select('id, patient_id, start_at, duration_minutes, appointment_type, treatment_type, status')
+      .select('id, patient_id, start_at, duration_minutes, appointment_type, treatment_type, status, package_treatment_id')
       .eq('owner_id', clinicOwner)
       .gte('start_at', rangeStartIso)
       .lte('start_at', rangeEndIso)
       .order('start_at', { ascending: true }),
+    // Paket sayaçları: pakete bağlı TÜM randevular (pencere dışındakiler dahil)
+    supabase
+      .from('internal_appointment')
+      .select('package_treatment_id, status, start_at')
+      .eq('owner_id', clinicOwner)
+      .not('package_treatment_id', 'is', null),
   ])
 
   const patients = patientsRes.data ?? []
@@ -208,7 +214,31 @@ export default async function MuhasebePage({
     appointment_type: a.appointment_type,
     treatment_type: a.treatment_type,
     status: a.status,
+    package_treatment_id: a.package_treatment_id ?? null,
   }))
+
+  // ─── Paket sayaçları ────────────────────────────────────────
+  const pkgAppts = pkgApptsRes.data ?? []
+  const nowMs = Date.now()
+  const packages: PackageRow[] = treatments
+    .filter(t => (t.session_total ?? 0) > 1)
+    .map(t => {
+      const linked = pkgAppts.filter(a => a.package_treatment_id === t.id)
+      const done = linked.filter(a => a.status === 'completed').length
+      const nextAt = linked
+        .filter(a => a.status === 'scheduled' && new Date(a.start_at).getTime() >= nowMs)
+        .map(a => a.start_at)
+        .sort()[0] ?? null
+      return {
+        treatment_id: t.id,
+        patient_id: t.patient_id,
+        name: t.name,
+        session_total: t.session_total as number,
+        done,
+        planned: linked.filter(a => a.status === 'scheduled').length,
+        next_at: nextAt,
+      }
+    })
   const txs: TxRow[] = [
     ...treatments.map(t => ({
       id: t.id, patient_id: t.patient_id, kind: 'islem' as const,
@@ -238,6 +268,7 @@ export default async function MuhasebePage({
         appointments={rangeAppts}
         txs={txs}
         catalog={catalog as CatalogItem[]}
+        packages={packages}
       />
     </div>
   )

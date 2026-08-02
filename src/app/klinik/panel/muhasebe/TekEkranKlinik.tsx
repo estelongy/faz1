@@ -24,6 +24,16 @@ export interface ApptRow {
   treatment_type: string | null
   appointment_type: string | null
   status: string
+  package_treatment_id: string | null
+}
+export interface PackageRow {
+  treatment_id: string
+  patient_id: string
+  name: string
+  session_total: number
+  done: number       // tamamlanan seans (completed randevu sayısı)
+  planned: number    // planlı seans
+  next_at: string | null
 }
 export interface TxRow {
   id: string
@@ -41,6 +51,7 @@ interface Props {
   appointments: ApptRow[]   // -30 / +90 gün aralığı, tüm durumlar
   txs: TxRow[]              // işlem + tahsilat birleşik (tüm kayıtlar)
   catalog: CatalogItem[]
+  packages: PackageRow[]    // seanslı işlemler (session_total > 1) + sayaçları
 }
 
 const TRY = (n: number) =>
@@ -62,7 +73,7 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, patients, appointments, txs, catalog }: Props) {
+export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -104,6 +115,17 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     return txs.filter(t => t.patient_id === selectedId)
       .sort((a, b) => b.date.localeCompare(a.date))
   }, [txs, selectedId])
+
+  // Seçili hastanın paketleri (aktifler önde: tamamlanmamış olanlar)
+  const patientPackages = useMemo(() => {
+    if (!selectedId) return []
+    return packages
+      .filter(p => p.patient_id === selectedId)
+      .sort((a, b) => (a.done >= a.session_total ? 1 : 0) - (b.done >= b.session_total ? 1 : 0))
+  }, [packages, selectedId])
+  const activePackages = patientPackages.filter(p => p.done < p.session_total)
+
+  const pkgById = useMemo(() => new Map(packages.map(p => [p.treatment_id, p])), [packages])
 
   const patientAppts = useMemo(() => {
     if (!selectedId) return []
@@ -277,7 +299,14 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${st.cls}`}>{st.label}</span>
                 </div>
                 <div className="flex items-center justify-between mt-1.5">
-                  <span className="text-xs text-slate-400 truncate">{a.treatment_type ?? a.appointment_type ?? ''}</span>
+                  <span className="text-xs text-slate-400 truncate">
+                    {a.treatment_type ?? a.appointment_type ?? ''}
+                    {(() => {
+                      const pk = a.package_treatment_id ? pkgById.get(a.package_treatment_id) : null
+                      if (!pk) return null
+                      return <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">📦 {pk.done}/{pk.session_total}</span>
+                    })()}
+                  </span>
                   {a.status === 'scheduled' && (
                     <div className="flex gap-1 shrink-0" onClick={e => e.stopPropagation()}>
                       <button onClick={() => pickPatient(a.patient_id, 'islem', a.id)}
@@ -337,6 +366,37 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 </Link>
               </div>
 
+              {/* ── Paketler / seans sayacı ── */}
+              {patientPackages.length > 0 && (
+                <div className="space-y-2">
+                  {patientPackages.map(pk => {
+                    const full = pk.done >= pk.session_total
+                    const pct = Math.min(100, Math.round((pk.done / pk.session_total) * 100))
+                    return (
+                      <div key={pk.treatment_id} className={`rounded-xl border p-3 ${full ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-violet-500/5 border-violet-500/25'}`}>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-bold text-white truncate">{pk.name}</span>
+                          <span className={`text-sm font-black tabular-nums shrink-0 ${full ? 'text-emerald-300' : 'text-violet-300'}`}>
+                            {pk.done}/{pk.session_total} seans
+                          </span>
+                        </div>
+                        <div className="mt-2 h-1.5 rounded-full bg-slate-700/60 overflow-hidden">
+                          <div className={`h-full rounded-full ${full ? 'bg-emerald-400' : 'bg-violet-400'}`} style={{ width: `${pct}%` }} />
+                        </div>
+                        <div className="mt-1.5 flex items-center justify-between text-xs text-slate-400">
+                          <span>
+                            {full ? 'Paket tamamlandı 🎉' : pk.next_at
+                              ? `Sonraki: ${new Date(pk.next_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} ${new Date(pk.next_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })}`
+                              : `Planlı seans yok — ${pk.session_total - pk.done} seans kaldı, randevu ver`}
+                          </span>
+                          {!full && pk.planned > 0 && <span>{pk.planned} planlı</span>}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
               {/* ── İşlem formu (opsiyonel tahsilatla) ── */}
               {openForm === 'islem' && (
                 <form onSubmit={submitIslem} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
@@ -351,7 +411,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     <input name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal" className={inputCls} />
                     <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
                   </div>
-                  <div className="grid sm:grid-cols-[120px,140px,1fr] gap-2">
+                  <div className="grid sm:grid-cols-[130px,120px,140px,1fr] gap-2">
+                    <select name="session_total" defaultValue="" className={inputCls} title="Paketse toplam seans sayısı">
+                      <option value="">Tek seans</option>
+                      {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n} seans</option>)}
+                    </select>
                     <input name="payment_amount" placeholder="Alınan ₺" inputMode="decimal" className={inputCls} />
                     <select name="payment_method" className={inputCls}>
                       <option value="">Ödeme yok</option>
@@ -394,6 +458,16 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </select>
                     <input name="treatment_type" list="katalog-listesi" placeholder="İşlem / sebep" className={inputCls} />
                   </div>
+                  {activePackages.length > 0 && (
+                    <select name="package_treatment_id" defaultValue={activePackages.length === 1 ? activePackages[0].treatment_id : ''} className={inputCls}>
+                      <option value="">Pakete bağlama (bağımsız randevu)</option>
+                      {activePackages.map(pk => (
+                        <option key={pk.treatment_id} value={pk.treatment_id}>
+                          Pakete bağla: {pk.name} ({pk.done}/{pk.session_total})
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   <button type="submit" disabled={pending} className={btnPrimary}>{pending ? 'Kaydediliyor…' : 'Randevuyu Kaydet'}</button>
                 </form>
               )}
