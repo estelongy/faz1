@@ -237,6 +237,9 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [photoProgress, setPhotoProgress] = useState<string | null>(null)
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
   const [photoStage, setPhotoStage] = useState<'oncesi' | 'sonrasi' | 'kontrol'>('oncesi')
+  // Karşılaştırma modu: 2 foto seç → yan yana
+  const [compareMode, setCompareMode] = useState(false)
+  const [compareSel, setCompareSel] = useState<string[]>([])
 
   // İstemci tarafı sıkıştırma: uzun kenar 1600px, JPEG %80 → 4-8 MB'lık kamera
   // fotoğrafı ~200-500 KB'a iner, yükleme 10 kat hızlanır. Decode edilemeyen
@@ -742,11 +745,30 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               {/* ── Fotoğraflar ── */}
               {patientPhotos.length > 0 && (
                 <div>
-                  <p className="text-sm font-bold text-slate-300 mb-2">Fotoğraflar ({patientPhotos.length})</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-bold text-slate-300">Fotoğraflar ({patientPhotos.length})</p>
+                    {patientPhotos.length > 1 && (
+                      <button type="button"
+                        onClick={() => { setCompareMode(!compareMode); setCompareSel([]) }}
+                        className={`text-xs font-bold px-2.5 py-1 rounded-lg transition-colors ${compareMode ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}>
+                        ⇆ Karşılaştır{compareMode ? ` (${compareSel.length}/2 seçildi)` : ''}
+                      </button>
+                    )}
+                  </div>
+                  {compareMode && compareSel.length < 2 && (
+                    <p className="text-xs text-violet-300 mb-2">Karşılaştırılacak {compareSel.length === 0 ? 'ilk' : 'ikinci'} fotoğrafı seç (önce öncesi, sonra sonrası).</p>
+                  )}
                   <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
                     {patientPhotos.map((f, idx) => (
-                      <div key={f.id} className="relative rounded-lg overflow-hidden border border-slate-700/60 bg-slate-900/40">
-                        <button type="button" onClick={() => setLightboxIdx(idx)} className="block w-full" aria-label="Fotoğrafı büyüt">
+                      <div key={f.id} className={`relative rounded-lg overflow-hidden border bg-slate-900/40 ${compareSel.includes(f.id) ? 'border-violet-400 ring-2 ring-violet-500/50' : 'border-slate-700/60'}`}>
+                        <button type="button"
+                          onClick={() => {
+                            if (!compareMode) { setLightboxIdx(idx); return }
+                            setCompareSel(prev => prev.includes(f.id)
+                              ? prev.filter(x => x !== f.id)
+                              : prev.length >= 2 ? [prev[1], f.id] : [...prev, f.id])
+                          }}
+                          className="block w-full" aria-label={compareMode ? 'Karşılaştırmaya seç' : 'Fotoğrafı büyüt'}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={f.url} alt={f.note ?? 'Hasta fotoğrafı'} className="w-full h-24 object-cover" loading="lazy" />
                         </button>
@@ -877,6 +899,46 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           )}
         </div>
       </div>
+
+      {/* KARŞILAŞTIRMA — iki foto yan yana */}
+      {compareMode && compareSel.length === 2 && (() => {
+        const pair = compareSel
+          .map(id => patientPhotos.find(f => f.id === id))
+          .filter((f): f is PhotoRow => !!f)
+        if (pair.length !== 2) return null
+        const caption = (f: PhotoRow) =>
+          `${new Date(f.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}${f.note ? ` · ${f.note}` : ''}`
+        return (
+          <div className="fixed inset-0 z-50 bg-black/95 flex flex-col"
+            onClick={() => setCompareSel([])}
+            onKeyDown={e => { if (e.key === 'Escape') setCompareSel([]) }}
+            tabIndex={0}
+            ref={el => el?.focus()}>
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-white font-bold text-sm">{selected?.name} — Karşılaştırma</span>
+              <div className="flex gap-2">
+                <button onClick={e => { e.stopPropagation(); setCompareSel([compareSel[1], compareSel[0]]) }}
+                  className="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">⇆ Yer değiştir</button>
+                <button onClick={() => setCompareSel([])} aria-label="Kapat"
+                  className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-bold">✕</button>
+              </div>
+            </div>
+            <div className="flex-1 grid grid-cols-2 gap-1 px-1 pb-1 min-h-0" onClick={e => e.stopPropagation()}>
+              {pair.map((f, i) => (
+                <div key={f.id} className="flex flex-col min-h-0 bg-slate-950 rounded-lg overflow-hidden">
+                  <div className="flex-1 min-h-0 flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={f.url} alt={f.note ?? 'Foto'} className="max-h-full max-w-full object-contain select-none" />
+                  </div>
+                  <div className={`px-3 py-2 text-xs font-semibold text-center ${i === 0 ? 'text-violet-300 bg-violet-500/10' : 'text-emerald-300 bg-emerald-500/10'}`}>
+                    {caption(f)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* LIGHTBOX — foto büyütme + ←→ geçiş + silme */}
       {lightboxIdx !== null && patientPhotos[lightboxIdx] && (() => {
