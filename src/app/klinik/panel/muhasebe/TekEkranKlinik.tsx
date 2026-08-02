@@ -265,6 +265,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [compareMode, setCompareMode] = useState(false)
   const [compareSel, setCompareSel] = useState<string[]>([])
   const [compareView, setCompareView] = useState<'yanyana' | 'kaydir'>('yanyana')
+  const [randevuPkgId, setRandevuPkgId] = useState('')
   const [sliderPos, setSliderPos] = useState(50)
 
   // İstemci tarafı sıkıştırma: uzun kenar 1600px, JPEG %80 → 4-8 MB'lık kamera
@@ -562,7 +563,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               <div className="flex flex-wrap gap-2">
                 {(['islem', 'tahsilat', 'randevu', 'foto'] as const).map(k => (
                   <button key={k}
-                    onClick={() => { setOpenForm(openForm === k ? null : k); setFromApptId(null) }}
+                    onClick={() => {
+                      setOpenForm(openForm === k ? null : k)
+                      setFromApptId(null)
+                      if (k === 'randevu') setRandevuPkgId(activePackages.length === 1 ? activePackages[0].treatment_id : '')
+                    }}
                     className={`px-3.5 py-2 rounded-lg text-sm font-bold transition-colors ${openForm === k ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-200 hover:bg-slate-600'}`}>
                     + {k === 'islem' ? 'İşlem' : k === 'tahsilat' ? 'Tahsilat' : k === 'randevu' ? 'Randevu' : 'Foto'}
                   </button>
@@ -669,20 +674,9 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </select>
                     <input name="treatment_type" list="katalog-listesi" placeholder="İşlem / sebep" className={inputCls} />
                   </div>
-                  <div className="grid sm:grid-cols-[1fr,1fr] gap-2">
-                    <select name="recurrence_freq" defaultValue="" className={inputCls} title="Tekrarlama">
-                      <option value="">Tek sefer (tekrarlamaz)</option>
-                      <option value="weekly">Her hafta</option>
-                      <option value="biweekly">2 haftada bir</option>
-                      <option value="triweekly">3 haftada bir</option>
-                      <option value="monthly">Her ay</option>
-                    </select>
-                    <select name="recurrence_months" defaultValue="3" className={inputCls} title="Tekrarlama süresi">
-                      {[1, 2, 3, 4, 5, 6].map(m => <option key={m} value={m}>{m} ay boyunca</option>)}
-                    </select>
-                  </div>
                   {activePackages.length > 0 && (
-                    <select name="package_treatment_id" defaultValue={activePackages.length === 1 ? activePackages[0].treatment_id : ''} className={inputCls}>
+                    <select name="package_treatment_id" value={randevuPkgId}
+                      onChange={e => setRandevuPkgId(e.target.value)} className={inputCls}>
                       <option value="">Pakete bağlama (bağımsız randevu)</option>
                       {activePackages.map(pk => (
                         <option key={pk.treatment_id} value={pk.treatment_id}>
@@ -691,6 +685,30 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                       ))}
                     </select>
                   )}
+                  <div className="grid sm:grid-cols-[1fr,1fr] gap-2 items-center">
+                    <select name="recurrence_freq" defaultValue={randevuPkgId ? 'weekly' : ''} key={randevuPkgId ? 'pkg' : 'solo'} className={inputCls} title="Tekrarlama">
+                      <option value="">{randevuPkgId ? 'Sadece bu seans' : 'Tek sefer (tekrarlamaz)'}</option>
+                      <option value="weekly">Her hafta</option>
+                      <option value="biweekly">2 haftada bir</option>
+                      <option value="triweekly">3 haftada bir</option>
+                      <option value="monthly">Her ay</option>
+                    </select>
+                    {randevuPkgId ? (
+                      (() => {
+                        const pk = activePackages.find(p => p.treatment_id === randevuPkgId)
+                        const kalan = pk ? pk.session_total - pk.done - pk.planned : 0
+                        return (
+                          <span className="text-xs text-violet-300 font-semibold">
+                            Sıklık seçersen kalan {kalan} seansın tümü otomatik planlanır.
+                          </span>
+                        )
+                      })()
+                    ) : (
+                      <select name="recurrence_months" defaultValue="3" className={inputCls} title="Tekrarlama süresi">
+                        {[1, 2, 3, 4, 5, 6].map(m => <option key={m} value={m}>{m} ay boyunca</option>)}
+                      </select>
+                    )}
+                  </div>
                   <button type="submit" disabled={pending} className={btnPrimary}>{pending ? 'Kaydediliyor…' : 'Randevuyu Kaydet'}</button>
                 </form>
               )}

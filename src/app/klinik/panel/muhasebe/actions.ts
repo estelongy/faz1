@@ -555,6 +555,7 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
   // Pakete bağlama (opsiyonel) — paket işlemi bu hastaya ve bu kliniğe ait olmalı
   const packageTreatmentId = (formData.get('package_treatment_id') as string | null)?.trim() || null
   let safePackageId: string | null = null
+  let pkgRemaining = 0
   if (packageTreatmentId) {
     const { data: pkg } = await ctx.supabase
       .from('internal_treatment')
@@ -565,14 +566,36 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
       .maybeSingle()
     if (!pkg || !pkg.session_total) return { ok: false, error: 'Paket bulunamadı.' }
     safePackageId = pkg.id
+    // Henüz randevusu açılmamış seans sayısı (tamamlanan + planlı düşülür)
+    const { count } = await ctx.supabase
+      .from('internal_appointment')
+      .select('id', { count: 'exact', head: true })
+      .eq('owner_id', ctx.clinicOwnerId)
+      .eq('package_treatment_id', pkg.id)
+      .in('status', ['completed', 'scheduled'])
+    pkgRemaining = Math.max(0, pkg.session_total - (count ?? 0))
+    if (pkgRemaining === 0) return { ok: false, error: 'Paketin tüm seansları zaten planlı veya tamamlanmış.' }
   }
 
-  // Tekrarlama (opsiyonel): weekly / biweekly / triweekly / monthly + 1..6 ay
+  // Tekrarlama: weekly / biweekly / triweekly / monthly
   const recurFreq = (formData.get('recurrence_freq') as string | null)?.trim() || null
-  const recurMonthsRaw = Number(formData.get('recurrence_months') ?? 0)
-  const recurMonths = recurFreq && Number.isInteger(recurMonthsRaw) && recurMonthsRaw >= 1 && recurMonthsRaw <= 6
-    ? recurMonthsRaw : null
-  const occurrences = buildOccurrences(startAt, recurFreq, recurMonths)
+  let occurrences: Date[]
+  if (safePackageId && recurFreq) {
+    // SEANS MANTIĞI: pakete bağlı + sıklık seçili → kalan seans sayısı kadar randevu
+    const stepDays = RECURRENCE_FREQ_DAYS[recurFreq] ?? null
+    occurrences = [startAt]
+    for (let i = 1; i < pkgRemaining; i++) {
+      occurrences.push(stepDays
+        ? new Date(startAt.getTime() + i * stepDays * 86_400_000)
+        : addMonthsSafe(startAt, i))
+    }
+  } else {
+    // Paketsiz: klasik süreli tekrar (1..6 ay)
+    const recurMonthsRaw = Number(formData.get('recurrence_months') ?? 0)
+    const recurMonths = recurFreq && Number.isInteger(recurMonthsRaw) && recurMonthsRaw >= 1 && recurMonthsRaw <= 6
+      ? recurMonthsRaw : null
+    occurrences = buildOccurrences(startAt, recurFreq, recurMonths)
+  }
   const groupId = occurrences.length > 1 ? crypto.randomUUID() : null
 
   const rows = occurrences.map(d => ({
