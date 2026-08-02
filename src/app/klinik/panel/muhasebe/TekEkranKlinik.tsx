@@ -573,59 +573,6 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 </div>
               )}
 
-              {/* ── Ödeme sözleri (alacak planı) ── */}
-              {(patientPromises.length > 0 || (selected.remaining > 0 && openForm === 'soz')) && (
-                <div className="space-y-1.5">
-                  <p className="text-xs font-bold text-amber-300">Ödeme planı</p>
-                  {patientPromises.map(pr => {
-                    const late = pr.due_date < today
-                    return (
-                      <div key={pr.id} className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border ${late ? 'bg-rose-500/5 border-rose-500/30' : 'bg-slate-900/40 border-slate-700/60'}`}>
-                        <div className="min-w-0 text-sm">
-                          <span className={late ? 'text-rose-300 font-semibold' : 'text-slate-200'}>
-                            {new Date(pr.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
-                            {late ? ' ⚠' : ''}
-                          </span>
-                          <span className="text-white font-bold ml-2 tabular-nums">{TRY(Number(pr.amount))}</span>
-                          {pr.note && <span className="text-xs text-slate-500 ml-2">{pr.note}</span>}
-                        </div>
-                        <div className="flex gap-1 shrink-0">
-                          <button onClick={() => run(() => settlePaymentPromise(pr.id, 'paid'))}
-                            className="text-[11px] font-bold px-2 py-1 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/40">
-                            Tahsil Et
-                          </button>
-                          <button onClick={() => run(() => settlePaymentPromise(pr.id, 'cancelled'))}
-                            className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-400 hover:bg-slate-600">
-                            İptal
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-              {selected.remaining > 0 && (
-                openForm === 'soz' ? (
-                  <form onSubmit={e => {
-                    e.preventDefault()
-                    if (!selectedId) return
-                    run(() => addPaymentPromise(selectedId, new FormData(e.currentTarget as HTMLFormElement)))
-                  }} className="bg-slate-900/60 border border-amber-500/25 rounded-xl p-3 space-y-2">
-                    <p className="text-xs text-amber-300 font-semibold">Kalan {TRY(selected.remaining)} için ödeme sözü</p>
-                    <div className="grid sm:grid-cols-[140px,130px,1fr,auto] gap-2">
-                      <input name="due_date" type="date" required className={inputCls} />
-                      <input name="amount" placeholder="Tutar ₺ *" required inputMode="decimal" defaultValue={String(selected.remaining)} className={inputCls} />
-                      <input name="note" placeholder="Not (taksit 1/3 vs.)" className={inputCls} />
-                      <button type="submit" disabled={pending} className={btnPrimary}>Kaydet</button>
-                    </div>
-                  </form>
-                ) : (
-                  <button onClick={() => setOpenForm('soz')} className="text-xs font-semibold text-amber-300/80 hover:text-amber-200 text-left">
-                    + Ödeme sözü al ({TRY(selected.remaining)} açık)
-                  </button>
-                )
-              )}
-
               {/* ── İşlem formu (opsiyonel tahsilatla) ── */}
               {openForm === 'islem' && (
                 <form onSubmit={submitIslem} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
@@ -856,6 +803,60 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   </div>
                 )}
               </div>
+
+              {/* ── Ödeme sözleri (alacak planı) ── */}
+              {(patientPromises.length > 0 || (selected.remaining > 0 && openForm === 'soz')) && (
+                <div className="space-y-1.5">
+                  <p className="text-xs font-bold text-amber-300">Ödeme planı</p>
+                  {patientPromises.map(pr => {
+                    const late = pr.due_date < today
+                    return (
+                      <div key={pr.id} className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border ${late ? 'bg-rose-500/5 border-rose-500/30' : 'bg-slate-900/40 border-slate-700/60'}`}>
+                        <div className="min-w-0 text-sm">
+                          <span className={late ? 'text-rose-300 font-semibold' : 'text-slate-200'}>
+                            {new Date(pr.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                            {late ? ' ⚠' : ''}
+                          </span>
+                          <span className="text-white font-bold ml-2 tabular-nums">{TRY(Number(pr.amount))}</span>
+                          {pr.note && <span className="text-xs text-slate-500 ml-2">{pr.note}</span>}
+                        </div>
+                        <div className="flex gap-1 shrink-0">
+                          <button onClick={() => run(() => settlePaymentPromise(pr.id, 'paid'))}
+                            className="text-[11px] font-bold px-2 py-1 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/40">
+                            Tahsil Et
+                          </button>
+                          <button onClick={() => run(() => settlePaymentPromise(pr.id, 'cancelled'))}
+                            className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-400 hover:bg-slate-600">
+                            İptal
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+              {selected.remaining > 0 && (
+                openForm === 'soz' ? (
+                  <form onSubmit={e => {
+                    e.preventDefault()
+                    if (!selectedId) return
+                    run(() => addPaymentPromise(selectedId, new FormData(e.currentTarget as HTMLFormElement)))
+                  }} className="bg-slate-900/60 border border-amber-500/25 rounded-xl p-3 space-y-2">
+                    <p className="text-xs text-amber-300 font-semibold">Kalan {TRY(selected.remaining)} için ödeme sözü</p>
+                    <div className="grid sm:grid-cols-[140px,130px,1fr,auto] gap-2">
+                      <input name="due_date" type="date" required className={inputCls} />
+                      <input name="amount" placeholder="Tutar ₺ *" required inputMode="decimal" defaultValue={String(selected.remaining)} className={inputCls} />
+                      <input name="note" placeholder="Not (taksit 1/3 vs.)" className={inputCls} />
+                      <button type="submit" disabled={pending} className={btnPrimary}>Kaydet</button>
+                    </div>
+                  </form>
+                ) : (
+                  <button onClick={() => setOpenForm('soz')} className="text-xs font-semibold text-amber-300/80 hover:text-amber-200 text-left">
+                    + Ödeme sözü al ({TRY(selected.remaining)} açık)
+                  </button>
+                )
+              )}
+
             </div>
           )}
         </div>
