@@ -839,19 +839,26 @@ export async function addPatientPhoto(patientId: string, formData: FormData): Pr
   const treatmentId = (formData.get('treatment_id') as string | null)?.trim() || null
   let note = (formData.get('note') as string | null)?.trim() || null
 
-  // Not boşsa otomatik etiketle: kapsam (işlem varsa o işlem, yoksa hasta geneli)
-  // içindeki İLK foto "İşlem öncesi", sonrakiler "Kontrol · GG.AA.YYYY".
+  // Not boşsa otomatik etiketle. Kural KÜME bazlı: kapsamın (işlem varsa o işlem,
+  // yoksa hasta geneli) İLK GÜNÜ çekilen TÜM fotolar "İşlem öncesi" — tek foto değil.
+  // Sonraki günlerde eklenenler "Kontrol · GG.AA.YYYY".
   if (!note) {
-    let countQuery = ctx.supabase
+    let firstQuery = ctx.supabase
       .from('internal_patient_photo')
-      .select('id', { count: 'exact', head: true })
+      .select('created_at')
       .eq('owner_id', ctx.clinicOwnerId)
       .eq('patient_id', patientId)
-    countQuery = treatmentId
-      ? countQuery.eq('treatment_id', treatmentId)
-      : countQuery.is('treatment_id', null)
-    const { count } = await countQuery
-    note = (count ?? 0) === 0
+      .order('created_at', { ascending: true })
+      .limit(1)
+    firstQuery = treatmentId
+      ? firstQuery.eq('treatment_id', treatmentId)
+      : firstQuery.is('treatment_id', null)
+    const { data: first } = await firstQuery
+    const todayTR = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+    const firstDayTR = first?.[0]
+      ? new Date(first[0].created_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+      : null
+    note = (!firstDayTR || firstDayTR === todayTR)
       ? 'İşlem öncesi'
       : `Kontrol · ${new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
   }
