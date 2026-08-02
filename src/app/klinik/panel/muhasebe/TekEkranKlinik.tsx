@@ -698,7 +698,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                         </option>
                       ))}
                     </select>
-                    <input name="note" placeholder="Not (öncesi / sonrası vs.)" className={inputCls} />
+                    <input name="note" placeholder="Not (boş bırak: ilk foto 'İşlem öncesi', sonrakiler 'Kontrol · tarih')" className={inputCls} />
                   </div>
                   <button type="submit" disabled={pending} className={btnPrimary}>{pending ? 'Yükleniyor…' : 'Fotoğrafı Yükle'}</button>
                 </form>

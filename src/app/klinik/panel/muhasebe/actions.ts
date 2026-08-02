@@ -837,7 +837,24 @@ export async function addPatientPhoto(patientId: string, formData: FormData): Pr
   if (!ext) return { ok: false, error: 'Sadece JPG / PNG / WebP / HEIC.' }
 
   const treatmentId = (formData.get('treatment_id') as string | null)?.trim() || null
-  const note = (formData.get('note') as string | null)?.trim() || null
+  let note = (formData.get('note') as string | null)?.trim() || null
+
+  // Not boşsa otomatik etiketle: kapsam (işlem varsa o işlem, yoksa hasta geneli)
+  // içindeki İLK foto "İşlem öncesi", sonrakiler "Kontrol · GG.AA.YYYY".
+  if (!note) {
+    let countQuery = ctx.supabase
+      .from('internal_patient_photo')
+      .select('id', { count: 'exact', head: true })
+      .eq('owner_id', ctx.clinicOwnerId)
+      .eq('patient_id', patientId)
+    countQuery = treatmentId
+      ? countQuery.eq('treatment_id', treatmentId)
+      : countQuery.is('treatment_id', null)
+    const { count } = await countQuery
+    note = (count ?? 0) === 0
+      ? 'İşlem öncesi'
+      : `Kontrol · ${new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
+  }
 
   // İşleme bağlanıyorsa bu hastanın işlemi olduğunu doğrula
   if (treatmentId) {
