@@ -233,6 +233,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   // ── Inline form durumu: aynı anda tek form açık ──
   type FormKind = 'islem' | 'tahsilat' | 'randevu' | 'yeniHasta' | 'soz' | 'foto' | null
   const [openForm, setOpenForm] = useState<FormKind>(null)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [fromApptId, setFromApptId] = useState<string | null>(null)
 
   function pickPatient(id: string, form: FormKind = null, apptId: string | null = null) {
@@ -684,11 +685,28 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               {openForm === 'foto' && (
                 <form onSubmit={e => {
                   e.preventDefault()
-                  if (!selectedId) return
-                  run(() => addPatientPhoto(selectedId, new FormData(e.currentTarget as HTMLFormElement)))
+                  if (!selectedId || !photoFile) { setError('Önce fotoğraf çek veya seç.'); return }
+                  const fd = new FormData(e.currentTarget as HTMLFormElement)
+                  fd.set('photo', photoFile)
+                  run(() => addPatientPhoto(selectedId, fd).then(r => { if (r.ok) setPhotoFile(null); return r }))
                 }} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
-                  <input name="photo" type="file" accept="image/*" capture="environment" required
-                    className="block w-full text-sm text-slate-300 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-violet-600 file:text-white file:text-sm file:font-bold file:cursor-pointer" />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label className="px-3.5 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold cursor-pointer">
+                      📷 Kamera
+                      <input type="file" accept="image/*" capture="environment" className="hidden"
+                        onChange={e => setPhotoFile(e.target.files?.[0] ?? null)} />
+                    </label>
+                    <label className="px-3.5 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 text-sm font-bold cursor-pointer">
+                      🖼 Galeriden Seç
+                      <input type="file" accept="image/*" className="hidden"
+                        onChange={e => setPhotoFile(e.target.files?.[0] ?? null)} />
+                    </label>
+                    {photoFile && (
+                      <span className="text-xs text-emerald-300 font-semibold truncate max-w-[200px]">
+                        ✓ {photoFile.name || 'fotoğraf hazır'} ({Math.round(photoFile.size / 1024)} KB)
+                      </span>
+                    )}
+                  </div>
                   <div className="grid sm:grid-cols-[1fr,1fr] gap-2">
                     <select name="treatment_id" defaultValue="" className={inputCls}>
                       <option value="">Genel (işleme bağlı değil)</option>
