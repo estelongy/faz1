@@ -817,3 +817,77 @@ export async function cancelRecurrenceSeries(params: {
   revalidatePath('/klinik/panel/muhasebe/randevu')
   return { ok: true, cancelled: count ?? 0 }
 }
+
+// ─── Hasta fotoğrafları ────────────────────────────────────────────────────
+// Private bucket 'klinik-foto', yol: {clinicOwnerId}/{patientId}/{uuid}.{ext}
+// Başlangıçta veya herhangi bir işleme bağlı olarak, sınırsız sayıda eklenebilir.
+const PHOTO_MAX_BYTES = 10 * 1024 * 1024
+const PHOTO_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic',
+}
+
+export async function addPatientPhoto(patientId: string, formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const file = formData.get('photo') as File | null
+  if (!file || file.size === 0) return { ok: false, error: 'Fotoğraf seçilmedi.' }
+  if (file.size > PHOTO_MAX_BYTES) return { ok: false, error: 'Fotoğraf 10 MB\'dan büyük olamaz.' }
+  const ext = PHOTO_TYPES[file.type]
+  if (!ext) return { ok: false, error: 'Sadece JPG / PNG / WebP / HEIC.' }
+
+  const treatmentId = (formData.get('treatment_id') as string | null)?.trim() || null
+  const note = (formData.get('note') as string | null)?.trim() || null
+
+  // İşleme bağlanıyorsa bu hastanın işlemi olduğunu doğrula
+  if (treatmentId) {
+    const { data: t } = await ctx.supabase
+      .from('internal_treatment')
+      .select('id')
+      .eq('id', treatmentId)
+      .eq('owner_id', ctx.clinicOwnerId)
+      .eq('patient_id', patientId)
+      .maybeSingle()
+    if (!t) return { ok: false, error: 'İşlem bulunamadı.' }
+  }
+
+  const path = `${ctx.clinicOwnerId}/${patientId}/${crypto.randomUUID()}.${ext}`
+  const { error: upErr } = await ctx.supabase.storage
+    .from('klinik-foto')
+    .upload(path, file, { contentType: file.type })
+  if (upErr) return { ok: false, error: `Yükleme hatası: ${upErr.message}` }
+
+  const { error } = await ctx.supabase.from('internal_patient_photo').insert({
+    owner_id: ctx.clinicOwnerId,
+    patient_id: patientId,
+    treatment_id: treatmentId,
+    storage_path: path,
+    note,
+    created_by: ctx.user.id,
+  })
+  if (error) {
+    await ctx.supabase.storage.from('klinik-foto').remove([path])
+    return { ok: false, error: error.message }
+  }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+export async function deletePatientPhoto(id: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const { data: photo } = await ctx.supabase
+    .from('internal_patient_photo')
+    .select('id, storage_path')
+    .eq('id', id)
+    .eq('owner_id', ctx.clinicOwnerId)
+    .maybeSingle()
+  if (!photo) return { ok: false, error: 'Fotoğraf bulunamadı.' }
+
+  await ctx.supabase.storage.from('klinik-foto').remove([photo.storage_path])
+  const { error } = await ctx.supabase.from('internal_patient_photo').delete().eq('id', id)
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}

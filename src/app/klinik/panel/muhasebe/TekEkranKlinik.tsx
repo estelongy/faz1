@@ -13,6 +13,7 @@ import {
   addQuickEntry, addPayment, addPatient,
   createAppointmentForPatient, setAppointmentStatus,
   addPaymentPromise, settlePaymentPromise,
+  addPatientPhoto, deletePatientPhoto,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
@@ -34,6 +35,14 @@ export interface PromiseRow {
   amount: number
   note: string | null
   status: string
+}
+export interface PhotoRow {
+  id: string
+  patient_id: string
+  treatment_id: string | null
+  note: string | null
+  created_at: string
+  url: string          // imzalı URL (1 saat)
 }
 export interface PackageRow {
   treatment_id: string
@@ -62,6 +71,7 @@ interface Props {
   catalog: CatalogItem[]
   packages: PackageRow[]    // seanslı işlemler (session_total > 1) + sayaçları
   promises: PromiseRow[]    // açık ödeme sözleri
+  photos: PhotoRow[]        // hasta fotoğrafları (imzalı URL'lerle)
 }
 
 const TRY = (n: number) =>
@@ -83,7 +93,7 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises }: Props) {
+export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises, photos }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -177,6 +187,24 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     [patients],
   )
 
+  const patientPhotos = useMemo(
+    () => selectedId ? photos.filter(f => f.patient_id === selectedId) : [],
+    [photos, selectedId],
+  )
+  // Foto formundaki "işleme bağla" seçici için hastanın işlemleri (yeniden eskiye, son 12)
+  const patientTreatments = useMemo(
+    () => selectedId
+      ? txs.filter(t => t.patient_id === selectedId && t.kind === 'islem')
+          .sort((a, b) => b.date.localeCompare(a.date)).slice(0, 12)
+      : [],
+    [txs, selectedId],
+  )
+  const treatmentLabel = (tid: string | null) => {
+    if (!tid) return null
+    const t = txs.find(x => x.kind === 'islem' && x.id === tid)
+    return t ? t.label : null
+  }
+
   const patientPromises = useMemo(
     () => selectedId ? promises.filter(pr => pr.patient_id === selectedId).sort((a, b) => a.due_date.localeCompare(b.due_date)) : [],
     [promises, selectedId],
@@ -203,7 +231,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   }, [txs, day])
 
   // ── Inline form durumu: aynı anda tek form açık ──
-  type FormKind = 'islem' | 'tahsilat' | 'randevu' | 'yeniHasta' | 'soz' | null
+  type FormKind = 'islem' | 'tahsilat' | 'randevu' | 'yeniHasta' | 'soz' | 'foto' | null
   const [openForm, setOpenForm] = useState<FormKind>(null)
   const [fromApptId, setFromApptId] = useState<string | null>(null)
 
@@ -476,11 +504,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
               {/* Aksiyon çubuğu */}
               <div className="flex flex-wrap gap-2">
-                {(['islem', 'tahsilat', 'randevu'] as const).map(k => (
+                {(['islem', 'tahsilat', 'randevu', 'foto'] as const).map(k => (
                   <button key={k}
                     onClick={() => { setOpenForm(openForm === k ? null : k); setFromApptId(null) }}
                     className={`px-3.5 py-2 rounded-lg text-sm font-bold transition-colors ${openForm === k ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-200 hover:bg-slate-600'}`}>
-                    + {k === 'islem' ? 'İşlem' : k === 'tahsilat' ? 'Tahsilat' : 'Randevu'}
+                    + {k === 'islem' ? 'İşlem' : k === 'tahsilat' ? 'Tahsilat' : k === 'randevu' ? 'Randevu' : 'Foto'}
                   </button>
                 ))}
                 <Link href={`/klinik/panel/muhasebe/${selected.id}`} className="ml-auto px-3 py-2 text-xs font-semibold text-slate-400 hover:text-white">
@@ -650,6 +678,58 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   )}
                   <button type="submit" disabled={pending} className={btnPrimary}>{pending ? 'Kaydediliyor…' : 'Randevuyu Kaydet'}</button>
                 </form>
+              )}
+
+              {/* ── Foto yükleme formu ── */}
+              {openForm === 'foto' && (
+                <form onSubmit={e => {
+                  e.preventDefault()
+                  if (!selectedId) return
+                  run(() => addPatientPhoto(selectedId, new FormData(e.currentTarget as HTMLFormElement)))
+                }} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
+                  <input name="photo" type="file" accept="image/*" capture="environment" required
+                    className="block w-full text-sm text-slate-300 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-violet-600 file:text-white file:text-sm file:font-bold file:cursor-pointer" />
+                  <div className="grid sm:grid-cols-[1fr,1fr] gap-2">
+                    <select name="treatment_id" defaultValue="" className={inputCls}>
+                      <option value="">Genel (işleme bağlı değil)</option>
+                      {patientTreatments.map(t => (
+                        <option key={t.id} value={t.id}>
+                          {new Date(t.date + 'T12:00:00').toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' })} — {t.label}
+                        </option>
+                      ))}
+                    </select>
+                    <input name="note" placeholder="Not (öncesi / sonrası vs.)" className={inputCls} />
+                  </div>
+                  <button type="submit" disabled={pending} className={btnPrimary}>{pending ? 'Yükleniyor…' : 'Fotoğrafı Yükle'}</button>
+                </form>
+              )}
+
+              {/* ── Fotoğraflar ── */}
+              {patientPhotos.length > 0 && (
+                <div>
+                  <p className="text-sm font-bold text-slate-300 mb-2">Fotoğraflar ({patientPhotos.length})</p>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+                    {patientPhotos.map(f => (
+                      <div key={f.id} className="relative group rounded-lg overflow-hidden border border-slate-700/60 bg-slate-900/40">
+                        <a href={f.url} target="_blank" rel="noreferrer">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={f.url} alt={f.note ?? 'Hasta fotoğrafı'} className="w-full h-24 object-cover" loading="lazy" />
+                        </a>
+                        <button
+                          onClick={() => run(() => deletePatientPhoto(f.id))}
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-rose-300 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                          aria-label="Fotoğrafı sil">
+                          ×
+                        </button>
+                        <div className="px-1.5 py-1 text-[10px] text-slate-400 truncate">
+                          {new Date(f.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                          {treatmentLabel(f.treatment_id) ? ` · ${treatmentLabel(f.treatment_id)}` : ''}
+                          {f.note ? ` · ${f.note}` : ''}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
 
               {/* Yaklaşan randevuları */}
