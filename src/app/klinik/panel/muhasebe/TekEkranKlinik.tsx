@@ -233,13 +233,39 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   // ── Inline form durumu: aynı anda tek form açık ──
   type FormKind = 'islem' | 'tahsilat' | 'randevu' | 'yeniHasta' | 'soz' | 'foto' | null
   const [openForm, setOpenForm] = useState<FormKind>(null)
-  const [photoFiles, setPhotoFiles] = useState<File[]>([])
   const [photoProgress, setPhotoProgress] = useState<string | null>(null)
+  const [photoTreatmentId, setPhotoTreatmentId] = useState('')
+  const [photoNote, setPhotoNote] = useState('')
+
+  // Seçilen dosyaları anında sıkıştırıp yükle — ayrıca "Yükle" tuşu yok.
+  function uploadPhotos(files: File[]) {
+    if (!selectedId || files.length === 0) return
+    setError(null)
+    startTransition(async () => {
+      for (let i = 0; i < files.length; i++) {
+        setPhotoProgress(`${i + 1}/${files.length} yükleniyor…`)
+        const compressed = await compressImage(files[i])
+        const fd = new FormData()
+        fd.set('photo', compressed)
+        fd.set('treatment_id', photoTreatmentId)
+        fd.set('stage', photoStage)
+        if (photoNote) fd.set('note', photoNote)
+        const res = await addPatientPhoto(selectedId, fd)
+        if (!res.ok) { setError(res.error ?? 'Yükleme hatası'); break }
+      }
+      setPhotoProgress(null)
+      // Doğal akış: öncesi yüklendi → sıradaki küme büyük ihtimalle sonrası
+      if (photoStage === 'oncesi') setPhotoStage('sonrasi')
+      router.refresh()
+    })
+  }
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
   const [photoStage, setPhotoStage] = useState<'oncesi' | 'sonrasi' | 'kontrol'>('oncesi')
   // Karşılaştırma modu: 2 foto seç → yan yana
   const [compareMode, setCompareMode] = useState(false)
   const [compareSel, setCompareSel] = useState<string[]>([])
+  const [compareView, setCompareView] = useState<'yanyana' | 'kaydir'>('yanyana')
+  const [sliderPos, setSliderPos] = useState(50)
 
   // İstemci tarafı sıkıştırma: uzun kenar 1600px, JPEG %80 → 4-8 MB'lık kamera
   // fotoğrafı ~200-500 KB'a iner, yükleme 10 kat hızlanır. Decode edilemeyen
@@ -657,62 +683,9 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 </form>
               )}
 
-              {/* ── Foto yükleme formu ── */}
+              {/* ── Foto yükleme: seçer seçmez otomatik yüklenir ── */}
               {openForm === 'foto' && (
-                <form onSubmit={e => {
-                  e.preventDefault()
-                  if (!selectedId || photoFiles.length === 0) { setError('Önce fotoğraf çek veya seç.'); return }
-                  const formEl = e.currentTarget as HTMLFormElement
-                  const treatmentId = (new FormData(formEl).get('treatment_id') as string) ?? ''
-                  const noteVal = (new FormData(formEl).get('note') as string) ?? ''
-                  setError(null)
-                  startTransition(async () => {
-                    for (let i = 0; i < photoFiles.length; i++) {
-                      setPhotoProgress(`${i + 1}/${photoFiles.length} yükleniyor…`)
-                      const compressed = await compressImage(photoFiles[i])
-                      const fd = new FormData()
-                      fd.set('photo', compressed)
-                      fd.set('treatment_id', treatmentId)
-                      fd.set('stage', photoStage)
-                      if (noteVal) fd.set('note', noteVal)
-                      const res = await addPatientPhoto(selectedId, fd)
-                      if (!res.ok) { setError(res.error ?? 'Yükleme hatası'); break }
-                    }
-                    setPhotoProgress(null)
-                    setPhotoFiles([])
-                    setOpenForm(null)
-                    // Doğal akış: öncesi çekildi → sıradaki küme büyük ihtimalle sonrası
-                    if (photoStage === 'oncesi') setPhotoStage('sonrasi')
-                    router.refresh()
-                  })
-                }} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <label className="px-3.5 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold cursor-pointer">
-                      📷 Kamera
-                      <input type="file" accept="image/*" capture="environment" className="hidden"
-                        onChange={e => { const f = e.target.files?.[0]; if (f) setPhotoFiles(prev => [...prev, f]) }} />
-                    </label>
-                    <label className="px-3.5 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 text-sm font-bold cursor-pointer">
-                      🖼 Galeriden Seç (çoklu)
-                      <input type="file" accept="image/*" multiple className="hidden"
-                        onChange={e => setPhotoFiles(prev => [...prev, ...Array.from(e.target.files ?? [])])} />
-                    </label>
-                    {photoFiles.length > 0 && !photoProgress && (
-                      <span className="text-xs text-emerald-300 font-semibold">✓ {photoFiles.length} foto hazır</span>
-                    )}
-                    {photoProgress && <span className="text-xs text-violet-300 font-semibold">{photoProgress}</span>}
-                  </div>
-                  {photoFiles.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {photoFiles.map((f, i) => (
-                        <span key={i} className="flex items-center gap-1 text-[11px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md">
-                          {f.name.length > 18 ? f.name.slice(0, 15) + '…' : f.name}
-                          <button type="button" onClick={() => setPhotoFiles(prev => prev.filter((_, j) => j !== i))}
-                            className="text-rose-300 font-bold">×</button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
                   <div className="flex gap-1.5">
                     {([
                       { v: 'oncesi' as const, label: 'Öncesi' },
@@ -726,7 +699,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     ))}
                   </div>
                   <div className="grid sm:grid-cols-[1fr,1fr] gap-2">
-                    <select name="treatment_id" defaultValue="" className={inputCls}>
+                    <select value={photoTreatmentId} onChange={e => setPhotoTreatmentId(e.target.value)} className={inputCls}>
                       <option value="">Genel (işleme bağlı değil)</option>
                       {patientTreatments.map(t => (
                         <option key={t.id} value={t.id}>
@@ -734,12 +707,25 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                         </option>
                       ))}
                     </select>
-                    <input name="note" placeholder="Ek not (opsiyonel — sağ profil, yakın çekim vs.)" className={inputCls} />
+                    <input value={photoNote} onChange={e => setPhotoNote(e.target.value)}
+                      placeholder="Ek not (opsiyonel — sağ profil vs.)" className={inputCls} />
                   </div>
-                  <button type="submit" disabled={pending} className={btnPrimary}>
-                    {pending ? (photoProgress ?? 'Yükleniyor…') : photoFiles.length > 1 ? `${photoFiles.length} Fotoğrafı Yükle` : 'Fotoğrafı Yükle'}
-                  </button>
-                </form>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label className={`px-3.5 py-2 rounded-lg text-sm font-bold cursor-pointer ${pending ? 'bg-slate-700 text-slate-400 pointer-events-none' : 'bg-violet-600 hover:bg-violet-500 text-white'}`}>
+                      📷 Kamera
+                      <input type="file" accept="image/*" capture="environment" className="hidden" disabled={pending}
+                        onChange={e => { uploadPhotos(Array.from(e.target.files ?? [])); e.target.value = '' }} />
+                    </label>
+                    <label className={`px-3.5 py-2 rounded-lg text-sm font-bold cursor-pointer ${pending ? 'bg-slate-800 text-slate-500 pointer-events-none' : 'bg-slate-700 hover:bg-slate-600 text-slate-100'}`}>
+                      🖼 Galeriden Seç (çoklu)
+                      <input type="file" accept="image/*" multiple className="hidden" disabled={pending}
+                        onChange={e => { uploadPhotos(Array.from(e.target.files ?? [])); e.target.value = '' }} />
+                    </label>
+                    {photoProgress
+                      ? <span className="text-xs text-violet-300 font-semibold">{photoProgress}</span>
+                      : <span className="text-xs text-slate-500">Seçince direkt yüklenir.</span>}
+                  </div>
+                </div>
               )}
 
               {/* ── Fotoğraflar ── */}
@@ -914,28 +900,62 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
             onKeyDown={e => { if (e.key === 'Escape') setCompareSel([]) }}
             tabIndex={0}
             ref={el => el?.focus()}>
-            <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center justify-between px-4 py-3 gap-2 flex-wrap">
               <span className="text-white font-bold text-sm">{selected?.name} — Karşılaştırma</span>
-              <div className="flex gap-2">
-                <button onClick={e => { e.stopPropagation(); setCompareSel([compareSel[1], compareSel[0]]) }}
+              <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+                <div className="flex rounded-lg overflow-hidden">
+                  <button onClick={() => setCompareView('yanyana')}
+                    className={`text-xs font-bold px-3 py-1.5 ${compareView === 'yanyana' ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}>Yan yana</button>
+                  <button onClick={() => { setCompareView('kaydir'); setSliderPos(50) }}
+                    className={`text-xs font-bold px-3 py-1.5 ${compareView === 'kaydir' ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}>Kaydır</button>
+                </div>
+                <button onClick={() => setCompareSel([compareSel[1], compareSel[0]])}
                   className="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">⇆ Yer değiştir</button>
                 <button onClick={() => setCompareSel([])} aria-label="Kapat"
                   className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-bold">✕</button>
               </div>
             </div>
-            <div className="flex-1 grid grid-cols-2 gap-1 px-1 pb-1 min-h-0" onClick={e => e.stopPropagation()}>
-              {pair.map((f, i) => (
-                <div key={f.id} className="flex flex-col min-h-0 bg-slate-950 rounded-lg overflow-hidden">
-                  <div className="flex-1 min-h-0 flex items-center justify-center">
+            {compareView === 'yanyana' ? (
+              <div className="flex-1 grid grid-cols-2 gap-1 px-1 pb-1 min-h-0" onClick={e => e.stopPropagation()}>
+                {pair.map((f, i) => (
+                  <div key={f.id} className="flex flex-col min-h-0 bg-slate-950 rounded-lg overflow-hidden">
+                    <div className="flex-1 min-h-0 flex items-center justify-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={f.url} alt={f.note ?? 'Foto'} className="max-h-full max-w-full object-contain select-none" />
+                    </div>
+                    <div className={`px-3 py-2 text-xs font-semibold text-center ${i === 0 ? 'text-violet-300 bg-violet-500/10' : 'text-emerald-300 bg-emerald-500/10'}`}>
+                      {caption(f)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col min-h-0 px-1 pb-1" onClick={e => e.stopPropagation()}>
+                {/* Kaydırmalı: iki foto üst üste, dikey çizgi sürüklenir */}
+                <div className="relative flex-1 min-h-0 bg-slate-950 rounded-lg overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={pair[1].url} alt="Sonrası" className="absolute inset-0 w-full h-full object-contain select-none" />
+                  <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={f.url} alt={f.note ?? 'Foto'} className="max-h-full max-w-full object-contain select-none" />
+                    <img src={pair[0].url} alt="Öncesi" className="absolute inset-0 w-full h-full object-contain select-none" />
                   </div>
-                  <div className={`px-3 py-2 text-xs font-semibold text-center ${i === 0 ? 'text-violet-300 bg-violet-500/10' : 'text-emerald-300 bg-emerald-500/10'}`}>
-                    {caption(f)}
+                  <div className="absolute top-0 bottom-0 w-0.5 bg-white/80 pointer-events-none" style={{ left: `${sliderPos}%` }}>
+                    <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white text-slate-900 flex items-center justify-center text-sm font-black shadow-lg">⇆</div>
                   </div>
+                  <span className="absolute top-2 left-2 text-[11px] font-bold px-2 py-1 rounded bg-violet-600/80 text-white">ÖNCESİ</span>
+                  <span className="absolute top-2 right-2 text-[11px] font-bold px-2 py-1 rounded bg-emerald-600/80 text-white">SONRASI</span>
+                  <input
+                    type="range" min={0} max={100} value={sliderPos}
+                    onChange={e => setSliderPos(Number(e.target.value))}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize"
+                    aria-label="Öncesi-sonrası kaydırıcı" />
                 </div>
-              ))}
-            </div>
+                <div className="grid grid-cols-2 text-xs font-semibold text-center mt-1">
+                  <span className="text-violet-300 py-1.5 bg-violet-500/10 rounded-l-lg">{caption(pair[0])}</span>
+                  <span className="text-emerald-300 py-1.5 bg-emerald-500/10 rounded-r-lg">{caption(pair[1])}</span>
+                </div>
+              </div>
+            )}
           </div>
         )
       })()}
