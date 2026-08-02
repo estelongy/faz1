@@ -623,26 +623,49 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 </div>
               )}
 
-              {/* Zaman çizgisi: işlem + tahsilat birleşik */}
+              {/* Geçmiş: iki sütun — işlemler (borç) | tahsilatlar (ödeme) */}
               <div>
                 <p className="text-sm font-bold text-slate-300 mb-2">Geçmiş</p>
                 {patientTimeline.length === 0 && <p className="text-sm text-slate-500">Henüz kayıt yok.</p>}
-                <div className="space-y-1.5 max-h-[420px] overflow-y-auto pr-1">
-                  {patientTimeline.map(t => (
-                    <div key={`${t.kind}-${t.id}`} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-slate-900/40">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${t.kind === 'islem' ? 'bg-violet-400' : 'bg-emerald-400'}`} />
-                        <span className="text-xs text-slate-500 tabular-nums shrink-0">
-                          {new Date(t.date + 'T12:00:00').toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
-                        </span>
-                        <span className="text-sm text-slate-200 truncate">{t.kind === 'tahsilat' ? `Tahsilat${t.label ? ` (${t.label})` : ''}` : t.label}</span>
-                      </div>
-                      <span className={`text-sm font-bold tabular-nums shrink-0 ${t.kind === 'islem' ? 'text-slate-200' : 'text-emerald-300'}`}>
-                        {t.kind === 'tahsilat' ? '+' : ''}{TRY(t.amount)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {patientTimeline.length > 0 && (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {([
+                      { kind: 'islem' as const, title: 'İşlemler', dot: 'bg-violet-400', total: 'text-slate-200' },
+                      { kind: 'tahsilat' as const, title: 'Tahsilatlar', dot: 'bg-emerald-400', total: 'text-emerald-300' },
+                    ]).map(col => {
+                      const items = patientTimeline.filter(t => t.kind === col.kind)
+                      const sum = items.reduce((s, t) => s + t.amount, 0)
+                      return (
+                        <div key={col.kind} className="bg-slate-900/30 border border-slate-700/50 rounded-xl p-2.5">
+                          <div className="flex items-center justify-between px-1 mb-1.5">
+                            <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+                              <span className={`w-1.5 h-1.5 rounded-full ${col.dot}`} />{col.title}
+                            </span>
+                            <span className={`text-xs font-black tabular-nums ${col.total}`}>{TRY(sum)}</span>
+                          </div>
+                          {items.length === 0 && <p className="text-xs text-slate-600 px-1 py-2">Kayıt yok.</p>}
+                          <div className="space-y-1 max-h-[360px] overflow-y-auto pr-1">
+                            {items.map(t => (
+                              <div key={`${t.kind}-${t.id}`} className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg bg-slate-900/50">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="text-xs text-slate-500 tabular-nums shrink-0">
+                                    {new Date(t.date + 'T12:00:00').toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                                  </span>
+                                  <span className="text-sm text-slate-200 truncate">
+                                    {t.kind === 'tahsilat' ? (t.label || 'Tahsilat') : t.label}
+                                  </span>
+                                </div>
+                                <span className={`text-sm font-bold tabular-nums shrink-0 ${col.total}`}>
+                                  {t.kind === 'tahsilat' ? '+' : ''}{TRY(t.amount)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}
