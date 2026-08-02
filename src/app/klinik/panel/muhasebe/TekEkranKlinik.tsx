@@ -669,6 +669,18 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </select>
                     <input name="treatment_type" list="katalog-listesi" placeholder="İşlem / sebep" className={inputCls} />
                   </div>
+                  <div className="grid sm:grid-cols-[1fr,1fr] gap-2">
+                    <select name="recurrence_freq" defaultValue="" className={inputCls} title="Tekrarlama">
+                      <option value="">Tek sefer (tekrarlamaz)</option>
+                      <option value="weekly">Her hafta</option>
+                      <option value="biweekly">2 haftada bir</option>
+                      <option value="triweekly">3 haftada bir</option>
+                      <option value="monthly">Her ay</option>
+                    </select>
+                    <select name="recurrence_months" defaultValue="3" className={inputCls} title="Tekrarlama süresi">
+                      {[1, 2, 3, 4, 5, 6].map(m => <option key={m} value={m}>{m} ay boyunca</option>)}
+                    </select>
+                  </div>
                   {activePackages.length > 0 && (
                     <select name="package_treatment_id" defaultValue={activePackages.length === 1 ? activePackages[0].treatment_id : ''} className={inputCls}>
                       <option value="">Pakete bağlama (bağımsız randevu)</option>

@@ -567,16 +567,26 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
     safePackageId = pkg.id
   }
 
-  const { error } = await ctx.supabase.from('internal_appointment').insert({
+  // Tekrarlama (opsiyonel): weekly / biweekly / triweekly / monthly + 1..6 ay
+  const recurFreq = (formData.get('recurrence_freq') as string | null)?.trim() || null
+  const recurMonthsRaw = Number(formData.get('recurrence_months') ?? 0)
+  const recurMonths = recurFreq && Number.isInteger(recurMonthsRaw) && recurMonthsRaw >= 1 && recurMonthsRaw <= 6
+    ? recurMonthsRaw : null
+  const occurrences = buildOccurrences(startAt, recurFreq, recurMonths)
+  const groupId = occurrences.length > 1 ? crypto.randomUUID() : null
+
+  const rows = occurrences.map(d => ({
     owner_id: ctx.clinicOwnerId,
     created_by: ctx.user.id,
     patient_id: patientId,
-    start_at: startAt.toISOString(),
+    start_at: d.toISOString(),
     duration_minutes: durationMin,
     treatment_type: treatmentType,
     package_treatment_id: safePackageId,
+    recurrence_group_id: groupId,
     status: 'scheduled',
-  })
+  }))
+  const { error } = await ctx.supabase.from('internal_appointment').insert(rows)
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/klinik/panel/muhasebe')
