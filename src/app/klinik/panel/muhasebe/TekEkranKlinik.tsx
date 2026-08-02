@@ -236,6 +236,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [photoFiles, setPhotoFiles] = useState<File[]>([])
   const [photoProgress, setPhotoProgress] = useState<string | null>(null)
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
+  const [photoStage, setPhotoStage] = useState<'oncesi' | 'sonrasi' | 'kontrol'>('oncesi')
 
   // İstemci tarafı sıkıştırma: uzun kenar 1600px, JPEG %80 → 4-8 MB'lık kamera
   // fotoğrafı ~200-500 KB'a iner, yükleme 10 kat hızlanır. Decode edilemeyen
@@ -669,6 +670,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                       const fd = new FormData()
                       fd.set('photo', compressed)
                       fd.set('treatment_id', treatmentId)
+                      fd.set('stage', photoStage)
                       if (noteVal) fd.set('note', noteVal)
                       const res = await addPatientPhoto(selectedId, fd)
                       if (!res.ok) { setError(res.error ?? 'Yükleme hatası'); break }
@@ -676,6 +678,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     setPhotoProgress(null)
                     setPhotoFiles([])
                     setOpenForm(null)
+                    // Doğal akış: öncesi çekildi → sıradaki küme büyük ihtimalle sonrası
+                    if (photoStage === 'oncesi') setPhotoStage('sonrasi')
                     router.refresh()
                   })
                 }} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
@@ -706,6 +710,18 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                       ))}
                     </div>
                   )}
+                  <div className="flex gap-1.5">
+                    {([
+                      { v: 'oncesi' as const, label: 'Öncesi' },
+                      { v: 'sonrasi' as const, label: 'Sonrası' },
+                      { v: 'kontrol' as const, label: 'Kontrol' },
+                    ]).map(s => (
+                      <button key={s.v} type="button" onClick={() => setPhotoStage(s.v)}
+                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${photoStage === s.v ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}>
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
                   <div className="grid sm:grid-cols-[1fr,1fr] gap-2">
                     <select name="treatment_id" defaultValue="" className={inputCls}>
                       <option value="">Genel (işleme bağlı değil)</option>
@@ -715,7 +731,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                         </option>
                       ))}
                     </select>
-                    <input name="note" placeholder="Not (boş bırak: ilk foto 'İşlem öncesi', sonrakiler 'Kontrol · tarih')" className={inputCls} />
+                    <input name="note" placeholder="Ek not (opsiyonel — sağ profil, yakın çekim vs.)" className={inputCls} />
                   </div>
                   <button type="submit" disabled={pending} className={btnPrimary}>
                     {pending ? (photoProgress ?? 'Yükleniyor…') : photoFiles.length > 1 ? `${photoFiles.length} Fotoğrafı Yükle` : 'Fotoğrafı Yükle'}

@@ -839,29 +839,16 @@ export async function addPatientPhoto(patientId: string, formData: FormData): Pr
   const treatmentId = (formData.get('treatment_id') as string | null)?.trim() || null
   let note = (formData.get('note') as string | null)?.trim() || null
 
-  // Not boşsa otomatik etiketle. Kural KÜME bazlı: kapsamın (işlem varsa o işlem,
-  // yoksa hasta geneli) İLK GÜNÜ çekilen TÜM fotolar "İşlem öncesi" — tek foto değil.
-  // Sonraki günlerde eklenenler "Kontrol · GG.AA.YYYY".
-  if (!note) {
-    let firstQuery = ctx.supabase
-      .from('internal_patient_photo')
-      .select('created_at')
-      .eq('owner_id', ctx.clinicOwnerId)
-      .eq('patient_id', patientId)
-      .order('created_at', { ascending: true })
-      .limit(1)
-    firstQuery = treatmentId
-      ? firstQuery.eq('treatment_id', treatmentId)
-      : firstQuery.is('treatment_id', null)
-    const { data: first } = await firstQuery
-    const todayTR = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
-    const firstDayTR = first?.[0]
-      ? new Date(first[0].created_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
-      : null
-    note = (!firstDayTR || firstDayTR === todayTR)
-      ? 'İşlem öncesi'
-      : `Kontrol · ${new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
+  // Etiket kullanıcı seçimiyle gelir: oncesi / sonrasi / kontrol.
+  // Kontrol'e tarih damgası eklenir. Serbest not varsa etiketin arkasına eklenir.
+  const stage = (formData.get('stage') as string | null)?.trim() || ''
+  const STAGE_LABELS: Record<string, string> = {
+    oncesi: 'İşlem öncesi',
+    sonrasi: 'İşlem sonrası',
+    kontrol: `Kontrol · ${new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Europe/Istanbul' })}`,
   }
+  const stageLabel = STAGE_LABELS[stage] ?? null
+  if (stageLabel) note = note ? `${stageLabel} — ${note}` : stageLabel
 
   // İşleme bağlanıyorsa bu hastanın işlemi olduğunu doğrula
   if (treatmentId) {
