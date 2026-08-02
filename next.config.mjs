@@ -2,6 +2,11 @@ import { withSentryConfig } from '@sentry/nextjs'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Server action gövde limiti: hasta fotoğrafı yüklemesi için (varsayılan 1 MB yetmez)
+  experimental: {
+    serverActions: { bodySizeLimit: '12mb' },
+  },
+
   // Görsel optimizasyonu: Supabase + Vercel blob'larına izin ver
   images: {
     remotePatterns: [
