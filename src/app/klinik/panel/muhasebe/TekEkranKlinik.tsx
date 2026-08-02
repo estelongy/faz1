@@ -233,7 +233,32 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   // ── Inline form durumu: aynı anda tek form açık ──
   type FormKind = 'islem' | 'tahsilat' | 'randevu' | 'yeniHasta' | 'soz' | 'foto' | null
   const [openForm, setOpenForm] = useState<FormKind>(null)
-  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoFiles, setPhotoFiles] = useState<File[]>([])
+  const [photoProgress, setPhotoProgress] = useState<string | null>(null)
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
+
+  // İstemci tarafı sıkıştırma: uzun kenar 1600px, JPEG %80 → 4-8 MB'lık kamera
+  // fotoğrafı ~200-500 KB'a iner, yükleme 10 kat hızlanır. Decode edilemeyen
+  // formatlar (ör. bazı HEIC'ler) olduğu gibi yüklenir.
+  async function compressImage(file: File): Promise<File> {
+    try {
+      const bmp = await createImageBitmap(file)
+      const scale = Math.min(1, 1600 / Math.max(bmp.width, bmp.height))
+      const w = Math.round(bmp.width * scale)
+      const h = Math.round(bmp.height * scale)
+      const canvas = document.createElement('canvas')
+      canvas.width = w; canvas.height = h
+      const cx = canvas.getContext('2d')
+      if (!cx) return file
+      cx.drawImage(bmp, 0, 0, w, h)
+      bmp.close()
+      const blob = await new Promise<Blob | null>(res => canvas.toBlob(res, 'image/jpeg', 0.8))
+      if (!blob || blob.size >= file.size) return file
+      return new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' })
+    } catch {
+      return file
+    }
+  }
   const [fromApptId, setFromApptId] = useState<string | null>(null)
 
   function pickPatient(id: string, form: FormKind = null, apptId: string | null = null) {
@@ -685,28 +710,55 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               {openForm === 'foto' && (
                 <form onSubmit={e => {
                   e.preventDefault()
-                  if (!selectedId || !photoFile) { setError('Önce fotoğraf çek veya seç.'); return }
-                  const fd = new FormData(e.currentTarget as HTMLFormElement)
-                  fd.set('photo', photoFile)
-                  run(() => addPatientPhoto(selectedId, fd).then(r => { if (r.ok) setPhotoFile(null); return r }))
+                  if (!selectedId || photoFiles.length === 0) { setError('Önce fotoğraf çek veya seç.'); return }
+                  const formEl = e.currentTarget as HTMLFormElement
+                  const treatmentId = (new FormData(formEl).get('treatment_id') as string) ?? ''
+                  const noteVal = (new FormData(formEl).get('note') as string) ?? ''
+                  setError(null)
+                  startTransition(async () => {
+                    for (let i = 0; i < photoFiles.length; i++) {
+                      setPhotoProgress(`${i + 1}/${photoFiles.length} yükleniyor…`)
+                      const compressed = await compressImage(photoFiles[i])
+                      const fd = new FormData()
+                      fd.set('photo', compressed)
+                      fd.set('treatment_id', treatmentId)
+                      if (noteVal) fd.set('note', noteVal)
+                      const res = await addPatientPhoto(selectedId, fd)
+                      if (!res.ok) { setError(res.error ?? 'Yükleme hatası'); break }
+                    }
+                    setPhotoProgress(null)
+                    setPhotoFiles([])
+                    setOpenForm(null)
+                    router.refresh()
+                  })
                 }} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <label className="px-3.5 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold cursor-pointer">
                       📷 Kamera
                       <input type="file" accept="image/*" capture="environment" className="hidden"
-                        onChange={e => setPhotoFile(e.target.files?.[0] ?? null)} />
+                        onChange={e => { const f = e.target.files?.[0]; if (f) setPhotoFiles(prev => [...prev, f]) }} />
                     </label>
                     <label className="px-3.5 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 text-sm font-bold cursor-pointer">
-                      🖼 Galeriden Seç
-                      <input type="file" accept="image/*" className="hidden"
-                        onChange={e => setPhotoFile(e.target.files?.[0] ?? null)} />
+                      🖼 Galeriden Seç (çoklu)
+                      <input type="file" accept="image/*" multiple className="hidden"
+                        onChange={e => setPhotoFiles(prev => [...prev, ...Array.from(e.target.files ?? [])])} />
                     </label>
-                    {photoFile && (
-                      <span className="text-xs text-emerald-300 font-semibold truncate max-w-[200px]">
-                        ✓ {photoFile.name || 'fotoğraf hazır'} ({Math.round(photoFile.size / 1024)} KB)
-                      </span>
+                    {photoFiles.length > 0 && !photoProgress && (
+                      <span className="text-xs text-emerald-300 font-semibold">✓ {photoFiles.length} foto hazır</span>
                     )}
+                    {photoProgress && <span className="text-xs text-violet-300 font-semibold">{photoProgress}</span>}
                   </div>
+                  {photoFiles.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {photoFiles.map((f, i) => (
+                        <span key={i} className="flex items-center gap-1 text-[11px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md">
+                          {f.name.length > 18 ? f.name.slice(0, 15) + '…' : f.name}
+                          <button type="button" onClick={() => setPhotoFiles(prev => prev.filter((_, j) => j !== i))}
+                            className="text-rose-300 font-bold">×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <div className="grid sm:grid-cols-[1fr,1fr] gap-2">
                     <select name="treatment_id" defaultValue="" className={inputCls}>
                       <option value="">Genel (işleme bağlı değil)</option>
@@ -718,7 +770,9 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </select>
                     <input name="note" placeholder="Not (boş bırak: ilk foto 'İşlem öncesi', sonrakiler 'Kontrol · tarih')" className={inputCls} />
                   </div>
-                  <button type="submit" disabled={pending} className={btnPrimary}>{pending ? 'Yükleniyor…' : 'Fotoğrafı Yükle'}</button>
+                  <button type="submit" disabled={pending} className={btnPrimary}>
+                    {pending ? (photoProgress ?? 'Yükleniyor…') : photoFiles.length > 1 ? `${photoFiles.length} Fotoğrafı Yükle` : 'Fotoğrafı Yükle'}
+                  </button>
                 </form>
               )}
 
@@ -727,17 +781,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 <div>
                   <p className="text-sm font-bold text-slate-300 mb-2">Fotoğraflar ({patientPhotos.length})</p>
                   <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
-                    {patientPhotos.map(f => (
-                      <div key={f.id} className="relative group rounded-lg overflow-hidden border border-slate-700/60 bg-slate-900/40">
-                        <a href={f.url} target="_blank" rel="noreferrer">
+                    {patientPhotos.map((f, idx) => (
+                      <div key={f.id} className="relative rounded-lg overflow-hidden border border-slate-700/60 bg-slate-900/40">
+                        <button type="button" onClick={() => setLightboxIdx(idx)} className="block w-full" aria-label="Fotoğrafı büyüt">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={f.url} alt={f.note ?? 'Hasta fotoğrafı'} className="w-full h-24 object-cover" loading="lazy" />
-                        </a>
-                        <button
-                          onClick={() => run(() => deletePatientPhoto(f.id))}
-                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-rose-300 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
-                          aria-label="Fotoğrafı sil">
-                          ×
                         </button>
                         <div className="px-1.5 py-1 text-[10px] text-slate-400 truncate">
                           {new Date(f.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
@@ -812,6 +860,59 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           )}
         </div>
       </div>
+
+      {/* LIGHTBOX — foto büyütme + ←→ geçiş + silme */}
+      {lightboxIdx !== null && patientPhotos[lightboxIdx] && (() => {
+        const f = patientPhotos[lightboxIdx]
+        const prev = () => setLightboxIdx(i => (i === null ? null : (i - 1 + patientPhotos.length) % patientPhotos.length))
+        const next = () => setLightboxIdx(i => (i === null ? null : (i + 1) % patientPhotos.length))
+        return (
+          <div
+            className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center"
+            onClick={() => setLightboxIdx(null)}
+            onKeyDown={e => {
+              if (e.key === 'Escape') setLightboxIdx(null)
+              if (e.key === 'ArrowLeft') prev()
+              if (e.key === 'ArrowRight') next()
+            }}
+            tabIndex={0}
+            ref={el => el?.focus()}>
+            <div className="relative max-w-4xl w-full px-4 flex-1 flex items-center justify-center" onClick={e => e.stopPropagation()}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={f.url} alt={f.note ?? 'Hasta fotoğrafı'} className="max-h-[78vh] max-w-full object-contain rounded-lg select-none" />
+              {patientPhotos.length > 1 && (
+                <>
+                  <button onClick={prev} aria-label="Önceki foto"
+                    className="absolute left-1 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/80 text-white text-2xl font-bold">‹</button>
+                  <button onClick={next} aria-label="Sonraki foto"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/80 text-white text-2xl font-bold">›</button>
+                </>
+              )}
+              <button onClick={() => setLightboxIdx(null)} aria-label="Kapat"
+                className="absolute top-2 right-3 w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 text-white text-lg font-bold">✕</button>
+            </div>
+            <div className="w-full max-w-4xl px-4 pb-5 flex items-center justify-between gap-3" onClick={e => e.stopPropagation()}>
+              <div className="text-sm text-slate-200 min-w-0">
+                <span className="font-bold">{lightboxIdx + 1}/{patientPhotos.length}</span>
+                <span className="text-slate-400 ml-3">
+                  {new Date(f.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {treatmentLabel(f.treatment_id) ? ` · ${treatmentLabel(f.treatment_id)}` : ' · Genel'}
+                  {f.note ? ` · ${f.note}` : ''}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  const delId = f.id
+                  setLightboxIdx(null)
+                  run(() => deletePatientPhoto(delId))
+                }}
+                className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg bg-rose-600/30 text-rose-200 hover:bg-rose-600/50">
+                Sil
+              </button>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ALT ŞERİT — günün + ayın muhasebesi */}
       <div className="sticky bottom-0 -mx-1 px-1 pb-1">
