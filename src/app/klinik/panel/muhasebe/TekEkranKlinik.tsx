@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import {
   addQuickEntry, addPayment, addPatient,
   createAppointmentForPatient, setAppointmentStatus,
+  addPaymentPromise, settlePaymentPromise,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
@@ -25,6 +26,14 @@ export interface ApptRow {
   appointment_type: string | null
   status: string
   package_treatment_id: string | null
+}
+export interface PromiseRow {
+  id: string
+  patient_id: string
+  due_date: string     // YYYY-MM-DD
+  amount: number
+  note: string | null
+  status: string
 }
 export interface PackageRow {
   treatment_id: string
@@ -52,6 +61,7 @@ interface Props {
   txs: TxRow[]              // işlem + tahsilat birleşik (tüm kayıtlar)
   catalog: CatalogItem[]
   packages: PackageRow[]    // seanslı işlemler (session_total > 1) + sayaçları
+  promises: PromiseRow[]    // açık ödeme sözleri
 }
 
 const TRY = (n: number) =>
@@ -73,12 +83,13 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages }: Props) {
+export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
   const [search, setSearch] = useState('')
+  const [leftView, setLeftView] = useState<'gun' | 'alacak'>('gun')
 
   const dayAppts = useMemo(
     () => appointments
@@ -136,6 +147,34 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
       .slice(0, 3)
   }, [appointments, selectedId])
 
+  // Alacak listesi: borçlu hastalar; söz tarihi geçenler önde, sonra en yakın söz, sonra borç büyüklüğü
+  const today = todayIso()
+  const debtors = useMemo(() => {
+    return patients
+      .filter(p => p.remaining > 0)
+      .map(p => {
+        const open = promises
+          .filter(pr => pr.patient_id === p.id)
+          .sort((a, b) => a.due_date.localeCompare(b.due_date))
+        const first = open[0] ?? null
+        const overdue = first ? first.due_date < today : false
+        return { ...p, promise: first, overdue, promisedTotal: open.reduce((s, x) => s + Number(x.amount), 0) }
+      })
+      .sort((a, b) => {
+        if (a.overdue !== b.overdue) return a.overdue ? -1 : 1
+        if (a.promise && b.promise) return a.promise.due_date.localeCompare(b.promise.due_date)
+        if (!!a.promise !== !!b.promise) return a.promise ? -1 : 1
+        return b.remaining - a.remaining
+      })
+  }, [patients, promises, today])
+  const overdueCount = debtors.filter(d => d.overdue).length
+  const totalReceivable = debtors.reduce((s, d) => s + d.remaining, 0)
+
+  const patientPromises = useMemo(
+    () => selectedId ? promises.filter(pr => pr.patient_id === selectedId).sort((a, b) => a.due_date.localeCompare(b.due_date)) : [],
+    [promises, selectedId],
+  )
+
   // Günün muhasebe şeridi
   const dayStats = useMemo(() => {
     const dayTxs = txs.filter(t => t.date === day)
@@ -157,7 +196,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   }, [txs, day])
 
   // ── Inline form durumu: aynı anda tek form açık ──
-  type FormKind = 'islem' | 'tahsilat' | 'randevu' | 'yeniHasta' | null
+  type FormKind = 'islem' | 'tahsilat' | 'randevu' | 'yeniHasta' | 'soz' | null
   const [openForm, setOpenForm] = useState<FormKind>(null)
   const [fromApptId, setFromApptId] = useState<string | null>(null)
 
@@ -252,6 +291,12 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
             </div>
           )}
         </div>
+        <button
+          onClick={() => setLeftView(leftView === 'alacak' ? 'gun' : 'alacak')}
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${leftView === 'alacak' ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
+          Alacaklar{debtors.length > 0 ? ` (${debtors.length})` : ''}
+          {overdueCount > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/25 text-rose-300">{overdueCount} gecikmiş</span>}
+        </button>
         <button onClick={() => { setOpenForm(openForm === 'yeniHasta' ? null : 'yeniHasta'); setMobilePanelOpen(false) }} className={btnGhost}>
           + Yeni Hasta
         </button>
@@ -274,15 +319,49 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
       {/* Ana gövde: sol akış + sağ karne */}
       <div className="grid lg:grid-cols-[340px,1fr] gap-4 items-start">
 
-        {/* SOL — GÜN AKIŞI */}
+        {/* SOL — GÜN AKIŞI veya ALACAKLAR */}
         <div className={`space-y-2 ${mobilePanelOpen ? 'hidden lg:block' : ''}`}>
-          {dayAppts.length === 0 && (
+          {leftView === 'alacak' && (
+            <>
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-amber-300">Alacaklar — {TRY(totalReceivable)}</span>
+                <button onClick={() => setLeftView('gun')} className="text-xs text-slate-400 hover:text-white">‹ Gün akışı</button>
+              </div>
+              {debtors.length === 0 && (
+                <div className="text-center py-10 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
+                  <p className="text-emerald-300 text-sm font-semibold">Açık alacak yok 🎉</p>
+                </div>
+              )}
+              {debtors.map(d => (
+                <div key={d.id}
+                  className={`rounded-xl border p-3 cursor-pointer transition-colors ${d.id === selectedId ? 'bg-violet-500/10 border-violet-500/40' : d.overdue ? 'bg-rose-500/5 border-rose-500/30 hover:border-rose-400' : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500'}`}
+                  onClick={() => pickPatient(d.id)}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-white text-sm font-semibold truncate">{d.name}</span>
+                    <span className="text-rose-300 text-sm font-black tabular-nums shrink-0">{TRY(d.remaining)}</span>
+                  </div>
+                  <div className="mt-1 text-xs">
+                    {d.promise ? (
+                      <span className={d.overdue ? 'text-rose-300 font-semibold' : 'text-slate-400'}>
+                        {d.overdue ? '⚠ Sözü geçti: ' : 'Söz: '}
+                        {new Date(d.promise.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                        {' · '}{TRY(Number(d.promise.amount))}
+                      </span>
+                    ) : (
+                      <span className="text-slate-500">Ödeme sözü yok — karneden söz al</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+          {leftView === 'gun' && dayAppts.length === 0 && (
             <div className="text-center py-10 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
               <p className="text-slate-400 text-sm">Bu gün için randevu yok.</p>
               <p className="text-slate-500 text-xs mt-1">Hasta ara → karnesinden randevu ver.</p>
             </div>
           )}
-          {dayAppts.map(a => {
+          {leftView === 'gun' && dayAppts.map(a => {
             const p = patients.find(pp => pp.id === a.patient_id)
             const time = new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })
             const st = STATUS_META[a.status] ?? STATUS_META.scheduled
@@ -397,6 +476,59 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 </div>
               )}
 
+              {/* ── Ödeme sözleri (alacak planı) ── */}
+              {(patientPromises.length > 0 || (selected.remaining > 0 && openForm === 'soz')) && (
+                <div className="space-y-1.5">
+                  <p className="text-xs font-bold text-amber-300">Ödeme planı</p>
+                  {patientPromises.map(pr => {
+                    const late = pr.due_date < today
+                    return (
+                      <div key={pr.id} className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border ${late ? 'bg-rose-500/5 border-rose-500/30' : 'bg-slate-900/40 border-slate-700/60'}`}>
+                        <div className="min-w-0 text-sm">
+                          <span className={late ? 'text-rose-300 font-semibold' : 'text-slate-200'}>
+                            {new Date(pr.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                            {late ? ' ⚠' : ''}
+                          </span>
+                          <span className="text-white font-bold ml-2 tabular-nums">{TRY(Number(pr.amount))}</span>
+                          {pr.note && <span className="text-xs text-slate-500 ml-2">{pr.note}</span>}
+                        </div>
+                        <div className="flex gap-1 shrink-0">
+                          <button onClick={() => run(() => settlePaymentPromise(pr.id, 'paid'))}
+                            className="text-[11px] font-bold px-2 py-1 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/40">
+                            Tahsil Et
+                          </button>
+                          <button onClick={() => run(() => settlePaymentPromise(pr.id, 'cancelled'))}
+                            className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-400 hover:bg-slate-600">
+                            İptal
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+              {selected.remaining > 0 && (
+                openForm === 'soz' ? (
+                  <form onSubmit={e => {
+                    e.preventDefault()
+                    if (!selectedId) return
+                    run(() => addPaymentPromise(selectedId, new FormData(e.currentTarget as HTMLFormElement)))
+                  }} className="bg-slate-900/60 border border-amber-500/25 rounded-xl p-3 space-y-2">
+                    <p className="text-xs text-amber-300 font-semibold">Kalan {TRY(selected.remaining)} için ödeme sözü</p>
+                    <div className="grid sm:grid-cols-[140px,130px,1fr,auto] gap-2">
+                      <input name="due_date" type="date" required className={inputCls} />
+                      <input name="amount" placeholder="Tutar ₺ *" required inputMode="decimal" defaultValue={String(selected.remaining)} className={inputCls} />
+                      <input name="note" placeholder="Not (taksit 1/3 vs.)" className={inputCls} />
+                      <button type="submit" disabled={pending} className={btnPrimary}>Kaydet</button>
+                    </div>
+                  </form>
+                ) : (
+                  <button onClick={() => setOpenForm('soz')} className="text-xs font-semibold text-amber-300/80 hover:text-amber-200 text-left">
+                    + Ödeme sözü al ({TRY(selected.remaining)} açık)
+                  </button>
+                )
+              )}
+
               {/* ── İşlem formu (opsiyonel tahsilatla) ── */}
               {openForm === 'islem' && (
                 <form onSubmit={submitIslem} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
@@ -442,6 +574,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </select>
                     <input name="paid_at" type="date" defaultValue={day} className={inputCls} />
                     <input name="notes" placeholder="Not" className={inputCls} />
+                  </div>
+                  <div className="grid sm:grid-cols-[auto,140px,130px] gap-2 items-center pt-1 border-t border-slate-700/60">
+                    <span className="text-xs text-amber-300/90 font-semibold">Kalan için söz (opsiyonel):</span>
+                    <input name="promise_date" type="date" className={inputCls} />
+                    <input name="promise_amount" placeholder="Söz ₺" inputMode="decimal" className={inputCls} />
                   </div>
                   <button type="submit" disabled={pending} className={btnPrimary}>{pending ? 'Kaydediliyor…' : 'Tahsilatı Kaydet'}</button>
                 </form>
@@ -519,6 +656,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           <span className="text-white font-bold">{dayStats.islem.length} işlem</span>
           <span className="text-slate-200 font-bold">{TRY(dayStats.billed)} yazıldı</span>
           <span className="text-emerald-300 font-bold">{TRY(dayStats.collected)} tahsil</span>
+          {totalReceivable > 0 && (
+            <button onClick={() => setLeftView('alacak')} className="text-amber-300/90 font-bold hover:text-amber-200">
+              Alacak: {TRY(totalReceivable)}
+            </button>
+          )}
           <span className="ml-auto text-slate-500 text-xs">
             {monthStats.label}: {TRY(monthStats.billed)} / <span className="text-emerald-400">{TRY(monthStats.collected)}</span>
           </span>

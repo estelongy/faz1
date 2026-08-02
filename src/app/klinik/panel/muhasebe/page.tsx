@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, clinicOwnerIdFor, getKlinikStaff } from '@/lib/muhasebe-owner'
-import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow } from './TekEkranKlinik'
+import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow, type PromiseRow } from './TekEkranKlinik'
 import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
 import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
@@ -32,7 +32,7 @@ export default async function MuhasebePage({
   const rangeStartIso = new Date(Date.now() - 30 * 86_400_000).toISOString()
   const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date, session_total'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
@@ -64,6 +64,13 @@ export default async function MuhasebePage({
       .select('package_treatment_id, status, start_at')
       .eq('owner_id', clinicOwner)
       .not('package_treatment_id', 'is', null),
+    // Açık ödeme sözleri (alacak takibi)
+    supabase
+      .from('internal_payment_promise')
+      .select('id, patient_id, due_date, amount, note, status')
+      .eq('owner_id', clinicOwner)
+      .eq('status', 'open')
+      .order('due_date', { ascending: true }),
   ])
 
   const patients = patientsRes.data ?? []
@@ -269,6 +276,7 @@ export default async function MuhasebePage({
         txs={txs}
         catalog={catalog as CatalogItem[]}
         packages={packages}
+        promises={(promisesRes.data ?? []) as PromiseRow[]}
       />
     </div>
   )

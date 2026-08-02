@@ -169,7 +169,85 @@ export async function addPayment(patientId: string, formData: FormData): Promise
     created_by: ctx.user.id,
   })
   if (error) return { ok: false, error: error.message }
+
+  // Kalan için ödeme sözü (opsiyonel): tarih + tutar birlikte verilirse kaydet
+  const promiseDate = (formData.get('promise_date') as string | null)?.trim() || null
+  const promiseAmountStr = (formData.get('promise_amount') as string | null)?.trim() || ''
+  if (promiseDate && promiseAmountStr) {
+    const pAmt = Number(promiseAmountStr.replace(',', '.'))
+    if (Number.isFinite(pAmt) && pAmt > 0) {
+      await ctx.supabase.from('internal_payment_promise').insert({
+        owner_id: ctx.clinicOwnerId,
+        patient_id: patientId,
+        due_date: promiseDate,
+        amount: pAmt,
+        created_by: ctx.user.id,
+      })
+    }
+  }
+
   revalidatePath(`/klinik/panel/muhasebe/${patientId}`)
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+// ─── Ödeme sözü / plan ────────────────────────────────────────────────────
+export async function addPaymentPromise(patientId: string, formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const dueDate = (formData.get('due_date') as string | null)?.trim() ?? ''
+  const amountStr = (formData.get('amount') as string | null)?.trim() ?? ''
+  const note = (formData.get('note') as string | null)?.trim() || null
+  const amount = Number(amountStr.replace(',', '.'))
+  if (!dueDate) return { ok: false, error: 'Tarih zorunlu.' }
+  if (!Number.isFinite(amount) || amount <= 0) return { ok: false, error: 'Geçersiz tutar.' }
+
+  const { error } = await ctx.supabase.from('internal_payment_promise').insert({
+    owner_id: ctx.clinicOwnerId,
+    patient_id: patientId,
+    due_date: dueDate,
+    amount, note,
+    created_by: ctx.user.id,
+  })
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+// Sözü kapat: 'paid' → aynı anda tahsilat kaydı da açılır (tek tık tahsilat).
+export async function settlePaymentPromise(id: string, mode: 'paid' | 'cancelled', method?: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const { data: pr, error: gErr } = await ctx.supabase
+    .from('internal_payment_promise')
+    .select('id, patient_id, amount, status')
+    .eq('id', id)
+    .eq('owner_id', ctx.clinicOwnerId)
+    .single()
+  if (gErr || !pr) return { ok: false, error: 'Söz bulunamadı.' }
+  if (pr.status !== 'open') return { ok: false, error: 'Söz zaten kapatılmış.' }
+
+  if (mode === 'paid') {
+    const { error: payErr } = await ctx.supabase.from('internal_payment').insert({
+      owner_id: ctx.clinicOwnerId,
+      patient_id: pr.patient_id,
+      amount: pr.amount,
+      paid_at: new Date().toISOString().slice(0, 10),
+      method: method || null,
+      notes: 'Ödeme sözü tahsilatı',
+      created_by: ctx.user.id,
+    })
+    if (payErr) return { ok: false, error: payErr.message }
+  }
+
+  const { error } = await ctx.supabase
+    .from('internal_payment_promise')
+    .update({ status: mode, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('owner_id', ctx.clinicOwnerId)
+  if (error) return { ok: false, error: error.message }
   revalidatePath('/klinik/panel/muhasebe')
   return { ok: true }
 }
