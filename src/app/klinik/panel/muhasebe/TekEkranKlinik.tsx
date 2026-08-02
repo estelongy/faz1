@@ -89,7 +89,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
   const [search, setSearch] = useState('')
-  const [leftView, setLeftView] = useState<'gun' | 'alacak'>('gun')
+  const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar'>('gun')
 
   const dayAppts = useMemo(
     () => appointments
@@ -169,6 +169,13 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   }, [patients, promises, today])
   const overdueCount = debtors.filter(d => d.overdue).length
   const totalReceivable = debtors.reduce((s, d) => s + d.remaining, 0)
+
+  // Hastalar görünümü: son hareket tarihine göre (yeniler önce), sonra ada göre
+  const allPatients = useMemo(
+    () => [...patients].sort((a, b) =>
+      (b.last_activity ?? '').localeCompare(a.last_activity ?? '') || a.name.localeCompare(b.name, 'tr')),
+    [patients],
+  )
 
   const patientPromises = useMemo(
     () => selectedId ? promises.filter(pr => pr.patient_id === selectedId).sort((a, b) => a.due_date.localeCompare(b.due_date)) : [],
@@ -292,6 +299,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           )}
         </div>
         <button
+          onClick={() => setLeftView(leftView === 'hastalar' ? 'gun' : 'hastalar')}
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${leftView === 'hastalar' ? 'bg-violet-500/20 text-violet-300' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
+          Hastalar ({patients.length})
+        </button>
+        <button
           onClick={() => setLeftView(leftView === 'alacak' ? 'gun' : 'alacak')}
           className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${leftView === 'alacak' ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
           Alacaklar{debtors.length > 0 ? ` (${debtors.length})` : ''}
@@ -353,6 +365,37 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   </div>
                 </div>
               ))}
+            </>
+          )}
+          {leftView === 'hastalar' && (
+            <>
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-violet-300">Tüm hastalar ({allPatients.length})</span>
+                <button onClick={() => setLeftView('gun')} className="text-xs text-slate-400 hover:text-white">‹ Gün akışı</button>
+              </div>
+              {allPatients.length === 0 && (
+                <div className="text-center py-10 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
+                  <p className="text-slate-400 text-sm">Henüz hasta yok — üstten &quot;+ Yeni Hasta&quot;.</p>
+                </div>
+              )}
+              <div className="space-y-1.5 max-h-[560px] overflow-y-auto pr-1">
+                {allPatients.map(p => (
+                  <div key={p.id}
+                    className={`rounded-xl border px-3 py-2.5 cursor-pointer transition-colors ${p.id === selectedId ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500'}`}
+                    onClick={() => pickPatient(p.id)}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-white text-sm font-semibold truncate">{p.name}</span>
+                      {p.remaining > 0
+                        ? <span className="text-rose-300 text-xs font-bold tabular-nums shrink-0">{TRY(p.remaining)}</span>
+                        : <span className="text-emerald-400/70 text-xs shrink-0">✓</span>}
+                    </div>
+                    <div className="flex items-center justify-between mt-0.5 text-xs text-slate-500">
+                      <span>{p.phone ?? '—'}</span>
+                      <span>{p.last_activity ? new Date(p.last_activity + 'T12:00:00').toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : 'kayıt yok'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </>
           )}
           {leftView === 'gun' && dayAppts.length === 0 && (
@@ -687,6 +730,10 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           <span className="ml-auto text-slate-500 text-xs">
             {monthStats.label}: {TRY(monthStats.billed)} / <span className="text-emerald-400">{TRY(monthStats.collected)}</span>
           </span>
+          <Link href={`/klinik/panel/muhasebe/rapor?ay=${day.slice(0, 7)}`}
+            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
+            🖨 Rapor
+          </Link>
         </div>
       </div>
     </div>
