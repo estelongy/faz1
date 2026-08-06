@@ -421,7 +421,10 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           {leftView === 'alacak' && (
             <>
               <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-amber-300">Alacaklar — {TRY(totalReceivable)}</span>
+                <span className="text-xs font-bold text-amber-300">
+                  Alacaklar — {TRY(totalReceivable)} · {debtors.length} hasta
+                  {overdueCount > 0 && <span className="text-rose-300"> ({overdueCount} Geciken Ödeme)</span>}
+                </span>
                 <button onClick={() => setLeftView('gun')} className="text-xs text-slate-400 hover:text-white">‹ Gün akışı</button>
               </div>
               {debtors.length === 0 && (
@@ -1043,24 +1046,26 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         )
       })()}
 
-      {/* ALT ŞERİT — günün + ayın muhasebesi */}
+      {/* ALT ŞERİT — canlı butonlar: gün özeti / alacaklar / ay raporu */}
       <div className="sticky bottom-0 -mx-1 px-1 pb-1">
-        <div className="bg-slate-900/95 backdrop-blur border border-slate-700/60 rounded-xl px-4 py-2.5 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
-          <span className="text-slate-400">{dayLabel(day)}:</span>
-          <span className="text-white font-bold">{dayStats.islem.length} işlem</span>
-          <span className="text-slate-200 font-bold">{TRY(dayStats.billed)} yazıldı</span>
-          <span className="text-emerald-300 font-bold">{TRY(dayStats.collected)} tahsil</span>
-          {totalReceivable > 0 && (
-            <button onClick={() => setLeftView('alacak')} className="text-amber-300/90 font-bold hover:text-amber-200">
-              Alacak: {TRY(totalReceivable)}
-            </button>
-          )}
-          <span className="ml-auto text-slate-500 text-xs">
-            {monthStats.label}: {TRY(monthStats.billed)} / <span className="text-emerald-400">{TRY(monthStats.collected)}</span>
-          </span>
+        <div className="bg-slate-900/95 backdrop-blur border border-slate-700/60 rounded-xl px-3 py-2 flex flex-wrap items-center gap-2 text-sm">
+          <button
+            onClick={() => { setLeftView('gun'); setMobilePanelOpen(false) }}
+            title="Gün akışını aç"
+            className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${leftView === 'gun' ? 'bg-slate-700/80 text-white' : 'bg-slate-800/60 hover:bg-slate-700 text-slate-200'}`}>
+            {dayLabel(day)}: {dayStats.islem.length} işlem · {TRY(dayStats.billed)} yazıldı · <span className="text-emerald-300">{TRY(dayStats.collected)} tahsil</span>
+          </button>
+          <button
+            onClick={() => { setLeftView('alacak'); setMobilePanelOpen(false) }}
+            title="Tüm alacakları aç"
+            className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${leftView === 'alacak' ? 'bg-amber-500/25 text-amber-200' : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300'}`}>
+            Alacak: {TRY(totalReceivable)}
+            {overdueCount > 0 && <span className="text-rose-300"> ({overdueCount} Geciken Ödeme)</span>}
+          </button>
           <Link href={`/klinik/panel/muhasebe/rapor?ay=${day.slice(0, 7)}`}
-            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
-            🖨 Rapor
+            title="Ay raporunu aç"
+            className="ml-auto px-3 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-colors">
+            🖨 {monthStats.label}: {TRY(monthStats.billed)} / <span className="text-emerald-400">{TRY(monthStats.collected)}</span>
           </Link>
         </div>
       </div>
