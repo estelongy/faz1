@@ -887,10 +887,16 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   <p className="font-bold text-slate-300">Yaklaşan randevuları</p>
                   {patientApptDays.map(([dayKey, appts]) => {
                     const first = appts[0]
-                    const label = appts.map(a => {
+    const label = appts.map(a => {
                       const pk = a.package_treatment_id ? pkgById.get(a.package_treatment_id) : null
                       const base = a.treatment_type ?? a.appointment_type ?? 'Randevu'
-                      return pk ? `📦 ${pk.name} (${pk.done}/${pk.session_total})` : base
+                      if (!pk) return base
+                      // Bu randevu paketin kaçıncı seansı olacak: tamamlanan + bu randevunun
+                      // gelecekteki bağlı randevular arasındaki sırası
+                      const ordinal = pk.done + 1 + patientAppts
+                        .filter(x => x.package_treatment_id === a.package_treatment_id)
+                        .findIndex(x => x.id === a.id)
+                      return `📦 ${pk.name} — Seans ${ordinal}/${pk.session_total}`
                     }).join(' + ')
                     return (
                       <p key={dayKey}>
