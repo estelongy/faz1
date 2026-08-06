@@ -353,8 +353,34 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const btnGhost = 'px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition-colors'
 
   // ─────────────────────────────────────────────────────────────────────────
+  // Ana sayfa: her şeyi bugünün gün akışına sıfırla
+  function resetToHome() {
+    setDay(todayIso())
+    setLeftView('gun')
+    setSelectedId(null)
+    setOpenForm(null)
+    setFromApptId(null)
+    setSearch('')
+    setError(null)
+    setMobilePanelOpen(false)
+    setCompareMode(false)
+    setCompareSel([])
+    setLightboxIdx(null)
+  }
+
   return (
     <div className="flex flex-col gap-4">
+      {/* Sabit başlık: ana sayfa butonu + modül adı */}
+      <div className="sticky top-0 z-40 -mx-1 px-1 pt-1 bg-slate-950/95 backdrop-blur">
+        <div className="flex items-center gap-3 py-2">
+          <button onClick={resetToHome}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white transition-colors">
+            🏠 Ana Sayfa
+          </button>
+          <h1 className="text-xl font-black text-white">Klinik Yönetim</h1>
+        </div>
+      </div>
+
       {/* Üst çubuk: gün gezgini + arama + yeni hasta */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1 bg-slate-800/60 rounded-xl px-1 py-1">

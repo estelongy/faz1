@@ -9,7 +9,6 @@ import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefi
 import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
 import MuhasebeAppView from '@/components/klinik-panel/MuhasebeAppView'
-import MuhasebeNav from './MuhasebeNav'
 
 export const metadata: Metadata = {
   title: 'Muhasebe | Klinik Paneli',
@@ -285,7 +284,7 @@ export default async function MuhasebePage({
 
   return (
     <div className="max-w-6xl mx-auto">
-      <MuhasebeNav title="Klinik Yönetim" showHome={false} />
+      {/* Başlık + ana sayfa butonu TekEkranKlinik içinde (sticky, client reset) */}
 
       <TekEkranKlinik
         role={staff.role}
