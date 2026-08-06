@@ -936,7 +936,7 @@ export async function addPatientPhoto(patientId: string, formData: FormData): Pr
     await ctx.supabase.storage.from('klinik-foto').remove([path])
     return { ok: false, error: error.message }
   }
-  revalidatePath('/klinik/panel/muhasebe')
+  // revalidatePath yok: foto listesi istemciden getPatientPhotos ile tazelenir (hız)
   return { ok: true }
 }
 
@@ -955,7 +955,7 @@ export async function deletePatientPhoto(id: string): Promise<Result> {
   await ctx.supabase.storage.from('klinik-foto').remove([photo.storage_path])
   const { error } = await ctx.supabase.from('internal_patient_photo').delete().eq('id', id)
   if (error) return { ok: false, error: error.message }
-  revalidatePath('/klinik/panel/muhasebe')
+  // revalidatePath yok: foto listesi istemciden getPatientPhotos ile tazelenir (hız)
   return { ok: true }
 }
 
@@ -1043,4 +1043,49 @@ export async function updatePaymentPromise(id: string, formData: FormData): Prom
   if (error) return { ok: false, error: error.message }
   revalidatePath('/klinik/panel/muhasebe')
   return { ok: true }
+}
+
+// ─── Hasta fotoğraflarını getir (tembel — sadece seçili hasta) ────────────
+// Sayfa yenilemesinden bağımsız: karne açılınca çağrılır, tüm hastalar için
+// toplu imzalı URL üretimi (yavaşlığın ana sebebi) ortadan kalkar.
+export type PhotoDto = {
+  id: string
+  patient_id: string
+  treatment_id: string | null
+  note: string | null
+  created_at: string
+  url: string
+}
+
+export async function getPatientPhotos(patientId: string): Promise<{ ok: true; photos: PhotoDto[] } | { ok: false; error: string }> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const { data: rows, error } = await ctx.supabase
+    .from('internal_patient_photo')
+    .select('id, patient_id, treatment_id, storage_path, note, created_at')
+    .eq('owner_id', ctx.clinicOwnerId)
+    .eq('patient_id', patientId)
+    .order('created_at', { ascending: false })
+  if (error) return { ok: false, error: error.message }
+  if (!rows || rows.length === 0) return { ok: true, photos: [] }
+
+  const { data: signed } = await ctx.supabase.storage
+    .from('klinik-foto')
+    .createSignedUrls(rows.map(r => r.storage_path), 3600)
+  const urlByPath = new Map((signed ?? []).map(s => [s.path, s.signedUrl]))
+
+  return {
+    ok: true,
+    photos: rows
+      .map(r => ({
+        id: r.id,
+        patient_id: r.patient_id,
+        treatment_id: r.treatment_id,
+        note: r.note,
+        created_at: r.created_at,
+        url: urlByPath.get(r.storage_path) ?? '',
+      }))
+      .filter(p => p.url),
+  }
 }

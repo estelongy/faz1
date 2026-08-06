@@ -6,7 +6,7 @@
  * Rol odağı: doktor → sıradaki hastanın karnesi açık başlar; sekreter → gün akışı.
  */
 
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
@@ -15,6 +15,7 @@ import {
   addPaymentPromise, settlePaymentPromise,
   addPatientPhoto, deletePatientPhoto,
   logPackageSession, updatePaymentPromise,
+  getPatientPhotos,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
@@ -73,7 +74,6 @@ interface Props {
   catalog: CatalogItem[]
   packages: PackageRow[]    // seanslı işlemler (session_total > 1) + sayaçları
   promises: PromiseRow[]    // açık ödeme sözleri
-  photos: PhotoRow[]        // hasta fotoğrafları (imzalı URL'lerle)
 }
 
 const TRY = (n: number) =>
@@ -95,7 +95,7 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises, photos }: Props) {
+export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -199,10 +199,22 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     [patients],
   )
 
-  const patientPhotos = useMemo(
-    () => selectedId ? photos.filter(f => f.patient_id === selectedId) : [],
-    [photos, selectedId],
-  )
+  // Fotoğraflar tembel yüklenir: sadece seçili hastanınkiler, sayfa yenilemesiz
+  const [patientPhotos, setPatientPhotos] = useState<PhotoRow[]>([])
+  useEffect(() => {
+    let alive = true
+    setPatientPhotos([])
+    if (!selectedId) return
+    getPatientPhotos(selectedId).then(res => {
+      if (alive && res.ok) setPatientPhotos(res.photos)
+    })
+    return () => { alive = false }
+  }, [selectedId])
+
+  function reloadPhotos() {
+    if (!selectedId) return
+    getPatientPhotos(selectedId).then(res => { if (res.ok) setPatientPhotos(res.photos) })
+  }
   // Foto formundaki "işleme bağla" seçici için hastanın işlemleri (yeniden eskiye, son 12)
   const patientTreatments = useMemo(
     () => selectedId
@@ -268,7 +280,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
       setPhotoProgress(null)
       // Doğal akış: öncesi yüklendi → sıradaki küme büyük ihtimalle sonrası
       if (photoStage === 'oncesi') setPhotoStage('sonrasi')
-      router.refresh()
+      reloadPhotos()
     })
   }
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
@@ -1190,7 +1202,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 onClick={() => {
                   const delId = f.id
                   setLightboxIdx(null)
-                  run(() => deletePatientPhoto(delId))
+                  startTransition(async () => {
+                    const res = await deletePatientPhoto(delId)
+                    if (res.ok) reloadPhotos()
+                    else setError(res.error ?? 'Silme hatası')
+                  })
                 }}
                 className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg bg-rose-600/30 text-rose-200 hover:bg-rose-600/50">
                 Sil

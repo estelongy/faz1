@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, clinicOwnerIdFor, getKlinikStaff } from '@/lib/muhasebe-owner'
-import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow, type PromiseRow, type PhotoRow } from './TekEkranKlinik'
+import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow, type PromiseRow } from './TekEkranKlinik'
 import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
 import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
@@ -31,7 +31,7 @@ export default async function MuhasebePage({
   const rangeStartIso = new Date(Date.now() - 30 * 86_400_000).toISOString()
   const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, photosRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date, session_total'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
@@ -70,12 +70,6 @@ export default async function MuhasebePage({
       .eq('owner_id', clinicOwner)
       .eq('status', 'open')
       .order('due_date', { ascending: true }),
-    // Hasta fotoğrafları (meta — imzalı URL aşağıda üretilir)
-    supabase
-      .from('internal_patient_photo')
-      .select('id, patient_id, treatment_id, storage_path, note, created_at')
-      .eq('owner_id', clinicOwner)
-      .order('created_at', { ascending: false }),
   ])
 
   const patients = patientsRes.data ?? []
@@ -266,26 +260,6 @@ export default async function MuhasebePage({
     })),
   ]
 
-  // ─── Foto imzalı URL'ler (1 saat geçerli) ───────────────────
-  const photoRows = photosRes.data ?? []
-  let photos: PhotoRow[] = []
-  if (photoRows.length > 0) {
-    const { data: signed } = await supabase.storage
-      .from('klinik-foto')
-      .createSignedUrls(photoRows.map(p => p.storage_path), 3600)
-    const urlByPath = new Map((signed ?? []).map(s => [s.path, s.signedUrl]))
-    photos = photoRows
-      .map(p => ({
-        id: p.id,
-        patient_id: p.patient_id,
-        treatment_id: p.treatment_id,
-        note: p.note,
-        created_at: p.created_at,
-        url: urlByPath.get(p.storage_path) ?? '',
-      }))
-      .filter(p => p.url)
-  }
-
   return (
     <div className="max-w-6xl mx-auto">
       {/* Başlık + ana sayfa butonu TekEkranKlinik içinde (sticky, client reset) */}
@@ -299,7 +273,6 @@ export default async function MuhasebePage({
         catalog={catalog as CatalogItem[]}
         packages={packages}
         promises={(promisesRes.data ?? []) as PromiseRow[]}
-        photos={photos}
       />
     </div>
   )
