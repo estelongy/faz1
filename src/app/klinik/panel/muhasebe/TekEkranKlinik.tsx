@@ -14,7 +14,7 @@ import {
   createAppointmentForPatient, setAppointmentStatus,
   addPaymentPromise, settlePaymentPromise,
   addPatientPhoto, deletePatientPhoto,
-  logPackageSession,
+  logPackageSession, updatePaymentPromise,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
@@ -155,8 +155,18 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     return appointments
       .filter(a => a.patient_id === selectedId && a.status === 'scheduled' && a.start_at >= now)
       .sort((a, b) => a.start_at.localeCompare(b.start_at))
-      .slice(0, 3)
+      .slice(0, 12)
   }, [appointments, selectedId])
+
+  // Yaklaşan randevular güne gruplanır: "(tarih saat) — A (1/3) + B (0/4)"
+  const patientApptDays = useMemo(() => {
+    const map = new Map<string, typeof patientAppts>()
+    for (const a of patientAppts) {
+      const k = new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+      map.set(k, [...(map.get(k) ?? []), a])
+    }
+    return Array.from(map.entries()).slice(0, 6)
+  }, [patientAppts])
 
   // Alacak listesi: borçlu hastalar; söz tarihi geçenler önde, sonra en yakın söz, sonra borç büyüklüğü
   const today = todayIso()
@@ -267,6 +277,10 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [compareSel, setCompareSel] = useState<string[]>([])
   const [compareView, setCompareView] = useState<'yanyana' | 'kaydir'>('yanyana')
   const [randevuPkgId, setRandevuPkgId] = useState('')
+  // Seans Yap mini detay formu (hangi paket için açık) + söz düzenle/tahsil onayı
+  const [seansFormPkg, setSeansFormPkg] = useState<string | null>(null)
+  const [editingPromiseId, setEditingPromiseId] = useState<string | null>(null)
+  const [settlingPromiseId, setSettlingPromiseId] = useState<string | null>(null)
   const [sliderPos, setSliderPos] = useState(50)
 
   // İstemci tarafı sıkıştırma: uzun kenar 1600px, JPEG %80 → 4-8 MB'lık kamera
@@ -632,15 +646,44 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                             {!full && pk.planned > 0 && ` · ${pk.planned} planlı`}
                           </span>
                           {!full && (
-                            <button
-                              onClick={() => run(() => logPackageSession(pk.treatment_id))}
-                              disabled={pending}
-                              title="Para sorulmaz — bugüne planlı seans varsa onu tamamlar, yoksa şimdi seans düşer"
-                              className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white transition-colors">
-                              ✓ Seans Yap ({pk.done + 1}/{pk.session_total})
-                            </button>
+                            <div className="flex gap-1.5 shrink-0">
+                              <button
+                                onClick={() => { setOpenForm('randevu'); setRandevuPkgId(pk.treatment_id); setFromApptId(null) }}
+                                title="Bu paket için seans randevuları planla"
+                                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700/70 hover:bg-slate-600 text-slate-200 transition-colors">
+                                📅 Planla
+                              </button>
+                              <button
+                                onClick={() => setSeansFormPkg(seansFormPkg === pk.treatment_id ? null : pk.treatment_id)}
+                                disabled={pending}
+                                title="Para sorulmaz — detayları gir, seans sayaca işlensin"
+                                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white transition-colors">
+                                ✓ Seans Yap ({pk.done + 1}/{pk.session_total})
+                              </button>
+                            </div>
                           )}
                         </div>
+                        {/* Seans detay mini formu: ürün / miktar / not — para sorulmaz */}
+                        {seansFormPkg === pk.treatment_id && !full && (
+                          <form
+                            onSubmit={e => {
+                              e.preventDefault()
+                              const fd = new FormData(e.currentTarget as HTMLFormElement)
+                              const parts = [fd.get('urun'), fd.get('miktar'), fd.get('not')]
+                                .map(v => (v as string | null)?.trim())
+                                .filter(Boolean)
+                              setSeansFormPkg(null)
+                              run(() => logPackageSession(pk.treatment_id, parts.join(' · ')))
+                            }}
+                            className="mt-2 grid sm:grid-cols-[1fr,110px,1fr,auto] gap-2 bg-slate-950/50 rounded-lg p-2">
+                            <input name="urun" placeholder="Uygulama / ürün (Revoshine vs.)" className={inputCls} />
+                            <input name="miktar" placeholder="Miktar (3ml)" className={inputCls} />
+                            <input name="not" placeholder="Not (göz altı, sağ yanak…)" className={inputCls} />
+                            <button type="submit" disabled={pending} className={btnPrimary}>
+                              {pending ? '…' : 'Tamamla'}
+                            </button>
+                          </form>
+                        )}
                       </div>
                     )
                   })}
@@ -838,17 +881,28 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 </div>
               )}
 
-              {/* Yaklaşan randevuları */}
-              {patientAppts.length > 0 && (
+              {/* Yaklaşan randevuları — güne birleşik, paket sayaçlı */}
+              {patientApptDays.length > 0 && (
                 <div className="text-xs text-slate-400 space-y-1">
                   <p className="font-bold text-slate-300">Yaklaşan randevuları</p>
-                  {patientAppts.map(a => (
-                    <p key={a.id}>
-                      {new Date(a.start_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
-                      {' '}{new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })}
-                      {a.treatment_type ? ` — ${a.treatment_type}` : ''}
-                    </p>
-                  ))}
+                  {patientApptDays.map(([dayKey, appts]) => {
+                    const first = appts[0]
+                    const label = appts.map(a => {
+                      const pk = a.package_treatment_id ? pkgById.get(a.package_treatment_id) : null
+                      const base = a.treatment_type ?? a.appointment_type ?? 'Randevu'
+                      return pk ? `📦 ${pk.name} (${pk.done}/${pk.session_total})` : base
+                    }).join(' + ')
+                    return (
+                      <p key={dayKey}>
+                        <span className="text-slate-300 font-semibold">
+                          {new Date(first.start_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                          {' '}{new Date(first.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })}
+                        </span>
+                        {' — '}{label}
+                        {appts.length > 1 && <span className="text-violet-300 font-semibold"> · aynı ziyaret</span>}
+                      </p>
+                    )
+                  })}
                 </div>
               )}
 
@@ -904,25 +958,61 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   {patientPromises.map(pr => {
                     const late = pr.due_date < today
                     return (
-                      <div key={pr.id} className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border ${late ? 'bg-rose-500/5 border-rose-500/30' : 'bg-slate-900/40 border-slate-700/60'}`}>
-                        <div className="min-w-0 text-sm">
-                          <span className={late ? 'text-rose-300 font-semibold' : 'text-slate-200'}>
-                            {new Date(pr.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
-                            {late ? ' ⚠' : ''}
-                          </span>
-                          <span className="text-white font-bold ml-2 tabular-nums">{TRY(Number(pr.amount))}</span>
-                          {pr.note && <span className="text-xs text-slate-500 ml-2">{pr.note}</span>}
-                        </div>
-                        <div className="flex gap-1 shrink-0">
-                          <button onClick={() => run(() => settlePaymentPromise(pr.id, 'paid'))}
-                            className="text-[11px] font-bold px-2 py-1 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/40">
-                            Tahsil Et
-                          </button>
-                          <button onClick={() => run(() => settlePaymentPromise(pr.id, 'cancelled'))}
-                            className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-400 hover:bg-slate-600">
-                            İptal
-                          </button>
-                        </div>
+                      <div key={pr.id} className={`rounded-lg border ${late ? 'bg-rose-500/5 border-rose-500/30' : 'bg-slate-900/40 border-slate-700/60'}`}>
+                        {editingPromiseId === pr.id ? (
+                          /* Düzenleme formu */
+                          <form onSubmit={e => {
+                            e.preventDefault()
+                            setEditingPromiseId(null)
+                            run(() => updatePaymentPromise(pr.id, new FormData(e.currentTarget as HTMLFormElement)))
+                          }} className="grid sm:grid-cols-[140px,120px,1fr,auto,auto] gap-2 p-2">
+                            <input name="due_date" type="date" required defaultValue={pr.due_date} className={inputCls} />
+                            <input name="amount" required inputMode="decimal" defaultValue={String(Number(pr.amount))} className={inputCls} />
+                            <input name="note" defaultValue={pr.note ?? ''} placeholder="Not" className={inputCls} />
+                            <button type="submit" disabled={pending} className={btnPrimary}>Kaydet</button>
+                            <button type="button" onClick={() => setEditingPromiseId(null)} className={btnGhost}>Vazgeç</button>
+                          </form>
+                        ) : (
+                          <div className="flex items-center justify-between gap-2 px-3 py-2">
+                            <div className="min-w-0 text-sm">
+                              <span className={late ? 'text-rose-300 font-semibold' : 'text-slate-200'}>
+                                {new Date(pr.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                                {late ? ' ⚠' : ''}
+                              </span>
+                              <span className="text-white font-bold ml-2 tabular-nums">{TRY(Number(pr.amount))}</span>
+                              {pr.note && <span className="text-xs text-slate-500 ml-2">{pr.note}</span>}
+                            </div>
+                            <div className="flex gap-1 shrink-0">
+                              <button onClick={() => { setSettlingPromiseId(settlingPromiseId === pr.id ? null : pr.id); setEditingPromiseId(null) }}
+                                className="text-[11px] font-bold px-2 py-1 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/40">
+                                Tahsil Et
+                              </button>
+                              <button onClick={() => { setEditingPromiseId(pr.id); setSettlingPromiseId(null) }}
+                                className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-300 hover:bg-slate-600">
+                                Düzenle
+                              </button>
+                              <button onClick={() => run(() => settlePaymentPromise(pr.id, 'cancelled'))}
+                                className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-400 hover:bg-slate-600">
+                                İptal
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        {/* Tahsil onayı: yöntem seç → onayla */}
+                        {settlingPromiseId === pr.id && editingPromiseId !== pr.id && (
+                          <div className="flex flex-wrap items-center gap-2 px-3 pb-2.5 pt-1 border-t border-slate-700/40">
+                            <span className="text-xs text-emerald-300 font-semibold">{TRY(Number(pr.amount))} tahsil edilecek — yöntem:</span>
+                            {(['nakit', 'kart', 'havale'] as const).map(m => (
+                              <button key={m}
+                                onClick={() => { setSettlingPromiseId(null); run(() => settlePaymentPromise(pr.id, 'paid', m)) }}
+                                disabled={pending}
+                                className="text-[11px] font-bold px-3 py-1.5 rounded-md bg-emerald-600/30 text-emerald-200 hover:bg-emerald-600/50 capitalize">
+                                {m}
+                              </button>
+                            ))}
+                            <button onClick={() => setSettlingPromiseId(null)} className="text-[11px] px-2 py-1.5 text-slate-400 hover:text-white">Vazgeç</button>
+                          </div>
+                        )}
                       </div>
                     )
                   })}

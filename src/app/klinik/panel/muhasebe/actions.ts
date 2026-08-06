@@ -962,7 +962,7 @@ export async function deletePatientPhoto(id: string): Promise<Result> {
 // Para sorulmaz (paket ücreti tanımda alındı), form yok. Bugüne planlı bağlı
 // randevu varsa onu tamamlar; yoksa "şimdi" tamamlanmış seans kaydı açar.
 // Sayaç = pakete bağlı completed randevu sayısı olduğundan otomatik ilerler.
-export async function logPackageSession(packageTreatmentId: string): Promise<Result> {
+export async function logPackageSession(packageTreatmentId: string, detail?: string): Promise<Result> {
   const ctx = await requireOwner()
   if (!ctx.ok) return { ok: false, error: ctx.error }
 
@@ -992,10 +992,12 @@ export async function logPackageSession(packageTreatmentId: string): Promise<Res
     new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === todayTR
   )
 
+  const cleanDetail = (detail ?? '').trim().slice(0, 500) || null
+
   if (todays) {
     const { error } = await ctx.supabase
       .from('internal_appointment')
-      .update({ status: 'completed', updated_at: new Date().toISOString() })
+      .update({ status: 'completed', detail: cleanDetail, updated_at: new Date().toISOString() })
       .eq('id', todays.id)
       .eq('owner_id', ctx.clinicOwnerId)
     if (error) return { ok: false, error: error.message }
@@ -1007,6 +1009,7 @@ export async function logPackageSession(packageTreatmentId: string): Promise<Res
       start_at: new Date().toISOString(),
       duration_minutes: 30,
       treatment_type: `${pkg.name} — Seans ${completedCount + 1}`,
+      detail: cleanDetail,
       package_treatment_id: pkg.id,
       status: 'completed',
     })
@@ -1015,5 +1018,28 @@ export async function logPackageSession(packageTreatmentId: string): Promise<Res
 
   revalidatePath('/klinik/panel/muhasebe')
   revalidatePath('/klinik/panel/muhasebe/randevu')
+  return { ok: true }
+}
+
+// ─── Ödeme sözü güncelle ──────────────────────────────────────────────────
+export async function updatePaymentPromise(id: string, formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const dueDate = (formData.get('due_date') as string | null)?.trim() ?? ''
+  const amountStr = (formData.get('amount') as string | null)?.trim() ?? ''
+  const note = (formData.get('note') as string | null)?.trim() || null
+  const amount = Number(amountStr.replace(',', '.'))
+  if (!dueDate) return { ok: false, error: 'Tarih zorunlu.' }
+  if (!Number.isFinite(amount) || amount <= 0) return { ok: false, error: 'Geçersiz tutar.' }
+
+  const { error } = await ctx.supabase
+    .from('internal_payment_promise')
+    .update({ due_date: dueDate, amount, note, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('owner_id', ctx.clinicOwnerId)
+    .eq('status', 'open')
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/muhasebe')
   return { ok: true }
 }
