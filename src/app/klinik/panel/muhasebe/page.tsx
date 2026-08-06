@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic'
 
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, clinicOwnerIdFor, getKlinikStaff } from '@/lib/muhasebe-owner'
 import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow, type PromiseRow, type PhotoRow } from './TekEkranKlinik'
@@ -10,6 +9,7 @@ import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefi
 import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
 import MuhasebeAppView from '@/components/klinik-panel/MuhasebeAppView'
+import MuhasebeNav from './MuhasebeNav'
 
 export const metadata: Metadata = {
   title: 'Muhasebe | Klinik Paneli',
@@ -285,14 +285,7 @@ export default async function MuhasebePage({
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-4">
-        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-1">
-          <Link href="/klinik/panel" className="hover:text-white transition-colors">Klinik Panel</Link>
-          <span>›</span>
-          <span className="text-slate-300">Klinik Yönetim</span>
-        </nav>
-        <h1 className="text-2xl font-black text-white">Klinik Yönetim</h1>
-      </div>
+      <MuhasebeNav title="Klinik Yönetim" showHome={false} />
 
       <TekEkranKlinik
         role={staff.role}

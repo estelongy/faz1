@@ -49,8 +49,15 @@ export default async function MusaitlikPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-6 flex items-center gap-3">
-        <Link href="/klinik/panel/muhasebe/randevu" className="text-slate-400 hover:text-white transition-colors text-base font-semibold">← Takvim</Link>
+      <div className="mb-6 flex items-center gap-2">
+        <Link href="/klinik/panel/muhasebe"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white transition-colors">
+          🏠 Ana Sayfa
+        </Link>
+        <Link href="/klinik/panel/muhasebe/randevu"
+          className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+          ‹ Takvim
+        </Link>
       </div>
       <div className="mb-6">
         <h1 className="text-2xl font-black text-white">Müsaitlik Takvimi</h1>
