@@ -918,27 +918,36 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   })}
                 </div>
               )}
-              {selected.remaining > 0 && (
-                openForm === 'soz' ? (
+              {selected.remaining > 0 && (() => {
+                // Planlanmamış açık: borçtan mevcut açık sözlerin toplamı düşülür.
+                const promisedTotal = patientPromises.reduce((s, pr) => s + Number(pr.amount), 0)
+                const unplanned = selected.remaining - promisedTotal
+                if (unplanned <= 0) {
+                  return <p className="text-xs text-emerald-400/80">Ödeme planı borcun tamamını karşılıyor ✓</p>
+                }
+                return openForm === 'soz' ? (
                   <form onSubmit={e => {
                     e.preventDefault()
                     if (!selectedId) return
                     run(() => addPaymentPromise(selectedId, new FormData(e.currentTarget as HTMLFormElement)))
                   }} className="bg-slate-900/60 border border-amber-500/25 rounded-xl p-3 space-y-2">
-                    <p className="text-xs text-amber-300 font-semibold">Kalan {TRY(selected.remaining)} için ödeme sözü</p>
+                    <p className="text-xs text-amber-300 font-semibold">
+                      Planlanmamış {TRY(unplanned)} için ödeme sözü
+                      {promisedTotal > 0 && <span className="text-slate-500"> (borç {TRY(selected.remaining)}, planlı {TRY(promisedTotal)})</span>}
+                    </p>
                     <div className="grid sm:grid-cols-[140px,130px,1fr,auto] gap-2">
                       <input name="due_date" type="date" required className={inputCls} />
-                      <input name="amount" placeholder="Tutar ₺ *" required inputMode="decimal" defaultValue={String(selected.remaining)} className={inputCls} />
+                      <input name="amount" placeholder="Tutar ₺ *" required inputMode="decimal" defaultValue={String(unplanned)} className={inputCls} />
                       <input name="note" placeholder="Not (taksit 1/3 vs.)" className={inputCls} />
                       <button type="submit" disabled={pending} className={btnPrimary}>Kaydet</button>
                     </div>
                   </form>
                 ) : (
                   <button onClick={() => setOpenForm('soz')} className="text-xs font-semibold text-amber-300/80 hover:text-amber-200 text-left">
-                    + Ödeme sözü al ({TRY(selected.remaining)} açık)
+                    + Ödeme sözü al ({TRY(unplanned)} planlanmamış)
                   </button>
                 )
-              )}
+              })()}
 
             </div>
           )}
