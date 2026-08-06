@@ -14,6 +14,7 @@ import {
   createAppointmentForPatient, setAppointmentStatus,
   addPaymentPromise, settlePaymentPromise,
   addPatientPhoto, deletePatientPhoto,
+  logPackageSession,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
@@ -623,13 +624,22 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                         <div className="mt-2 h-1.5 rounded-full bg-slate-700/60 overflow-hidden">
                           <div className={`h-full rounded-full ${full ? 'bg-emerald-400' : 'bg-violet-400'}`} style={{ width: `${pct}%` }} />
                         </div>
-                        <div className="mt-1.5 flex items-center justify-between text-xs text-slate-400">
-                          <span>
+                        <div className="mt-1.5 flex items-center justify-between gap-2 text-xs text-slate-400">
+                          <span className="min-w-0">
                             {full ? 'Paket tamamlandı 🎉' : pk.next_at
                               ? `Sonraki: ${new Date(pk.next_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} ${new Date(pk.next_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })}`
-                              : `Planlı seans yok — ${pk.session_total - pk.done} seans kaldı, randevu ver`}
+                              : `Planlı seans yok — ${pk.session_total - pk.done} seans kaldı`}
+                            {!full && pk.planned > 0 && ` · ${pk.planned} planlı`}
                           </span>
-                          {!full && pk.planned > 0 && <span>{pk.planned} planlı</span>}
+                          {!full && (
+                            <button
+                              onClick={() => run(() => logPackageSession(pk.treatment_id))}
+                              disabled={pending}
+                              title="Para sorulmaz — bugüne planlı seans varsa onu tamamlar, yoksa şimdi seans düşer"
+                              className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white transition-colors">
+                              ✓ Seans Yap ({pk.done + 1}/{pk.session_total})
+                            </button>
+                          )}
                         </div>
                       </div>
                     )

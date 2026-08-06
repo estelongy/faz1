@@ -598,17 +598,39 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
   }
   const groupId = occurrences.length > 1 ? crypto.randomUUID() : null
 
-  const rows = occurrences.map(d => ({
-    owner_id: ctx.clinicOwnerId,
-    created_by: ctx.user.id,
-    patient_id: patientId,
-    start_at: d.toISOString(),
-    duration_minutes: durationMin,
-    treatment_type: treatmentType,
-    package_treatment_id: safePackageId,
-    recurrence_group_id: groupId,
-    status: 'scheduled',
-  }))
+  // Akıllı birleştirme: aynı hastanın o gün başka planlı randevusu varsa yeni
+  // seansı aynı ziyarete ekle — son randevunun bitişinden hemen sonraya koy.
+  // Böylece uyumlu aralıklı paketler tek ziyarette birleşir; uyumsuzlar kendi
+  // takviminde kalır.
+  const occDayKeys = occurrences.map(d => d.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }))
+  const { data: existingAppts } = await ctx.supabase
+    .from('internal_appointment')
+    .select('start_at, duration_minutes')
+    .eq('owner_id', ctx.clinicOwnerId)
+    .eq('patient_id', patientId)
+    .eq('status', 'scheduled')
+  const dayKeyOf = (iso: string) => new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+
+  const rows = occurrences.map((d, i) => {
+    let start = d
+    const sameDay = (existingAppts ?? []).filter(a => dayKeyOf(a.start_at) === occDayKeys[i])
+    if (sameDay.length > 0) {
+      const lastEnd = Math.max(...sameDay.map(a =>
+        new Date(a.start_at).getTime() + (a.duration_minutes ?? 30) * 60_000))
+      if (lastEnd > start.getTime()) start = new Date(lastEnd)
+    }
+    return {
+      owner_id: ctx.clinicOwnerId,
+      created_by: ctx.user.id,
+      patient_id: patientId,
+      start_at: start.toISOString(),
+      duration_minutes: durationMin,
+      treatment_type: treatmentType,
+      package_treatment_id: safePackageId,
+      recurrence_group_id: groupId,
+      status: 'scheduled',
+    }
+  })
   const { error } = await ctx.supabase.from('internal_appointment').insert(rows)
   if (error) return { ok: false, error: error.message }
 
@@ -933,5 +955,65 @@ export async function deletePatientPhoto(id: string): Promise<Result> {
   const { error } = await ctx.supabase.from('internal_patient_photo').delete().eq('id', id)
   if (error) return { ok: false, error: error.message }
   revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+// ─── Paket seansı işle (tek tık) ──────────────────────────────────────────
+// Para sorulmaz (paket ücreti tanımda alındı), form yok. Bugüne planlı bağlı
+// randevu varsa onu tamamlar; yoksa "şimdi" tamamlanmış seans kaydı açar.
+// Sayaç = pakete bağlı completed randevu sayısı olduğundan otomatik ilerler.
+export async function logPackageSession(packageTreatmentId: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const { data: pkg } = await ctx.supabase
+    .from('internal_treatment')
+    .select('id, patient_id, name, session_total')
+    .eq('id', packageTreatmentId)
+    .eq('owner_id', ctx.clinicOwnerId)
+    .maybeSingle()
+  if (!pkg || !pkg.session_total) return { ok: false, error: 'Paket bulunamadı.' }
+
+  const { data: linked } = await ctx.supabase
+    .from('internal_appointment')
+    .select('id, start_at, status')
+    .eq('owner_id', ctx.clinicOwnerId)
+    .eq('package_treatment_id', pkg.id)
+
+  const completedCount = (linked ?? []).filter(a => a.status === 'completed').length
+  if (completedCount >= pkg.session_total) {
+    return { ok: false, error: 'Paketin tüm seansları zaten tamamlanmış.' }
+  }
+
+  // Bugüne (TR) planlı bağlı randevu varsa onu tamamla
+  const todayTR = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+  const todays = (linked ?? []).find(a =>
+    a.status === 'scheduled' &&
+    new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === todayTR
+  )
+
+  if (todays) {
+    const { error } = await ctx.supabase
+      .from('internal_appointment')
+      .update({ status: 'completed', updated_at: new Date().toISOString() })
+      .eq('id', todays.id)
+      .eq('owner_id', ctx.clinicOwnerId)
+    if (error) return { ok: false, error: error.message }
+  } else {
+    const { error } = await ctx.supabase.from('internal_appointment').insert({
+      owner_id: ctx.clinicOwnerId,
+      created_by: ctx.user.id,
+      patient_id: pkg.patient_id,
+      start_at: new Date().toISOString(),
+      duration_minutes: 30,
+      treatment_type: `${pkg.name} — Seans ${completedCount + 1}`,
+      package_treatment_id: pkg.id,
+      status: 'completed',
+    })
+    if (error) return { ok: false, error: error.message }
+  }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
   return { ok: true }
 }
