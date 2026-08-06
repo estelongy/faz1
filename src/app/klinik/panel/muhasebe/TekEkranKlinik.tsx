@@ -53,6 +53,7 @@ export interface PackageRow {
   done: number       // tamamlanan seans (completed randevu sayısı)
   planned: number    // planlı seans
   next_at: string | null
+  sessions: { at: string; detail: string | null }[]  // yapılan seanslar (tarih + detay)
 }
 export interface TxRow {
   id: string
@@ -663,6 +664,18 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                             </div>
                           )}
                         </div>
+                        {/* Yapılan seanslar: tarih + girilen detay */}
+                        {pk.sessions.length > 0 && (
+                          <div className="mt-2 space-y-0.5 border-t border-slate-700/40 pt-1.5">
+                            {pk.sessions.map((s, i) => (
+                              <p key={i} className="text-[11px] text-slate-400">
+                                <span className="text-emerald-400 font-bold">✓ {i + 1}.</span>
+                                {' '}{new Date(s.at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                                {s.detail && <span className="text-slate-300"> — {s.detail}</span>}
+                              </p>
+                            ))}
+                          </div>
+                        )}
                         {/* Seans detay mini formu: ürün / miktar / not — para sorulmaz */}
                         {seansFormPkg === pk.treatment_id && !full && (
                           <form
@@ -750,7 +763,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 <form onSubmit={submitRandevu} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
                   <div className="grid sm:grid-cols-[140px,110px,110px,1fr] gap-2">
                     <input name="date" type="date" required defaultValue={day} className={inputCls} />
-                    <input name="time" type="time" required className={inputCls} />
+                    <input name="time" type="time" title="Boş bırakılırsa 17:00" className={inputCls} />
                     <select name="duration_minutes" defaultValue="30" className={inputCls}>
                       {[15, 20, 30, 45, 60, 90].map(m => <option key={m} value={m}>{m} dk</option>)}
                     </select>

@@ -540,12 +540,13 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
 
   const patientId = (formData.get('patient_id') as string | null)?.trim() ?? ''
   const dateStr = (formData.get('date') as string | null)?.trim() ?? ''
-  const timeStr = (formData.get('time') as string | null)?.trim() ?? ''
+  // Saat girilmezse varsayılan 17:00
+  const timeStr = (formData.get('time') as string | null)?.trim() || '17:00'
   const durationMin = Number(formData.get('duration_minutes') ?? 30)
   const treatmentType = ((formData.get('treatment_type') as string | null)?.trim() || null)
 
   if (!patientId) return { ok: false, error: 'Hasta seçilmedi.' }
-  if (!dateStr || !timeStr) return { ok: false, error: 'Tarih ve saat zorunlu.' }
+  if (!dateStr) return { ok: false, error: 'Tarih zorunlu.' }
   if (!Number.isFinite(durationMin) || durationMin < 5 || durationMin > 480) {
     return { ok: false, error: 'Geçersiz randevu süresi.' }
   }
