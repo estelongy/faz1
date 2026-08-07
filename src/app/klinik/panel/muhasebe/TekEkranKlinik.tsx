@@ -701,7 +701,177 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
       {error && <div className="px-3 py-2 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-300 text-sm">{error}</div>}
 
+      {/* STOK — tam genişlik tablo görünümü */}
+      {leftView === 'stok' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-black text-white">
+              📦 Stok — {stockAll.length} kalem
+              {lowStockCount > 0 && <span className="text-rose-300 text-sm font-bold ml-2">({lowStockCount} ürün azaldı)</span>}
+            </h2>
+            <button onClick={() => setLeftView('gun')} className={btnGhost}>‹ Gün akışına dön</button>
+          </div>
+
+          {/* Yeni ürün ekleme satırı */}
+          <form onSubmit={e => {
+            e.preventDefault()
+            const formEl = e.currentTarget as HTMLFormElement
+            run(() => addStockItem(new FormData(formEl)).then(r => { if (r.ok) formEl.reset(); return r }))
+          }} className="bg-slate-800/40 border border-slate-700 rounded-xl p-3">
+            <div className="grid sm:grid-cols-[2fr,1fr,1fr,1fr,auto] gap-2 items-end">
+              <label className="text-xs text-slate-400 font-semibold">Ürün adı
+                <input name="name" placeholder="Botoks Flakon 100U" required className={`${inputCls} mt-1`} />
+              </label>
+              <label className="text-xs text-slate-400 font-semibold">Miktar
+                <input name="quantity" placeholder="3" inputMode="decimal" className={`${inputCls} mt-1`} />
+              </label>
+              <label className="text-xs text-slate-400 font-semibold">Birim
+                <input name="unit" placeholder="adet / ml / kutu" className={`${inputCls} mt-1`} />
+              </label>
+              <label className="text-xs text-slate-400 font-semibold">Uyarı eşiği
+                <input name="min_threshold" placeholder="1" inputMode="decimal" title="Bu sayıya inince kırmızı uyarı" className={`${inputCls} mt-1`} />
+              </label>
+              <button type="submit" disabled={pending} className={btnPrimary}>+ Ürün Ekle</button>
+            </div>
+          </form>
+
+          {/* Stok tablosu */}
+          {stockAll.length === 0 ? (
+            <div className="text-center py-12 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
+              <p className="text-slate-400">Henüz stok kalemi yok — yukarıdan ilk ürünü ekle.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto bg-slate-800/30 border border-slate-700/60 rounded-xl">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs text-slate-400 border-b border-slate-700">
+                    <th className="px-4 py-2.5 font-bold">Ürün</th>
+                    <th className="px-3 py-2.5 font-bold text-right">Miktar</th>
+                    <th className="px-3 py-2.5 font-bold">Birim</th>
+                    <th className="px-3 py-2.5 font-bold text-right">Uyarı eşiği</th>
+                    <th className="px-3 py-2.5 font-bold">Durum</th>
+                    <th className="px-3 py-2.5 font-bold text-right">Hareket</th>
+                    <th className="px-3 py-2.5" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {stockAll.map(i => {
+                    const low = i.min_threshold > 0 && i.quantity <= i.min_threshold
+                    const out = i.quantity <= 0
+                    return (
+                      <tr key={i.id} className={`border-b border-slate-800/80 ${low ? 'bg-rose-500/5' : ''}`}>
+                        <td className="px-4 py-2.5 text-white font-semibold">{i.name}</td>
+                        <td className={`px-3 py-2.5 text-right font-black tabular-nums ${out ? 'text-rose-400' : low ? 'text-rose-300' : 'text-teal-300'}`}>{i.quantity}</td>
+                        <td className="px-3 py-2.5 text-slate-400">{i.unit ?? '—'}</td>
+                        <td className="px-3 py-2.5 text-right text-slate-500 tabular-nums">{i.min_threshold > 0 ? i.min_threshold : '—'}</td>
+                        <td className="px-3 py-2.5">
+                          {out ? <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-500/25 text-rose-300">TÜKENDİ</span>
+                            : low ? <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300">⚠ Azaldı</span>
+                            : <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">✓ Yeterli</span>}
+                        </td>
+                        <td className="px-3 py-2.5">
+                          <div className="flex gap-1 justify-end">
+                            <button onClick={() => { setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) - 1 })); run(() => adjustStock(i.id, -1, 'çıkış')) }}
+                              disabled={pending || i.quantity <= 0}
+                              className="w-8 h-8 rounded-md bg-slate-700/60 hover:bg-slate-600 text-slate-200 font-black disabled:opacity-40">−</button>
+                            <button onClick={() => { setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) + 1 })); run(() => adjustStock(i.id, 1, 'giriş')) }}
+                              disabled={pending}
+                              className="w-8 h-8 rounded-md bg-slate-700/60 hover:bg-slate-600 text-slate-200 font-black">+</button>
+                            <button onClick={() => {
+                              const v = window.prompt(`"${i.name}" — kaç ${i.unit ?? 'adet'} alım girişi?`, '5')
+                              const n = Number((v ?? '').replace(',', '.'))
+                              if (!Number.isFinite(n) || n === 0) return
+                              setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) + n }))
+                              run(() => adjustStock(i.id, n, 'alım'))
+                            }}
+                              className="px-2.5 h-8 rounded-md bg-teal-600/20 hover:bg-teal-600/40 text-teal-300 text-xs font-bold">Alım</button>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2.5 text-right">
+                          <button onClick={() => {
+                            setConfirmBox({
+                              title: `"${i.name}" stok kalemi silinecek`,
+                              lines: [
+                                `Kalan ${i.quantity}${i.unit ? ` ${i.unit}` : ''} kayıttan düşer`,
+                                'Hareket geçmişi ve eşleştirmeleri de silinir',
+                                'Yapılmış seans/işlem kayıtlarına dokunulmaz',
+                              ],
+                              confirmLabel: 'Kalemi Sil',
+                              action: () => {
+                                setRemovedStockIds(prev => new Set(prev).add(i.id))
+                                run(() => deleteStockItem(i.id))
+                              },
+                            })
+                          }}
+                            className="text-slate-600 hover:text-rose-300 font-bold" aria-label="Kalemi sil">✕</button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Uygulama ↔ ürün eşleştirme tablosu */}
+          {stockAll.length > 0 && (
+            <div className="bg-slate-800/30 border border-slate-700/60 rounded-xl p-4 space-y-3">
+              <p className="text-sm font-bold text-slate-200">Uygulama → Ürün eşleştirme</p>
+              <p className="text-xs text-slate-500">İşlem/paket adında uygulama kelimesi geçince Seans Yap formunda ürün otomatik seçili gelir; tek seans işlemlerde stok kendiliğinden düşer.</p>
+              {stockMaps.length > 0 && (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs text-slate-400 border-b border-slate-700">
+                      <th className="py-2 font-bold">Uygulama</th>
+                      <th className="py-2 font-bold">Ürün</th>
+                      <th className="py-2 font-bold text-right">Seans başı</th>
+                      <th className="py-2" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stockMaps.map(m => {
+                      const item = stockAll.find(i => i.id === m.item_id)
+                      return (
+                        <tr key={m.id} className="border-b border-slate-800/80">
+                          <td className="py-2 text-white">{m.match_text}</td>
+                          <td className="py-2 text-slate-300">{item?.name ?? '—'}</td>
+                          <td className="py-2 text-right tabular-nums text-slate-300">{m.amount_per_use}{item?.unit ? ` ${item.unit}` : ''}</td>
+                          <td className="py-2 text-right">
+                            <button onClick={() => run(() => deleteStockMap(m.id))}
+                              className="text-slate-600 hover:text-rose-300 font-bold" aria-label="Eşleştirmeyi sil">✕</button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
+              <form onSubmit={e => {
+                e.preventDefault()
+                const formEl = e.currentTarget as HTMLFormElement
+                run(() => addStockMap(new FormData(formEl)).then(r => { if (r.ok) formEl.reset(); return r }))
+              }} className="grid sm:grid-cols-[1fr,1fr,120px,auto] gap-2 items-end">
+                <label className="text-xs text-slate-400 font-semibold">Uygulama adı
+                  <input name="match_text" placeholder="Botoks" required className={`${inputCls} mt-1`} />
+                </label>
+                <label className="text-xs text-slate-400 font-semibold">Depodaki ürün
+                  <select name="item_id" required className={`${inputCls} mt-1`}>
+                    <option value="">Seç…</option>
+                    {stockAll.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                  </select>
+                </label>
+                <label className="text-xs text-slate-400 font-semibold">Seans başı miktar
+                  <input name="amount_per_use" placeholder="1" defaultValue="1" inputMode="decimal" className={`${inputCls} mt-1`} />
+                </label>
+                <button type="submit" disabled={pending} className={btnPrimary}>+ Eşleştir</button>
+              </form>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Ana gövde: sol akış + sağ karne */}
+      {leftView !== 'stok' && (
       <div className="grid lg:grid-cols-[340px,1fr] gap-4 items-start">
 
         {/* SOL — GÜN AKIŞI veya ALACAKLAR */}
@@ -741,118 +911,6 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   </div>
                 </div>
               ))}
-            </>
-          )}
-          {leftView === 'stok' && (
-            <>
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-teal-300">
-                  Stok — {stockAll.length} kalem
-                  {lowStockCount > 0 && <span className="text-rose-300"> ({lowStockCount} azaldı)</span>}
-                </span>
-                <button onClick={() => setLeftView('gun')} className="text-xs text-slate-400 hover:text-white">‹ Gün akışı</button>
-              </div>
-
-              {/* Yeni kalem */}
-              <form onSubmit={e => {
-                e.preventDefault()
-                const formEl = e.currentTarget as HTMLFormElement
-                run(() => addStockItem(new FormData(formEl)).then(r => { if (r.ok) formEl.reset(); return r }))
-              }} className="grid grid-cols-[1fr,70px,70px,70px,auto] gap-1.5 bg-slate-800/40 border border-slate-700 rounded-xl p-2">
-                <input name="name" placeholder="Ürün adı *" required className={inputCls} />
-                <input name="quantity" placeholder="Adet" inputMode="decimal" className={inputCls} />
-                <input name="unit" placeholder="Birim" className={inputCls} />
-                <input name="min_threshold" placeholder="Min" inputMode="decimal" title="Bu sayının altına düşünce uyarı" className={inputCls} />
-                <button type="submit" disabled={pending} className={btnPrimary}>+</button>
-              </form>
-
-              {stockAll.length === 0 && (
-                <div className="text-center py-8 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
-                  <p className="text-slate-400 text-sm">Henüz stok kalemi yok — yukarıdan ekle.</p>
-                  <p className="text-slate-500 text-xs mt-1">Örn: Botoks Flakon · 3 · adet · min 1</p>
-                </div>
-              )}
-              <div className="space-y-1.5 max-h-[420px] overflow-y-auto pr-1">
-                {stockAll.map(i => {
-                  const low = i.min_threshold > 0 && i.quantity <= i.min_threshold
-                  return (
-                    <div key={i.id} className={`rounded-xl border px-3 py-2 ${low ? 'bg-rose-500/5 border-rose-500/30' : 'bg-slate-800/40 border-slate-700/60'}`}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-white text-sm font-semibold truncate">{i.name}</span>
-                        <span className={`text-sm font-black tabular-nums shrink-0 ${low ? 'text-rose-300' : 'text-teal-300'}`}>
-                          {i.quantity}{i.unit ? ` ${i.unit}` : ''}{low ? ' ⚠' : ''}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between mt-1.5">
-                        <div className="flex gap-1">
-                          <button onClick={() => { setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) - 1 })); run(() => adjustStock(i.id, -1, 'çıkış')) }}
-                            disabled={pending || i.quantity <= 0}
-                            className="w-7 h-7 rounded-md bg-slate-700/60 hover:bg-slate-600 text-slate-200 text-sm font-black disabled:opacity-40">−</button>
-                          <button onClick={() => { setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) + 1 })); run(() => adjustStock(i.id, 1, 'giriş')) }}
-                            disabled={pending}
-                            className="w-7 h-7 rounded-md bg-slate-700/60 hover:bg-slate-600 text-slate-200 text-sm font-black">+</button>
-                          <button onClick={() => {
-                            const v = window.prompt('Kaç adet/birim eklensin? (alım girişi)', '5')
-                            const n = Number((v ?? '').replace(',', '.'))
-                            if (!Number.isFinite(n) || n === 0) return
-                            setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) + n }))
-                            run(() => adjustStock(i.id, n, 'alım'))
-                          }}
-                            className="px-2 h-7 rounded-md bg-teal-600/20 hover:bg-teal-600/40 text-teal-300 text-xs font-bold">Alım</button>
-                        </div>
-                        <button onClick={() => {
-                          setConfirmBox({
-                            title: `"${i.name}" stok kalemi silinecek`,
-                            lines: [
-                              `Kalan ${i.quantity}${i.unit ? ` ${i.unit}` : ''} kayıttan düşer`,
-                              'Hareket geçmişi ve eşleştirmeleri de silinir',
-                              'Yapılmış seans/işlem kayıtlarına dokunulmaz',
-                            ],
-                            confirmLabel: 'Kalemi Sil',
-                            action: () => {
-                              setRemovedStockIds(prev => new Set(prev).add(i.id))
-                              run(() => deleteStockItem(i.id))
-                            },
-                          })
-                        }}
-                          className="text-slate-600 hover:text-rose-300 text-xs font-bold" aria-label="Kalemi sil">✕</button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              {/* Uygulama ↔ ürün eşleştirmeleri */}
-              {stockAll.length > 0 && (
-                <div className="bg-slate-800/30 border border-slate-700/60 rounded-xl p-2.5 space-y-1.5">
-                  <p className="text-xs font-bold text-slate-300" title="İşlem/paket adında bu kelime geçerse seans formunda ürün otomatik seçili gelir; tek seans işlemlerde stok otomatik düşer.">
-                    Uygulama → Ürün eşleştirme
-                  </p>
-                  {stockMaps.map(m => {
-                    const item = stockAll.find(i => i.id === m.item_id)
-                    return (
-                      <div key={m.id} className="flex items-center justify-between gap-2 text-xs text-slate-400">
-                        <span className="truncate">&quot;{m.match_text}&quot; → {item?.name ?? '—'} · {m.amount_per_use}{item?.unit ? ` ${item.unit}` : ''}/seans</span>
-                        <button onClick={() => run(() => deleteStockMap(m.id))}
-                          className="text-slate-600 hover:text-rose-300 font-bold" aria-label="Eşleştirmeyi sil">✕</button>
-                      </div>
-                    )
-                  })}
-                  <form onSubmit={e => {
-                    e.preventDefault()
-                    const formEl = e.currentTarget as HTMLFormElement
-                    run(() => addStockMap(new FormData(formEl)).then(r => { if (r.ok) formEl.reset(); return r }))
-                  }} className="grid grid-cols-[1fr,1fr,60px,auto] gap-1.5">
-                    <input name="match_text" placeholder="Uygulama (Botoks)" required className={inputCls} />
-                    <select name="item_id" required className={inputCls}>
-                      <option value="">Ürün…</option>
-                      {stockAll.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
-                    </select>
-                    <input name="amount_per_use" placeholder="Mik." defaultValue="1" inputMode="decimal" className={inputCls} />
-                    <button type="submit" disabled={pending} className={btnPrimary}>+</button>
-                  </form>
-                </div>
-              )}
             </>
           )}
           {leftView === 'hastalar' && (
@@ -1651,6 +1709,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           )}
         </div>
       </div>
+      )}
 
       {/* KARŞILAŞTIRMA — iki foto yan yana */}
       {compareMode && compareSel.length === 2 && (() => {
