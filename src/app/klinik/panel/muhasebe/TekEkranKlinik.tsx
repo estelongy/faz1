@@ -426,7 +426,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         <style>{`img, video { filter: invert(1.087) hue-rotate(180deg); }`}</style>
       )}
       {/* Sabit başlık: ana sayfa butonu + modül adı + tema */}
-      <div className="sticky top-0 z-40 -mx-1 px-1 pt-1 bg-slate-950/95 backdrop-blur">
+      <div className="sticky top-0 z-40 pt-1 bg-slate-950/95 backdrop-blur">
         <div className="flex items-center gap-3 py-2">
           <button onClick={resetToHome}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white transition-colors">
@@ -1285,7 +1285,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
       })()}
 
       {/* ALT ŞERİT — canlı butonlar: gün özeti / alacaklar / ay raporu */}
-      <div className="sticky bottom-0 -mx-1 px-1 pb-1">
+      <div className="sticky bottom-0 pb-1">
         <div className="bg-slate-900/95 backdrop-blur border border-slate-700/60 rounded-xl px-3 py-2 flex flex-wrap items-center gap-2 text-sm">
           <button
             onClick={() => { setLeftView('gun'); setMobilePanelOpen(false) }}
