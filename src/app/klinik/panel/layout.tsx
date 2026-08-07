@@ -64,19 +64,22 @@ export default async function KlinikPanelLayout({ children }: { children: React.
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <KlinikSidebar
-        clinicName={clinic.name}
-        totalCredit={totalCredit}
-        freeCredit={freeCredit}
-        isEducator={clinic.is_educator ?? false}
-        showMuhasebe={isMuhasebeOwner(user.id)}
-      />
+      {/* PWA (kurulu uygulama) modunda site kabuğu gizlenir — saf işlem alanı */}
+      <div className="pwa-hide">
+        <KlinikSidebar
+          clinicName={clinic.name}
+          totalCredit={totalCredit}
+          freeCredit={freeCredit}
+          isEducator={clinic.is_educator ?? false}
+          showMuhasebe={isMuhasebeOwner(user.id)}
+        />
+      </div>
 
       {/* Ana içerik — sidebar collapsed offset (72px), expanded sidebar overlays */}
-      <div className="lg:pl-[72px]">
+      <div className="lg:pl-[72px] pwa-nopad">
         {/* Üst bar (mobil için boşluk + çıkış) */}
         <header
-          className="web-only sticky top-0 z-30 bg-slate-900/80 backdrop-blur border-b border-slate-800 h-14 flex items-center justify-between px-4 lg:px-8"
+          className="pwa-hide web-only sticky top-0 z-30 bg-slate-900/80 backdrop-blur border-b border-slate-800 h-14 flex items-center justify-between px-4 lg:px-8"
           style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(3.5rem + env(safe-area-inset-top))' }}
         >
           <div className="lg:hidden w-10" /> {/* mobile hamburger placeholder */}
