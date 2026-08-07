@@ -1096,3 +1096,65 @@ export async function signOutKlinik(): Promise<Result> {
   await supabase.auth.signOut()
   return { ok: true }
 }
+
+// ─── İşlem/paket sil (kaskat) ─────────────────────────────────────────────
+// Paketse: bağlı PLANLI randevular da silinir (çöp randevu kalmaz).
+// Tamamlanmış seans randevuları tarihçe olarak kalır (bağ null'a düşer).
+export async function deleteTreatmentCascade(treatmentId: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const { data: t } = await ctx.supabase
+    .from('internal_treatment')
+    .select('id, patient_id, session_total')
+    .eq('id', treatmentId)
+    .eq('owner_id', ctx.clinicOwnerId)
+    .maybeSingle()
+  if (!t) return { ok: false, error: 'İşlem bulunamadı.' }
+
+  if (t.session_total) {
+    await ctx.supabase
+      .from('internal_appointment')
+      .delete()
+      .eq('owner_id', ctx.clinicOwnerId)
+      .eq('package_treatment_id', t.id)
+      .eq('status', 'scheduled')
+  }
+
+  const { error } = await ctx.supabase
+    .from('internal_treatment')
+    .delete()
+    .eq('id', t.id)
+    .eq('owner_id', ctx.clinicOwnerId)
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  revalidatePath('/klinik/panel/muhasebe/randevu')
+  return { ok: true }
+}
+
+// ─── Seans geri al ────────────────────────────────────────────────────────
+// Yanlışlıkla "Seans Yap" — tamamlanan seans randevusu silinir, sayaç geri düşer.
+export async function undoPackageSession(appointmentId: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const { data: a } = await ctx.supabase
+    .from('internal_appointment')
+    .select('id, status, package_treatment_id')
+    .eq('id', appointmentId)
+    .eq('owner_id', ctx.clinicOwnerId)
+    .maybeSingle()
+  if (!a || !a.package_treatment_id) return { ok: false, error: 'Seans bulunamadı.' }
+  if (a.status !== 'completed') return { ok: false, error: 'Sadece tamamlanmış seans geri alınır.' }
+
+  const { error } = await ctx.supabase
+    .from('internal_appointment')
+    .delete()
+    .eq('id', a.id)
+    .eq('owner_id', ctx.clinicOwnerId)
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}

@@ -62,7 +62,7 @@ export default async function MuhasebePage({
     // Paket sayaçları: pakete bağlı TÜM randevular (pencere dışındakiler dahil)
     supabase
       .from('internal_appointment')
-      .select('package_treatment_id, status, start_at, detail')
+      .select('id, package_treatment_id, status, start_at, detail')
       .eq('owner_id', clinicOwner)
       .not('package_treatment_id', 'is', null),
     // Açık ödeme sözleri (alacak takibi)
@@ -238,7 +238,7 @@ export default async function MuhasebePage({
         sessions: linked
           .filter(a => a.status === 'completed')
           .sort((a, b) => a.start_at.localeCompare(b.start_at))
-          .map(a => ({ at: a.start_at, detail: a.detail ?? null })),
+          .map(a => ({ id: a.id, at: a.start_at, detail: a.detail ?? null })),
       }
     })
   const txs: TxRow[] = [

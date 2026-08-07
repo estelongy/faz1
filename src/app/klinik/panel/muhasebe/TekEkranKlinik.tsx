@@ -15,6 +15,7 @@ import {
   addPatientPhoto, deletePatientPhoto,
   logPackageSession, updatePaymentPromise,
   getPatientPhotos, signOutKlinik,
+  deleteTreatmentCascade, undoPackageSession, deleteAppointment, deletePayment,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
@@ -53,7 +54,7 @@ export interface PackageRow {
   done: number       // tamamlanan seans (completed randevu sayısı)
   planned: number    // planlı seans
   next_at: string | null
-  sessions: { at: string; detail: string | null }[]  // yapılan seanslar (tarih + detay)
+  sessions: { id: string; at: string; detail: string | null }[]  // yapılan seanslar (randevu id + tarih + detay)
 }
 export interface TxRow {
   id: string
@@ -111,24 +112,32 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [apptStatusOv, setApptStatusOv] = useState<Record<string, string>>({})
   const [optPromises, setOptPromises] = useState<PromiseRow[]>([])
   const [promiseOv, setPromiseOv] = useState<Record<string, { removed?: boolean; due_date?: string; amount?: number; note?: string | null }>>({})
-  const [pkgDelta, setPkgDelta] = useState<Record<string, { done: number; planned: number; sessions: { at: string; detail: string | null }[] }>>({})
+  const [pkgDelta, setPkgDelta] = useState<Record<string, { done: number; planned: number; sessions: { id: string; at: string; detail: string | null }[]; removedSessionIds?: string[] }>>({})
+  // Silme overlay'leri: anında kaybolsun
+  const [removedTxIds, setRemovedTxIds] = useState<Set<string>>(new Set())
+  const [removedApptIds, setRemovedApptIds] = useState<Set<string>>(new Set())
+  const [removedPkgIds, setRemovedPkgIds] = useState<Set<string>>(new Set())
 
   function resetOverlays() {
     setOptTxs([]); setOptAppts([]); setApptStatusOv({})
     setOptPromises([]); setPromiseOv({}); setPkgDelta({})
+    setRemovedTxIds(new Set()); setRemovedApptIds(new Set()); setRemovedPkgIds(new Set())
   }
   // Taze server verisi geldiğinde overlay'ler görevini tamamladı → temizle
   useEffect(() => { resetOverlays() }, [txs, appointments, promises, packages]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const oid = () => `opt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 
-  const txsAll = useMemo(() => optTxs.length ? [...txs, ...optTxs] : txs, [txs, optTxs])
+  const txsAll = useMemo(() => {
+    const base = removedTxIds.size ? txs.filter(t => !removedTxIds.has(t.id)) : txs
+    return optTxs.length ? [...base, ...optTxs] : base
+  }, [txs, optTxs, removedTxIds])
   const apptsAll = useMemo(() => {
-    const base = Object.keys(apptStatusOv).length
-      ? appointments.map(a => apptStatusOv[a.id] ? { ...a, status: apptStatusOv[a.id] } : a)
-      : appointments
+    let base = removedApptIds.size ? appointments.filter(a => !removedApptIds.has(a.id)) : appointments
+    if (removedPkgIds.size) base = base.filter(a => !(a.package_treatment_id && removedPkgIds.has(a.package_treatment_id) && a.status === 'scheduled'))
+    if (Object.keys(apptStatusOv).length) base = base.map(a => apptStatusOv[a.id] ? { ...a, status: apptStatusOv[a.id] } : a)
     return optAppts.length ? [...base, ...optAppts] : base
-  }, [appointments, apptStatusOv, optAppts])
+  }, [appointments, apptStatusOv, optAppts, removedApptIds, removedPkgIds])
   const promisesAll = useMemo(() => {
     const base = promises
       .filter(p => !promiseOv[p.id]?.removed)
@@ -136,18 +145,22 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     return optPromises.length ? [...base, ...optPromises] : base
   }, [promises, promiseOv, optPromises])
   const packagesAll = useMemo(() => {
-    if (!Object.keys(pkgDelta).length) return packages
-    return packages.map(p => {
-      const d = pkgDelta[p.treatment_id]
-      if (!d) return p
-      return {
-        ...p,
-        done: p.done + d.done,
-        planned: Math.max(0, p.planned + d.planned),
-        sessions: [...p.sessions, ...d.sessions],
-      }
-    })
-  }, [packages, pkgDelta])
+    let base = removedPkgIds.size ? packages.filter(p => !removedPkgIds.has(p.treatment_id)) : packages
+    if (Object.keys(pkgDelta).length) {
+      base = base.map(p => {
+        const d = pkgDelta[p.treatment_id]
+        if (!d) return p
+        const removedS = new Set(d.removedSessionIds ?? [])
+        return {
+          ...p,
+          done: p.done + d.done,
+          planned: Math.max(0, p.planned + d.planned),
+          sessions: [...p.sessions.filter(s => !removedS.has(s.id)), ...d.sessions],
+        }
+      })
+    }
+    return base
+  }, [packages, pkgDelta, removedPkgIds])
 
   // Bakiyeler canlı hesaplanır (optimistic kayıtlar dahil): işlem − tahsilat
   const balances = useMemo(() => {
@@ -739,7 +752,21 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     <span className="text-white font-black text-sm tabular-nums shrink-0">{time}</span>
                     <span className="text-white text-sm font-semibold truncate">{p?.name ?? '—'}</span>
                   </div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${st.cls}`}>{st.label}</span>
+                  <span className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${st.cls}`}>{st.label}</span>
+                    {!a.id.startsWith('opt-') && (
+                      <button
+                        onClick={() => {
+                          if (!confirm('Bu randevu silinsin mi?')) return
+                          setRemovedApptIds(prev => new Set(prev).add(a.id))
+                          run(() => deleteAppointment(a.id))
+                        }}
+                        title="Randevuyu sil"
+                        className="text-slate-600 hover:text-rose-300 text-xs font-bold" aria-label="Randevuyu sil">
+                        ✕
+                      </button>
+                    )}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between mt-1.5">
                   <span className="text-xs text-slate-400 truncate">
@@ -826,8 +853,21 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                       <div key={pk.treatment_id} className={`rounded-xl border p-3 ${full ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-violet-500/5 border-violet-500/25'}`}>
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-sm font-bold text-white truncate">{pk.name}</span>
-                          <span className={`text-sm font-black tabular-nums shrink-0 ${full ? 'text-emerald-300' : 'text-violet-300'}`}>
-                            {pk.done}/{pk.session_total} seans
+                          <span className="flex items-center gap-2 shrink-0">
+                            <span className={`text-sm font-black tabular-nums ${full ? 'text-emerald-300' : 'text-violet-300'}`}>
+                              {pk.done}/{pk.session_total} seans
+                            </span>
+                            <button
+                              onClick={() => {
+                                if (!confirm(`"${pk.name}" paketi silinsin mi? Planlı seans randevuları da silinir.`)) return
+                                setRemovedPkgIds(prev => new Set(prev).add(pk.treatment_id))
+                                setRemovedTxIds(prev => new Set(prev).add(pk.treatment_id))
+                                run(() => deleteTreatmentCascade(pk.treatment_id))
+                              }}
+                              title="Paketi sil (planlı seans randevularıyla birlikte)"
+                              className="text-slate-500 hover:text-rose-300 text-sm" aria-label="Paketi sil">
+                              🗑
+                            </button>
                           </span>
                         </div>
                         <div className="mt-2 h-1.5 rounded-full bg-slate-700/60 overflow-hidden">
@@ -862,10 +902,29 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                         {pk.sessions.length > 0 && (
                           <div className="mt-2 space-y-0.5 border-t border-slate-700/40 pt-1.5">
                             {pk.sessions.map((s, i) => (
-                              <p key={i} className="text-[11px] text-slate-400">
+                              <p key={s.id} className="text-[11px] text-slate-400 flex items-center gap-1.5">
                                 <span className="text-emerald-400 font-bold">✓ {i + 1}.</span>
                                 {' '}{new Date(s.at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
                                 {s.detail && <span className="text-slate-300"> — {s.detail}</span>}
+                                {!s.id.startsWith('opt-') && (
+                                  <button
+                                    onClick={() => {
+                                      setPkgDelta(prev => ({
+                                        ...prev,
+                                        [pk.treatment_id]: {
+                                          done: (prev[pk.treatment_id]?.done ?? 0) - 1,
+                                          planned: prev[pk.treatment_id]?.planned ?? 0,
+                                          sessions: prev[pk.treatment_id]?.sessions ?? [],
+                                          removedSessionIds: [...(prev[pk.treatment_id]?.removedSessionIds ?? []), s.id],
+                                        },
+                                      }))
+                                      run(() => undoPackageSession(s.id))
+                                    }}
+                                    title="Seansı geri al (yanlış tıklama düzeltme — sayaç geri düşer)"
+                                    className="text-slate-600 hover:text-rose-300 font-bold" aria-label="Seansı geri al">
+                                    ×
+                                  </button>
+                                )}
                               </p>
                             ))}
                           </div>
@@ -897,7 +956,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                                 [pk.treatment_id]: {
                                   done: (prev[pk.treatment_id]?.done ?? 0) + 1,
                                   planned: (prev[pk.treatment_id]?.planned ?? 0) + (todaysLinked ? -1 : 0),
-                                  sessions: [...(prev[pk.treatment_id]?.sessions ?? []), { at: nowIso, detail: parts.join(' · ') || null }],
+                                  sessions: [...(prev[pk.treatment_id]?.sessions ?? []), { id: oid(), at: nowIso, detail: parts.join(' · ') || null }],
                                 },
                               }))
 
@@ -1172,8 +1231,30 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                                     {t.kind === 'tahsilat' ? (t.label || 'Tahsilat') : t.label}
                                   </span>
                                 </div>
-                                <span className={`text-sm font-bold tabular-nums shrink-0 ${col.total}`}>
-                                  {t.kind === 'tahsilat' ? '+' : ''}{TRY(t.amount)}
+                                <span className="flex items-center gap-1.5 shrink-0">
+                                  <span className={`text-sm font-bold tabular-nums ${col.total}`}>
+                                    {t.kind === 'tahsilat' ? '+' : ''}{TRY(t.amount)}
+                                  </span>
+                                  {!t.id.startsWith('opt-') && (
+                                    <button
+                                      onClick={() => {
+                                        const msg = t.kind === 'islem'
+                                          ? `"${t.label}" işlemi silinsin mi? Paketse planlı seans randevuları da silinir.`
+                                          : `${TRY(t.amount)} tahsilat kaydı silinsin mi?`
+                                        if (!confirm(msg)) return
+                                        setRemovedTxIds(prev => new Set(prev).add(t.id))
+                                        if (t.kind === 'islem') {
+                                          setRemovedPkgIds(prev => new Set(prev).add(t.id))
+                                          run(() => deleteTreatmentCascade(t.id))
+                                        } else {
+                                          run(() => deletePayment(t.id, t.patient_id))
+                                        }
+                                      }}
+                                      title="Kaydı sil"
+                                      className="text-slate-600 hover:text-rose-300 text-xs font-bold" aria-label="Kaydı sil">
+                                      ✕
+                                    </button>
+                                  )}
                                 </span>
                               </div>
                             ))}
