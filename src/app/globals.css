@@ -306,3 +306,13 @@ html.is-app .satici-panel-main { padding-bottom: calc(80px + env(safe-area-inset
 @media (display-mode: standalone) {
   .pwa-only { display: inline-flex !important; }
 }
+
+/* ── Klinik Yönetim: tüm yazılar ~3px büyütüldü (okunabilirlik) ── */
+.klinik-panel-main .text-\[10px\] { font-size: 13px !important; }
+.klinik-panel-main .text-\[11px\] { font-size: 14px !important; }
+.klinik-panel-main .text-xs  { font-size: 15px !important; line-height: 1.35 !important; }
+.klinik-panel-main .text-sm  { font-size: 17px !important; line-height: 1.4 !important; }
+.klinik-panel-main .text-base{ font-size: 19px !important; }
+.klinik-panel-main .text-lg  { font-size: 21px !important; }
+.klinik-panel-main .text-xl  { font-size: 24px !important; }
+.klinik-panel-main .text-2xl { font-size: 27px !important; }
