@@ -339,6 +339,11 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
   }).select('id').single()
   if (treatmentErr) return { ok: false, error: treatmentErr.message }
 
+  // Stok: uygulama-ürün eşleştirmesi (paket tanımında düşmez — seans başına düşer)
+  if (!sessionTotal) {
+    await applyStockForUsage(ctx, treatmentName, patientId, 'işlem')
+  }
+
   // Tahsilat (opsiyonel — tutar > 0 ise)
   const paymentAmountStr = (formData.get('payment_amount') as string | null)?.trim() ?? '0'
   const paymentAmount = Number(paymentAmountStr.replace(',', '.'))
@@ -963,7 +968,7 @@ export async function deletePatientPhoto(id: string): Promise<Result> {
 // Para sorulmaz (paket ücreti tanımda alındı), form yok. Bugüne planlı bağlı
 // randevu varsa onu tamamlar; yoksa "şimdi" tamamlanmış seans kaydı açar.
 // Sayaç = pakete bağlı completed randevu sayısı olduğundan otomatik ilerler.
-export async function logPackageSession(packageTreatmentId: string, detail?: string): Promise<Result> {
+export async function logPackageSession(packageTreatmentId: string, detail?: string, stockItemId?: string, stockAmount?: number): Promise<Result> {
   const ctx = await requireOwner()
   if (!ctx.ok) return { ok: false, error: ctx.error }
 
@@ -1015,6 +1020,30 @@ export async function logPackageSession(packageTreatmentId: string, detail?: str
       status: 'completed',
     })
     if (error) return { ok: false, error: error.message }
+  }
+
+  // Stok: seçilen ürün + miktar depodan düşülür (seans kaydına bağlı)
+  if (stockItemId && Number.isFinite(stockAmount ?? NaN) && (stockAmount ?? 0) > 0) {
+    const { data: item } = await ctx.supabase
+      .from('internal_stock_item')
+      .select('id, quantity')
+      .eq('id', stockItemId)
+      .eq('owner_id', ctx.clinicOwnerId)
+      .maybeSingle()
+    if (item) {
+      const newQty = Math.max(0, Number(item.quantity) - (stockAmount as number))
+      const applied = newQty - Number(item.quantity)
+      await ctx.supabase
+        .from('internal_stock_item')
+        .update({ quantity: newQty, updated_at: new Date().toISOString() })
+        .eq('id', item.id)
+      if (applied !== 0) {
+        await ctx.supabase.from('internal_stock_movement').insert({
+          owner_id: ctx.clinicOwnerId, item_id: item.id, delta: applied,
+          reason: 'seans', patient_id: pkg.patient_id, created_by: ctx.user.id,
+        })
+      }
+    }
   }
 
   revalidatePath('/klinik/panel/muhasebe')
@@ -1158,3 +1187,155 @@ export async function undoPackageSession(appointmentId: string): Promise<Result>
   revalidatePath('/klinik/panel/muhasebe')
   return { ok: true }
 }
+
+// ─── Stok ─────────────────────────────────────────────────────────────────
+export async function addStockItem(formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const name = (formData.get('name') as string | null)?.trim() ?? ''
+  const unit = (formData.get('unit') as string | null)?.trim() || null
+  const qty = Number(((formData.get('quantity') as string) ?? '0').replace(',', '.'))
+  const minT = Number(((formData.get('min_threshold') as string) ?? '0').replace(',', '.'))
+  if (name.length < 2) return { ok: false, error: 'Ürün adı en az 2 karakter.' }
+  if (!Number.isFinite(qty) || qty < 0) return { ok: false, error: 'Geçersiz miktar.' }
+
+  const { data, error } = await ctx.supabase.from('internal_stock_item').insert({
+    owner_id: ctx.clinicOwnerId, name, unit,
+    quantity: qty,
+    min_threshold: Number.isFinite(minT) && minT > 0 ? minT : 0,
+    created_by: ctx.user.id,
+  }).select('id').single()
+  if (error) return { ok: false, error: error.message }
+
+  if (qty > 0 && data) {
+    await ctx.supabase.from('internal_stock_movement').insert({
+      owner_id: ctx.clinicOwnerId, item_id: data.id, delta: qty, reason: 'açılış', created_by: ctx.user.id,
+    })
+  }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+// delta: +giriş / -çıkış. Stok eksiye düşmez (0'da durur).
+export async function adjustStock(itemId: string, delta: number, reason?: string, patientId?: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+  if (!Number.isFinite(delta) || delta === 0) return { ok: false, error: 'Geçersiz miktar.' }
+
+  const { data: item } = await ctx.supabase
+    .from('internal_stock_item')
+    .select('id, quantity')
+    .eq('id', itemId)
+    .eq('owner_id', ctx.clinicOwnerId)
+    .maybeSingle()
+  if (!item) return { ok: false, error: 'Stok kalemi bulunamadı.' }
+
+  const newQty = Math.max(0, Number(item.quantity) + delta)
+  const applied = newQty - Number(item.quantity)
+
+  const { error } = await ctx.supabase
+    .from('internal_stock_item')
+    .update({ quantity: newQty, updated_at: new Date().toISOString() })
+    .eq('id', itemId)
+    .eq('owner_id', ctx.clinicOwnerId)
+  if (error) return { ok: false, error: error.message }
+
+  if (applied !== 0) {
+    await ctx.supabase.from('internal_stock_movement').insert({
+      owner_id: ctx.clinicOwnerId, item_id: itemId, delta: applied,
+      reason: reason || (applied > 0 ? 'giriş' : 'çıkış'),
+      patient_id: patientId || null,
+      created_by: ctx.user.id,
+    })
+  }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+export async function deleteStockItem(itemId: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+  const { error } = await ctx.supabase
+    .from('internal_stock_item')
+    .delete()
+    .eq('id', itemId)
+    .eq('owner_id', ctx.clinicOwnerId)
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+// ─── Uygulama ↔ ürün eşleştirmesi ────────────────────────────────────────
+export async function addStockMap(formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const matchText = (formData.get('match_text') as string | null)?.trim() ?? ''
+  const itemId = (formData.get('item_id') as string | null)?.trim() ?? ''
+  const amount = Number(((formData.get('amount_per_use') as string) ?? '1').replace(',', '.'))
+  if (matchText.length < 2) return { ok: false, error: 'Uygulama adı en az 2 karakter.' }
+  if (!itemId) return { ok: false, error: 'Ürün seçin.' }
+  if (!Number.isFinite(amount) || amount <= 0) return { ok: false, error: 'Geçersiz miktar.' }
+
+  const { error } = await ctx.supabase.from('internal_stock_map').insert({
+    owner_id: ctx.clinicOwnerId, match_text: matchText, item_id: itemId,
+    amount_per_use: amount, created_by: ctx.user.id,
+  })
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+export async function deleteStockMap(id: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+  const { error } = await ctx.supabase
+    .from('internal_stock_map')
+    .delete()
+    .eq('id', id)
+    .eq('owner_id', ctx.clinicOwnerId)
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+// Uygulama adına eşleşen haritalar üzerinden stok düş (işlem kaydı + seans).
+// Eşleşme: harita metni uygulama adının içinde geçiyorsa (büyük/küçük duyarsız).
+async function applyStockForUsage(
+  ctx: Extract<OwnerCtx, { ok: true }>,
+  usageName: string,
+  patientId: string | null,
+  reason: string,
+) {
+  if (!usageName) return
+  const { data: maps } = await ctx.supabase
+    .from('internal_stock_map')
+    .select('id, match_text, item_id, amount_per_use')
+    .eq('owner_id', ctx.clinicOwnerId)
+  const lowered = usageName.toLocaleLowerCase('tr')
+  for (const m of maps ?? []) {
+    if (!lowered.includes(m.match_text.toLocaleLowerCase('tr'))) continue
+    const { data: item } = await ctx.supabase
+      .from('internal_stock_item')
+      .select('id, quantity')
+      .eq('id', m.item_id)
+      .eq('owner_id', ctx.clinicOwnerId)
+      .maybeSingle()
+    if (!item) continue
+    const newQty = Math.max(0, Number(item.quantity) - Number(m.amount_per_use))
+    const applied = newQty - Number(item.quantity)
+    await ctx.supabase
+      .from('internal_stock_item')
+      .update({ quantity: newQty, updated_at: new Date().toISOString() })
+      .eq('id', item.id)
+    if (applied !== 0) {
+      await ctx.supabase.from('internal_stock_movement').insert({
+        owner_id: ctx.clinicOwnerId, item_id: item.id, delta: applied,
+        reason, patient_id: patientId, created_by: ctx.user.id,
+      })
+    }
+  }
+}
+
+export { applyStockForUsage as _applyStockForUsage }

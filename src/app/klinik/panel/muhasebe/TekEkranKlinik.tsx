@@ -16,6 +16,7 @@ import {
   logPackageSession, updatePaymentPromise,
   getPatientPhotos, signOutKlinik,
   deleteTreatmentCascade, undoPackageSession, deleteAppointment, deletePayment,
+  addStockItem, adjustStock, deleteStockItem, addStockMap, deleteStockMap,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
@@ -46,6 +47,19 @@ export interface PhotoRow {
   created_at: string
   url: string          // imzalı URL (1 saat)
 }
+export interface StockItemRow {
+  id: string
+  name: string
+  unit: string | null
+  quantity: number
+  min_threshold: number
+}
+export interface StockMapRow {
+  id: string
+  match_text: string
+  item_id: string
+  amount_per_use: number
+}
 export interface PackageRow {
   treatment_id: string
   patient_id: string
@@ -74,6 +88,8 @@ interface Props {
   catalog: CatalogItem[]
   packages: PackageRow[]    // seanslı işlemler (session_total > 1) + sayaçları
   promises: PromiseRow[]    // açık ödeme sözleri
+  stockItems: StockItemRow[]
+  stockMaps: StockMapRow[]
 }
 
 const TRY = (n: number) =>
@@ -95,12 +111,12 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises }: Props) {
+export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps }: Props) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
   const [search, setSearch] = useState('')
-  const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar'>('gun')
+  const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok'>('gun')
 
   // ══ OPTIMISTIC KATMAN ══════════════════════════════════════════════════
   // Kayıt tıklandığı AN ekrana işlenir; server action arkada çalışır.
@@ -117,11 +133,14 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [removedTxIds, setRemovedTxIds] = useState<Set<string>>(new Set())
   const [removedApptIds, setRemovedApptIds] = useState<Set<string>>(new Set())
   const [removedPkgIds, setRemovedPkgIds] = useState<Set<string>>(new Set())
+  const [stockDelta, setStockDelta] = useState<Record<string, number>>({})
+  const [removedStockIds, setRemovedStockIds] = useState<Set<string>>(new Set())
 
   function resetOverlays() {
     setOptTxs([]); setOptAppts([]); setApptStatusOv({})
     setOptPromises([]); setPromiseOv({}); setPkgDelta({})
     setRemovedTxIds(new Set()); setRemovedApptIds(new Set()); setRemovedPkgIds(new Set())
+    setStockDelta({}); setRemovedStockIds(new Set())
   }
 
   // Bilgilendirici silme onayı: ne silinecek + zincirleme sonuçları
@@ -132,7 +151,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     action: () => void
   } | null>(null)
   // Taze server verisi geldiğinde overlay'ler görevini tamamladı → temizle
-  useEffect(() => { resetOverlays() }, [txs, appointments, promises, packages]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { resetOverlays() }, [txs, appointments, promises, packages, stockItems]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const oid = () => `opt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 
@@ -169,6 +188,15 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     }
     return base
   }, [packages, pkgDelta, removedPkgIds])
+
+  // Stok: overlay'li canlı liste + düşük stok sayısı
+  const stockAll = useMemo(() => stockItems
+    .filter(i => !removedStockIds.has(i.id))
+    .map(i => stockDelta[i.id] ? { ...i, quantity: Math.max(0, i.quantity + stockDelta[i.id]) } : i),
+    [stockItems, stockDelta, removedStockIds])
+  const lowStockCount = useMemo(
+    () => stockAll.filter(i => i.min_threshold > 0 && i.quantity <= i.min_threshold).length,
+    [stockAll])
 
   // Bakiyeler canlı hesaplanır (optimistic kayıtlar dahil): işlem − tahsilat
   const balances = useMemo(() => {
@@ -648,6 +676,12 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           Alacaklar{debtors.length > 0 ? ` (${debtors.length})` : ''}
           {overdueCount > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/25 text-rose-300">{overdueCount} gecikmiş</span>}
         </button>
+        <button
+          onClick={() => setLeftView(leftView === 'stok' ? 'gun' : 'stok')}
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${leftView === 'stok' ? 'bg-teal-500/20 text-teal-300' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
+          Stok{stockAll.length > 0 ? ` (${stockAll.length})` : ''}
+          {lowStockCount > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/25 text-rose-300">{lowStockCount} azaldı</span>}
+        </button>
         <button onClick={() => { setOpenForm(openForm === 'yeniHasta' ? null : 'yeniHasta'); setMobilePanelOpen(false) }} className={btnGhost}>
           + Yeni Hasta
         </button>
@@ -707,6 +741,118 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   </div>
                 </div>
               ))}
+            </>
+          )}
+          {leftView === 'stok' && (
+            <>
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-teal-300">
+                  Stok — {stockAll.length} kalem
+                  {lowStockCount > 0 && <span className="text-rose-300"> ({lowStockCount} azaldı)</span>}
+                </span>
+                <button onClick={() => setLeftView('gun')} className="text-xs text-slate-400 hover:text-white">‹ Gün akışı</button>
+              </div>
+
+              {/* Yeni kalem */}
+              <form onSubmit={e => {
+                e.preventDefault()
+                const formEl = e.currentTarget as HTMLFormElement
+                run(() => addStockItem(new FormData(formEl)).then(r => { if (r.ok) formEl.reset(); return r }))
+              }} className="grid grid-cols-[1fr,70px,70px,70px,auto] gap-1.5 bg-slate-800/40 border border-slate-700 rounded-xl p-2">
+                <input name="name" placeholder="Ürün adı *" required className={inputCls} />
+                <input name="quantity" placeholder="Adet" inputMode="decimal" className={inputCls} />
+                <input name="unit" placeholder="Birim" className={inputCls} />
+                <input name="min_threshold" placeholder="Min" inputMode="decimal" title="Bu sayının altına düşünce uyarı" className={inputCls} />
+                <button type="submit" disabled={pending} className={btnPrimary}>+</button>
+              </form>
+
+              {stockAll.length === 0 && (
+                <div className="text-center py-8 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
+                  <p className="text-slate-400 text-sm">Henüz stok kalemi yok — yukarıdan ekle.</p>
+                  <p className="text-slate-500 text-xs mt-1">Örn: Botoks Flakon · 3 · adet · min 1</p>
+                </div>
+              )}
+              <div className="space-y-1.5 max-h-[420px] overflow-y-auto pr-1">
+                {stockAll.map(i => {
+                  const low = i.min_threshold > 0 && i.quantity <= i.min_threshold
+                  return (
+                    <div key={i.id} className={`rounded-xl border px-3 py-2 ${low ? 'bg-rose-500/5 border-rose-500/30' : 'bg-slate-800/40 border-slate-700/60'}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-white text-sm font-semibold truncate">{i.name}</span>
+                        <span className={`text-sm font-black tabular-nums shrink-0 ${low ? 'text-rose-300' : 'text-teal-300'}`}>
+                          {i.quantity}{i.unit ? ` ${i.unit}` : ''}{low ? ' ⚠' : ''}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-1.5">
+                        <div className="flex gap-1">
+                          <button onClick={() => { setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) - 1 })); run(() => adjustStock(i.id, -1, 'çıkış')) }}
+                            disabled={pending || i.quantity <= 0}
+                            className="w-7 h-7 rounded-md bg-slate-700/60 hover:bg-slate-600 text-slate-200 text-sm font-black disabled:opacity-40">−</button>
+                          <button onClick={() => { setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) + 1 })); run(() => adjustStock(i.id, 1, 'giriş')) }}
+                            disabled={pending}
+                            className="w-7 h-7 rounded-md bg-slate-700/60 hover:bg-slate-600 text-slate-200 text-sm font-black">+</button>
+                          <button onClick={() => {
+                            const v = window.prompt('Kaç adet/birim eklensin? (alım girişi)', '5')
+                            const n = Number((v ?? '').replace(',', '.'))
+                            if (!Number.isFinite(n) || n === 0) return
+                            setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) + n }))
+                            run(() => adjustStock(i.id, n, 'alım'))
+                          }}
+                            className="px-2 h-7 rounded-md bg-teal-600/20 hover:bg-teal-600/40 text-teal-300 text-xs font-bold">Alım</button>
+                        </div>
+                        <button onClick={() => {
+                          setConfirmBox({
+                            title: `"${i.name}" stok kalemi silinecek`,
+                            lines: [
+                              `Kalan ${i.quantity}${i.unit ? ` ${i.unit}` : ''} kayıttan düşer`,
+                              'Hareket geçmişi ve eşleştirmeleri de silinir',
+                              'Yapılmış seans/işlem kayıtlarına dokunulmaz',
+                            ],
+                            confirmLabel: 'Kalemi Sil',
+                            action: () => {
+                              setRemovedStockIds(prev => new Set(prev).add(i.id))
+                              run(() => deleteStockItem(i.id))
+                            },
+                          })
+                        }}
+                          className="text-slate-600 hover:text-rose-300 text-xs font-bold" aria-label="Kalemi sil">✕</button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Uygulama ↔ ürün eşleştirmeleri */}
+              {stockAll.length > 0 && (
+                <div className="bg-slate-800/30 border border-slate-700/60 rounded-xl p-2.5 space-y-1.5">
+                  <p className="text-xs font-bold text-slate-300" title="İşlem/paket adında bu kelime geçerse seans formunda ürün otomatik seçili gelir; tek seans işlemlerde stok otomatik düşer.">
+                    Uygulama → Ürün eşleştirme
+                  </p>
+                  {stockMaps.map(m => {
+                    const item = stockAll.find(i => i.id === m.item_id)
+                    return (
+                      <div key={m.id} className="flex items-center justify-between gap-2 text-xs text-slate-400">
+                        <span className="truncate">&quot;{m.match_text}&quot; → {item?.name ?? '—'} · {m.amount_per_use}{item?.unit ? ` ${item.unit}` : ''}/seans</span>
+                        <button onClick={() => run(() => deleteStockMap(m.id))}
+                          className="text-slate-600 hover:text-rose-300 font-bold" aria-label="Eşleştirmeyi sil">✕</button>
+                      </div>
+                    )
+                  })}
+                  <form onSubmit={e => {
+                    e.preventDefault()
+                    const formEl = e.currentTarget as HTMLFormElement
+                    run(() => addStockMap(new FormData(formEl)).then(r => { if (r.ok) formEl.reset(); return r }))
+                  }} className="grid grid-cols-[1fr,1fr,60px,auto] gap-1.5">
+                    <input name="match_text" placeholder="Uygulama (Botoks)" required className={inputCls} />
+                    <select name="item_id" required className={inputCls}>
+                      <option value="">Ürün…</option>
+                      {stockAll.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
+                    </select>
+                    <input name="amount_per_use" placeholder="Mik." defaultValue="1" inputMode="decimal" className={inputCls} />
+                    <button type="submit" disabled={pending} className={btnPrimary}>+</button>
+                  </form>
+                </div>
+              )}
             </>
           )}
           {leftView === 'hastalar' && (
@@ -979,10 +1125,19 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                             onSubmit={e => {
                               e.preventDefault()
                               const fd = new FormData(e.currentTarget as HTMLFormElement)
-                              const parts = [fd.get('urun'), fd.get('miktar'), fd.get('not')]
-                                .map(v => (v as string | null)?.trim())
-                                .filter(Boolean)
+                              // Depodan ürün: ad detaya yazılır + stok düşülür
+                              const stockId = (fd.get('stock_item') as string ?? '').trim()
+                              const stockItem = stockId ? stockAll.find(i => i.id === stockId) : null
+                              const miktarStr = ((fd.get('miktar') as string) ?? '').trim()
+                              const miktar = Number(miktarStr.replace(',', '.'))
+                              const useStock = !!stockItem && Number.isFinite(miktar) && miktar > 0
+                              const parts = [
+                                stockItem ? stockItem.name : (fd.get('urun') as string | null)?.trim(),
+                                miktarStr ? `${miktarStr}${stockItem?.unit ? ` ${stockItem.unit}` : ''}` : null,
+                                (fd.get('not') as string | null)?.trim(),
+                              ].filter(Boolean) as string[]
                               setSeansFormPkg(null)
+                              if (useStock) setStockDelta(prev => ({ ...prev, [stockItem.id]: (prev[stockItem.id] ?? 0) - miktar }))
 
                               // Anında: sayaç +1; bugüne planlı bağlı randevu varsa onu tamamla
                               const nowIso = new Date().toISOString()
@@ -1004,15 +1159,45 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                                 },
                               }))
 
-                              run(() => logPackageSession(pk.treatment_id, parts.join(' · ')))
+                              run(() => logPackageSession(
+                                pk.treatment_id, parts.join(' · '),
+                                useStock ? stockItem.id : undefined,
+                                useStock ? miktar : undefined,
+                              ))
                             }}
-                            className="mt-2 grid sm:grid-cols-[1fr,110px,1fr,auto] gap-2 bg-slate-950/50 rounded-lg p-2">
-                            <input name="urun" placeholder="Uygulama / ürün (Revoshine vs.)" className={inputCls} />
-                            <input name="miktar" placeholder="Miktar (3ml)" className={inputCls} />
-                            <input name="not" placeholder="Not (göz altı, sağ yanak…)" className={inputCls} />
-                            <button type="submit" disabled={pending} className={btnPrimary}>
-                              {pending ? '…' : 'Tamamla'}
-                            </button>
+                            className="mt-2 space-y-2 bg-slate-950/50 rounded-lg p-2">
+                            <div className="grid sm:grid-cols-[1fr,110px] gap-2">
+                              {/* Depodan ürün: uygulama adıyla eşleşenler önde */}
+                              <select name="stock_item" className={inputCls}
+                                defaultValue={(() => {
+                                  const nm = pk.name.toLocaleLowerCase('tr')
+                                  const mapped = stockMaps.find(m => nm.includes(m.match_text.toLocaleLowerCase('tr')))
+                                  if (mapped && stockAll.some(i => i.id === mapped.item_id)) return mapped.item_id
+                                  const byName = stockAll.find(i =>
+                                    nm.includes(i.name.toLocaleLowerCase('tr')) || i.name.toLocaleLowerCase('tr').includes(nm.split(' ')[0]))
+                                  return byName?.id ?? ''
+                                })()}>
+                                <option value="">Depodan düşme yok (serbest)</option>
+                                {(() => {
+                                  const nm = pk.name.toLocaleLowerCase('tr')
+                                  const score = (i: StockItemRow) =>
+                                    nm.includes(i.name.toLocaleLowerCase('tr')) || i.name.toLocaleLowerCase('tr').includes(nm.split(' ')[0]) ? 0 : 1
+                                  return [...stockAll].sort((a, b) => score(a) - score(b) || a.name.localeCompare(b.name, 'tr'))
+                                })().map(i => (
+                                  <option key={i.id} value={i.id} disabled={i.quantity <= 0}>
+                                    {i.name} — kalan {i.quantity}{i.unit ? ` ${i.unit}` : ''}{i.quantity <= 0 ? ' (TÜKENDİ)' : ''}
+                                  </option>
+                                ))}
+                              </select>
+                              <input name="miktar" placeholder="Miktar *" inputMode="decimal" className={inputCls} />
+                            </div>
+                            <div className="grid sm:grid-cols-[1fr,1fr,auto] gap-2">
+                              <input name="urun" placeholder="Serbest ürün adı (depoda yoksa)" className={inputCls} />
+                              <input name="not" placeholder="Not (göz altı, sağ yanak…)" className={inputCls} />
+                              <button type="submit" disabled={pending} className={btnPrimary}>
+                                {pending ? '…' : 'Tamamla'}
+                              </button>
+                            </div>
                           </form>
                         )}
                       </div>

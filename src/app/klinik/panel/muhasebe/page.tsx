@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, clinicOwnerIdFor, getKlinikStaff } from '@/lib/muhasebe-owner'
-import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow, type PromiseRow } from './TekEkranKlinik'
+import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow, type PromiseRow, type StockItemRow, type StockMapRow } from './TekEkranKlinik'
 import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
 import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
@@ -33,7 +33,7 @@ export default async function MuhasebePage({
   const rangeStartIso = new Date(Date.now() - 30 * 86_400_000).toISOString()
   const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, stockRes, stockMapRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date, session_total'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
@@ -72,6 +72,16 @@ export default async function MuhasebePage({
       .eq('owner_id', clinicOwner)
       .eq('status', 'open')
       .order('due_date', { ascending: true }),
+    // Stok kalemleri + uygulama-ürün eşleştirmeleri
+    supabase
+      .from('internal_stock_item')
+      .select('id, name, unit, quantity, min_threshold')
+      .eq('owner_id', clinicOwner)
+      .order('name', { ascending: true }),
+    supabase
+      .from('internal_stock_map')
+      .select('id, match_text, item_id, amount_per_use')
+      .eq('owner_id', clinicOwner),
   ])
 
   const patients = patientsRes.data ?? []
@@ -265,6 +275,13 @@ export default async function MuhasebePage({
         catalog={catalog as CatalogItem[]}
         packages={packages}
         promises={(promisesRes.data ?? []) as PromiseRow[]}
+        stockItems={(stockRes.data ?? []).map(i => ({
+          id: i.id, name: i.name, unit: i.unit,
+          quantity: Number(i.quantity ?? 0), min_threshold: Number(i.min_threshold ?? 0),
+        })) as StockItemRow[]}
+        stockMaps={(stockMapRes.data ?? []).map(m => ({
+          id: m.id, match_text: m.match_text, item_id: m.item_id, amount_per_use: Number(m.amount_per_use ?? 1),
+        })) as StockMapRow[]}
       />
     </div>
   )
