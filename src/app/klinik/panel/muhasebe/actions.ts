@@ -1089,3 +1089,10 @@ export async function getPatientPhotos(patientId: string): Promise<{ ok: true; p
       .filter(p => p.url),
   }
 }
+
+// ─── Çıkış (PWA modu için — kabuktaki Çıkış butonu gizli olduğundan) ──────
+export async function signOutKlinik(): Promise<Result> {
+  const supabase = await createClient()
+  await supabase.auth.signOut()
+  return { ok: true }
+}

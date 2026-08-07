@@ -302,3 +302,7 @@ html.is-app .satici-panel-main { padding-bottom: calc(80px + env(safe-area-inset
   .pwa-nopad { padding-left: 0 !important; }
   .klinik-panel-main { padding: 0.75rem !important; }
 }
+.pwa-only { display: none !important; }
+@media (display-mode: standalone) {
+  .pwa-only { display: inline-flex !important; }
+}

@@ -15,7 +15,7 @@ import {
   addPaymentPromise, settlePaymentPromise,
   addPatientPhoto, deletePatientPhoto,
   logPackageSession, updatePaymentPromise,
-  getPatientPhotos,
+  getPatientPhotos, signOutKlinik,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
@@ -446,6 +446,17 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
             title="Tam ekran (çıkmak için Esc)"
             className="px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
             ⛶ Tam Ekran
+          </button>
+          {/* Çıkış — sadece kurulu uygulama modunda (webde kabuktaki Çıkış var) */}
+          <button
+            onClick={() => {
+              startTransition(async () => {
+                await signOutKlinik()
+                window.location.href = '/giris'
+              })
+            }}
+            className="pwa-only px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400 hover:text-rose-200 transition-colors items-center">
+            Çıkış
           </button>
         </div>
       </div>
