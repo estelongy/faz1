@@ -261,7 +261,7 @@ export default async function MuhasebePage({
   ]
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="w-full max-w-[1800px] mx-auto">
       {/* Başlık + ana sayfa butonu TekEkranKlinik içinde (sticky, client reset) */}
 
       <TekEkranKlinik

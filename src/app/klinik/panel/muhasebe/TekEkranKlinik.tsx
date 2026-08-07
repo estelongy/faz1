@@ -438,6 +438,15 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
             className="ml-auto px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
             {TEMA_LABEL[tema]}
           </button>
+          <button
+            onClick={() => {
+              if (document.fullscreenElement) document.exitFullscreen()
+              else document.documentElement.requestFullscreen()
+            }}
+            title="Tam ekran (çıkmak için Esc)"
+            className="px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+            ⛶ Tam Ekran
+          </button>
         </div>
       </div>
 
