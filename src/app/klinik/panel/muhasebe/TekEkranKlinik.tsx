@@ -8,7 +8,6 @@
 
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import {
   addQuickEntry, addPayment, addPatient,
   createAppointmentForPatient, setAppointmentStatus,
@@ -96,7 +95,6 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
 }
 
 export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises }: Props) {
-  const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
@@ -335,11 +333,13 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     setDay(d.toLocaleDateString('en-CA'))
   }
 
+  // NOT: router.refresh() bilerek YOK — server action'lar revalidatePath ile
+  // taze veriyi aynı yanıtta getiriyor; ekstra refresh sayfayı iki kez kurduruyordu.
   function run(fn: () => Promise<{ ok: boolean; error?: string }>) {
     setError(null)
     startTransition(async () => {
       const res = await fn()
-      if (res.ok) { setOpenForm(null); setFromApptId(null); router.refresh() }
+      if (res.ok) { setOpenForm(null); setFromApptId(null) }
       else setError(res.error ?? 'Hata')
     })
   }
@@ -371,7 +371,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     setError(null)
     startTransition(async () => {
       const res = await addPatient(fd)
-      if (res.ok) { setOpenForm(null); router.refresh() }
+      if (res.ok) setOpenForm(null)
       else setError(res.error)
     })
   }
@@ -382,11 +382,13 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
   // ─────────────────────────────────────────────────────────────────────────
   // ── Tema: koyu (varsayılan) / siyah / açık — localStorage'da hatırlanır ──
-  const [tema, setTema] = useState<'koyu' | 'siyah' | 'acik'>('koyu')
-  useEffect(() => {
+  // İlk render'da localStorage'dan oku (flash önlenir); SSR 'koyu' der,
+  // hydration'da gerçek değer oturur — suppressHydrationWarning wrapper'da.
+  const [tema, setTema] = useState<'koyu' | 'siyah' | 'acik'>(() => {
+    if (typeof window === 'undefined') return 'koyu'
     const t = localStorage.getItem('klinik_tema')
-    if (t === 'siyah' || t === 'acik') setTema(t)
-  }, [])
+    return t === 'siyah' || t === 'acik' ? t : 'koyu'
+  })
   function cycleTema() {
     const next = tema === 'koyu' ? 'siyah' : tema === 'siyah' ? 'acik' : 'koyu'
     setTema(next)
@@ -416,6 +418,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   return (
     <div
       className="flex flex-col gap-4"
+      suppressHydrationWarning
       style={{
         // Açık tema: invert hilesi — tüm koyu paleti tersine çevirir, görseller
         // aşağıdaki CSS ile geri çevrilir. Siyah: zemin düz siyaha kayar.

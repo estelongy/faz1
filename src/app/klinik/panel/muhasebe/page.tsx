@@ -81,44 +81,6 @@ export default async function MuhasebePage({
   const patientName = (id: string) => patients.find(p => p.id === id)?.name ?? '—'
   const patientPhone = (id: string) => patients.find(p => p.id === id)?.phone ?? null
 
-  const upcomingAppts: AppointmentRow[] = (upcomingRes.data ?? []).map(a => ({
-    id: a.id,
-    patient_id: a.patient_id,
-    patient_name: patientName(a.patient_id),
-    patient_phone: patientPhone(a.patient_id),
-    start_at: a.start_at,
-    duration_minutes: a.duration_minutes,
-    appointment_type: a.appointment_type,
-    treatment_type: a.treatment_type,
-    reason: a.reason,
-    detail: a.detail,
-    status: a.status,
-    recurrence_group_id: a.recurrence_group_id,
-  }))
-
-  // ─── İşleme alınan randevu varsa hızlı kayıt prefill'ini hazırla ────
-  let prefill: AppointmentPrefill | null = null
-  const fromApptId = typeof searchParams.from_appointment === 'string' ? searchParams.from_appointment : null
-  if (fromApptId) {
-    const { data: appt } = await supabase
-      .from('internal_appointment')
-      .select('id, patient_id, start_at, treatment_type, status')
-      .eq('id', fromApptId)
-      .eq('owner_id', clinicOwner)
-      .maybeSingle()
-    if (appt && appt.status !== 'completed') {
-      const p = patients.find(pp => pp.id === appt.patient_id)
-      prefill = {
-        appointmentId: appt.id,
-        patientId: p?.id ?? null,
-        patientName: p?.name ?? '',
-        patientPhone: p?.phone ?? null,
-        treatmentName: appt.treatment_type ?? '',
-        treatmentDate: new Date(appt.start_at).toISOString().slice(0, 10),
-      }
-    }
-  }
-
   // ─── Hasta satırları ────────────────────────────────────────
   const rows: PatientRow[] = patients.map(p => {
     const ts = treatments.filter(t => t.patient_id === p.id)
@@ -136,65 +98,93 @@ export default async function MuhasebePage({
     }
   })
 
-  // ─── Bu ay yekün ────────────────────────────────────────────
-  const now = new Date()
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
-  const monthLabel = now.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
-
-  const monthBilled = treatments
-    .filter(t => t.treatment_date >= monthStart)
-    .reduce((s, t) => s + Number(t.amount ?? 0), 0)
-  const monthCollected = payments
-    .filter(p => p.paid_at >= monthStart)
-    .reduce((s, p) => s + Number(p.amount ?? 0), 0)
-
-  // Tüm zaman kalan (genel borç durumu — ay yekünü değil)
-  const totalAll = rows.reduce((s, r) => s + r.total_amount, 0)
-  const paidAll = rows.reduce((s, r) => s + r.paid_amount, 0)
-  const remainingAll = totalAll - paidAll
-  const debtorCount = rows.filter(r => r.remaining > 0).length
-
-  // ─── Günlük hareket dökümü (son 365 gün — geçmiş ay seçici için) ─
-  const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 365).toISOString().slice(0, 10)
-  const dayMap = new Map<string, DayGroup>()
-  function ensureDay(d: string): DayGroup {
-    let g = dayMap.get(d)
-    if (!g) {
-      g = { date: d, treatments: [], payments: [], billed: 0, collected: 0 }
-      dayMap.set(d, g)
-    }
-    return g
-  }
-  for (const t of treatments) {
-    if (t.treatment_date < cutoff) continue
-    const g = ensureDay(t.treatment_date)
-    const amt = Number(t.amount ?? 0)
-    g.treatments.push({
-      id: t.id,
-      patient_id: t.patient_id,
-      patient_name: patientName(t.patient_id),
-      name: t.name,
-      amount: amt,
-    })
-    g.billed += amt
-  }
-  for (const p of payments) {
-    if (p.paid_at < cutoff) continue
-    const g = ensureDay(p.paid_at)
-    const amt = Number(p.amount ?? 0)
-    g.payments.push({
-      id: p.id,
-      patient_id: p.patient_id,
-      patient_name: patientName(p.patient_id),
-      amount: amt,
-      method: p.method,
-    })
-    g.collected += amt
-  }
-  const days: DayGroup[] = Array.from(dayMap.values()).sort((a, b) => b.date.localeCompare(a.date))
-
+  // ─── Sadece APP (EsteKlinikPRO) görünümü için ağır legacy hesaplar ──
+  // Web tek-ekran yolunda bunlar hiç çalışmaz (hız).
   const flavor = await getServerFlavor()
   if (flavor === 'esteklinikpro') {
+    const upcomingAppts: AppointmentRow[] = (upcomingRes.data ?? []).map(a => ({
+      id: a.id,
+      patient_id: a.patient_id,
+      patient_name: patientName(a.patient_id),
+      patient_phone: patientPhone(a.patient_id),
+      start_at: a.start_at,
+      duration_minutes: a.duration_minutes,
+      appointment_type: a.appointment_type,
+      treatment_type: a.treatment_type,
+      reason: a.reason,
+      detail: a.detail,
+      status: a.status,
+      recurrence_group_id: a.recurrence_group_id,
+    }))
+
+    let prefill: AppointmentPrefill | null = null
+    const fromApptId = typeof searchParams.from_appointment === 'string' ? searchParams.from_appointment : null
+    if (fromApptId) {
+      const { data: appt } = await supabase
+        .from('internal_appointment')
+        .select('id, patient_id, start_at, treatment_type, status')
+        .eq('id', fromApptId)
+        .eq('owner_id', clinicOwner)
+        .maybeSingle()
+      if (appt && appt.status !== 'completed') {
+        const p = patients.find(pp => pp.id === appt.patient_id)
+        prefill = {
+          appointmentId: appt.id,
+          patientId: p?.id ?? null,
+          patientName: p?.name ?? '',
+          patientPhone: p?.phone ?? null,
+          treatmentName: appt.treatment_type ?? '',
+          treatmentDate: new Date(appt.start_at).toISOString().slice(0, 10),
+        }
+      }
+    }
+
+    const now = new Date()
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
+    const monthLabel = now.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
+    const monthBilled = treatments
+      .filter(t => t.treatment_date >= monthStart)
+      .reduce((s, t) => s + Number(t.amount ?? 0), 0)
+    const monthCollected = payments
+      .filter(p => p.paid_at >= monthStart)
+      .reduce((s, p) => s + Number(p.amount ?? 0), 0)
+    const totalAll = rows.reduce((s, r) => s + r.total_amount, 0)
+    const paidAll = rows.reduce((s, r) => s + r.paid_amount, 0)
+    const remainingAll = totalAll - paidAll
+    const debtorCount = rows.filter(r => r.remaining > 0).length
+
+    const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 365).toISOString().slice(0, 10)
+    const dayMap = new Map<string, DayGroup>()
+    const ensureDay = (d: string): DayGroup => {
+      let g = dayMap.get(d)
+      if (!g) {
+        g = { date: d, treatments: [], payments: [], billed: 0, collected: 0 }
+        dayMap.set(d, g)
+      }
+      return g
+    }
+    for (const t of treatments) {
+      if (t.treatment_date < cutoff) continue
+      const g = ensureDay(t.treatment_date)
+      const amt = Number(t.amount ?? 0)
+      g.treatments.push({
+        id: t.id, patient_id: t.patient_id, patient_name: patientName(t.patient_id),
+        name: t.name, amount: amt,
+      })
+      g.billed += amt
+    }
+    for (const p of payments) {
+      if (p.paid_at < cutoff) continue
+      const g = ensureDay(p.paid_at)
+      const amt = Number(p.amount ?? 0)
+      g.payments.push({
+        id: p.id, patient_id: p.patient_id, patient_name: patientName(p.patient_id),
+        amount: amt, method: p.method,
+      })
+      g.collected += amt
+    }
+    const days: DayGroup[] = Array.from(dayMap.values()).sort((a, b) => b.date.localeCompare(a.date))
+
     return (
       <MuhasebeAppView
         rows={rows}
