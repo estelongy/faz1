@@ -101,11 +101,70 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [search, setSearch] = useState('')
   const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar'>('gun')
 
+  // ══ OPTIMISTIC KATMAN ══════════════════════════════════════════════════
+  // Kayıt tıklandığı AN ekrana işlenir; server action arkada çalışır.
+  // Action başarıyla dönünce revalidate ile gelen taze props bu geçici
+  // kayıtların gerçeğini içerir → overlay'ler sıfırlanır. Hata olursa da
+  // sıfırlanır (geri alma) + hata mesajı gösterilir.
+  const [optTxs, setOptTxs] = useState<TxRow[]>([])
+  const [optAppts, setOptAppts] = useState<ApptRow[]>([])
+  const [apptStatusOv, setApptStatusOv] = useState<Record<string, string>>({})
+  const [optPromises, setOptPromises] = useState<PromiseRow[]>([])
+  const [promiseOv, setPromiseOv] = useState<Record<string, { removed?: boolean; due_date?: string; amount?: number; note?: string | null }>>({})
+  const [pkgDelta, setPkgDelta] = useState<Record<string, { done: number; planned: number; sessions: { at: string; detail: string | null }[] }>>({})
+
+  function resetOverlays() {
+    setOptTxs([]); setOptAppts([]); setApptStatusOv({})
+    setOptPromises([]); setPromiseOv({}); setPkgDelta({})
+  }
+  // Taze server verisi geldiğinde overlay'ler görevini tamamladı → temizle
+  useEffect(() => { resetOverlays() }, [txs, appointments, promises, packages]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const oid = () => `opt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+
+  const txsAll = useMemo(() => optTxs.length ? [...txs, ...optTxs] : txs, [txs, optTxs])
+  const apptsAll = useMemo(() => {
+    const base = Object.keys(apptStatusOv).length
+      ? appointments.map(a => apptStatusOv[a.id] ? { ...a, status: apptStatusOv[a.id] } : a)
+      : appointments
+    return optAppts.length ? [...base, ...optAppts] : base
+  }, [appointments, apptStatusOv, optAppts])
+  const promisesAll = useMemo(() => {
+    const base = promises
+      .filter(p => !promiseOv[p.id]?.removed)
+      .map(p => promiseOv[p.id] ? { ...p, ...promiseOv[p.id] } : p)
+    return optPromises.length ? [...base, ...optPromises] : base
+  }, [promises, promiseOv, optPromises])
+  const packagesAll = useMemo(() => {
+    if (!Object.keys(pkgDelta).length) return packages
+    return packages.map(p => {
+      const d = pkgDelta[p.treatment_id]
+      if (!d) return p
+      return {
+        ...p,
+        done: p.done + d.done,
+        planned: Math.max(0, p.planned + d.planned),
+        sessions: [...p.sessions, ...d.sessions],
+      }
+    })
+  }, [packages, pkgDelta])
+
+  // Bakiyeler canlı hesaplanır (optimistic kayıtlar dahil): işlem − tahsilat
+  const balances = useMemo(() => {
+    const m = new Map<string, number>()
+    for (const t of txsAll) {
+      m.set(t.patient_id, (m.get(t.patient_id) ?? 0) + (t.kind === 'islem' ? t.amount : -t.amount))
+    }
+    return m
+  }, [txsAll])
+  const remainingOf = (pid: string) => balances.get(pid) ?? 0
+  // ══════════════════════════════════════════════════════════════════════
+
   const dayAppts = useMemo(
-    () => appointments
+    () => apptsAll
       .filter(a => new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === day)
       .sort((a, b) => a.start_at.localeCompare(b.start_at)),
-    [appointments, day],
+    [apptsAll, day],
   )
 
   // Doktor açılışı: bugünün sıradaki (şu andan sonraki ilk planlı) hastası
@@ -119,6 +178,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   }, [])
   const [selectedId, setSelectedId] = useState<string | null>(initialPatient)
   const selected = patients.find(p => p.id === selectedId) ?? null
+  // Canlı bakiye (optimistic kayıtlar dahil) — selected.remaining yerine bunu kullan
+  const selRemaining = selectedId ? (balances.get(selectedId) ?? 0) : 0
 
   // Mobil: hasta seçiliyken sağ panel tam ekran
   const [mobilePanelOpen, setMobilePanelOpen] = useState(!!initialPatient && role === 'doktor')
@@ -133,29 +194,29 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
   const patientTimeline = useMemo(() => {
     if (!selectedId) return []
-    return txs.filter(t => t.patient_id === selectedId)
+    return txsAll.filter(t => t.patient_id === selectedId)
       .sort((a, b) => b.date.localeCompare(a.date))
-  }, [txs, selectedId])
+  }, [txsAll, selectedId])
 
   // Seçili hastanın paketleri (aktifler önde: tamamlanmamış olanlar)
   const patientPackages = useMemo(() => {
     if (!selectedId) return []
-    return packages
+    return packagesAll
       .filter(p => p.patient_id === selectedId)
       .sort((a, b) => (a.done >= a.session_total ? 1 : 0) - (b.done >= b.session_total ? 1 : 0))
-  }, [packages, selectedId])
+  }, [packagesAll, selectedId])
   const activePackages = patientPackages.filter(p => p.done < p.session_total)
 
-  const pkgById = useMemo(() => new Map(packages.map(p => [p.treatment_id, p])), [packages])
+  const pkgById = useMemo(() => new Map(packagesAll.map(p => [p.treatment_id, p])), [packagesAll])
 
   const patientAppts = useMemo(() => {
     if (!selectedId) return []
     const now = new Date().toISOString()
-    return appointments
+    return apptsAll
       .filter(a => a.patient_id === selectedId && a.status === 'scheduled' && a.start_at >= now)
       .sort((a, b) => a.start_at.localeCompare(b.start_at))
       .slice(0, 12)
-  }, [appointments, selectedId])
+  }, [apptsAll, selectedId])
 
   // Yaklaşan randevular güne gruplanır: "(tarih saat) — A (1/3) + B (0/4)"
   const patientApptDays = useMemo(() => {
@@ -171,9 +232,10 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const today = todayIso()
   const debtors = useMemo(() => {
     return patients
+      .map(p => ({ ...p, remaining: balances.get(p.id) ?? 0 }))
       .filter(p => p.remaining > 0)
       .map(p => {
-        const open = promises
+        const open = promisesAll
           .filter(pr => pr.patient_id === p.id)
           .sort((a, b) => a.due_date.localeCompare(b.due_date))
         const first = open[0] ?? null
@@ -186,7 +248,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         if (!!a.promise !== !!b.promise) return a.promise ? -1 : 1
         return b.remaining - a.remaining
       })
-  }, [patients, promises, today])
+  }, [patients, promisesAll, today, balances])
   const overdueCount = debtors.filter(d => d.overdue).length
   const totalReceivable = debtors.reduce((s, d) => s + d.remaining, 0)
 
@@ -216,41 +278,41 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   // Foto formundaki "işleme bağla" seçici için hastanın işlemleri (yeniden eskiye, son 12)
   const patientTreatments = useMemo(
     () => selectedId
-      ? txs.filter(t => t.patient_id === selectedId && t.kind === 'islem')
+      ? txsAll.filter(t => t.patient_id === selectedId && t.kind === 'islem')
           .sort((a, b) => b.date.localeCompare(a.date)).slice(0, 12)
       : [],
-    [txs, selectedId],
+    [txsAll, selectedId],
   )
   const treatmentLabel = (tid: string | null) => {
     if (!tid) return null
-    const t = txs.find(x => x.kind === 'islem' && x.id === tid)
+    const t = txsAll.find(x => x.kind === 'islem' && x.id === tid)
     return t ? t.label : null
   }
 
   const patientPromises = useMemo(
-    () => selectedId ? promises.filter(pr => pr.patient_id === selectedId).sort((a, b) => a.due_date.localeCompare(b.due_date)) : [],
-    [promises, selectedId],
+    () => selectedId ? promisesAll.filter(pr => pr.patient_id === selectedId).sort((a, b) => a.due_date.localeCompare(b.due_date)) : [],
+    [promisesAll, selectedId],
   )
 
   // Günün muhasebe şeridi
   const dayStats = useMemo(() => {
-    const dayTxs = txs.filter(t => t.date === day)
+    const dayTxs = txsAll.filter(t => t.date === day)
     return {
       islem: dayTxs.filter(t => t.kind === 'islem'),
       billed: dayTxs.filter(t => t.kind === 'islem').reduce((s, t) => s + t.amount, 0),
       collected: dayTxs.filter(t => t.kind === 'tahsilat').reduce((s, t) => s + t.amount, 0),
     }
-  }, [txs, day])
+  }, [txsAll, day])
 
   const monthStats = useMemo(() => {
     const mk = day.slice(0, 7)
-    const mTxs = txs.filter(t => t.date.startsWith(mk))
+    const mTxs = txsAll.filter(t => t.date.startsWith(mk))
     return {
       billed: mTxs.filter(t => t.kind === 'islem').reduce((s, t) => s + t.amount, 0),
       collected: mTxs.filter(t => t.kind === 'tahsilat').reduce((s, t) => s + t.amount, 0),
       label: new Date(day + 'T12:00:00').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }),
     }
-  }, [txs, day])
+  }, [txsAll, day])
 
   // ── Inline form durumu: aynı anda tek form açık ──
   type FormKind = 'islem' | 'tahsilat' | 'randevu' | 'yeniHasta' | 'soz' | 'foto' | null
@@ -335,34 +397,96 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
   // NOT: router.refresh() bilerek YOK — server action'lar revalidatePath ile
   // taze veriyi aynı yanıtta getiriyor; ekstra refresh sayfayı iki kez kurduruyordu.
+  // Optimistic akış: overlay ANINDA uygulanır, action arkada koşar.
+  // Başarı → revalidate gelince overlay'ler sıfırlanır (gerçek veri devralır).
+  // Hata → overlay'ler geri alınır + mesaj gösterilir.
   function run(fn: () => Promise<{ ok: boolean; error?: string }>) {
     setError(null)
+    setOpenForm(null)
+    setFromApptId(null)
     startTransition(async () => {
       const res = await fn()
-      if (res.ok) { setOpenForm(null); setFromApptId(null) }
-      else setError(res.error ?? 'Hata')
+      if (!res.ok) { resetOverlays(); setError(res.error ?? 'Hata') }
     })
   }
 
-  // ── Form gönderimleri ──
+  // ── Form gönderimleri (optimistic push + action) ──
   function submitIslem(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!selectedId) return
     const fd = new FormData(e.currentTarget)
     fd.set('existing_patient_id', selectedId)
     if (fromApptId) fd.set('complete_appointment_id', fromApptId)
+
+    // Anında ekrana işle
+    const name = (fd.get('treatment_name') as string ?? '').trim()
+    const amount = Number(((fd.get('treatment_amount') as string) ?? '0').replace(',', '.'))
+    const tDate = (fd.get('treatment_date') as string) || day
+    const payAmount = Number(((fd.get('payment_amount') as string) ?? '0').replace(',', '.'))
+    const newTxs: TxRow[] = []
+    if (name && Number.isFinite(amount)) {
+      newTxs.push({ id: oid(), patient_id: selectedId, kind: 'islem', date: tDate, label: name, amount })
+    }
+    if (Number.isFinite(payAmount) && payAmount > 0) {
+      newTxs.push({ id: oid(), patient_id: selectedId, kind: 'tahsilat', date: day, label: (fd.get('payment_method') as string) || '', amount: payAmount })
+    }
+    if (newTxs.length) setOptTxs(prev => [...prev, ...newTxs])
+    if (fromApptId) setApptStatusOv(prev => ({ ...prev, [fromApptId]: 'completed' }))
+
     run(() => addQuickEntry(fd))
   }
   function submitTahsilat(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!selectedId) return
-    run(() => addPayment(selectedId, new FormData(e.currentTarget)))
+    const fd = new FormData(e.currentTarget)
+
+    const amount = Number(((fd.get('amount') as string) ?? '').replace(',', '.'))
+    if (Number.isFinite(amount) && amount > 0) {
+      setOptTxs(prev => [...prev, {
+        id: oid(), patient_id: selectedId, kind: 'tahsilat',
+        date: (fd.get('paid_at') as string) || day,
+        label: (fd.get('method') as string) || '', amount,
+      }])
+    }
+    const pDate = (fd.get('promise_date') as string ?? '').trim()
+    const pAmt = Number(((fd.get('promise_amount') as string) ?? '').replace(',', '.'))
+    if (pDate && Number.isFinite(pAmt) && pAmt > 0) {
+      setOptPromises(prev => [...prev, { id: oid(), patient_id: selectedId, due_date: pDate, amount: pAmt, note: null, status: 'open' }])
+    }
+
+    run(() => addPayment(selectedId, fd))
   }
   function submitRandevu(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!selectedId) return
     const fd = new FormData(e.currentTarget)
     fd.set('patient_id', selectedId)
+
+    // Tek randevu ise anında göster (tekrarlı seriyi/birleştirmeyi server üretir)
+    const freq = (fd.get('recurrence_freq') as string ?? '').trim()
+    if (!freq) {
+      const dateStr = (fd.get('date') as string ?? '').trim()
+      const timeStr = ((fd.get('time') as string) ?? '').trim() || '17:00'
+      const start = new Date(`${dateStr}T${timeStr}:00`)
+      if (dateStr && !Number.isNaN(start.getTime())) {
+        const pkgId = (fd.get('package_treatment_id') as string ?? '').trim() || null
+        setOptAppts(prev => [...prev, {
+          id: oid(), patient_id: selectedId, start_at: start.toISOString(),
+          duration_minutes: Number(fd.get('duration_minutes') ?? 30),
+          treatment_type: (fd.get('treatment_type') as string) || null,
+          appointment_type: null, status: 'scheduled', package_treatment_id: pkgId,
+        }])
+        if (pkgId) setPkgDelta(prev => ({
+          ...prev,
+          [pkgId]: {
+            done: prev[pkgId]?.done ?? 0,
+            planned: (prev[pkgId]?.planned ?? 0) + 1,
+            sessions: prev[pkgId]?.sessions ?? [],
+          },
+        }))
+      }
+    }
+
     run(() => createAppointmentForPatient(fd))
   }
   function submitYeniHasta(e: React.FormEvent<HTMLFormElement>) {
@@ -486,7 +610,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 <button key={p.id} onClick={() => pickPatient(p.id)}
                   className="w-full text-left px-3 py-2.5 hover:bg-slate-800 flex items-center justify-between gap-2">
                   <span className="text-sm text-white font-semibold">{p.name}</span>
-                  <span className="text-xs text-slate-400">{p.phone ?? ''}{p.remaining > 0 ? ` · ${TRY(p.remaining)} borç` : ''}</span>
+                  <span className="text-xs text-slate-400">{p.phone ?? ''}{remainingOf(p.id) > 0 ? ` · ${TRY(remainingOf(p.id))} borç` : ''}</span>
                 </button>
               ))}
             </div>
@@ -582,8 +706,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     onClick={() => pickPatient(p.id)}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-white text-sm font-semibold truncate">{p.name}</span>
-                      {p.remaining > 0
-                        ? <span className="text-rose-300 text-xs font-bold tabular-nums shrink-0">{TRY(p.remaining)}</span>
+                      {remainingOf(p.id) > 0
+                        ? <span className="text-rose-300 text-xs font-bold tabular-nums shrink-0">{TRY(remainingOf(p.id))}</span>
                         : <span className="text-emerald-400/70 text-xs shrink-0">✓</span>}
                     </div>
                     <div className="flex items-center justify-between mt-0.5 text-xs text-slate-500">
@@ -633,7 +757,10 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                         İşleme Al
                       </button>
                       <button
-                        onClick={() => run(() => setAppointmentStatus(a.id, 'no_show'))}
+                        onClick={() => {
+                          setApptStatusOv(prev => ({ ...prev, [a.id]: 'no_show' }))
+                          run(() => setAppointmentStatus(a.id, 'no_show'))
+                        }}
                         className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-300 hover:bg-slate-600">
                         Gelmedi
                       </button>
@@ -664,8 +791,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  {selected.remaining > 0
-                    ? <p className="text-rose-300 font-black">{TRY(selected.remaining)} <span className="text-xs font-semibold">borç</span></p>
+                  {selRemaining > 0
+                    ? <p className="text-rose-300 font-black">{TRY(selRemaining)} <span className="text-xs font-semibold">borç</span></p>
                     : <p className="text-emerald-300 font-bold text-sm">Bakiye kapalı</p>}
                   <p className="text-xs text-slate-500 mt-0.5">{selected.treatment_count} işlem · {TRY(selected.total_amount)}</p>
                 </div>
@@ -753,6 +880,27 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                                 .map(v => (v as string | null)?.trim())
                                 .filter(Boolean)
                               setSeansFormPkg(null)
+
+                              // Anında: sayaç +1; bugüne planlı bağlı randevu varsa onu tamamla
+                              const nowIso = new Date().toISOString()
+                              const todaysLinked = apptsAll.find(a =>
+                                a.package_treatment_id === pk.treatment_id && a.status === 'scheduled' &&
+                                new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === todayIso())
+                              if (todaysLinked) setApptStatusOv(prev => ({ ...prev, [todaysLinked.id]: 'completed' }))
+                              else setOptAppts(prev => [...prev, {
+                                id: oid(), patient_id: pk.patient_id, start_at: nowIso, duration_minutes: 30,
+                                treatment_type: `${pk.name} — Seans ${pk.done + 1}`, appointment_type: null,
+                                status: 'completed', package_treatment_id: pk.treatment_id,
+                              }])
+                              setPkgDelta(prev => ({
+                                ...prev,
+                                [pk.treatment_id]: {
+                                  done: (prev[pk.treatment_id]?.done ?? 0) + 1,
+                                  planned: (prev[pk.treatment_id]?.planned ?? 0) + (todaysLinked ? -1 : 0),
+                                  sessions: [...(prev[pk.treatment_id]?.sessions ?? []), { at: nowIso, detail: parts.join(' · ') || null }],
+                                },
+                              }))
+
                               run(() => logPackageSession(pk.treatment_id, parts.join(' · ')))
                             }}
                             className="mt-2 grid sm:grid-cols-[1fr,110px,1fr,auto] gap-2 bg-slate-950/50 rounded-lg p-2">
@@ -1038,7 +1186,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               </div>
 
               {/* ── Ödeme sözleri (alacak planı) ── */}
-              {(patientPromises.length > 0 || (selected.remaining > 0 && openForm === 'soz')) && (
+              {(patientPromises.length > 0 || (selRemaining > 0 && openForm === 'soz')) && (
                 <div className="space-y-1.5">
                   <p className="text-xs font-bold text-amber-300">Ödeme planı</p>
                   {patientPromises.map(pr => {
@@ -1050,7 +1198,16 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                           <form onSubmit={e => {
                             e.preventDefault()
                             setEditingPromiseId(null)
-                            run(() => updatePaymentPromise(pr.id, new FormData(e.currentTarget as HTMLFormElement)))
+                            const fd = new FormData(e.currentTarget as HTMLFormElement)
+                            setPromiseOv(prev => ({
+                              ...prev,
+                              [pr.id]: {
+                                due_date: (fd.get('due_date') as string) || pr.due_date,
+                                amount: Number(((fd.get('amount') as string) ?? '').replace(',', '.')) || Number(pr.amount),
+                                note: (fd.get('note') as string) || null,
+                              },
+                            }))
+                            run(() => updatePaymentPromise(pr.id, fd))
                           }} className="grid sm:grid-cols-[140px,120px,1fr,auto,auto] gap-2 p-2">
                             <input name="due_date" type="date" required defaultValue={pr.due_date} className={inputCls} />
                             <input name="amount" required inputMode="decimal" defaultValue={String(Number(pr.amount))} className={inputCls} />
@@ -1077,7 +1234,10 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                                 className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-300 hover:bg-slate-600">
                                 Düzenle
                               </button>
-                              <button onClick={() => run(() => settlePaymentPromise(pr.id, 'cancelled'))}
+                              <button onClick={() => {
+                                setPromiseOv(prev => ({ ...prev, [pr.id]: { removed: true } }))
+                                run(() => settlePaymentPromise(pr.id, 'cancelled'))
+                              }}
                                 className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-400 hover:bg-slate-600">
                                 İptal
                               </button>
@@ -1090,7 +1250,16 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                             <span className="text-xs text-emerald-300 font-semibold">{TRY(Number(pr.amount))} tahsil edilecek — yöntem:</span>
                             {(['nakit', 'kart', 'havale'] as const).map(m => (
                               <button key={m}
-                                onClick={() => { setSettlingPromiseId(null); run(() => settlePaymentPromise(pr.id, 'paid', m)) }}
+                                onClick={() => {
+                                  setSettlingPromiseId(null)
+                                  // Anında: söz düşer, tahsilat işlenir, bakiye oynar
+                                  setPromiseOv(prev => ({ ...prev, [pr.id]: { removed: true } }))
+                                  setOptTxs(prev => [...prev, {
+                                    id: oid(), patient_id: pr.patient_id, kind: 'tahsilat',
+                                    date: todayIso(), label: m, amount: Number(pr.amount),
+                                  }])
+                                  run(() => settlePaymentPromise(pr.id, 'paid', m))
+                                }}
                                 disabled={pending}
                                 className="text-[11px] font-bold px-3 py-1.5 rounded-md bg-emerald-600/30 text-emerald-200 hover:bg-emerald-600/50 capitalize">
                                 {m}
@@ -1104,10 +1273,10 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   })}
                 </div>
               )}
-              {selected.remaining > 0 && (() => {
+              {selRemaining > 0 && (() => {
                 // Planlanmamış açık: borçtan mevcut açık sözlerin toplamı düşülür.
                 const promisedTotal = patientPromises.reduce((s, pr) => s + Number(pr.amount), 0)
-                const unplanned = selected.remaining - promisedTotal
+                const unplanned = selRemaining - promisedTotal
                 if (unplanned <= 0) {
                   return <p className="text-xs text-emerald-400/80">Ödeme planı borcun tamamını karşılıyor ✓</p>
                 }
@@ -1115,11 +1284,20 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   <form onSubmit={e => {
                     e.preventDefault()
                     if (!selectedId) return
-                    run(() => addPaymentPromise(selectedId, new FormData(e.currentTarget as HTMLFormElement)))
+                    const fd = new FormData(e.currentTarget as HTMLFormElement)
+                    const dd = (fd.get('due_date') as string ?? '').trim()
+                    const amt = Number(((fd.get('amount') as string) ?? '').replace(',', '.'))
+                    if (dd && Number.isFinite(amt) && amt > 0) {
+                      setOptPromises(prev => [...prev, {
+                        id: oid(), patient_id: selectedId, due_date: dd, amount: amt,
+                        note: (fd.get('note') as string) || null, status: 'open',
+                      }])
+                    }
+                    run(() => addPaymentPromise(selectedId, fd))
                   }} className="bg-slate-900/60 border border-amber-500/25 rounded-xl p-3 space-y-2">
                     <p className="text-xs text-amber-300 font-semibold">
                       Planlanmamış {TRY(unplanned)} için ödeme sözü
-                      {promisedTotal > 0 && <span className="text-slate-500"> (borç {TRY(selected.remaining)}, planlı {TRY(promisedTotal)})</span>}
+                      {promisedTotal > 0 && <span className="text-slate-500"> (borç {TRY(selRemaining)}, planlı {TRY(promisedTotal)})</span>}
                     </p>
                     <div className="grid sm:grid-cols-[140px,130px,1fr,auto] gap-2">
                       <input name="due_date" type="date" required className={inputCls} />
