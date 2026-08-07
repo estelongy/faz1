@@ -123,6 +123,14 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     setOptPromises([]); setPromiseOv({}); setPkgDelta({})
     setRemovedTxIds(new Set()); setRemovedApptIds(new Set()); setRemovedPkgIds(new Set())
   }
+
+  // Bilgilendirici silme onayı: ne silinecek + zincirleme sonuçları
+  const [confirmBox, setConfirmBox] = useState<{
+    title: string
+    lines: string[]
+    confirmLabel: string
+    action: () => void
+  } | null>(null)
   // Taze server verisi geldiğinde overlay'ler görevini tamamladı → temizle
   useEffect(() => { resetOverlays() }, [txs, appointments, promises, packages]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -757,9 +765,22 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     {!a.id.startsWith('opt-') && (
                       <button
                         onClick={() => {
-                          if (!confirm('Bu randevu silinsin mi?')) return
-                          setRemovedApptIds(prev => new Set(prev).add(a.id))
-                          run(() => deleteAppointment(a.id))
+                          const pk = a.package_treatment_id ? pkgById.get(a.package_treatment_id) : null
+                          setConfirmBox({
+                            title: 'Randevu silinecek',
+                            lines: [
+                              `${new Date(a.start_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} ${new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })} — ${p?.name ?? ''}${a.treatment_type ? ` · ${a.treatment_type}` : ''}`,
+                              ...(pk ? [
+                                `Paket planından düşer: "${pk.name}" (${pk.done}/${pk.session_total})`,
+                                a.status === 'completed' ? 'Tamamlanmış seans — silinirse sayaç geri düşer' : 'Seans daha sonra yeniden planlanabilir',
+                              ] : ['Muhasebe kayıtlarına dokunulmaz (işlem/tahsilat ayrı)']),
+                            ],
+                            confirmLabel: 'Randevuyu Sil',
+                            action: () => {
+                              setRemovedApptIds(prev => new Set(prev).add(a.id))
+                              run(() => deleteAppointment(a.id))
+                            },
+                          })
                         }}
                         title="Randevuyu sil"
                         className="text-slate-600 hover:text-rose-300 text-xs font-bold" aria-label="Randevuyu sil">
@@ -859,10 +880,22 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                             </span>
                             <button
                               onClick={() => {
-                                if (!confirm(`"${pk.name}" paketi silinsin mi? Planlı seans randevuları da silinir.`)) return
-                                setRemovedPkgIds(prev => new Set(prev).add(pk.treatment_id))
-                                setRemovedTxIds(prev => new Set(prev).add(pk.treatment_id))
-                                run(() => deleteTreatmentCascade(pk.treatment_id))
+                                const tx = txsAll.find(t => t.id === pk.treatment_id)
+                                setConfirmBox({
+                                  title: `"${pk.name}" paketi silinecek`,
+                                  lines: [
+                                    tx ? `İşlem kaydı (${TRY(tx.amount)}) silinir — hastanın borcu ${TRY(tx.amount)} azalır` : 'İşlem kaydı silinir',
+                                    pk.planned > 0 ? `${pk.planned} planlı seans randevusu takvimden silinir` : 'Planlı seans randevusu yok',
+                                    pk.done > 0 ? `${pk.done} tamamlanmış seans tarihçede kalır` : 'Henüz yapılmış seans yok',
+                                    'Alınmış tahsilatlar SİLİNMEZ — bakiye buna göre yeniden hesaplanır',
+                                  ],
+                                  confirmLabel: 'Paketi Sil',
+                                  action: () => {
+                                    setRemovedPkgIds(prev => new Set(prev).add(pk.treatment_id))
+                                    setRemovedTxIds(prev => new Set(prev).add(pk.treatment_id))
+                                    run(() => deleteTreatmentCascade(pk.treatment_id))
+                                  },
+                                })
                               }}
                               title="Paketi sil (planlı seans randevularıyla birlikte)"
                               className="text-slate-500 hover:text-rose-300 text-sm" aria-label="Paketi sil">
@@ -909,16 +942,27 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                                 {!s.id.startsWith('opt-') && (
                                   <button
                                     onClick={() => {
-                                      setPkgDelta(prev => ({
-                                        ...prev,
-                                        [pk.treatment_id]: {
-                                          done: (prev[pk.treatment_id]?.done ?? 0) - 1,
-                                          planned: prev[pk.treatment_id]?.planned ?? 0,
-                                          sessions: prev[pk.treatment_id]?.sessions ?? [],
-                                          removedSessionIds: [...(prev[pk.treatment_id]?.removedSessionIds ?? []), s.id],
+                                      setConfirmBox({
+                                        title: `Seans ${i + 1} geri alınacak`,
+                                        lines: [
+                                          `${new Date(s.at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} tarihli seans kaydı silinir${s.detail ? ` (${s.detail})` : ''}`,
+                                          `Sayaç ${pk.done}/${pk.session_total} → ${pk.done - 1}/${pk.session_total} olur`,
+                                          'Ücrete dokunulmaz (paket bedeli işlemde)',
+                                        ],
+                                        confirmLabel: 'Geri Al',
+                                        action: () => {
+                                          setPkgDelta(prev => ({
+                                            ...prev,
+                                            [pk.treatment_id]: {
+                                              done: (prev[pk.treatment_id]?.done ?? 0) - 1,
+                                              planned: prev[pk.treatment_id]?.planned ?? 0,
+                                              sessions: prev[pk.treatment_id]?.sessions ?? [],
+                                              removedSessionIds: [...(prev[pk.treatment_id]?.removedSessionIds ?? []), s.id],
+                                            },
+                                          }))
+                                          run(() => undoPackageSession(s.id))
                                         },
-                                      }))
-                                      run(() => undoPackageSession(s.id))
+                                      })
                                     }}
                                     title="Seansı geri al (yanlış tıklama düzeltme — sayaç geri düşer)"
                                     className="text-slate-600 hover:text-rose-300 font-bold" aria-label="Seansı geri al">
@@ -1238,16 +1282,40 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                                   {!t.id.startsWith('opt-') && (
                                     <button
                                       onClick={() => {
-                                        const msg = t.kind === 'islem'
-                                          ? `"${t.label}" işlemi silinsin mi? Paketse planlı seans randevuları da silinir.`
-                                          : `${TRY(t.amount)} tahsilat kaydı silinsin mi?`
-                                        if (!confirm(msg)) return
-                                        setRemovedTxIds(prev => new Set(prev).add(t.id))
+                                        const dateStr = new Date(t.date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
                                         if (t.kind === 'islem') {
-                                          setRemovedPkgIds(prev => new Set(prev).add(t.id))
-                                          run(() => deleteTreatmentCascade(t.id))
+                                          const pk = pkgById.get(t.id)
+                                          setConfirmBox({
+                                            title: `"${t.label}" işlemi silinecek`,
+                                            lines: [
+                                              `${dateStr} tarihli ${TRY(t.amount)} tutarlı işlem kaydı silinir`,
+                                              `Hastanın borcu ${TRY(t.amount)} azalır`,
+                                              ...(pk ? [
+                                                pk.planned > 0 ? `PAKET: ${pk.planned} planlı seans randevusu da silinir` : 'PAKET: planlı seans randevusu yok',
+                                                pk.done > 0 ? `${pk.done} tamamlanmış seans tarihçede kalır` : '',
+                                              ].filter(Boolean) : []),
+                                              'Alınmış tahsilatlar SİLİNMEZ',
+                                            ],
+                                            confirmLabel: 'İşlemi Sil',
+                                            action: () => {
+                                              setRemovedTxIds(prev => new Set(prev).add(t.id))
+                                              setRemovedPkgIds(prev => new Set(prev).add(t.id))
+                                              run(() => deleteTreatmentCascade(t.id))
+                                            },
+                                          })
                                         } else {
-                                          run(() => deletePayment(t.id, t.patient_id))
+                                          setConfirmBox({
+                                            title: 'Tahsilat kaydı silinecek',
+                                            lines: [
+                                              `${dateStr} · ${TRY(t.amount)}${t.label ? ` · ${t.label}` : ''} tahsilatı silinir`,
+                                              `Hastanın borcu ${TRY(t.amount)} ARTAR`,
+                                            ],
+                                            confirmLabel: 'Tahsilatı Sil',
+                                            action: () => {
+                                              setRemovedTxIds(prev => new Set(prev).add(t.id))
+                                              run(() => deletePayment(t.id, t.patient_id))
+                                            },
+                                          })
                                         }
                                       }}
                                       title="Kaydı sil"
@@ -1545,6 +1613,40 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           </div>
         )
       })()}
+
+      {/* SİLME ONAYI — ne silinecek + zincirleme sonuçları */}
+      {confirmBox && (
+        <div className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4"
+          style={{ filter: 'none' }}
+          onClick={() => setConfirmBox(null)}
+          onKeyDown={e => { if (e.key === 'Escape') setConfirmBox(null) }}
+          tabIndex={0}
+          ref={el => el?.focus()}>
+          <div className="w-full max-w-md bg-slate-900 border border-rose-500/30 rounded-2xl p-5 space-y-3"
+            onClick={e => e.stopPropagation()}>
+            <h3 className="text-white font-black">⚠ {confirmBox.title}</h3>
+            <ul className="space-y-1.5">
+              {confirmBox.lines.map((l, i) => (
+                <li key={i} className="text-sm text-slate-300 flex gap-2">
+                  <span className="text-rose-400 shrink-0">•</span><span>{l}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => { const a = confirmBox.action; setConfirmBox(null); a() }}
+                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold transition-colors">
+                {confirmBox.confirmLabel}
+              </button>
+              <button
+                onClick={() => setConfirmBox(null)}
+                className="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-bold transition-colors">
+                Vazgeç
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ALT ŞERİT — canlı butonlar: gün özeti / alacaklar / ay raporu */}
       <div className="sticky bottom-0 pb-1">
