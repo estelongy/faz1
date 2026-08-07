@@ -381,6 +381,23 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const btnGhost = 'px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition-colors'
 
   // ─────────────────────────────────────────────────────────────────────────
+  // ── Tema: koyu (varsayılan) / siyah / açık — localStorage'da hatırlanır ──
+  const [tema, setTema] = useState<'koyu' | 'siyah' | 'acik'>('koyu')
+  useEffect(() => {
+    const t = localStorage.getItem('klinik_tema')
+    if (t === 'siyah' || t === 'acik') setTema(t)
+  }, [])
+  function cycleTema() {
+    const next = tema === 'koyu' ? 'siyah' : tema === 'siyah' ? 'acik' : 'koyu'
+    setTema(next)
+    localStorage.setItem('klinik_tema', next)
+  }
+  const TEMA_LABEL = { koyu: '🌙 Koyu', siyah: '⚫ Siyah', acik: '☀️ Açık' } as const
+
+  // Foto görüntüleme zemini: lightbox + karşılaştırma
+  const [fotoZemin, setFotoZemin] = useState<'siyah' | 'gri' | 'beyaz'>('siyah')
+  const ZEMIN_BG = { siyah: '#0a0a0a', gri: '#6b7280', beyaz: '#ffffff' } as const
+
   // Ana sayfa: her şeyi bugünün gün akışına sıfırla
   function resetToHome() {
     setDay(todayIso())
@@ -397,8 +414,18 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Sabit başlık: ana sayfa butonu + modül adı */}
+    <div
+      className="flex flex-col gap-4"
+      style={{
+        // Açık tema: invert hilesi — tüm koyu paleti tersine çevirir, görseller
+        // aşağıdaki CSS ile geri çevrilir. Siyah: zemin düz siyaha kayar.
+        ...(tema === 'acik' ? { filter: 'invert(0.92) hue-rotate(180deg)', background: '#0b0b0d', borderRadius: 12 } : {}),
+        ...(tema === 'siyah' ? { background: '#000', borderRadius: 12 } : {}),
+      }}>
+      {tema === 'acik' && (
+        <style>{`img, video { filter: invert(1.087) hue-rotate(180deg); }`}</style>
+      )}
+      {/* Sabit başlık: ana sayfa butonu + modül adı + tema */}
       <div className="sticky top-0 z-40 -mx-1 px-1 pt-1 bg-slate-950/95 backdrop-blur">
         <div className="flex items-center gap-3 py-2">
           <button onClick={resetToHome}
@@ -406,6 +433,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
             🏠 Ana Sayfa
           </button>
           <h1 className="text-xl font-black text-white">Klinik Yönetim</h1>
+          <button onClick={cycleTema}
+            title="Tema değiştir (koyu → siyah → açık)"
+            className="ml-auto px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+            {TEMA_LABEL[tema]}
+          </button>
         </div>
       </div>
 
@@ -1094,14 +1126,22 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         const caption = (f: PhotoRow) =>
           `${new Date(f.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}${f.note ? ` · ${f.note}` : ''}`
         return (
-          <div className="fixed inset-0 z-50 bg-black/95 flex flex-col"
+          <div className="fixed inset-0 z-50 flex flex-col"
+            style={{ background: ZEMIN_BG[fotoZemin], filter: 'none' }}
             onClick={() => setCompareSel([])}
             onKeyDown={e => { if (e.key === 'Escape') setCompareSel([]) }}
             tabIndex={0}
             ref={el => el?.focus()}>
             <div className="flex items-center justify-between px-4 py-3 gap-2 flex-wrap">
-              <span className="text-white font-bold text-sm">{selected?.name} — Karşılaştırma</span>
-              <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+              <span className="text-white font-bold text-sm bg-black/60 px-3 py-1.5 rounded-lg">{selected?.name} — Karşılaştırma</span>
+              <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                <div className="flex gap-1.5 mr-1">
+                  {(['siyah', 'gri', 'beyaz'] as const).map(z => (
+                    <button key={z} onClick={() => setFotoZemin(z)} aria-label={`Zemin ${z}`}
+                      className={`w-6 h-6 rounded-full border-2 ${fotoZemin === z ? 'border-violet-400' : 'border-white/30'}`}
+                      style={{ background: ZEMIN_BG[z] }} />
+                  ))}
+                </div>
                 <div className="flex rounded-lg overflow-hidden">
                   <button onClick={() => setCompareView('yanyana')}
                     className={`text-xs font-bold px-3 py-1.5 ${compareView === 'yanyana' ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}>Yan yana</button>
@@ -1166,7 +1206,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         const next = () => setLightboxIdx(i => (i === null ? null : (i + 1) % patientPhotos.length))
         return (
           <div
-            className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+            style={{ background: ZEMIN_BG[fotoZemin], filter: 'none' }}
             onClick={() => setLightboxIdx(null)}
             onKeyDown={e => {
               if (e.key === 'Escape') setLightboxIdx(null)
@@ -1188,8 +1229,15 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               )}
               <button onClick={() => setLightboxIdx(null)} aria-label="Kapat"
                 className="absolute top-2 right-3 w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 text-white text-lg font-bold">✕</button>
+              <div className="absolute top-2 left-3 flex gap-1.5">
+                {(['siyah', 'gri', 'beyaz'] as const).map(z => (
+                  <button key={z} onClick={() => setFotoZemin(z)} aria-label={`Zemin ${z}`}
+                    className={`w-7 h-7 rounded-full border-2 ${fotoZemin === z ? 'border-violet-400' : 'border-white/30'}`}
+                    style={{ background: ZEMIN_BG[z] }} />
+                ))}
+              </div>
             </div>
-            <div className="w-full max-w-4xl px-4 pb-5 flex items-center justify-between gap-3" onClick={e => e.stopPropagation()}>
+            <div className="w-full max-w-4xl px-4 pb-5 flex items-center justify-between gap-3 [&>div]:bg-black/60 [&>div]:rounded-lg [&>div]:px-3 [&>div]:py-1.5" onClick={e => e.stopPropagation()}>
               <div className="text-sm text-slate-200 min-w-0">
                 <span className="font-bold">{lightboxIdx + 1}/{patientPhotos.length}</span>
                 <span className="text-slate-400 ml-3">
