@@ -609,9 +609,15 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
             🏠 Ana Sayfa
           </button>
           <h1 className="text-xl font-black text-white">Klinik Yönetim</h1>
+          <button
+            onClick={() => { setLeftView(leftView === 'stok' ? 'gun' : 'stok'); setMobilePanelOpen(false) }}
+            className={`ml-auto px-3 py-2 rounded-lg text-xs font-bold transition-colors ${leftView === 'stok' ? 'bg-teal-500/25 text-teal-200' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
+            📦 Stok{stockAll.length > 0 ? ` (${stockAll.length})` : ''}
+            {lowStockCount > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/25 text-rose-300">{lowStockCount} azaldı</span>}
+          </button>
           <button onClick={cycleTema}
             title="Tema değiştir (koyu → siyah → açık)"
-            className="ml-auto px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+            className="px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
             {TEMA_LABEL[tema]}
           </button>
           <button
@@ -675,12 +681,6 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${leftView === 'alacak' ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
           Alacaklar{debtors.length > 0 ? ` (${debtors.length})` : ''}
           {overdueCount > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/25 text-rose-300">{overdueCount} gecikmiş</span>}
-        </button>
-        <button
-          onClick={() => setLeftView(leftView === 'stok' ? 'gun' : 'stok')}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${leftView === 'stok' ? 'bg-teal-500/20 text-teal-300' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
-          Stok{stockAll.length > 0 ? ` (${stockAll.length})` : ''}
-          {lowStockCount > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/25 text-rose-300">{lowStockCount} azaldı</span>}
         </button>
         <button onClick={() => { setOpenForm(openForm === 'yeniHasta' ? null : 'yeniHasta'); setMobilePanelOpen(false) }} className={btnGhost}>
           + Yeni Hasta
