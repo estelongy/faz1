@@ -13,6 +13,8 @@ import MuhasebeAppView from '@/components/klinik-panel/MuhasebeAppView'
 export const metadata: Metadata = {
   title: 'Muhasebe | Klinik Paneli',
   robots: { index: false, follow: false },
+  // Bu rota kendi PWA'sı olarak kurulabilir: "Klinik Yönetim"
+  manifest: '/klinik-manifest.json',
 }
 
 export default async function MuhasebePage({
