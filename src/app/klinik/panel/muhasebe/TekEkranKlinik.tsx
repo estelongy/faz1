@@ -117,6 +117,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [day, setDay] = useState(todayIso())
   const [search, setSearch] = useState('')
   const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok'>('gun')
+  const [tableSearch, setTableSearch] = useState('')
 
   // ══ OPTIMISTIC KATMAN ══════════════════════════════════════════════════
   // Kayıt tıklandığı AN ekrana işlenir; server action arkada çalışır.
@@ -701,6 +702,179 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
       {error && <div className="px-3 py-2 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-300 text-sm">{error}</div>}
 
+      {/* HASTALAR — tam genişlik tablo */}
+      {leftView === 'hastalar' && (() => {
+        const q = tableSearch.trim().toLocaleLowerCase('tr')
+        const rows = allPatients
+          .filter(p => !q || p.name.toLocaleLowerCase('tr').includes(q) || (p.phone ?? '').includes(q))
+          .map(p => ({
+            ...p,
+            remaining: remainingOf(p.id),
+            islemTotal: txsAll.filter(t => t.patient_id === p.id && t.kind === 'islem').reduce((s2, t) => s2 + t.amount, 0),
+            activePkg: packagesAll.find(pk => pk.patient_id === p.id && pk.done < pk.session_total) ?? null,
+          }))
+        return (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-lg font-black text-white">👥 Hastalar — {rows.length} kayıt</h2>
+              <div className="flex items-center gap-2">
+                <input value={tableSearch} onChange={e => setTableSearch(e.target.value)}
+                  placeholder="Tabloda ara (ad / telefon)…" className={`${inputCls} w-56`} />
+                <button onClick={() => setLeftView('gun')} className={btnGhost}>‹ Gün akışına dön</button>
+              </div>
+            </div>
+            {rows.length === 0 ? (
+              <div className="text-center py-12 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
+                <p className="text-slate-400">{q ? 'Eşleşen hasta yok.' : 'Henüz hasta yok — üstten "+ Yeni Hasta".'}</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto bg-slate-800/30 border border-slate-700/60 rounded-xl">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs text-slate-400 border-b border-slate-700">
+                      <th className="px-4 py-2.5 font-bold">Hasta</th>
+                      <th className="px-3 py-2.5 font-bold">Telefon</th>
+                      <th className="px-3 py-2.5 font-bold text-right">Toplam işlem</th>
+                      <th className="px-3 py-2.5 font-bold text-right">Bakiye</th>
+                      <th className="px-3 py-2.5 font-bold">Son hareket</th>
+                      <th className="px-3 py-2.5 font-bold">Aktif paket</th>
+                      <th className="px-3 py-2.5" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map(p => (
+                      <tr key={p.id}
+                        className="border-b border-slate-800/80 hover:bg-slate-800/40 cursor-pointer"
+                        onClick={() => { pickPatient(p.id); setLeftView('gun') }}>
+                        <td className="px-4 py-2.5 text-white font-semibold">{p.name}</td>
+                        <td className="px-3 py-2.5 text-slate-400">{p.phone ?? '—'}</td>
+                        <td className="px-3 py-2.5 text-right tabular-nums text-slate-300">{TRY(p.islemTotal)}</td>
+                        <td className={`px-3 py-2.5 text-right tabular-nums font-bold ${p.remaining > 0 ? 'text-rose-300' : 'text-emerald-400/80'}`}>
+                          {p.remaining > 0 ? TRY(p.remaining) : '✓ kapalı'}
+                        </td>
+                        <td className="px-3 py-2.5 text-slate-400">
+                          {p.last_activity ? new Date(p.last_activity + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) : '—'}
+                        </td>
+                        <td className="px-3 py-2.5 text-violet-300">
+                          {p.activePkg ? `📦 ${p.activePkg.name} ${p.activePkg.done}/${p.activePkg.session_total}` : <span className="text-slate-600">—</span>}
+                        </td>
+                        <td className="px-3 py-2.5 text-right text-violet-300 text-xs font-bold whitespace-nowrap">Karneyi aç ›</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )
+      })()}
+
+      {/* ALACAKLAR — tam genişlik tablo */}
+      {leftView === 'alacak' && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-lg font-black text-amber-300">
+              💰 Alacaklar — {TRY(totalReceivable)} · {debtors.length} hasta
+              {overdueCount > 0 && <span className="text-rose-300 text-sm font-bold ml-1">({overdueCount} Geciken Ödeme)</span>}
+            </h2>
+            <button onClick={() => setLeftView('gun')} className={btnGhost}>‹ Gün akışına dön</button>
+          </div>
+          {debtors.length === 0 ? (
+            <div className="text-center py-12 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
+              <p className="text-emerald-300 font-semibold">Açık alacak yok 🎉</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto bg-slate-800/30 border border-slate-700/60 rounded-xl">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs text-slate-400 border-b border-slate-700">
+                    <th className="px-4 py-2.5 font-bold">Hasta</th>
+                    <th className="px-3 py-2.5 font-bold text-right">Kalan borç</th>
+                    <th className="px-3 py-2.5 font-bold">Ödeme sözü</th>
+                    <th className="px-3 py-2.5 font-bold">Durum</th>
+                    <th className="px-3 py-2.5 font-bold text-right">Hızlı işlem</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {debtors.map(d => {
+                    const overdueDays = d.promise && d.overdue
+                      ? Math.max(1, Math.round((new Date(today).getTime() - new Date(d.promise.due_date).getTime()) / 86_400_000))
+                      : 0
+                    const planFull = d.promisedTotal >= d.remaining
+                    return (
+                      <>
+                        <tr key={d.id}
+                          className={`border-b border-slate-800/80 ${d.overdue ? 'bg-rose-500/5' : ''}`}>
+                          <td className="px-4 py-2.5 text-white font-semibold cursor-pointer hover:text-violet-300"
+                            onClick={() => { pickPatient(d.id); setLeftView('gun') }}>{d.name}</td>
+                          <td className="px-3 py-2.5 text-right tabular-nums font-bold text-rose-300">{TRY(d.remaining)}</td>
+                          <td className="px-3 py-2.5 text-slate-300">
+                            {d.promise
+                              ? `${new Date(d.promise.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })} · ${TRY(Number(d.promise.amount))}`
+                              : <span className="text-slate-600">söz yok</span>}
+                          </td>
+                          <td className="px-3 py-2.5">
+                            {overdueDays > 0
+                              ? <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300">⚠ {overdueDays} gün gecikti</span>
+                              : d.promise && planFull
+                                ? <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">Plan tam ✓</span>
+                                : d.promise
+                                  ? <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300">Kısmi plan</span>
+                                  : <button
+                                      onClick={() => { pickPatient(d.id, 'soz'); setLeftView('gun') }}
+                                      className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 hover:bg-amber-500/30">
+                                      Söz al
+                                    </button>}
+                          </td>
+                          <td className="px-3 py-2.5 text-right whitespace-nowrap">
+                            {d.promise && (
+                              <button
+                                onClick={() => setSettlingPromiseId(settlingPromiseId === d.promise!.id ? null : d.promise!.id)}
+                                className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/40 mr-2">
+                                Tahsil Et
+                              </button>
+                            )}
+                            <button onClick={() => { pickPatient(d.id); setLeftView('gun') }}
+                              className="text-violet-300 text-xs font-bold">Karne ›</button>
+                          </td>
+                        </tr>
+                        {d.promise && settlingPromiseId === d.promise.id && (
+                          <tr key={`${d.id}-settle`} className="border-b border-slate-800/80 bg-slate-900/60">
+                            <td colSpan={5} className="px-4 py-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-xs text-emerald-300 font-semibold">{TRY(Number(d.promise.amount))} tahsil edilecek — yöntem:</span>
+                                {(['nakit', 'kart', 'havale'] as const).map(m => (
+                                  <button key={m}
+                                    onClick={() => {
+                                      const pr = d.promise!
+                                      setSettlingPromiseId(null)
+                                      setPromiseOv(prev => ({ ...prev, [pr.id]: { removed: true } }))
+                                      setOptTxs(prev => [...prev, {
+                                        id: oid(), patient_id: pr.patient_id, kind: 'tahsilat',
+                                        date: todayIso(), label: m, amount: Number(pr.amount),
+                                      }])
+                                      run(() => settlePaymentPromise(pr.id, 'paid', m))
+                                    }}
+                                    disabled={pending}
+                                    className="text-[11px] font-bold px-3 py-1.5 rounded-md bg-emerald-600/30 text-emerald-200 hover:bg-emerald-600/50 capitalize">
+                                    {m}
+                                  </button>
+                                ))}
+                                <button onClick={() => setSettlingPromiseId(null)} className="text-[11px] px-2 py-1.5 text-slate-400 hover:text-white">Vazgeç</button>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* STOK — tam genişlik tablo görünümü */}
       {leftView === 'stok' && (
         <div className="space-y-4">
@@ -871,79 +1045,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
       )}
 
       {/* Ana gövde: sol akış + sağ karne */}
-      {leftView !== 'stok' && (
+      {leftView === 'gun' && (
       <div className="grid lg:grid-cols-[340px,1fr] gap-4 items-start">
 
         {/* SOL — GÜN AKIŞI veya ALACAKLAR */}
         <div className={`space-y-2 ${mobilePanelOpen ? 'hidden lg:block' : ''}`}>
-          {leftView === 'alacak' && (
-            <>
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-amber-300">
-                  Alacaklar — {TRY(totalReceivable)} · {debtors.length} hasta
-                  {overdueCount > 0 && <span className="text-rose-300"> ({overdueCount} Geciken Ödeme)</span>}
-                </span>
-                <button onClick={() => setLeftView('gun')} className="text-xs text-slate-400 hover:text-white">‹ Gün akışı</button>
-              </div>
-              {debtors.length === 0 && (
-                <div className="text-center py-10 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
-                  <p className="text-emerald-300 text-sm font-semibold">Açık alacak yok 🎉</p>
-                </div>
-              )}
-              {debtors.map(d => (
-                <div key={d.id}
-                  className={`rounded-xl border p-3 cursor-pointer transition-colors ${d.id === selectedId ? 'bg-violet-500/10 border-violet-500/40' : d.overdue ? 'bg-rose-500/5 border-rose-500/30 hover:border-rose-400' : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500'}`}
-                  onClick={() => pickPatient(d.id)}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-white text-sm font-semibold truncate">{d.name}</span>
-                    <span className="text-rose-300 text-sm font-black tabular-nums shrink-0">{TRY(d.remaining)}</span>
-                  </div>
-                  <div className="mt-1 text-xs">
-                    {d.promise ? (
-                      <span className={d.overdue ? 'text-rose-300 font-semibold' : 'text-slate-400'}>
-                        {d.overdue ? '⚠ Sözü geçti: ' : 'Söz: '}
-                        {new Date(d.promise.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
-                        {' · '}{TRY(Number(d.promise.amount))}
-                      </span>
-                    ) : (
-                      <span className="text-slate-500">Ödeme sözü yok — karneden söz al</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </>
-          )}
-          {leftView === 'hastalar' && (
-            <>
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-violet-300">Tüm hastalar ({allPatients.length})</span>
-                <button onClick={() => setLeftView('gun')} className="text-xs text-slate-400 hover:text-white">‹ Gün akışı</button>
-              </div>
-              {allPatients.length === 0 && (
-                <div className="text-center py-10 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
-                  <p className="text-slate-400 text-sm">Henüz hasta yok — üstten &quot;+ Yeni Hasta&quot;.</p>
-                </div>
-              )}
-              <div className="space-y-1.5 max-h-[560px] overflow-y-auto pr-1">
-                {allPatients.map(p => (
-                  <div key={p.id}
-                    className={`rounded-xl border px-3 py-2.5 cursor-pointer transition-colors ${p.id === selectedId ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500'}`}
-                    onClick={() => pickPatient(p.id)}>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-white text-sm font-semibold truncate">{p.name}</span>
-                      {remainingOf(p.id) > 0
-                        ? <span className="text-rose-300 text-xs font-bold tabular-nums shrink-0">{TRY(remainingOf(p.id))}</span>
-                        : <span className="text-emerald-400/70 text-xs shrink-0">✓</span>}
-                    </div>
-                    <div className="flex items-center justify-between mt-0.5 text-xs text-slate-500">
-                      <span>{p.phone ?? '—'}</span>
-                      <span>{p.last_activity ? new Date(p.last_activity + 'T12:00:00').toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : 'kayıt yok'}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
           {leftView === 'gun' && dayAppts.length === 0 && (
             <div className="text-center py-10 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
               <p className="text-slate-400 text-sm">Bu gün için randevu yok.</p>
