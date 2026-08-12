@@ -2,3 +2,4 @@ build/
 dist/
 *.spec
 _test_root/
+__pycache__/
