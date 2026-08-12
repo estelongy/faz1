@@ -35,8 +35,8 @@ PORT = 47821
 CONFIG_PATH = os.path.join(os.path.expanduser("~"), ".klinik-foto-koprusu.json")
 
 STAGE_LABELS = {
-    "oncesi": "islem-oncesi",
-    "sonrasi": "islem-sonrasi",
+    "oncesi": "once",
+    "sonrasi": "sonra",
     "kontrol": "kontrol",
     "genel": "foto",
 }
@@ -140,13 +140,16 @@ def next_free_name(folder: str, base: str, ext: str) -> str:
 
 
 def save_photo(patient: str, stage: str, note: str, data: bytes, ext: str = ".jpg") -> str:
+    """Dosya adı: Ad_Soyad_once_120826_205643.jpg"""
     folder = os.path.join(patients_dir(), safe_folder(patient))
     os.makedirs(folder, exist_ok=True)
 
+    who = slug(patient).replace(" ", "_") or "Hasta"
     label = STAGE_LABELS.get(stage, STAGE_LABELS["genel"])
     if note:
-        label = f"{label}-{slug(note)}"
-    base = f"{label}-{datetime.now().strftime('%Y-%m-%d')}"
+        label = f"{label}_{slug(note).replace(' ', '_')}"
+    stamp = datetime.now().strftime("%d%m%y_%H%M%S")
+    base = f"{who}_{label}_{stamp}"
     name = next_free_name(folder, base, ext)
     path = os.path.join(folder, name)
     with open(path, "wb") as f:

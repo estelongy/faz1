@@ -46,9 +46,9 @@ def api(url, key, method, path, body=None):
 def label_from_note(note: str) -> str:
     n = (note or "").lower()
     if "öncesi" in n or "oncesi" in n:
-        return "islem-oncesi"
+        return "once"
     if "sonrası" in n or "sonrasi" in n:
-        return "islem-sonrasi"
+        return "sonra"
     if "kontrol" in n:
         return "kontrol"
     return "foto"
@@ -81,8 +81,10 @@ def main():
                      {"expiresIn": 600})
         signed_url = url + "/storage/v1" + signed["signedURL"]
 
-        date = datetime.fromisoformat(r["created_at"].replace("Z", "+00:00")).strftime("%Y-%m-%d")
-        base = f"{label_from_note(r.get('note'))}-{date}"
+        # Ad_Soyad_once_120826_205643.jpg
+        stamp = datetime.fromisoformat(r["created_at"].replace("Z", "+00:00")).strftime("%d%m%y_%H%M%S")
+        who = slug(pname).replace(" ", "_") or "Hasta"
+        base = f"{who}_{label_from_note(r.get('note'))}_{stamp}"
         ext = os.path.splitext(r["storage_path"])[1] or ".jpg"
         name = next_free_name(folder, base, ext)
 
