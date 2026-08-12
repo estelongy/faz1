@@ -19,6 +19,7 @@ import {
   addStockItem, adjustStock, deleteStockItem, addStockMap, deleteStockMap,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
+import SeriKamera from './SeriKamera'
 import {
   findBridge, getBridgeHost, setBridgeHost,
   bridgeUpload, bridgeList, bridgeDelete, bridgeFileUrl,
@@ -408,8 +409,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [photoProgress, setPhotoProgress] = useState<string | null>(null)
   const [photoTreatmentId, setPhotoTreatmentId] = useState('')
   const [photoNote, setPhotoNote] = useState('')
-  const [seriCekim, setSeriCekim] = useState(true)
+  const seriCekim = true   // "Tek kare" yedek yolunda cihaz kamerasını tekrar aç
   const cameraRef = useRef<HTMLInputElement | null>(null)
+  const [kameraAcik, setKameraAcik] = useState(false)
+
+
 
   // Seçilen dosyaları anında sıkıştırıp yükle — ayrıca "Yükle" tuşu yok.
   // Köprü varsa klinik bilgisayarına, yoksa buluta yazılır.
@@ -448,6 +452,24 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   }
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
   const [photoStage, setPhotoStage] = useState<'oncesi' | 'sonrasi' | 'kontrol'>('oncesi')
+
+  // Seri kameradan gelen tek kareyi yükle (köprü varsa yerele, yoksa buluta)
+  const captureOne = useCallback(async (file: File) => {
+    if (!selectedId) return
+    const pname = patients.find(p => p.id === selectedId)?.name ?? ''
+    if (bridgeHost) {
+      const res = await bridgeUpload(bridgeHost, file, pname, photoStage, photoNote)
+      if (!res.ok) setError(`Köprü hatası: ${res.error}`)
+    } else {
+      const fd = new FormData()
+      fd.set('photo', file)
+      fd.set('treatment_id', photoTreatmentId)
+      fd.set('stage', photoStage)
+      if (photoNote) fd.set('note', photoNote)
+      const res = await addPatientPhoto(selectedId, fd)
+      if (!res.ok) setError(res.error ?? 'Yükleme hatası')
+    }
+  }, [selectedId, patients, bridgeHost, photoStage, photoNote, photoTreatmentId])
   // Karşılaştırma modu: 2 foto seç → yan yana
   const [compareMode, setCompareMode] = useState(false)
   const [compareSel, setCompareSel] = useState<string[]>([])
@@ -1618,20 +1640,23 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                       placeholder="Ek not (opsiyonel — sağ profil vs.)" className={inputCls} />
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <label className={`px-3.5 py-2 rounded-lg text-sm font-bold cursor-pointer ${pending ? 'bg-slate-700 text-slate-400 pointer-events-none' : 'bg-violet-600 hover:bg-violet-500 text-white'}`}>
-                      📷 Kamera
+                    {/* Seri kamera: tarayıcı içi, onay ekranı yok, kamera açık kalır */}
+                    <button type="button"
+                      onClick={() => setKameraAcik(true)}
+                      disabled={pending}
+                      className={`px-3.5 py-2 rounded-lg text-sm font-bold ${pending ? 'bg-slate-700 text-slate-400' : 'bg-violet-600 hover:bg-violet-500 text-white'}`}>
+                      📷 Kamera (seri)
+                    </button>
+                    {/* Yedek: cihaz kamerası — tarayıcı içi çalışmazsa */}
+                    <label className={`px-3 py-2 rounded-lg text-xs font-bold cursor-pointer ${pending ? 'bg-slate-800 text-slate-500 pointer-events-none' : 'bg-slate-700 hover:bg-slate-600 text-slate-200'}`}
+                      title="Telefonun kendi kamera uygulaması">
+                      Tek kare
                       <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" disabled={pending}
                         onChange={e => {
                           const files = Array.from(e.target.files ?? [])
                           e.target.value = ''
-                          // Seri çekim: yükle, bitince kamerayı hemen tekrar aç
                           uploadPhotos(files, { reopenCamera: seriCekim })
                         }} />
-                    </label>
-                    <label className="flex items-center gap-1.5 text-xs text-slate-300 font-semibold cursor-pointer select-none">
-                      <input type="checkbox" checked={seriCekim} onChange={e => setSeriCekim(e.target.checked)}
-                        className="w-4 h-4 accent-violet-500" />
-                      Seri çekim
                     </label>
                     <label className={`px-3.5 py-2 rounded-lg text-sm font-bold cursor-pointer ${pending ? 'bg-slate-800 text-slate-500 pointer-events-none' : 'bg-slate-700 hover:bg-slate-600 text-slate-100'}`}>
                       🖼 Galeriden Seç (çoklu)
@@ -2144,6 +2169,16 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           </div>
         )
       })()}
+
+      {/* SERİ KAMERA — tarayıcı içi çekim */}
+      {kameraAcik && selected && (
+        <SeriKamera
+          patientName={selected.name}
+          stageLabel={photoStage === 'oncesi' ? 'İşlem öncesi' : photoStage === 'sonrasi' ? 'İşlem sonrası' : 'Kontrol'}
+          onCapture={captureOne}
+          onClose={() => { setKameraAcik(false); reloadPhotos() }}
+        />
+      )}
 
       {/* SİLME ONAYI — ne silinecek + zincirleme sonuçları */}
       {confirmBox && (
