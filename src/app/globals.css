@@ -316,3 +316,34 @@ html.is-app .satici-panel-main { padding-bottom: calc(80px + env(safe-area-inset
 .klinik-panel-main .text-lg  { font-size: 21px !important; }
 .klinik-panel-main .text-xl  { font-size: 24px !important; }
 .klinik-panel-main .text-2xl { font-size: 27px !important; }
+
+/* ── Klinik Yönetim mobil: tablolar kart görünümüne dönüşür ── */
+@media (max-width: 640px) {
+  .klinik-tablo thead { display: none; }
+  .klinik-tablo, .klinik-tablo tbody, .klinik-tablo tr, .klinik-tablo td { display: block; width: 100%; }
+  .klinik-tablo tr {
+    background: rgb(30 41 59 / 0.5);
+    border: 1px solid rgb(51 65 85 / 0.6);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .klinik-tablo td {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 3px 0 !important; text-align: right !important; border: 0;
+  }
+  /* İlk hücre (ad) başlık gibi: tam satır, sola yaslı, büyük */
+  .klinik-tablo td:first-child {
+    justify-content: flex-start; text-align: left !important;
+    font-size: 16px; font-weight: 500;
+    padding-bottom: 6px !important; margin-bottom: 4px;
+    border-bottom: 1px solid rgb(51 65 85 / 0.5);
+  }
+  /* data-label ile sol tarafta alan adı */
+  .klinik-tablo td[data-label]::before {
+    content: attr(data-label);
+    color: rgb(148 163 184); font-size: 13px; font-weight: 400;
+    text-align: left; flex: 0 0 auto;
+  }
+  .klinik-tablo td:empty { display: none; }
+}

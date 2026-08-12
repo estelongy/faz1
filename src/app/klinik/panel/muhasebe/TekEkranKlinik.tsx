@@ -118,6 +118,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [search, setSearch] = useState('')
   const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok'>('gun')
   const [tableSearch, setTableSearch] = useState('')
+  const [mobileMenu, setMobileMenu] = useState(false)
 
   // ══ OPTIMISTIC KATMAN ══════════════════════════════════════════════════
   // Kayıt tıklandığı AN ekrana işlenir; server action arkada çalışır.
@@ -602,23 +603,30 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
       {tema === 'acik' && (
         <style>{`img, video { filter: invert(1.087) hue-rotate(180deg); }`}</style>
       )}
-      {/* Sabit başlık: ana sayfa butonu + modül adı + tema */}
+      {/* Sabit başlık — mobilde sade (Ana Sayfa + ⋯), masaüstünde tüm butonlar */}
       <div className="sticky top-0 z-40 pt-1 bg-slate-950/95 backdrop-blur">
-        <div className="flex items-center gap-3 py-2">
+        <div className="flex items-center gap-2 sm:gap-3 py-2">
           <button onClick={resetToHome}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white transition-colors">
-            🏠 Ana Sayfa
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white transition-colors shrink-0">
+            🏠<span className="hidden sm:inline"> Ana Sayfa</span>
           </button>
-          <h1 className="text-xl font-black text-white">Klinik Yönetim</h1>
+          <h1 className="text-base sm:text-xl font-black text-white truncate">Klinik Yönetim</h1>
+
+          {/* Mobil: tek ⋯ menüsü */}
+          <button onClick={() => setMobileMenu(v => !v)}
+            className="sm:hidden ml-auto px-3 py-2 rounded-lg text-sm font-bold bg-slate-800 text-slate-300 shrink-0"
+            aria-label="Menü">⋯</button>
+
+          {/* Masaüstü butonları */}
           <button
             onClick={() => { setLeftView(leftView === 'stok' ? 'gun' : 'stok'); setMobilePanelOpen(false) }}
-            className={`ml-auto px-3 py-2 rounded-lg text-xs font-bold transition-colors ${leftView === 'stok' ? 'bg-teal-500/25 text-teal-200' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
+            className={`hidden sm:inline-flex ml-auto px-3 py-2 rounded-lg text-xs font-bold transition-colors ${leftView === 'stok' ? 'bg-teal-500/25 text-teal-200' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
             📦 Stok{stockAll.length > 0 ? ` (${stockAll.length})` : ''}
             {lowStockCount > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/25 text-rose-300">{lowStockCount} azaldı</span>}
           </button>
           <button onClick={cycleTema}
             title="Tema değiştir (koyu → siyah → açık)"
-            className="px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+            className="hidden sm:inline-flex px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
             {TEMA_LABEL[tema]}
           </button>
           <button
@@ -627,10 +635,9 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               else document.documentElement.requestFullscreen()
             }}
             title="Tam ekran (çıkmak için Esc)"
-            className="px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+            className="hidden sm:inline-flex px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
             ⛶ Tam Ekran
           </button>
-          {/* Çıkış — sadece kurulu uygulama modunda (webde kabuktaki Çıkış var) */}
           <button
             onClick={() => {
               startTransition(async () => {
@@ -638,10 +645,24 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 window.location.href = '/giris'
               })
             }}
-            className="pwa-only px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400 hover:text-rose-200 transition-colors items-center">
+            className="pwa-only hidden sm:inline-flex px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400 hover:text-rose-200 transition-colors items-center">
             Çıkış
           </button>
         </div>
+
+        {/* Mobil ⋯ açılır menü */}
+        {mobileMenu && (
+          <div className="sm:hidden flex flex-wrap gap-2 pb-2">
+            <button onClick={() => { cycleTema() }} className={btnGhost}>{TEMA_LABEL[tema]}</button>
+            <button onClick={() => {
+              if (document.fullscreenElement) document.exitFullscreen()
+              else document.documentElement.requestFullscreen()
+            }} className={btnGhost}>⛶ Tam Ekran</button>
+            <Link href={`/klinik/panel/muhasebe/rapor?ay=${day.slice(0, 7)}`} className={btnGhost}>🖨 Rapor</Link>
+            <button onClick={() => { setMobileMenu(false); startTransition(async () => { await signOutKlinik(); window.location.href = '/giris' }) }}
+              className="px-3 py-1.5 bg-slate-800 hover:bg-rose-600/30 text-slate-400 text-xs font-semibold rounded-lg">Çıkış</button>
+          </div>
+        )}
       </div>
 
       {/* Üst çubuk: gün gezgini + arama + yeni hasta */}
@@ -729,7 +750,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               </div>
             ) : (
               <div className="overflow-x-auto bg-slate-800/30 border border-slate-700/60 rounded-xl">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm klinik-tablo">
                   <thead>
                     <tr className="text-left text-xs text-slate-400 border-b border-slate-700">
                       <th className="px-4 py-2.5 font-bold">Hasta</th>
@@ -747,15 +768,15 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                         className="border-b border-slate-800/80 hover:bg-slate-800/40 cursor-pointer"
                         onClick={() => { pickPatient(p.id); setLeftView('gun') }}>
                         <td className="px-4 py-2.5 text-white font-semibold">{p.name}</td>
-                        <td className="px-3 py-2.5 text-slate-400">{p.phone ?? '—'}</td>
-                        <td className="px-3 py-2.5 text-right tabular-nums text-slate-300">{TRY(p.islemTotal)}</td>
-                        <td className={`px-3 py-2.5 text-right tabular-nums font-bold ${p.remaining > 0 ? 'text-rose-300' : 'text-emerald-400/80'}`}>
+                        <td data-label="Telefon" className="px-3 py-2.5 text-slate-400">{p.phone ?? '—'}</td>
+                        <td data-label="Toplam işlem" className="px-3 py-2.5 text-right tabular-nums text-slate-300">{TRY(p.islemTotal)}</td>
+                        <td data-label="Bakiye" className={`px-3 py-2.5 text-right tabular-nums font-bold ${p.remaining > 0 ? 'text-rose-300' : 'text-emerald-400/80'}`}>
                           {p.remaining > 0 ? TRY(p.remaining) : '✓ kapalı'}
                         </td>
-                        <td className="px-3 py-2.5 text-slate-400">
+                        <td data-label="Son hareket" className="px-3 py-2.5 text-slate-400">
                           {p.last_activity ? new Date(p.last_activity + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) : '—'}
                         </td>
-                        <td className="px-3 py-2.5 text-violet-300">
+                        <td data-label="Aktif paket" className="px-3 py-2.5 text-violet-300">
                           {p.activePkg ? `📦 ${p.activePkg.name} ${p.activePkg.done}/${p.activePkg.session_total}` : <span className="text-slate-600">—</span>}
                         </td>
                         <td className="px-3 py-2.5 text-right text-violet-300 text-xs font-bold whitespace-nowrap">Karneyi aç ›</td>
@@ -785,7 +806,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
             </div>
           ) : (
             <div className="overflow-x-auto bg-slate-800/30 border border-slate-700/60 rounded-xl">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm klinik-tablo">
                 <thead>
                   <tr className="text-left text-xs text-slate-400 border-b border-slate-700">
                     <th className="px-4 py-2.5 font-bold">Hasta</th>
@@ -807,13 +828,13 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                           className={`border-b border-slate-800/80 ${d.overdue ? 'bg-rose-500/5' : ''}`}>
                           <td className="px-4 py-2.5 text-white font-semibold cursor-pointer hover:text-violet-300"
                             onClick={() => { pickPatient(d.id); setLeftView('gun') }}>{d.name}</td>
-                          <td className="px-3 py-2.5 text-right tabular-nums font-bold text-rose-300">{TRY(d.remaining)}</td>
-                          <td className="px-3 py-2.5 text-slate-300">
+                          <td data-label="Kalan borç" className="px-3 py-2.5 text-right tabular-nums font-bold text-rose-300">{TRY(d.remaining)}</td>
+                          <td data-label="Ödeme sözü" className="px-3 py-2.5 text-slate-300">
                             {d.promise
                               ? `${new Date(d.promise.due_date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })} · ${TRY(Number(d.promise.amount))}`
                               : <span className="text-slate-600">söz yok</span>}
                           </td>
-                          <td className="px-3 py-2.5">
+                          <td data-label="Durum" className="px-3 py-2.5">
                             {overdueDays > 0
                               ? <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300">⚠ {overdueDays} gün gecikti</span>
                               : d.promise && planFull
@@ -916,7 +937,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
             </div>
           ) : (
             <div className="overflow-x-auto bg-slate-800/30 border border-slate-700/60 rounded-xl">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm klinik-tablo">
                 <thead>
                   <tr className="text-left text-xs text-slate-400 border-b border-slate-700">
                     <th className="px-4 py-2.5 font-bold">Ürün</th>
@@ -935,15 +956,15 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     return (
                       <tr key={i.id} className={`border-b border-slate-800/80 ${low ? 'bg-rose-500/5' : ''}`}>
                         <td className="px-4 py-2.5 text-white font-semibold">{i.name}</td>
-                        <td className={`px-3 py-2.5 text-right font-black tabular-nums ${out ? 'text-rose-400' : low ? 'text-rose-300' : 'text-teal-300'}`}>{i.quantity}</td>
-                        <td className="px-3 py-2.5 text-slate-400">{i.unit ?? '—'}</td>
-                        <td className="px-3 py-2.5 text-right text-slate-500 tabular-nums">{i.min_threshold > 0 ? i.min_threshold : '—'}</td>
-                        <td className="px-3 py-2.5">
+                        <td data-label="Miktar" className={`px-3 py-2.5 text-right font-black tabular-nums ${out ? 'text-rose-400' : low ? 'text-rose-300' : 'text-teal-300'}`}>{i.quantity}</td>
+                        <td data-label="Birim" className="px-3 py-2.5 text-slate-400">{i.unit ?? '—'}</td>
+                        <td data-label="Uyarı eşiği" className="px-3 py-2.5 text-right text-slate-500 tabular-nums">{i.min_threshold > 0 ? i.min_threshold : '—'}</td>
+                        <td data-label="Durum" className="px-3 py-2.5">
                           {out ? <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-500/25 text-rose-300">TÜKENDİ</span>
                             : low ? <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300">⚠ Azaldı</span>
                             : <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">✓ Yeterli</span>}
                         </td>
-                        <td className="px-3 py-2.5">
+                        <td data-label="Hareket" className="px-3 py-2.5">
                           <div className="flex gap-1 justify-end">
                             <button onClick={() => { setStockDelta(prev => ({ ...prev, [i.id]: (prev[i.id] ?? 0) - 1 })); run(() => adjustStock(i.id, -1, 'çıkış')) }}
                               disabled={pending || i.quantity <= 0}
@@ -993,7 +1014,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               <p className="text-sm font-bold text-slate-200">Uygulama → Ürün eşleştirme</p>
               <p className="text-xs text-slate-500">İşlem/paket adında uygulama kelimesi geçince Seans Yap formunda ürün otomatik seçili gelir; tek seans işlemlerde stok kendiliğinden düşer.</p>
               {stockMaps.length > 0 && (
-                <table className="w-full text-sm">
+                <table className="w-full text-sm klinik-tablo">
                   <thead>
                     <tr className="text-left text-xs text-slate-400 border-b border-slate-700">
                       <th className="py-2 font-bold">Uygulama</th>
@@ -1998,8 +2019,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         </div>
       )}
 
-      {/* ALT ŞERİT — canlı butonlar: gün özeti / alacaklar / ay raporu */}
-      <div className="sticky bottom-0 pb-1">
+      {/* ALT ŞERİT — masaüstünde sabit; mobilde alt nav var, şerit akışın sonunda */}
+      <div className="sm:sticky sm:bottom-0 pb-1 hidden sm:block">
         <div className="bg-slate-900/95 backdrop-blur border border-slate-700/60 rounded-xl px-3 py-2 flex flex-wrap items-center gap-2 text-sm">
           <button
             onClick={() => { setLeftView('gun'); setMobilePanelOpen(false) }}
@@ -2021,6 +2042,42 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
           </Link>
         </div>
       </div>
+
+      {/* MOBİL ALT NAV — başparmak menzilinde 4 sekme */}
+      <div className="sm:hidden h-20" aria-hidden />
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/98 backdrop-blur border-t border-slate-700"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        {/* Gün özeti şeridi — nav'ın üstünde ince satır */}
+        <div className="px-3 py-1 text-[11px] text-slate-400 border-b border-slate-800 flex items-center justify-between">
+          <span>{dayLabel(day)}: <span className="text-white font-bold">{dayStats.islem.length}</span> işlem · <span className="text-emerald-300 font-bold">{TRY(dayStats.collected)}</span> tahsil</span>
+          <Link href={`/klinik/panel/muhasebe/rapor?ay=${day.slice(0, 7)}`} className="text-slate-500">🖨</Link>
+        </div>
+        <div className="grid grid-cols-4">
+          {([
+            { v: 'gun' as const, icon: '📅', label: 'Gün', badge: dayAppts.filter(a => a.status === 'scheduled').length },
+            { v: 'hastalar' as const, icon: '👥', label: 'Hastalar', badge: 0 },
+            { v: 'alacak' as const, icon: '💰', label: 'Alacak', badge: overdueCount },
+            { v: 'stok' as const, icon: '📦', label: 'Stok', badge: lowStockCount },
+          ]).map(t => (
+            <button key={t.v}
+              onClick={() => {
+                setLeftView(t.v)
+                setMobilePanelOpen(false)
+                setMobileMenu(false)
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              className={`relative flex flex-col items-center gap-0.5 py-2.5 transition-colors ${leftView === t.v && !mobilePanelOpen ? 'text-violet-300' : 'text-slate-400'}`}>
+              <span className="text-lg leading-none">{t.icon}</span>
+              <span className="text-[11px] font-bold">{t.label}</span>
+              {t.badge > 0 && (
+                <span className={`absolute top-1.5 right-1/2 translate-x-4 min-w-[16px] h-4 px-1 rounded-full text-[9px] font-black flex items-center justify-center ${t.v === 'gun' ? 'bg-violet-500/40 text-violet-100' : 'bg-rose-500/40 text-rose-100'}`}>
+                  {t.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </nav>
     </div>
   )
 }
