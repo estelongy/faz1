@@ -6,7 +6,7 @@
  * Rol odağı: doktor → sıradaki hastanın karnesi açık başlar; sekreter → gün akışı.
  */
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
 import {
   addQuickEntry, addPayment, addPatient,
@@ -408,10 +408,13 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [photoProgress, setPhotoProgress] = useState<string | null>(null)
   const [photoTreatmentId, setPhotoTreatmentId] = useState('')
   const [photoNote, setPhotoNote] = useState('')
+  const [seriCekim, setSeriCekim] = useState(true)
+  const cameraRef = useRef<HTMLInputElement | null>(null)
 
   // Seçilen dosyaları anında sıkıştırıp yükle — ayrıca "Yükle" tuşu yok.
   // Köprü varsa klinik bilgisayarına, yoksa buluta yazılır.
-  function uploadPhotos(files: File[]) {
+  // reopenCamera: seri çekimde yükleme biter bitmez kamerayı tekrar açar.
+  function uploadPhotos(files: File[], opts?: { reopenCamera?: boolean }) {
     if (!selectedId || files.length === 0) return
     setError(null)
     const pname = patients.find(p => p.id === selectedId)?.name ?? ''
@@ -433,9 +436,14 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         }
       }
       setPhotoProgress(null)
-      // Doğal akış: öncesi yüklendi → sıradaki küme büyük ihtimalle sonrası
-      if (photoStage === 'oncesi') setPhotoStage('sonrasi')
       reloadPhotos()
+      // Seri çekim: kamerayı hemen tekrar aç (etiket sabit kalır)
+      if (opts?.reopenCamera) {
+        setTimeout(() => cameraRef.current?.click(), 250)
+      } else if (photoStage === 'oncesi') {
+        // Tek çekimde doğal akış: öncesi bitti → sıradaki küme sonrası
+        setPhotoStage('sonrasi')
+      }
     })
   }
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
@@ -1612,8 +1620,18 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   <div className="flex flex-wrap items-center gap-2">
                     <label className={`px-3.5 py-2 rounded-lg text-sm font-bold cursor-pointer ${pending ? 'bg-slate-700 text-slate-400 pointer-events-none' : 'bg-violet-600 hover:bg-violet-500 text-white'}`}>
                       📷 Kamera
-                      <input type="file" accept="image/*" capture="environment" className="hidden" disabled={pending}
-                        onChange={e => { uploadPhotos(Array.from(e.target.files ?? [])); e.target.value = '' }} />
+                      <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" disabled={pending}
+                        onChange={e => {
+                          const files = Array.from(e.target.files ?? [])
+                          e.target.value = ''
+                          // Seri çekim: yükle, bitince kamerayı hemen tekrar aç
+                          uploadPhotos(files, { reopenCamera: seriCekim })
+                        }} />
+                    </label>
+                    <label className="flex items-center gap-1.5 text-xs text-slate-300 font-semibold cursor-pointer select-none">
+                      <input type="checkbox" checked={seriCekim} onChange={e => setSeriCekim(e.target.checked)}
+                        className="w-4 h-4 accent-violet-500" />
+                      Seri çekim
                     </label>
                     <label className={`px-3.5 py-2 rounded-lg text-sm font-bold cursor-pointer ${pending ? 'bg-slate-800 text-slate-500 pointer-events-none' : 'bg-slate-700 hover:bg-slate-600 text-slate-100'}`}>
                       🖼 Galeriden Seç (çoklu)
@@ -1676,6 +1694,37 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={f.url} alt={f.note ?? 'Hasta fotoğrafı'} className="w-full h-24 object-cover" loading="lazy" />
                         </button>
+                        {/* Sil — galeriden doğrudan, büyütmeye gerek yok */}
+                        {!compareMode && (
+                          <button
+                            onClick={() => {
+                              setConfirmBox({
+                                title: 'Fotoğraf silinecek',
+                                lines: [
+                                  `${new Date(f.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}${f.note ? ` · ${f.note}` : ''}`,
+                                  f.id.startsWith('local:') ? 'Klinik bilgisayarındaki dosya silinir' : 'Buluttaki dosya silinir',
+                                  'Geri alınamaz',
+                                ],
+                                confirmLabel: 'Fotoğrafı Sil',
+                                action: () => {
+                                  const delId = f.id
+                                  startTransition(async () => {
+                                    if (delId.startsWith('local:') && bridgeHost) {
+                                      const ok = await bridgeDelete(bridgeHost, delId.slice(6))
+                                      if (ok) reloadPhotos(); else setError('Köprüden silinemedi')
+                                      return
+                                    }
+                                    const res = await deletePatientPhoto(delId)
+                                    if (res.ok) reloadPhotos(); else setError(res.error ?? 'Silme hatası')
+                                  })
+                                },
+                              })
+                            }}
+                            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 hover:bg-rose-600/80 text-white text-xs font-bold flex items-center justify-center"
+                            aria-label="Fotoğrafı sil">
+                            ✕
+                          </button>
+                        )}
                         <div className="px-1.5 py-1 text-[10px] text-slate-400 truncate">
                           {new Date(f.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                           {treatmentLabel(f.treatment_id) ? ` · ${treatmentLabel(f.treatment_id)}` : ''}
