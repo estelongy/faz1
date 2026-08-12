@@ -1,0 +1,4 @@
+build/
+dist/
+*.spec
+_test_root/

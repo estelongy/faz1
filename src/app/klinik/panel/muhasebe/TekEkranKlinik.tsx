@@ -6,7 +6,7 @@
  * Rol odağı: doktor → sıradaki hastanın karnesi açık başlar; sekreter → gün akışı.
  */
 
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import {
   addQuickEntry, addPayment, addPatient,
@@ -19,6 +19,10 @@ import {
   addStockItem, adjustStock, deleteStockItem, addStockMap, deleteStockMap,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
+import {
+  findBridge, getBridgeHost, setBridgeHost,
+  bridgeUpload, bridgeList, bridgeDelete, bridgeFileUrl,
+} from '@/lib/foto-koprusu'
 import type { CatalogItem, PatientRow } from './MuhasebeShellClient'
 
 export interface ApptRow {
@@ -310,21 +314,54 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     [patients],
   )
 
-  // Fotoğraflar tembel yüklenir: sadece seçili hastanınkiler, sayfa yenilemesiz
+  // ── Yerel foto köprüsü: klinik bilgisayarında çalışan program ──
+  // Köprü bulunursa fotoğraflar buluta değil o bilgisayara kaydedilir.
+  const [bridgeHost, setBridgeHostState] = useState<string | null>(null)
+  const [bridgeChecked, setBridgeChecked] = useState(false)
+  const [bridgeInput, setBridgeInput] = useState('')
+  useEffect(() => {
+    let alive = true
+    findBridge().then(host => {
+      if (!alive) return
+      setBridgeHostState(host)
+      setBridgeChecked(true)
+      setBridgeInput(getBridgeHost() ?? '')
+    })
+    return () => { alive = false }
+  }, [])
+
+  // Fotoğraflar tembel yüklenir: köprü varsa yerelden, yoksa buluttan
   const [patientPhotos, setPatientPhotos] = useState<PhotoRow[]>([])
+
+  const loadPhotos = useCallback(async (pid: string, pname: string) => {
+    if (bridgeHost) {
+      const list = await bridgeList(bridgeHost, pname)
+      return list.map(f => ({
+        id: `local:${f.path}`,
+        patient_id: pid,
+        treatment_id: null,
+        note: f.name.replace(/\.\w+$/, '').replace(/-/g, ' '),
+        created_at: f.modified,
+        url: bridgeFileUrl(bridgeHost, f.path),
+      })) as PhotoRow[]
+    }
+    const res = await getPatientPhotos(pid)
+    return res.ok ? res.photos : []
+  }, [bridgeHost])
+
   useEffect(() => {
     let alive = true
     setPatientPhotos([])
-    if (!selectedId) return
-    getPatientPhotos(selectedId).then(res => {
-      if (alive && res.ok) setPatientPhotos(res.photos)
-    })
+    if (!selectedId || !bridgeChecked) return
+    const pname = patients.find(p => p.id === selectedId)?.name ?? ''
+    loadPhotos(selectedId, pname).then(list => { if (alive) setPatientPhotos(list) })
     return () => { alive = false }
-  }, [selectedId])
+  }, [selectedId, bridgeChecked, loadPhotos, patients])
 
   function reloadPhotos() {
     if (!selectedId) return
-    getPatientPhotos(selectedId).then(res => { if (res.ok) setPatientPhotos(res.photos) })
+    const pname = patients.find(p => p.id === selectedId)?.name ?? ''
+    loadPhotos(selectedId, pname).then(setPatientPhotos)
   }
   // Foto formundaki "işleme bağla" seçici için hastanın işlemleri (yeniden eskiye, son 12)
   const patientTreatments = useMemo(
@@ -373,20 +410,27 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [photoNote, setPhotoNote] = useState('')
 
   // Seçilen dosyaları anında sıkıştırıp yükle — ayrıca "Yükle" tuşu yok.
+  // Köprü varsa klinik bilgisayarına, yoksa buluta yazılır.
   function uploadPhotos(files: File[]) {
     if (!selectedId || files.length === 0) return
     setError(null)
+    const pname = patients.find(p => p.id === selectedId)?.name ?? ''
     startTransition(async () => {
       for (let i = 0; i < files.length; i++) {
-        setPhotoProgress(`${i + 1}/${files.length} yükleniyor…`)
+        setPhotoProgress(`${i + 1}/${files.length} ${bridgeHost ? 'bilgisayara' : 'buluta'} kaydediliyor…`)
         const compressed = await compressImage(files[i])
-        const fd = new FormData()
-        fd.set('photo', compressed)
-        fd.set('treatment_id', photoTreatmentId)
-        fd.set('stage', photoStage)
-        if (photoNote) fd.set('note', photoNote)
-        const res = await addPatientPhoto(selectedId, fd)
-        if (!res.ok) { setError(res.error ?? 'Yükleme hatası'); break }
+        if (bridgeHost) {
+          const res = await bridgeUpload(bridgeHost, compressed, pname, photoStage, photoNote)
+          if (!res.ok) { setError(`Köprü hatası: ${res.error}`); break }
+        } else {
+          const fd = new FormData()
+          fd.set('photo', compressed)
+          fd.set('treatment_id', photoTreatmentId)
+          fd.set('stage', photoStage)
+          if (photoNote) fd.set('note', photoNote)
+          const res = await addPatientPhoto(selectedId, fd)
+          if (!res.ok) { setError(res.error ?? 'Yükleme hatası'); break }
+        }
       }
       setPhotoProgress(null)
       // Doğal akış: öncesi yüklendi → sıradaki küme büyük ihtimalle sonrası
@@ -1578,8 +1622,27 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </label>
                     {photoProgress
                       ? <span className="text-xs text-violet-300 font-semibold">{photoProgress}</span>
-                      : <span className="text-xs text-slate-500">Seçince direkt yüklenir.</span>}
+                      : bridgeHost
+                        ? <span className="text-xs text-emerald-400/90 font-semibold">💾 Klinik bilgisayarına kaydedilir</span>
+                        : <span className="text-xs text-slate-500">Seçince direkt yüklenir (bulut)</span>}
                   </div>
+                  {/* Köprü bulunamadıysa adres girme */}
+                  {bridgeChecked && !bridgeHost && (
+                    <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-700/60">
+                      <span className="text-[11px] text-amber-300/90">Klinik bilgisayarına kaydetmek için köprü adresi:</span>
+                      <input value={bridgeInput} onChange={e => setBridgeInput(e.target.value)}
+                        placeholder="192.168.1.40" className={`${inputCls} w-36`} />
+                      <button type="button"
+                        onClick={() => {
+                          setBridgeHost(bridgeInput || null)
+                          findBridge().then(h => {
+                            setBridgeHostState(h)
+                            if (!h) setError('Köprüye ulaşılamadı — program açık mı, aynı Wi-Fi\'da mısın?')
+                          })
+                        }}
+                        className={btnGhost}>Bağlan</button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -2014,6 +2077,12 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   const delId = f.id
                   setLightboxIdx(null)
                   startTransition(async () => {
+                    if (delId.startsWith('local:') && bridgeHost) {
+                      const ok = await bridgeDelete(bridgeHost, delId.slice(6))
+                      if (ok) reloadPhotos()
+                      else setError('Köprüden silinemedi')
+                      return
+                    }
                     const res = await deletePatientPhoto(delId)
                     if (res.ok) reloadPhotos()
                     else setError(res.error ?? 'Silme hatası')

@@ -45,16 +45,20 @@ const nextConfig = {
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://*.sentry.io https://browser.sentry-cdn.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https:",
+      // http: → Klinik Foto Köprüsü (klinik bilgisayarındaki yerel program).
+      // Hasta fotoğrafları buluta değil o bilgisayara kaydedilir; görüntüler
+      // ve yükleme istekleri yerel ağdan gelir.
+      "img-src 'self' data: blob: https: http://127.0.0.1:47821 http://localhost:47821 http:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://api.stripe.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://api.stripe.com http://127.0.0.1:47821 http://localhost:47821 http:",
       "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
       "worker-src 'self' blob:",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
-      "upgrade-insecure-requests",
+      // NOT: upgrade-insecure-requests kaldırıldı — yerel foto köprüsü (http://…:47821)
+      // aksi halde https'e zorlanıp bloke oluyordu. Dış kaynaklar zaten https.
     ].join('; ')
 
     return [
