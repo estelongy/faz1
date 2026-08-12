@@ -1072,9 +1072,13 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         {/* SOL — GÜN AKIŞI veya ALACAKLAR */}
         <div className={`space-y-2 ${mobilePanelOpen ? 'hidden lg:block' : ''}`}>
           {leftView === 'gun' && dayAppts.length === 0 && (
-            <div className="text-center py-10 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
+            <div className="text-center py-6 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
               <p className="text-slate-400 text-sm">Bu gün için randevu yok.</p>
-              <p className="text-slate-500 text-xs mt-1">Hasta ara → karnesinden randevu ver.</p>
+              <p className="text-slate-500 text-xs mt-1">
+                {txsAll.some(t => t.date === day)
+                  ? 'Randevusuz işlemler aşağıda.'
+                  : 'Hasta ara → işlem gir veya randevu ver.'}
+              </p>
             </div>
           )}
           {leftView === 'gun' && dayAppts.map(a => {
@@ -1149,6 +1153,44 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               </div>
             )
           })}
+
+          {/* O GÜNÜN KAYITLARI — randevusuz gelen de burada görünür */}
+          {(() => {
+            const dayTxs = txsAll.filter(t => t.date === day)
+              .sort((a, b) => (a.kind === 'islem' ? 0 : 1) - (b.kind === 'islem' ? 0 : 1))
+            if (dayTxs.length === 0) return null
+            const nameOf = (pid: string) => patients.find(p => p.id === pid)?.name ?? '—'
+            return (
+              <div className="pt-2 space-y-1.5">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-xs font-bold text-slate-300">
+                    Bu günün kayıtları · {dayStats.islem.length} işlem
+                  </span>
+                  <span className="text-xs text-slate-500">
+                    {TRY(dayStats.billed)} / <span className="text-emerald-400">{TRY(dayStats.collected)}</span>
+                  </span>
+                </div>
+                {dayTxs.map(t => (
+                  <div key={`${t.kind}-${t.id}`}
+                    onClick={() => pickPatient(t.patient_id)}
+                    className={`rounded-xl border px-3 py-2 cursor-pointer transition-colors ${t.patient_id === selectedId ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-900/40 border-slate-700/50 hover:border-slate-500'}`}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-white text-sm font-semibold truncate">{nameOf(t.patient_id)}</span>
+                      <span className={`text-sm font-bold tabular-nums shrink-0 ${t.kind === 'islem' ? 'text-slate-200' : 'text-emerald-300'}`}>
+                        {t.kind === 'tahsilat' ? '+' : ''}{TRY(t.amount)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${t.kind === 'islem' ? 'bg-violet-400' : 'bg-emerald-400'}`} />
+                      <span className="text-xs text-slate-400 truncate">
+                        {t.kind === 'islem' ? t.label : `Tahsilat${t.label ? ` · ${t.label}` : ''}`}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          })()}
         </div>
 
         {/* SAĞ — HASTA KARNESİ */}
