@@ -50,22 +50,52 @@ export async function updatePatient(id: string, formData: FormData): Promise<Res
   const notes = (formData.get('notes') as string | null)?.trim() || null
 
   if (name.length < 2) return { ok: false, error: 'Hasta adı en az 2 karakter.' }
+  if (name.length > 120) return { ok: false, error: 'Hasta adı çok uzun.' }
 
   const { error } = await ctx.supabase
     .from('internal_patient')
     .update({ name, phone, notes, updated_at: new Date().toISOString() })
     .eq('id', id)
+    .eq('owner_id', ctx.clinicOwnerId)
   if (error) return { ok: false, error: error.message }
   revalidatePath('/klinik/panel/muhasebe')
   revalidatePath(`/klinik/panel/muhasebe/${id}`)
   return { ok: true }
 }
 
+// Sadece BOŞ hasta silinir: işlem / tahsilat / randevu / foto yoksa.
+// Kaydı olan hasta silinmez — muhasebe tarihçesi ve raporlar bozulmasın.
 export async function deletePatient(id: string): Promise<Result> {
   const ctx = await requireOwner()
   if (!ctx.ok) return { ok: false, error: ctx.error }
 
-  const { error } = await ctx.supabase.from('internal_patient').delete().eq('id', id)
+  const counts = await Promise.all([
+    ctx.supabase.from('internal_treatment').select('id', { count: 'exact', head: true })
+      .eq('owner_id', ctx.clinicOwnerId).eq('patient_id', id),
+    ctx.supabase.from('internal_payment').select('id', { count: 'exact', head: true })
+      .eq('owner_id', ctx.clinicOwnerId).eq('patient_id', id),
+    ctx.supabase.from('internal_appointment').select('id', { count: 'exact', head: true })
+      .eq('owner_id', ctx.clinicOwnerId).eq('patient_id', id),
+    ctx.supabase.from('internal_patient_photo').select('id', { count: 'exact', head: true })
+      .eq('owner_id', ctx.clinicOwnerId).eq('patient_id', id),
+  ])
+  const [islem, tahsilat, randevu, foto] = counts.map(c => c.count ?? 0)
+  if (islem + tahsilat + randevu + foto > 0) {
+    const parts = [
+      islem ? `${islem} işlem` : null,
+      tahsilat ? `${tahsilat} tahsilat` : null,
+      randevu ? `${randevu} randevu` : null,
+      foto ? `${foto} fotoğraf` : null,
+    ].filter(Boolean).join(', ')
+    return { ok: false, error: `Bu hastanın kaydı var (${parts}). Önce kayıtlarını silin.` }
+  }
+
+  // Açık ödeme sözü varsa o da düşsün (kayıt sayılmaz, borç yok demektir)
+  await ctx.supabase.from('internal_payment_promise').delete()
+    .eq('owner_id', ctx.clinicOwnerId).eq('patient_id', id)
+
+  const { error } = await ctx.supabase.from('internal_patient').delete()
+    .eq('id', id).eq('owner_id', ctx.clinicOwnerId)
   if (error) return { ok: false, error: error.message }
   revalidatePath('/klinik/panel/muhasebe')
   return { ok: true }

@@ -17,6 +17,7 @@ import {
   getPatientPhotos, signOutKlinik,
   deleteTreatmentCascade, undoPackageSession, deleteAppointment, deletePayment,
   addStockItem, adjustStock, deleteStockItem, addStockMap, deleteStockMap,
+  updatePatient, deletePatient,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
@@ -124,6 +125,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok'>('gun')
   const [tableSearch, setTableSearch] = useState('')
   const [mobileMenu, setMobileMenu] = useState(false)
+  const [hastaDuzenle, setHastaDuzenle] = useState(false)
 
   // ══ OPTIMISTIC KATMAN ══════════════════════════════════════════════════
   // Kayıt tıklandığı AN ekrana işlenir; server action arkada çalışır.
@@ -521,6 +523,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
   function pickPatient(id: string, form: FormKind = null, apptId: string | null = null) {
     setSelectedId(id)
+    setHastaDuzenle(false)
     setOpenForm(form)
     setFromApptId(apptId)
     setSearch('')
@@ -1293,11 +1296,56 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <button onClick={() => setMobilePanelOpen(false)} className="lg:hidden text-xs text-violet-300 mb-1">‹ Gün akışına dön</button>
-                  <h2 className="text-xl font-black text-white truncate">{selected.name}</h2>
-                  <p className="text-sm text-slate-400 mt-0.5">
-                    {selected.phone ?? 'Telefon yok'}
-                    {selected.notes ? ` · ${selected.notes}` : ''}
-                  </p>
+                  {hastaDuzenle ? (
+                    <form onSubmit={e => {
+                      e.preventDefault()
+                      const fd = new FormData(e.currentTarget as HTMLFormElement)
+                      setHastaDuzenle(false)
+                      run(() => updatePatient(selected.id, fd))
+                    }} className="grid sm:grid-cols-[1fr,140px,1fr,auto,auto] gap-2 items-center">
+                      <input name="name" defaultValue={selected.name} required placeholder="Ad Soyad *" className={inputCls} />
+                      <input name="phone" defaultValue={selected.phone ?? ''} placeholder="Telefon" className={inputCls} />
+                      <input name="notes" defaultValue={selected.notes ?? ''} placeholder="Not" className={inputCls} />
+                      <button type="submit" disabled={pending} className={btnPrimary}>Kaydet</button>
+                      <button type="button" onClick={() => setHastaDuzenle(false)} className={btnGhost}>Vazgeç</button>
+                    </form>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-xl font-black text-white truncate">{selected.name}</h2>
+                        <button onClick={() => setHastaDuzenle(true)}
+                          title="Hasta bilgilerini düzenle"
+                          className="text-slate-500 hover:text-violet-300 text-sm shrink-0" aria-label="Düzenle">✏️</button>
+                        <button
+                          onClick={() => {
+                            const bos = patientTimeline.length === 0 && patientPhotos.length === 0 &&
+                              apptsAll.filter(a => a.patient_id === selected.id).length === 0
+                            setConfirmBox({
+                              title: `"${selected.name}" hastası silinecek`,
+                              lines: bos
+                                ? ['Bu hastanın hiç kaydı yok — güvenle silinir', 'Geri alınamaz']
+                                : ['Bu hastanın kayıtları var (işlem/tahsilat/randevu/foto)',
+                                   'Kayıtlı hasta SİLİNEMEZ — muhasebe geçmişi korunur',
+                                   'Silmek için önce kayıtlarını tek tek silin'],
+                              confirmLabel: bos ? 'Hastayı Sil' : 'Yine de dene',
+                              action: () => {
+                                startTransition(async () => {
+                                  const res = await deletePatient(selected.id)
+                                  if (res.ok) { setSelectedId(null); setMobilePanelOpen(false) }
+                                  else setError(res.error)
+                                })
+                              },
+                            })
+                          }}
+                          title="Hastayı sil (sadece kaydı olmayan hastalar)"
+                          className="text-slate-600 hover:text-rose-300 text-sm shrink-0" aria-label="Hastayı sil">🗑</button>
+                      </div>
+                      <p className="text-sm text-slate-400 mt-0.5">
+                        {selected.phone ?? 'Telefon yok'}
+                        {selected.notes ? ` · ${selected.notes}` : ''}
+                      </p>
+                    </>
+                  )}
                 </div>
                 <div className="text-right shrink-0">
                   {selRemaining > 0
