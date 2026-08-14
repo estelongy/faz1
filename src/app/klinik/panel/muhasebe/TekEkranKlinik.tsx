@@ -218,9 +218,12 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const remainingOf = (pid: string) => balances.get(pid) ?? 0
   // ══════════════════════════════════════════════════════════════════════
 
+  // Gün akışı = o günün BEKLEYEN randevuları. Tamamlananlar listeden düşer,
+  // "Bu günün kayıtları" bölümünde işlem olarak görünür.
   const dayAppts = useMemo(
     () => apptsAll
       .filter(a => new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === day)
+      .filter(a => a.status !== 'completed')
       .sort((a, b) => a.start_at.localeCompare(b.start_at)),
     [apptsAll, day],
   )
@@ -1164,10 +1167,10 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         <div className={`space-y-2 ${mobilePanelOpen ? 'hidden lg:block' : ''}`}>
           {leftView === 'gun' && dayAppts.length === 0 && (
             <div className="text-center py-6 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
-              <p className="text-slate-400 text-sm">Bu gün için randevu yok.</p>
+              <p className="text-slate-400 text-sm">Bekleyen randevu yok.</p>
               <p className="text-slate-500 text-xs mt-1">
                 {txsAll.some(t => t.date === day)
-                  ? 'Randevusuz işlemler aşağıda.'
+                  ? 'Yapılan işlemler aşağıda.'
                   : 'Hasta ara → işlem gir veya randevu ver.'}
               </p>
             </div>
