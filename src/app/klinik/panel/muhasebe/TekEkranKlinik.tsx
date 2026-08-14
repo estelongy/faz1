@@ -320,15 +320,29 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [bridgeHost, setBridgeHostState] = useState<string | null>(null)
   const [bridgeChecked, setBridgeChecked] = useState(false)
   const [bridgeInput, setBridgeInput] = useState('')
+  // Köprü sürekli izlenir: 15 saniyede bir + sekmeye dönüldüğünde.
+  // Program sonradan açılırsa ekran kendiliğinden yakalar; kapanırsa fark eder.
   useEffect(() => {
     let alive = true
-    findBridge().then(host => {
-      if (!alive) return
-      setBridgeHostState(host)
-      setBridgeChecked(true)
-      setBridgeInput(getBridgeHost() ?? '')
-    })
-    return () => { alive = false }
+    const check = () => {
+      findBridge().then(host => {
+        if (!alive) return
+        setBridgeHostState(prev => (prev === host ? prev : host))
+        setBridgeChecked(true)
+      })
+    }
+    setBridgeInput(getBridgeHost() ?? '')
+    check()
+    const timer = setInterval(check, 15_000)
+    const onFocus = () => check()
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onFocus)
+    return () => {
+      alive = false
+      clearInterval(timer)
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onFocus)
+    }
   }, [])
 
   // Fotoğraflar tembel yüklenir: köprü varsa yerelden, yoksa buluttan
@@ -1667,8 +1681,14 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                       ? <span className="text-xs text-violet-300 font-semibold">{photoProgress}</span>
                       : bridgeHost
                         ? <span className="text-xs text-emerald-400/90 font-semibold">💾 Klinik bilgisayarına kaydedilir</span>
-                        : <span className="text-xs text-slate-500">Seçince direkt yüklenir (bulut)</span>}
+                        : <span className="text-xs text-rose-300 font-semibold">⚠ Köprü kapalı — foto BULUTA gider</span>}
                   </div>
+                  {bridgeChecked && !bridgeHost && (
+                    <div className="text-[11px] text-rose-300/90 bg-rose-500/10 border border-rose-500/25 rounded-lg px-2.5 py-1.5">
+                      Klinik bilgisayarındaki <b>KlinikFoto</b> programı açık değil (veya ağ değişti).
+                      Programı açıp birkaç saniye bekleyin — bağlantı kendiliğinden kurulur.
+                    </div>
+                  )}
                   {/* Köprü bulunamadıysa adres girme */}
                   {bridgeChecked && !bridgeHost && (
                     <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-700/60">
