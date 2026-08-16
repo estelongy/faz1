@@ -1640,7 +1640,9 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     <input name="treatment_notes" placeholder="Not" className={inputCls} />
                   </div>
                   <input type="hidden" name="payment_date" value={day} />
-                  <button type="submit" disabled={pending} className={btnPrimary}>{pending ? 'Kaydediliyor…' : 'İşlemi Kaydet'}</button>
+                  <button type="submit" disabled={pending} className={btnPrimary}>
+                    {pending ? 'Kaydediliyor…' : extraIslemler.length > 0 ? `${extraIslemler.length + 1} İşlemi Kaydet` : 'İşlemi Kaydet'}
+                  </button>
                 </form>
               )}
 
