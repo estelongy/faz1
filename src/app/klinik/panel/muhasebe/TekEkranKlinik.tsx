@@ -126,6 +126,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [tableSearch, setTableSearch] = useState('')
   const [mobileMenu, setMobileMenu] = useState(false)
   const [hastaDuzenle, setHastaDuzenle] = useState(false)
+  // Aynı ziyarette birden çok işlem: ek satırlar
+  const [extraIslemler, setExtraIslemler] = useState<{ id: string }[]>([])
 
   // ══ OPTIMISTIC KATMAN ══════════════════════════════════════════════════
   // Kayıt tıklandığı AN ekrana işlenir; server action arkada çalışır.
@@ -572,11 +574,20 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     if (name && Number.isFinite(amount)) {
       newTxs.push({ id: oid(), patient_id: selectedId, kind: 'islem', date: tDate, label: name, amount })
     }
+    // Ek işlem satırları da anında ekrana
+    for (let i = 0; i < extraIslemler.length; i++) {
+      const eName = ((fd.get(`extra_name_${i}`) as string) ?? '').trim()
+      if (eName.length < 2) continue
+      const eAmt = Number(((fd.get(`extra_amount_${i}`) as string) ?? '0').replace(',', '.'))
+      if (!Number.isFinite(eAmt) || eAmt < 0) continue
+      newTxs.push({ id: oid(), patient_id: selectedId, kind: 'islem', date: tDate, label: eName, amount: eAmt })
+    }
     if (Number.isFinite(payAmount) && payAmount > 0) {
       newTxs.push({ id: oid(), patient_id: selectedId, kind: 'tahsilat', date: day, label: (fd.get('payment_method') as string) || '', amount: payAmount })
     }
     if (newTxs.length) setOptTxs(prev => [...prev, ...newTxs])
     if (fromApptId) setApptStatusOv(prev => ({ ...prev, [fromApptId]: 'completed' }))
+    setExtraIslemler([])
 
     run(() => addQuickEntry(fd))
   }
@@ -1580,8 +1591,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               {openForm === 'islem' && (
                 <form onSubmit={submitIslem} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
                   {fromApptId && <p className="text-xs text-emerald-300 font-semibold">Randevu işleme alınıyor — kaydedilince randevu tamamlanır.</p>}
-                  <div className="grid sm:grid-cols-[1fr,120px,140px] gap-2">
-                    <div>
+                  <div className="grid sm:grid-cols-[minmax(0,1fr),110px,130px,auto] gap-2">
+                    <div className="min-w-0">
                       <input name="treatment_name" list="katalog-listesi" placeholder="İşlem adı *" required className={inputCls} />
                       <datalist id="katalog-listesi">
                         {catalog.map(c => <option key={c.id} value={c.name} />)}
@@ -1589,13 +1600,37 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </div>
                     <input name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal" className={inputCls} />
                     <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
+                    <button type="button"
+                      onClick={() => setExtraIslemler(prev => [...prev, { id: oid() }])}
+                      title="Aynı ziyarette başka işlem ekle"
+                      className="px-3 py-2 rounded-lg text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-100 whitespace-nowrap">
+                      + İşlem
+                    </button>
                   </div>
+
+                  {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
+                  {extraIslemler.map((row, i) => (
+                    <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),110px,130px,auto] gap-2">
+                      <input name={`extra_name_${i}`} list="katalog-listesi" placeholder={`${i + 2}. işlem adı`} className={inputCls} />
+                      <input name={`extra_amount_${i}`} placeholder="Ücret ₺" inputMode="decimal" className={inputCls} />
+                      <select name={`extra_session_${i}`} defaultValue="" className={inputCls} title="Paketse seans sayısı">
+                        <option value="">Tek seans</option>
+                        {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n}</option>)}
+                      </select>
+                      <button type="button"
+                        onClick={() => setExtraIslemler(prev => prev.filter(r => r.id !== row.id))}
+                        className="px-3 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400"
+                        aria-label="Satırı kaldır">✕</button>
+                    </div>
+                  ))}
+                  <input type="hidden" name="extra_count" value={extraIslemler.length} />
                   <div className="grid sm:grid-cols-[130px,120px,140px,1fr] gap-2">
                     <select name="session_total" defaultValue="" className={inputCls} title="Paketse toplam seans sayısı">
                       <option value="">Tek seans</option>
                       {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n} seans</option>)}
                     </select>
-                    <input name="payment_amount" placeholder="Alınan ₺" inputMode="decimal" className={inputCls} />
+                    <input name="payment_amount" placeholder="Alınan ₺ (toplam)" inputMode="decimal" className={inputCls}
+                      title="Tüm işlemler için alınan toplam tutar — hastanın hesabına yazılır" />
                     <select name="payment_method" className={inputCls}>
                       <option value="">Ödeme yok</option>
                       <option value="nakit">Nakit</option>

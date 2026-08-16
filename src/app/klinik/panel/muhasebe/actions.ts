@@ -369,6 +369,36 @@ export async function addQuickEntry(formData: FormData): Promise<QuickResult> {
   }).select('id').single()
   if (treatmentErr) return { ok: false, error: treatmentErr.message }
 
+  // Ek işlem satırları: extra_name_0 / extra_amount_0 / extra_session_0 …
+  // Aynı ziyarette birden çok işlem yapılır; hepsi ayrı borç kaydı olur,
+  // tahsilat hastanın geneline yazılır (aşağıda).
+  const extraCount = Number((formData.get('extra_count') as string | null) ?? '0')
+  if (Number.isFinite(extraCount) && extraCount > 0) {
+    for (let i = 0; i < Math.min(extraCount, 12); i++) {
+      const eName = (formData.get(`extra_name_${i}`) as string | null)?.trim() ?? ''
+      if (eName.length < 2) continue
+      const eAmt = Number(((formData.get(`extra_amount_${i}`) as string) ?? '0').replace(',', '.'))
+      if (!Number.isFinite(eAmt) || eAmt < 0) continue
+      const eSesStr = (formData.get(`extra_session_${i}`) as string | null)?.trim() ?? ''
+      let eSes: number | null = null
+      if (eSesStr) {
+        const n = Number(eSesStr)
+        if (Number.isInteger(n) && n > 1 && n <= 60) eSes = n
+      }
+      const { error: eErr } = await ctx.supabase.from('internal_treatment').insert({
+        owner_id: ctx.clinicOwnerId,
+        patient_id: patientId,
+        name: eName,
+        treatment_date: treatmentDateStr || new Date().toISOString().slice(0, 10),
+        amount: eAmt,
+        session_total: eSes,
+        created_by: ctx.user.id,
+      })
+      if (eErr) return { ok: false, error: eErr.message }
+      if (!eSes) await applyStockForUsage(ctx, eName, patientId, 'işlem')
+    }
+  }
+
   // Stok: uygulama-ürün eşleştirmesi (paket tanımında düşmez — seans başına düşer)
   if (!sessionTotal) {
     await applyStockForUsage(ctx, treatmentName, patientId, 'işlem')
