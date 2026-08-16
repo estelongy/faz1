@@ -1271,32 +1271,47 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 <div className="flex items-center justify-between px-1">
                   <span className="text-xs font-bold text-slate-300">
                     Yapılan işlemler · {dayTxs.length}
+                    <span className="text-slate-500 font-normal"> · {new Set(dayTxs.map(t => t.patient_id)).size} hasta</span>
                   </span>
                 </div>
-                {dayTxs.map(t => (
-                  <div key={`${t.kind}-${t.id}`}
-                    onClick={() => pickPatient(t.patient_id)}
-                    className={`rounded-xl border px-3 py-2 cursor-pointer transition-colors ${t.patient_id === selectedId ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-900/40 border-slate-700/50 hover:border-slate-500'}`}>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-white text-sm font-semibold truncate">{nameOf(t.patient_id)}</span>
-                      <span className="text-sm text-slate-200 font-semibold shrink-0 truncate max-w-[55%] text-right">{t.label}</span>
+                {/* Hasta bazında tek kart: o gün yapılan işlemler alt alta */}
+                {Array.from(
+                  dayTxs.reduce((m, t) => {
+                    m.set(t.patient_id, [...(m.get(t.patient_id) ?? []), t])
+                    return m
+                  }, new Map<string, TxRow[]>()),
+                ).map(([pid, list]) => {
+                  const toplam = list.reduce((s, t) => s + t.amount, 0)
+                  const kalan = remainingOf(pid)
+                  const sozler = promisesAll.filter(pr => pr.patient_id === pid).reduce((s, pr) => s + Number(pr.amount), 0)
+                  const odendi = kalan <= 0
+                  const planTam = !odendi && sozler >= kalan
+                  return (
+                    <div key={pid}
+                      onClick={() => pickPatient(pid)}
+                      className={`rounded-xl border px-3 py-2 cursor-pointer transition-colors ${pid === selectedId ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-900/40 border-slate-700/50 hover:border-slate-500'}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-white text-sm font-semibold truncate">{nameOf(pid)}</span>
+                        <span className="flex items-center gap-1.5 shrink-0">
+                          <span className="text-xs text-slate-500 tabular-nums">{TRY(toplam)}</span>
+                          {odendi && <span className="text-emerald-400 text-xs font-bold" title="Bakiye kapalı">✓</span>}
+                          {planTam && <span className="text-emerald-400/70 text-xs font-bold" title="Ödeme planı tam">✓</span>}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 space-y-0.5">
+                        {list.map(t => (
+                          <div key={t.id} className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-violet-400" />
+                            <span className="text-sm text-slate-200 font-semibold truncate">{t.label}</span>
+                            {list.length > 1 && (
+                              <span className="text-[11px] text-slate-600 tabular-nums ml-auto shrink-0">{TRY(t.amount)}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-violet-400" />
-                      <span className="text-xs text-slate-500 tabular-nums">{TRY(t.amount)}</span>
-                      {(() => {
-                        // Hastanın kalan borcu yoksa ya da tamamı söze bağlanmışsa ✓
-                        const kalan = remainingOf(t.patient_id)
-                        if (kalan <= 0) return <span className="text-emerald-400 text-xs font-bold" title="Bakiye kapalı">✓</span>
-                        const sozler = promisesAll
-                          .filter(pr => pr.patient_id === t.patient_id)
-                          .reduce((s, pr) => s + Number(pr.amount), 0)
-                        if (sozler >= kalan) return <span className="text-emerald-400/70 text-xs font-bold" title="Ödeme planı tam">✓</span>
-                        return null
-                      })()}
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )
           })()}
