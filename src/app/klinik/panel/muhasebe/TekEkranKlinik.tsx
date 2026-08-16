@@ -1219,7 +1219,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-1.5">
-                  <span className="text-xs text-slate-400 truncate">
+                  <span className="text-sm text-slate-200 font-semibold truncate">
                     {a.treatment_type ?? a.appointment_type ?? ''}
                     {(() => {
                       const pk = a.package_treatment_id ? pkgById.get(a.package_treatment_id) : null
@@ -1250,18 +1250,16 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
           {/* O GÜNÜN KAYITLARI — randevusuz gelen de burada görünür */}
           {(() => {
-            const dayTxs = txsAll.filter(t => t.date === day)
-              .sort((a, b) => (a.kind === 'islem' ? 0 : 1) - (b.kind === 'islem' ? 0 : 1))
+            // Sadece işlemler — tahsilatlar burada listelenmez (hasta akışı para
+            // listesi gibi görünmesin). Günün parası alt şeritte/raporda.
+            const dayTxs = txsAll.filter(t => t.date === day && t.kind === 'islem')
             if (dayTxs.length === 0) return null
             const nameOf = (pid: string) => patients.find(p => p.id === pid)?.name ?? '—'
             return (
               <div className="pt-2 space-y-1.5">
                 <div className="flex items-center justify-between px-1">
                   <span className="text-xs font-bold text-slate-300">
-                    Bu günün kayıtları · {dayStats.islem.length} işlem
-                  </span>
-                  <span className="text-xs text-slate-500">
-                    {TRY(dayStats.billed)} / <span className="text-emerald-400">{TRY(dayStats.collected)}</span>
+                    Yapılan işlemler · {dayTxs.length}
                   </span>
                 </div>
                 {dayTxs.map(t => (
@@ -1270,15 +1268,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     className={`rounded-xl border px-3 py-2 cursor-pointer transition-colors ${t.patient_id === selectedId ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-900/40 border-slate-700/50 hover:border-slate-500'}`}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-white text-sm font-semibold truncate">{nameOf(t.patient_id)}</span>
-                      <span className={`text-sm font-bold tabular-nums shrink-0 ${t.kind === 'islem' ? 'text-slate-200' : 'text-emerald-300'}`}>
-                        {t.kind === 'tahsilat' ? '+' : ''}{TRY(t.amount)}
-                      </span>
+                      <span className="text-xs text-slate-500 tabular-nums shrink-0">{TRY(t.amount)}</span>
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${t.kind === 'islem' ? 'bg-violet-400' : 'bg-emerald-400'}`} />
-                      <span className="text-xs text-slate-400 truncate">
-                        {t.kind === 'islem' ? t.label : `Tahsilat${t.label ? ` · ${t.label}` : ''}`}
-                      </span>
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-violet-400" />
+                      <span className="text-sm text-slate-200 font-semibold truncate">{t.label}</span>
                     </div>
                   </div>
                 ))}
