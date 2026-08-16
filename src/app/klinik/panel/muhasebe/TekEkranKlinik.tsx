@@ -1290,15 +1290,19 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     <div key={pid}
                       onClick={() => pickPatient(pid)}
                       className={`rounded-xl border px-3 py-2 cursor-pointer transition-colors ${pid === selectedId ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-900/40 border-slate-700/50 hover:border-slate-500'}`}>
-                      {/* Ad + işlem adları aynı satırda (ikisi de vurgulu) */}
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-white text-sm font-semibold truncate">{nameOf(pid)}</span>
-                        <span className="text-sm text-slate-200 font-semibold shrink-0 truncate max-w-[60%] text-right">
-                          {list.map(t => t.label).join(' + ')}
-                        </span>
+                      {/* Hasta adı — üstte tek başına */}
+                      <p className="text-white text-sm font-semibold truncate">{nameOf(pid)}</p>
+                      {/* İşlemler alt alta: ad solda vurgulu, tutarı sağda küçük gri */}
+                      <div className="mt-1 space-y-0.5">
+                        {list.map(t => (
+                          <div key={t.id} className="flex items-center justify-between gap-2">
+                            <span className="text-sm text-slate-200 font-semibold truncate">{t.label}</span>
+                            <span className="text-xs text-slate-500 tabular-nums shrink-0">{TRY(t.amount)}</span>
+                          </div>
+                        ))}
                       </div>
-                      {/* Tutar altta, küçük gri + ödeme durumu */}
-                      <div className="flex items-center gap-1.5 mt-0.5">
+                      {/* Toplam + ödeme durumu */}
+                      <div className="flex items-center gap-1.5 mt-1 pt-1 border-t border-slate-700/40">
                         <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-violet-400" />
                         <span className="text-xs text-slate-500 tabular-nums">{TRY(toplam)}</span>
                         {odendi && <span className="text-emerald-400 text-xs font-bold" title="Bakiye kapalı">✓</span>}
