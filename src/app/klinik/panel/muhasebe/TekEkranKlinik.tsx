@@ -1268,11 +1268,21 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     className={`rounded-xl border px-3 py-2 cursor-pointer transition-colors ${t.patient_id === selectedId ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-900/40 border-slate-700/50 hover:border-slate-500'}`}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-white text-sm font-semibold truncate">{nameOf(t.patient_id)}</span>
-                      <span className="text-xs text-slate-500 tabular-nums shrink-0">{TRY(t.amount)}</span>
+                      <span className="text-sm text-slate-200 font-semibold shrink-0 truncate max-w-[55%] text-right">{t.label}</span>
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-violet-400" />
-                      <span className="text-sm text-slate-200 font-semibold truncate">{t.label}</span>
+                      <span className="text-xs text-slate-500 tabular-nums">{TRY(t.amount)}</span>
+                      {(() => {
+                        // Hastanın kalan borcu yoksa ya da tamamı söze bağlanmışsa ✓
+                        const kalan = remainingOf(t.patient_id)
+                        if (kalan <= 0) return <span className="text-emerald-400 text-xs font-bold" title="Bakiye kapalı">✓</span>
+                        const sozler = promisesAll
+                          .filter(pr => pr.patient_id === t.patient_id)
+                          .reduce((s, pr) => s + Number(pr.amount), 0)
+                        if (sozler >= kalan) return <span className="text-emerald-400/70 text-xs font-bold" title="Ödeme planı tam">✓</span>
+                        return null
+                      })()}
                     </div>
                   </div>
                 ))}
