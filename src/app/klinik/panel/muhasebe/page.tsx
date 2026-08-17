@@ -9,6 +9,7 @@ import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefi
 import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
 import MuhasebeAppView from '@/components/klinik-panel/MuhasebeAppView'
+import { normalizeWeek, type DayAvailability } from './randevu/slot-utils'
 
 export const metadata: Metadata = {
   title: 'Muhasebe | Klinik Paneli',
@@ -33,7 +34,7 @@ export default async function MuhasebePage({
   const rangeStartIso = new Date(Date.now() - 30 * 86_400_000).toISOString()
   const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, stockRes, stockMapRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, stockRes, stockMapRes, availRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date, session_total'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
@@ -81,6 +82,11 @@ export default async function MuhasebePage({
     supabase
       .from('internal_stock_map')
       .select('id, match_text, item_id, amount_per_use')
+      .eq('owner_id', clinicOwner),
+    // Müsaitlik — karnedeki randevu formunda slot üretmek için
+    supabase
+      .from('internal_availability')
+      .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
       .eq('owner_id', clinicOwner),
   ])
 
@@ -282,6 +288,7 @@ export default async function MuhasebePage({
         stockMaps={(stockMapRes.data ?? []).map(m => ({
           id: m.id, match_text: m.match_text, item_id: m.item_id, amount_per_use: Number(m.amount_per_use ?? 1),
         })) as StockMapRow[]}
+        availability={normalizeWeek((availRes.data ?? []) as Partial<DayAvailability>[])}
       />
     </div>
   )

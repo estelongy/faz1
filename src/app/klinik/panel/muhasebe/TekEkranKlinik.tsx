@@ -21,6 +21,7 @@ import {
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
+import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import {
   findBridge, getBridgeHost, setBridgeHost,
   bridgeUpload, bridgeList, bridgeDelete, bridgeFileUrl,
@@ -96,6 +97,7 @@ interface Props {
   promises: PromiseRow[]    // açık ödeme sözleri
   stockItems: StockItemRow[]
   stockMaps: StockMapRow[]
+  availability: AvailabilityWeek   // haftalık müsaitlik → slot üretimi
 }
 
 const TRY = (n: number) =>
@@ -117,7 +119,7 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps }: Props) {
+export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps, availability }: Props) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
@@ -496,6 +498,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [compareSel, setCompareSel] = useState<string[]>([])
   const [compareView, setCompareView] = useState<'yanyana' | 'kaydir'>('yanyana')
   const [randevuPkgId, setRandevuPkgId] = useState('')
+  const [randevuTarih, setRandevuTarih] = useState(day)
+  const [randevuSaat, setRandevuSaat] = useState('')
   // Seans Yap mini detay formu (hangi paket için açık) + söz düzenle/tahsil onayı
   const [seansFormPkg, setSeansFormPkg] = useState<string | null>(null)
   const [editingPromiseId, setEditingPromiseId] = useState<string | null>(null)
@@ -1393,7 +1397,11 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     onClick={() => {
                       setOpenForm(openForm === k ? null : k)
                       setFromApptId(null)
-                      if (k === 'randevu') setRandevuPkgId(activePackages.length === 1 ? activePackages[0].treatment_id : '')
+                      if (k === 'randevu') {
+                        setRandevuPkgId(activePackages.length === 1 ? activePackages[0].treatment_id : '')
+                        setRandevuTarih(day)
+                        setRandevuSaat('')
+                      }
                     }}
                     className={`px-3.5 py-2 rounded-lg text-sm font-bold transition-colors ${openForm === k ? 'bg-violet-600 text-white' : 'bg-slate-700/60 text-slate-200 hover:bg-slate-600'}`}>
                     + {k === 'islem' ? 'İşlem' : k === 'tahsilat' ? 'Tahsilat' : k === 'randevu' ? 'Randevu' : 'Foto'}
@@ -1456,7 +1464,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                           {!full && (
                             <div className="flex gap-1.5 shrink-0">
                               <button
-                                onClick={() => { setOpenForm('randevu'); setRandevuPkgId(pk.treatment_id); setFromApptId(null) }}
+                                onClick={() => { setOpenForm('randevu'); setRandevuPkgId(pk.treatment_id); setFromApptId(null); setRandevuTarih(day); setRandevuSaat('') }}
                                 title="Bu paket için seans randevuları planla"
                                 className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700/70 hover:bg-slate-600 text-slate-200 transition-colors">
                                 📅 Planla
@@ -1684,14 +1692,60 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               {/* ── Randevu formu ── */}
               {openForm === 'randevu' && (
                 <form onSubmit={submitRandevu} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
-                  <div className="grid sm:grid-cols-[140px,110px,110px,1fr] gap-2">
-                    <input name="date" type="date" required defaultValue={day} className={inputCls} />
-                    <input name="time" type="time" title="Boş bırakılırsa 17:00" className={inputCls} />
+                  <div className="grid sm:grid-cols-[140px,110px,1fr] gap-2">
+                    <input name="date" type="date" required value={randevuTarih}
+                      onChange={e => { setRandevuTarih(e.target.value); setRandevuSaat('') }}
+                      className={inputCls} />
                     <select name="duration_minutes" defaultValue="30" className={inputCls}>
                       {[15, 20, 30, 45, 60, 90].map(m => <option key={m} value={m}>{m} dk</option>)}
                     </select>
                     <input name="treatment_type" list="katalog-listesi" placeholder="İşlem / sebep" className={inputCls} />
                   </div>
+
+                  {/* Slot seçici — müsaitlik takviminden üretilir, dolu saatler kapalı */}
+                  {(() => {
+                    const d = new Date(randevuTarih + 'T12:00:00')
+                    const dayAvail = availabilityForDate(availability, d)
+                    const slots = generateSlotsForDay(dayAvail)
+                    const dolu = new Set(
+                      apptsAll
+                        .filter(a => a.status === 'scheduled' &&
+                          new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === randevuTarih)
+                        .map(a => new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })),
+                    )
+                    if (slots.length === 0) {
+                      return (
+                        <div className="flex flex-wrap items-center gap-2 text-xs">
+                          <span className="text-amber-300">Bu gün kapalı veya müsaitlik tanımlı değil.</span>
+                          <Link href="/klinik/panel/muhasebe/randevu/musaitlik" className="text-violet-300 font-semibold">Müsaitlik ayarla →</Link>
+                          <span className="text-slate-500">· saat girilmezse 17:00</span>
+                        </div>
+                      )
+                    }
+                    return (
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-bold text-slate-400">Saat seç {randevuSaat && <span className="text-violet-300">· {randevuSaat}</span>}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {slots.map(s => {
+                            const full = dolu.has(s.time)
+                            const sel = randevuSaat === s.time
+                            return (
+                              <button key={s.time} type="button" disabled={full}
+                                onClick={() => setRandevuSaat(s.time)}
+                                title={full ? 'Dolu' : `${s.time} – ${s.endTime}`}
+                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold tabular-nums transition-colors ${
+                                  full ? 'bg-slate-800/50 text-slate-600 line-through cursor-not-allowed'
+                                    : sel ? 'bg-violet-600 text-white'
+                                    : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}>
+                                {s.time}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                  })()}
+                  <input type="hidden" name="time" value={randevuSaat} />
                   {activePackages.length > 0 && (
                     <select name="package_treatment_id" value={randevuPkgId}
                       onChange={e => setRandevuPkgId(e.target.value)} className={inputCls}>
