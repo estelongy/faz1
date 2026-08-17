@@ -623,7 +623,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     if (!freq) {
       const dateStr = (fd.get('date') as string ?? '').trim()
       const timeStr = ((fd.get('time') as string) ?? '').trim() || '17:00'
-      const start = new Date(`${dateStr}T${timeStr}:00`)
+      // TR saati olarak sabitle — sunucudaki trDate() ile aynı sonuç
+      const start = new Date(`${dateStr}T${timeStr}:00+03:00`)
       if (dateStr && !Number.isNaN(start.getTime())) {
         const pkgId = (fd.get('package_treatment_id') as string ?? '').trim() || null
         setOptAppts(prev => [...prev, {

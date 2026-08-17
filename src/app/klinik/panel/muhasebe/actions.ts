@@ -21,6 +21,13 @@ async function requireOwner(): Promise<OwnerCtx> {
   return { ok: true, user, supabase, clinicOwnerId: staff.clinicOwnerId, role: staff.role }
 }
 
+// Girilen tarih+saat DAİMA Türkiye saati kabul edilir. Sunucu UTC'de çalıştığı
+// için düz `new Date("...T12:00")` UTC 12:00 sayılıp ekranda 15:00 görünüyordu.
+// TR ofseti (yaz/kış farkı yok, sabit +03) açıkça eklenerek düzeltilir.
+function trDate(dateStr: string, timeStr: string): Date {
+  return new Date(`${dateStr}T${timeStr}:00+03:00`)
+}
+
 // ─── Hasta ────────────────────────────────────────────────────────────────
 export async function addPatient(formData: FormData): Promise<Result> {
   const ctx = await requireOwner()
@@ -530,7 +537,7 @@ export async function createAppointment(formData: FormData): Promise<Appointment
     return { ok: false, error: 'Geçersiz randevu süresi.' }
   }
 
-  const startAt = new Date(`${dateStr}T${timeStr}:00`)
+  const startAt = trDate(dateStr, timeStr)
   if (Number.isNaN(startAt.getTime())) return { ok: false, error: 'Geçersiz tarih/saat.' }
 
   // ─── Tekrarlama ─────
@@ -615,7 +622,7 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
   if (!Number.isFinite(durationMin) || durationMin < 5 || durationMin > 480) {
     return { ok: false, error: 'Geçersiz randevu süresi.' }
   }
-  const startAt = new Date(`${dateStr}T${timeStr}:00`)
+  const startAt = trDate(dateStr, timeStr)
   if (Number.isNaN(startAt.getTime())) return { ok: false, error: 'Geçersiz tarih/saat.' }
 
   // Pakete bağlama (opsiyonel) — paket işlemi bu hastaya ve bu kliniğe ait olmalı
@@ -809,7 +816,7 @@ export async function updateAppointment(formData: FormData): Promise<Result> {
   if (!Number.isFinite(durationMin) || durationMin < 5 || durationMin > 480) {
     return { ok: false, error: 'Geçersiz süre.' }
   }
-  const startAt = new Date(`${dateStr}T${timeStr}:00`)
+  const startAt = trDate(dateStr, timeStr)
   if (Number.isNaN(startAt.getTime())) return { ok: false, error: 'Geçersiz tarih/saat.' }
 
   const { error } = await ctx.supabase
