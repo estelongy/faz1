@@ -123,6 +123,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
+  const dayPickerRef = useRef<HTMLInputElement | null>(null)
   const [search, setSearch] = useState('')
   const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok'>('gun')
   const [tableSearch, setTableSearch] = useState('')
@@ -779,10 +780,41 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1 bg-slate-800/60 rounded-xl px-1 py-1">
           <button onClick={() => shiftDay(-1)} className="px-2.5 py-1.5 text-slate-300 hover:text-white text-lg leading-none" aria-label="Önceki gün">‹</button>
-          <button onClick={() => setDay(todayIso())} className={`px-3 py-1.5 text-sm font-bold rounded-lg ${day === todayIso() ? 'text-white' : 'text-violet-300 hover:text-white'}`}>
-            {dayLabel(day)}
-          </button>
+
+          {/* Gün etiketi = takvim açar (gizli date input üstünde) */}
+          <span className="relative">
+            <button
+              onClick={() => {
+                const el = dayPickerRef.current
+                if (!el) return
+                // Chrome/Edge: showPicker(); diğerleri: normal tıklama
+                if (typeof el.showPicker === 'function') { try { el.showPicker(); return } catch { /* fallback */ } }
+                el.click()
+              }}
+              className={`px-3 py-1.5 text-sm font-bold rounded-lg flex items-center gap-1.5 ${day === todayIso() ? 'text-white' : 'text-violet-300 hover:text-white'}`}
+              title="Takvimden gün seç"
+            >
+              {dayLabel(day)}
+              <span className="text-[10px] opacity-60">▾</span>
+            </button>
+            <input
+              ref={dayPickerRef}
+              type="date"
+              value={day}
+              onChange={e => { if (e.target.value) setDay(e.target.value) }}
+              className="absolute left-2 bottom-0 w-px h-px opacity-0 pointer-events-none"
+              tabIndex={-1}
+              aria-label="Gün seç"
+            />
+          </span>
+
           <button onClick={() => shiftDay(1)} className="px-2.5 py-1.5 text-slate-300 hover:text-white text-lg leading-none" aria-label="Sonraki gün">›</button>
+
+          {day !== todayIso() && (
+            <button onClick={() => setDay(todayIso())}
+              className="ml-0.5 px-2.5 py-1.5 text-xs font-bold rounded-lg bg-violet-600/25 text-violet-200 hover:bg-violet-600/40"
+              title="Bugüne dön">Bugün</button>
+          )}
         </div>
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <input
