@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import Link from 'next/link'
 import {
   addQuickEntry, addPayment, addPatient,
-  createAppointmentForPatient, setAppointmentStatus,
+  createAppointmentForPatient, setAppointmentStatus, updateAppointment,
   addPaymentPromise, settlePaymentPromise,
   addPatientPhoto, deletePatientPhoto,
   logPackageSession, updatePaymentPromise,
@@ -129,6 +129,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [tableSearch, setTableSearch] = useState('')
   const [mobileMenu, setMobileMenu] = useState(false)
   const [hastaDuzenle, setHastaDuzenle] = useState(false)
+  // Inline randevu düzenleme formu (hangi randevu açık + form alanları)
+  const [editAppt, setEditAppt] = useState<{ id: string; tarih: string; saat: string; sure: number; islem: string } | null>(null)
   // Aynı ziyarette birden çok işlem: ek satırlar
   const [extraIslemler, setExtraIslemler] = useState<{ id: string }[]>([])
 
@@ -140,6 +142,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [optTxs, setOptTxs] = useState<TxRow[]>([])
   const [optAppts, setOptAppts] = useState<ApptRow[]>([])
   const [apptStatusOv, setApptStatusOv] = useState<Record<string, string>>({})
+  // Randevu düzenleme: kaydedilen yeni saat/süre/işlem anında görünsün
+  const [apptEditOv, setApptEditOv] = useState<Record<string, { start_at: string; duration_minutes: number; treatment_type: string | null }>>({})
   const [optPromises, setOptPromises] = useState<PromiseRow[]>([])
   const [promiseOv, setPromiseOv] = useState<Record<string, { removed?: boolean; due_date?: string; amount?: number; note?: string | null }>>({})
   const [pkgDelta, setPkgDelta] = useState<Record<string, { done: number; planned: number; sessions: { id: string; at: string; detail: string | null }[]; removedSessionIds?: string[] }>>({})
@@ -151,7 +155,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [removedStockIds, setRemovedStockIds] = useState<Set<string>>(new Set())
 
   function resetOverlays() {
-    setOptTxs([]); setOptAppts([]); setApptStatusOv({})
+    setOptTxs([]); setOptAppts([]); setApptStatusOv({}); setApptEditOv({})
     setOptPromises([]); setPromiseOv({}); setPkgDelta({})
     setRemovedTxIds(new Set()); setRemovedApptIds(new Set()); setRemovedPkgIds(new Set())
     setStockDelta({}); setRemovedStockIds(new Set())
@@ -177,8 +181,9 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     let base = removedApptIds.size ? appointments.filter(a => !removedApptIds.has(a.id)) : appointments
     if (removedPkgIds.size) base = base.filter(a => !(a.package_treatment_id && removedPkgIds.has(a.package_treatment_id) && a.status === 'scheduled'))
     if (Object.keys(apptStatusOv).length) base = base.map(a => apptStatusOv[a.id] ? { ...a, status: apptStatusOv[a.id] } : a)
+    if (Object.keys(apptEditOv).length) base = base.map(a => apptEditOv[a.id] ? { ...a, ...apptEditOv[a.id] } : a)
     return optAppts.length ? [...base, ...optAppts] : base
-  }, [appointments, apptStatusOv, optAppts, removedApptIds, removedPkgIds])
+  }, [appointments, apptStatusOv, apptEditOv, optAppts, removedApptIds, removedPkgIds])
   const promisesAll = useMemo(() => {
     const base = promises
       .filter(p => !promiseOv[p.id]?.removed)
@@ -534,6 +539,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   function pickPatient(id: string, form: FormKind = null, apptId: string | null = null) {
     setSelectedId(id)
     setHastaDuzenle(false)
+    setEditAppt(null)
     setOpenForm(form)
     setFromApptId(apptId)
     setSearch('')
@@ -545,6 +551,119 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     const d = new Date(day + 'T12:00:00')
     d.setDate(d.getDate() + delta)
     setDay(d.toLocaleDateString('en-CA'))
+  }
+
+  // ── Slot seçici — hem yeni randevu hem düzenleme formunda kullanılır ──
+  // `haric`: düzenlenen randevunun kendi saati dolu sayılmasın.
+  function SlotSecici({ tarih, secili, onSec, haricApptId }: {
+    tarih: string
+    secili: string
+    onSec: (t: string) => void
+    haricApptId?: string
+  }) {
+    const slots = generateSlotsForDay(availabilityForDate(availability, new Date(tarih + 'T12:00:00')))
+    const dolu = new Set(
+      apptsAll
+        .filter(a => a.status === 'scheduled' && a.id !== haricApptId &&
+          new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === tarih)
+        .map(a => new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })),
+    )
+    if (slots.length === 0) {
+      return (
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-amber-300">Bu gün kapalı veya müsaitlik tanımlı değil.</span>
+          <Link href="/klinik/panel/muhasebe/randevu/musaitlik" className="text-violet-300 font-semibold">Müsaitlik ayarla →</Link>
+          <span className="text-slate-500">· saat girilmezse 17:00</span>
+        </div>
+      )
+    }
+    return (
+      <div className="space-y-1.5">
+        <p className="text-xs font-bold text-slate-400">Saat seç {secili && <span className="text-violet-300">· {secili}</span>}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {slots.map(s => {
+            const full = dolu.has(s.time)
+            const sel = secili === s.time
+            return (
+              <button key={s.time} type="button" disabled={full}
+                onClick={() => onSec(s.time)}
+                title={full ? 'Dolu' : `${s.time} – ${s.endTime}`}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold tabular-nums transition-colors ${
+                  full ? 'bg-slate-800/50 text-slate-600 line-through cursor-not-allowed'
+                    : sel ? 'bg-violet-600 text-white'
+                    : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}>
+                {s.time}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  // ── Randevu düzenleme (inline) ──
+  // Ayrı sayfa yerine kartın içinde açılır. editAppt null ise kapalı.
+  function openEditAppt(a: ApptRow) {
+    const d = new Date(a.start_at)
+    setEditAppt({
+      id: a.id,
+      tarih: d.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }),
+      saat: d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' }),
+      sure: a.duration_minutes ?? 30,
+      islem: a.treatment_type ?? a.appointment_type ?? '',
+    })
+  }
+
+  // Inline düzenleme formu — gün akışı kartında ve hasta karnesinde aynısı
+  function RandevuDuzenleForm() {
+    if (!editAppt) return null
+    return (
+      <form onSubmit={submitEditAppt} onClick={e => e.stopPropagation()}
+        className="mt-2 pt-2 border-t border-slate-700/60 space-y-2">
+        <div className="grid grid-cols-[1fr,90px] gap-2">
+          <input type="date" required value={editAppt.tarih}
+            onChange={e => setEditAppt(s => s && { ...s, tarih: e.target.value, saat: '' })}
+            className={inputCls} />
+          <select value={editAppt.sure}
+            onChange={e => setEditAppt(s => s && { ...s, sure: Number(e.target.value) })}
+            className={inputCls}>
+            {[15, 20, 30, 45, 60, 90].map(m => <option key={m} value={m}>{m} dk</option>)}
+          </select>
+        </div>
+        <input list="katalog-listesi" placeholder="İşlem / sebep" value={editAppt.islem}
+          onChange={e => setEditAppt(s => s && { ...s, islem: e.target.value })}
+          className={inputCls} />
+        <SlotSecici tarih={editAppt.tarih} secili={editAppt.saat} haricApptId={editAppt.id}
+          onSec={t => setEditAppt(s => s && { ...s, saat: t })} />
+        <div className="flex gap-2">
+          <button type="submit" disabled={pending} className={btnPrimary}>
+            {pending ? 'Kaydediliyor…' : 'Kaydet'}
+          </button>
+          <button type="button" onClick={() => setEditAppt(null)} className={btnGhost}>Vazgeç</button>
+        </div>
+      </form>
+    )
+  }
+
+  function submitEditAppt(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!editAppt) return
+    const { id, tarih, saat, sure, islem } = editAppt
+    const fd = new FormData()
+    fd.set('id', id)
+    fd.set('date', tarih)
+    fd.set('time', saat || '17:00')
+    fd.set('duration_minutes', String(sure))
+    fd.set('treatment_type', islem)
+
+    // Anında ekrana yansıt — sunucu yenilemesini beklemeden
+    const yeniStart = new Date(`${tarih}T${saat || '17:00'}:00+03:00`).toISOString()
+    setApptEditOv(prev => ({
+      ...prev,
+      [id]: { start_at: yeniStart, duration_minutes: sure, treatment_type: islem || null },
+    }))
+    setEditAppt(null)
+    run(() => updateAppointment(fd))
   }
 
   // NOT: router.refresh() bilerek YOK — server action'lar revalidatePath ile
@@ -1241,6 +1360,15 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${st.cls}`}>{st.label}</span>
                     {!a.id.startsWith('opt-') && (
                       <button
+                        onClick={() => editAppt?.id === a.id ? setEditAppt(null) : openEditAppt(a)}
+                        title="Randevuyu düzenle (saat / süre / işlem)"
+                        className={`text-xs font-bold ${editAppt?.id === a.id ? 'text-violet-300' : 'text-slate-600 hover:text-violet-300'}`}
+                        aria-label="Randevuyu düzenle">
+                        ✎
+                      </button>
+                    )}
+                    {!a.id.startsWith('opt-') && (
+                      <button
                         onClick={() => {
                           const pk = a.package_treatment_id ? pkgById.get(a.package_treatment_id) : null
                           setConfirmBox({
@@ -1292,6 +1420,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </div>
                   )}
                 </div>
+                {editAppt?.id === a.id && <RandevuDuzenleForm />}
               </div>
             )
           })}
@@ -1734,49 +1863,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     <input name="treatment_type" list="katalog-listesi" placeholder="İşlem / sebep" className={inputCls} />
                   </div>
 
-                  {/* Slot seçici — müsaitlik takviminden üretilir, dolu saatler kapalı */}
-                  {(() => {
-                    const d = new Date(randevuTarih + 'T12:00:00')
-                    const dayAvail = availabilityForDate(availability, d)
-                    const slots = generateSlotsForDay(dayAvail)
-                    const dolu = new Set(
-                      apptsAll
-                        .filter(a => a.status === 'scheduled' &&
-                          new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === randevuTarih)
-                        .map(a => new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })),
-                    )
-                    if (slots.length === 0) {
-                      return (
-                        <div className="flex flex-wrap items-center gap-2 text-xs">
-                          <span className="text-amber-300">Bu gün kapalı veya müsaitlik tanımlı değil.</span>
-                          <Link href="/klinik/panel/muhasebe/randevu/musaitlik" className="text-violet-300 font-semibold">Müsaitlik ayarla →</Link>
-                          <span className="text-slate-500">· saat girilmezse 17:00</span>
-                        </div>
-                      )
-                    }
-                    return (
-                      <div className="space-y-1.5">
-                        <p className="text-xs font-bold text-slate-400">Saat seç {randevuSaat && <span className="text-violet-300">· {randevuSaat}</span>}</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {slots.map(s => {
-                            const full = dolu.has(s.time)
-                            const sel = randevuSaat === s.time
-                            return (
-                              <button key={s.time} type="button" disabled={full}
-                                onClick={() => setRandevuSaat(s.time)}
-                                title={full ? 'Dolu' : `${s.time} – ${s.endTime}`}
-                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold tabular-nums transition-colors ${
-                                  full ? 'bg-slate-800/50 text-slate-600 line-through cursor-not-allowed'
-                                    : sel ? 'bg-violet-600 text-white'
-                                    : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}>
-                                {s.time}
-                              </button>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )
-                  })()}
+                  <SlotSecici tarih={randevuTarih} secili={randevuSaat} onSec={setRandevuSaat} />
                   <input type="hidden" name="time" value={randevuSaat} />
                   {activePackages.length > 0 && (
                     <select name="package_treatment_id" value={randevuPkgId}
@@ -1990,14 +2077,28 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                       return `📦 ${pk.name} — Seans ${ordinal}/${pk.session_total}`
                     }).join(' + ')
                     return (
-                      <p key={dayKey}>
-                        <span className="text-slate-300 font-semibold">
-                          {new Date(first.start_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
-                          {' '}{new Date(first.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })}
-                        </span>
-                        {' — '}{label}
-                        {appts.length > 1 && <span className="text-violet-300 font-semibold"> · aynı ziyaret</span>}
-                      </p>
+                      <div key={dayKey}>
+                        <p>
+                          <span className="text-slate-300 font-semibold">
+                            {new Date(first.start_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                            {' '}{new Date(first.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })}
+                          </span>
+                          {' — '}{label}
+                          {appts.length > 1 && <span className="text-violet-300 font-semibold"> · aynı ziyaret</span>}
+                          {/* Düzenle: aynı ziyarette birden çok randevu varsa her biri ayrı */}
+                          {appts.filter(a => !a.id.startsWith('opt-')).map((a, i) => (
+                            <button key={a.id}
+                              onClick={() => editAppt?.id === a.id ? setEditAppt(null) : openEditAppt(a)}
+                              title={appts.length > 1
+                                ? `Düzenle: ${a.treatment_type ?? a.appointment_type ?? 'randevu'}`
+                                : 'Randevuyu düzenle'}
+                              className={`ml-1.5 font-bold ${editAppt?.id === a.id ? 'text-violet-300' : 'text-slate-600 hover:text-violet-300'}`}>
+                              ✎{appts.length > 1 ? <span className="text-[9px]">{i + 1}</span> : null}
+                            </button>
+                          ))}
+                        </p>
+                        {appts.some(a => a.id === editAppt?.id) && <RandevuDuzenleForm />}
+                      </div>
                     )
                   })}
                 </div>
