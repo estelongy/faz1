@@ -130,7 +130,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [mobileMenu, setMobileMenu] = useState(false)
   const [hastaDuzenle, setHastaDuzenle] = useState(false)
   // Inline randevu düzenleme formu (hangi randevu açık + form alanları)
-  const [editAppt, setEditAppt] = useState<{ id: string; tarih: string; saat: string; sure: number; islem: string } | null>(null)
+  const [editAppt, setEditAppt] = useState<{ id: string; patientId: string; tarih: string; saat: string; sure: number; islem: string } | null>(null)
   // Aynı ziyarette birden çok işlem: ek satırlar
   const [extraIslemler, setExtraIslemler] = useState<{ id: string }[]>([])
 
@@ -238,6 +238,18 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     [apptsAll, day],
   )
 
+  // Gün akışı kartları: aynı hastanın aynı SAATTEKİ randevuları tek ziyaret =
+  // tek kart (2 paket + 1 bağımsız işlem hep birlikte yapılır). Farklı saatteki
+  // randevular ayrı kart kalır — o gerçekten ayrı ziyarettir.
+  const dayVisits = useMemo(() => {
+    const map = new Map<string, ApptRow[]>()
+    for (const a of dayAppts) {
+      const k = `${a.patient_id}|${a.start_at}`
+      map.set(k, [...(map.get(k) ?? []), a])
+    }
+    return Array.from(map.values())
+  }, [dayAppts])
+
   // Doktor açılışı: bugünün sıradaki (şu andan sonraki ilk planlı) hastası
   const initialPatient = useMemo(() => {
     if (role !== 'doktor') return null
@@ -289,12 +301,13 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
       .slice(0, 12)
   }, [apptsAll, selectedId])
 
-  // Yaklaşan randevular güne gruplanır: "(tarih saat) — A (1/3) + B (0/4)"
+  // Yaklaşan randevular ZİYARETE gruplanır (aynı gün + aynı saat = tek ziyaret).
+  // Gün bazlı gruplamak yanıltıcıydı: 10:00 ve 16:00 ayrı ziyaretken tek satırda
+  // birleşiyordu. Gün akışındaki kart mantığıyla aynı.
   const patientApptDays = useMemo(() => {
     const map = new Map<string, typeof patientAppts>()
     for (const a of patientAppts) {
-      const k = new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
-      map.set(k, [...(map.get(k) ?? []), a])
+      map.set(a.start_at, [...(map.get(a.start_at) ?? []), a])
     }
     return Array.from(map.entries()).slice(0, 6)
   }, [patientAppts])
@@ -554,20 +567,25 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   }
 
   // ── Slot seçici — hem yeni randevu hem düzenleme formunda kullanılır ──
-  // `haric`: düzenlenen randevunun kendi saati dolu sayılmasın.
-  function SlotSecici({ tarih, secili, onSec, haricApptId }: {
+  // `haricApptId`: düzenlenen randevunun kendi saati dolu sayılmasın.
+  // `ayniHastaId`: o hastanın kendi saatleri KAPALI DEĞİL — aynı ziyarette
+  // birden çok işlem normaldir (2 paket + 1 bağımsız işlem aynı 17:00'da).
+  // Sadece BAŞKA hastanın saati gerçekten dolu sayılır.
+  function SlotSecici({ tarih, secili, onSec, haricApptId, ayniHastaId }: {
     tarih: string
     secili: string
     onSec: (t: string) => void
     haricApptId?: string
+    ayniHastaId?: string
   }) {
     const slots = generateSlotsForDay(availabilityForDate(availability, new Date(tarih + 'T12:00:00')))
-    const dolu = new Set(
-      apptsAll
-        .filter(a => a.status === 'scheduled' && a.id !== haricApptId &&
-          new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === tarih)
-        .map(a => new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })),
-    )
+    const saatOf = (iso: string) =>
+      new Date(iso).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })
+    const oGun = apptsAll.filter(a => a.status === 'scheduled' && a.id !== haricApptId &&
+      new Date(a.start_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === tarih)
+    const dolu = new Set(oGun.filter(a => a.patient_id !== ayniHastaId).map(a => saatOf(a.start_at)))
+    // Bu hastanın o gün zaten randevusu olan saatleri: seçilebilir, "aynı ziyaret" işaretli
+    const kendi = new Set(oGun.filter(a => a.patient_id === ayniHastaId).map(a => saatOf(a.start_at)))
     if (slots.length === 0) {
       return (
         <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -583,16 +601,18 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         <div className="flex flex-wrap gap-1.5">
           {slots.map(s => {
             const full = dolu.has(s.time)
+            const ayni = kendi.has(s.time)
             const sel = secili === s.time
             return (
               <button key={s.time} type="button" disabled={full}
                 onClick={() => onSec(s.time)}
-                title={full ? 'Dolu' : `${s.time} – ${s.endTime}`}
+                title={full ? 'Başka hasta var' : ayni ? `${s.time} — bu hastanın zaten randevusu var, aynı ziyarete eklenir` : `${s.time} – ${s.endTime}`}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-bold tabular-nums transition-colors ${
                   full ? 'bg-slate-800/50 text-slate-600 line-through cursor-not-allowed'
                     : sel ? 'bg-violet-600 text-white'
+                    : ayni ? 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/40 hover:bg-violet-500/25'
                     : 'bg-slate-800 text-slate-200 hover:bg-slate-700'}`}>
-                {s.time}
+                {s.time}{ayni && !sel ? <span className="ml-0.5 text-[9px]">•</span> : null}
               </button>
             )
           })}
@@ -607,6 +627,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     const d = new Date(a.start_at)
     setEditAppt({
       id: a.id,
+      patientId: a.patient_id,
       tarih: d.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }),
       saat: d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' }),
       sure: a.duration_minutes ?? 30,
@@ -633,7 +654,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
         <input list="katalog-listesi" placeholder="İşlem / sebep" value={editAppt.islem}
           onChange={e => setEditAppt(s => s && { ...s, islem: e.target.value })}
           className={inputCls} />
-        <SlotSecici tarih={editAppt.tarih} secili={editAppt.saat} haricApptId={editAppt.id}
+        <SlotSecici tarih={editAppt.tarih} secili={editAppt.saat} haricApptId={editAppt.id} ayniHastaId={editAppt.patientId}
           onSec={t => setEditAppt(s => s && { ...s, saat: t })} />
         <div className="flex gap-2">
           <button type="submit" disabled={pending} className={btnPrimary}>
@@ -1342,66 +1363,88 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
               </p>
             </div>
           )}
-          {leftView === 'gun' && dayAppts.map(a => {
+          {leftView === 'gun' && dayVisits.map(grup => {
+            // grup = aynı hastanın aynı saatteki randevuları (tek ziyaret)
+            const a = grup[0]
             const p = patients.find(pp => pp.id === a.patient_id)
             const time = new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })
             const st = STATUS_META[a.status] ?? STATUS_META.scheduled
             const isSel = a.patient_id === selectedId
+            const gunAd = new Date(a.start_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })
+            const acikEdit = grup.some(x => x.id === editAppt?.id)
+            const silinebilir = grup.filter(x => !x.id.startsWith('opt-'))
             return (
-              <div key={a.id}
+              <div key={grup.map(x => x.id).join('|')}
                 className={`rounded-xl border p-3 cursor-pointer transition-colors ${isSel ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500'}`}
                 onClick={() => pickPatient(a.patient_id)}>
-                <div className="flex items-center justify-between gap-2">
+
+                {/* Hasta adı solda · işlemler sağda alt alta */}
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span className="text-white font-black text-sm tabular-nums shrink-0">{time}</span>
                     <span className="text-white text-sm font-semibold truncate">{p?.name ?? '—'}</span>
                   </div>
-                  <span className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
+                  <span className="text-right shrink-0 min-w-0">
+                    {grup.map(x => {
+                      const pk = x.package_treatment_id ? pkgById.get(x.package_treatment_id) : null
+                      const ad = x.treatment_type ?? x.appointment_type ?? (pk ? pk.name : 'Randevu')
+                      return (
+                        <span key={x.id} className="block text-sm text-slate-200 font-semibold truncate">
+                          {ad}
+                          {pk && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">📦 {pk.done}/{pk.session_total}</span>}
+                        </span>
+                      )
+                    })}
+                  </span>
+                </div>
+
+                {/* Durum satırı: rozet · aynı ziyaret notu · düzenle/sil · aksiyonlar */}
+                <div className="flex items-center justify-between gap-2 mt-1.5">
+                  <span className="flex items-center gap-1.5 min-w-0" onClick={e => e.stopPropagation()}>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${st.cls}`}>{st.label}</span>
-                    {!a.id.startsWith('opt-') && (
-                      <button
-                        onClick={() => editAppt?.id === a.id ? setEditAppt(null) : openEditAppt(a)}
-                        title="Randevuyu düzenle (saat / süre / işlem)"
-                        className={`text-xs font-bold ${editAppt?.id === a.id ? 'text-violet-300' : 'text-slate-600 hover:text-violet-300'}`}
-                        aria-label="Randevuyu düzenle">
-                        ✎
-                      </button>
+                    {grup.length > 1 && (
+                      <span className="text-[10px] text-violet-300 font-semibold shrink-0">· {grup.length} işlem, aynı ziyaret</span>
                     )}
-                    {!a.id.startsWith('opt-') && (
-                      <button
-                        onClick={() => {
-                          const pk = a.package_treatment_id ? pkgById.get(a.package_treatment_id) : null
-                          setConfirmBox({
+                    {/* Her randevu ayrı düzenlenir/silinir; birden çoksa numaralı */}
+                    {silinebilir.map((x, i) => (
+                      <button key={`e-${x.id}`}
+                        onClick={() => editAppt?.id === x.id ? setEditAppt(null) : openEditAppt(x)}
+                        title={grup.length > 1
+                          ? `Düzenle: ${x.treatment_type ?? x.appointment_type ?? 'randevu'}`
+                          : 'Randevuyu düzenle (saat / süre / işlem)'}
+                        className={`text-xs font-bold shrink-0 ${editAppt?.id === x.id ? 'text-violet-300' : 'text-slate-600 hover:text-violet-300'}`}
+                        aria-label="Randevuyu düzenle">
+                        ✎{grup.length > 1 ? <span className="text-[9px]">{i + 1}</span> : null}
+                      </button>
+                    ))}
+                    {silinebilir.map((x, i) => {
+                      const pk = x.package_treatment_id ? pkgById.get(x.package_treatment_id) : null
+                      return (
+                        <button key={`d-${x.id}`}
+                          onClick={() => setConfirmBox({
                             title: 'Randevu silinecek',
                             lines: [
-                              `${new Date(a.start_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} ${new Date(a.start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })} — ${p?.name ?? ''}${a.treatment_type ? ` · ${a.treatment_type}` : ''}`,
+                              `${gunAd} ${time} — ${p?.name ?? ''}${x.treatment_type ? ` · ${x.treatment_type}` : ''}`,
                               ...(pk ? [
                                 `Paket planından düşer: "${pk.name}" (${pk.done}/${pk.session_total})`,
-                                a.status === 'completed' ? 'Tamamlanmış seans — silinirse sayaç geri düşer' : 'Seans daha sonra yeniden planlanabilir',
+                                x.status === 'completed' ? 'Tamamlanmış seans — silinirse sayaç geri düşer' : 'Seans daha sonra yeniden planlanabilir',
                               ] : ['Muhasebe kayıtlarına dokunulmaz (işlem/tahsilat ayrı)']),
+                              ...(grup.length > 1 ? [`Aynı ziyaretteki diğer ${grup.length - 1} işlem kalır`] : []),
                             ],
                             confirmLabel: 'Randevuyu Sil',
                             action: () => {
-                              setRemovedApptIds(prev => new Set(prev).add(a.id))
-                              run(() => deleteAppointment(a.id))
+                              setRemovedApptIds(prev => new Set(prev).add(x.id))
+                              run(() => deleteAppointment(x.id))
                             },
-                          })
-                        }}
-                        title="Randevuyu sil"
-                        className="text-slate-600 hover:text-rose-300 text-xs font-bold" aria-label="Randevuyu sil">
-                        ✕
-                      </button>
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between mt-1.5">
-                  <span className="text-sm text-slate-200 font-semibold truncate">
-                    {a.treatment_type ?? a.appointment_type ?? ''}
-                    {(() => {
-                      const pk = a.package_treatment_id ? pkgById.get(a.package_treatment_id) : null
-                      if (!pk) return null
-                      return <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">📦 {pk.done}/{pk.session_total}</span>
-                    })()}
+                          })}
+                          title={grup.length > 1
+                            ? `Sil: ${x.treatment_type ?? x.appointment_type ?? 'randevu'}`
+                            : 'Randevuyu sil'}
+                          className="text-slate-600 hover:text-rose-300 text-xs font-bold shrink-0" aria-label="Randevuyu sil">
+                          ✕{grup.length > 1 ? <span className="text-[9px]">{i + 1}</span> : null}
+                        </button>
+                      )
+                    })}
                   </span>
                   {a.status === 'scheduled' && (
                     <div className="flex gap-1 shrink-0" onClick={e => e.stopPropagation()}>
@@ -1411,8 +1454,19 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                       </button>
                       <button
                         onClick={() => {
-                          setApptStatusOv(prev => ({ ...prev, [a.id]: 'no_show' }))
-                          run(() => setAppointmentStatus(a.id, 'no_show'))
+                          // Gelmedi: ziyaretin tamamı için işaretlenir
+                          setApptStatusOv(prev => {
+                            const n = { ...prev }
+                            for (const x of grup) n[x.id] = 'no_show'
+                            return n
+                          })
+                          run(async () => {
+                            for (const x of grup) {
+                              const r = await setAppointmentStatus(x.id, 'no_show')
+                              if (!r.ok) return r
+                            }
+                            return { ok: true as const }
+                          })
                         }}
                         className="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-700/60 text-slate-300 hover:bg-slate-600">
                         Gelmedi
@@ -1420,7 +1474,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     </div>
                   )}
                 </div>
-                {editAppt?.id === a.id && <RandevuDuzenleForm />}
+                {acikEdit && <RandevuDuzenleForm />}
               </div>
             )
           })}
@@ -1863,7 +1917,7 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                     <input name="treatment_type" list="katalog-listesi" placeholder="İşlem / sebep" className={inputCls} />
                   </div>
 
-                  <SlotSecici tarih={randevuTarih} secili={randevuSaat} onSec={setRandevuSaat} />
+                  <SlotSecici tarih={randevuTarih} secili={randevuSaat} onSec={setRandevuSaat} ayniHastaId={selectedId ?? undefined} />
                   <input type="hidden" name="time" value={randevuSaat} />
                   {activePackages.length > 0 && (
                     <select name="package_treatment_id" value={randevuPkgId}

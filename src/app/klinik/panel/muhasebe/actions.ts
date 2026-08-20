@@ -671,27 +671,13 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
   }
   const groupId = occurrences.length > 1 ? crypto.randomUUID() : null
 
-  // Akıllı birleştirme: aynı hastanın o gün başka planlı randevusu varsa yeni
-  // seansı aynı ziyarete ekle — son randevunun bitişinden hemen sonraya koy.
-  // Böylece uyumlu aralıklı paketler tek ziyarette birleşir; uyumsuzlar kendi
-  // takviminde kalır.
-  const occDayKeys = occurrences.map(d => d.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }))
-  const { data: existingAppts } = await ctx.supabase
-    .from('internal_appointment')
-    .select('start_at, duration_minutes')
-    .eq('owner_id', ctx.clinicOwnerId)
-    .eq('patient_id', patientId)
-    .eq('status', 'scheduled')
-  const dayKeyOf = (iso: string) => new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
-
-  const rows = occurrences.map((d, i) => {
-    let start = d
-    const sameDay = (existingAppts ?? []).filter(a => dayKeyOf(a.start_at) === occDayKeys[i])
-    if (sameDay.length > 0) {
-      const lastEnd = Math.max(...sameDay.map(a =>
-        new Date(a.start_at).getTime() + (a.duration_minutes ?? 30) * 60_000))
-      if (lastEnd > start.getTime()) start = new Date(lastEnd)
-    }
+  // Saat SEÇİLDİĞİ GİBİ kaydedilir. Eskiden aynı gün başka randevu varsa yeni
+  // seans otomatik olarak onun bitişine kaydırılıyordu; bu yüzden aynı hastaya
+  // aynı slot verilemiyor, iki paket 17:00/17:30 diye ayrı ziyarete bölünüyordu.
+  // Aynı hastaya aynı anda birden çok işlem yapmak normaldir — tek ziyarette
+  // birleşsinler; ekran da onları tek kart gösterir.
+  const rows = occurrences.map(d => {
+    const start = d
     return {
       owner_id: ctx.clinicOwnerId,
       created_by: ctx.user.id,
