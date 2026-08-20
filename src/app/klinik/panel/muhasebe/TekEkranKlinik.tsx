@@ -1378,29 +1378,31 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 className={`rounded-xl border p-3 cursor-pointer transition-colors ${isSel ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500'}`}
                 onClick={() => pickPatient(a.patient_id)}>
 
-                {/* Hasta adı solda · işlemler sağda alt alta */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-white font-black text-sm tabular-nums shrink-0">{time}</span>
-                    <span className="text-white text-sm font-semibold truncate">{p?.name ?? '—'}</span>
-                  </div>
-                  <span className="text-right shrink-0 min-w-0">
-                    {grup.map(x => {
-                      const pk = x.package_treatment_id ? pkgById.get(x.package_treatment_id) : null
-                      const ad = x.treatment_type ?? x.appointment_type ?? (pk ? pk.name : 'Randevu')
-                      return (
-                        <span key={x.id} className="block text-sm text-slate-200 font-semibold truncate">
-                          {ad}
-                          {pk && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">📦 {pk.done}/{pk.session_total}</span>}
-                        </span>
-                      )
-                    })}
-                  </span>
+                {/* 1. satır: saat + hasta adı — TAM görünür, kırpılmaz.
+                    Eskiden işlem adlarıyla aynı satırda yarışıyordu ve isim
+                    "E..." diye eziliyordu. */}
+                <div className="flex items-baseline gap-2.5">
+                  <span className="text-white font-black text-sm tabular-nums shrink-0">{time}</span>
+                  <span className="text-white text-sm font-semibold break-words">{p?.name ?? '—'}</span>
+                </div>
+
+                {/* 2. satır: işlemler alt alta, sağa yaslı */}
+                <div className="text-right mt-0.5">
+                  {grup.map(x => {
+                    const pk = x.package_treatment_id ? pkgById.get(x.package_treatment_id) : null
+                    const ad = x.treatment_type ?? x.appointment_type ?? (pk ? pk.name : 'Randevu')
+                    return (
+                      <span key={x.id} className="block text-sm text-slate-200 font-semibold break-words">
+                        {ad}
+                        {pk && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300 whitespace-nowrap">📦 {pk.done}/{pk.session_total}</span>}
+                      </span>
+                    )
+                  })}
                 </div>
 
                 {/* Durum satırı: rozet · aynı ziyaret notu · düzenle/sil · aksiyonlar */}
-                <div className="flex items-center justify-between gap-2 mt-1.5">
-                  <span className="flex items-center gap-1.5 min-w-0" onClick={e => e.stopPropagation()}>
+                <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5 mt-1.5">
+                  <span className="flex flex-wrap items-center gap-1.5" onClick={e => e.stopPropagation()}>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${st.cls}`}>{st.label}</span>
                     {grup.length > 1 && (
                       <span className="text-[10px] text-violet-300 font-semibold shrink-0">· {grup.length} işlem, aynı ziyaret</span>
