@@ -1378,21 +1378,20 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                 className={`rounded-xl border p-3 cursor-pointer transition-colors ${isSel ? 'bg-violet-500/10 border-violet-500/40' : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500'}`}
                 onClick={() => pickPatient(a.patient_id)}>
 
-                {/* 1. satır: saat + hasta adı — TAM görünür, kırpılmaz.
-                    Eskiden işlem adlarıyla aynı satırda yarışıyordu ve isim
-                    "E..." diye eziliyordu. */}
-                <div className="flex items-baseline gap-2.5">
-                  <span className="text-white font-black text-sm tabular-nums shrink-0">{time}</span>
-                  <span className="text-white text-sm font-semibold break-words">{p?.name ?? '—'}</span>
+                {/* Klinik kartı disiplini: saat sabit, isim sarar (kırpılmaz) */}
+                <div className="flex items-start gap-2.5">
+                  <span className="text-white font-black text-sm tabular-nums shrink-0 leading-tight">{time}</span>
+                  <h3 className="min-w-0 flex-1 text-white text-sm font-semibold line-clamp-2 leading-tight">
+                    {p?.name ?? '—'}
+                  </h3>
                 </div>
-
-                {/* 2. satır: işlemler alt alta, sağa yaslı */}
-                <div className="text-right mt-0.5">
+                {/* İşlemler kendi satırında, sağa yaslı, her biri alt alta */}
+                <div className="text-right mt-1">
                   {grup.map(x => {
                     const pk = x.package_treatment_id ? pkgById.get(x.package_treatment_id) : null
                     const ad = x.treatment_type ?? x.appointment_type ?? (pk ? pk.name : 'Randevu')
                     return (
-                      <span key={x.id} className="block text-sm text-slate-200 font-semibold break-words">
+                      <span key={x.id} className="block text-sm text-slate-200 font-semibold line-clamp-1">
                         {ad}
                         {pk && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300 whitespace-nowrap">📦 {pk.done}/{pk.session_total}</span>}
                       </span>
