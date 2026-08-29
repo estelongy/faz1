@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { sendInfoSms } from '@/lib/netgsm'
 import { createClient } from '@/lib/supabase/server'
 import { getKlinikStaff, type KlinikRole } from '@/lib/muhasebe-owner'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
@@ -692,6 +693,57 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
   })
   const { error } = await ctx.supabase.from('internal_appointment').insert(rows)
   if (error) return { ok: false, error: error.message }
+
+  // ── Randevu bilgi SMS'i ──
+  // Tekrarlayan pakette TEK özet mesaj gider (3 seans = 3 SMS değil).
+  // SMS başarısız olsa bile randevu kaydı geçerlidir — hata yutulur, loglanır.
+  try {
+    const { data: pat } = await ctx.supabase
+      .from('internal_patient')
+      .select('name, phone')
+      .eq('id', patientId)
+      .maybeSingle()
+
+    if (pat?.phone) {
+      const ilk = occurrences[0]
+      const tarih = ilk.toLocaleDateString('tr-TR', {
+        day: 'numeric', month: 'long', timeZone: 'Europe/Istanbul',
+      })
+      const saat = ilk.toLocaleTimeString('tr-TR', {
+        hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul',
+      })
+      const ad = (pat.name ?? '').trim().split(/\s+/)
+        .map((w: string) => w.charAt(0).toLocaleUpperCase('tr') + w.slice(1).toLocaleLowerCase('tr'))
+        .join(' ')
+      const islem = treatmentType ? ` İşlem: ${treatmentType}.` : ''
+      const mesaj = occurrences.length > 1
+        ? `Sayın ${ad}, ${occurrences.length} seanslık randevunuz planlandı. İlki ${tarih} ${saat}.${islem} Değişiklik için bize ulaşabilirsiniz.`
+        : `Sayın ${ad}, randevunuz oluşturuldu: ${tarih} ${saat}.${islem} Değişiklik için bize ulaşabilirsiniz.`
+
+      const res = await sendInfoSms(pat.phone, mesaj)
+      if (!res.success) {
+        console.error('[randevu-sms] gonderilemedi:', pat.name, res.error)
+      } else {
+        // BUGÜNE randevu verildiyse sabah hatırlatması artık gereksiz —
+        // hasta iki mesaj almasın. İlk seansı bugün olanlar işaretlenir.
+        const bugun = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+        const ilkGun = ilk.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
+        if (ilkGun === bugun) {
+          await ctx.supabase
+            .from('internal_appointment')
+            .update({ reminder_sms_sent_at: new Date().toISOString() })
+            .eq('patient_id', patientId)
+            .eq('owner_id', ctx.clinicOwnerId)
+            .eq('status', 'scheduled')
+            .gte('start_at', new Date(`${bugun}T00:00:00+03:00`).toISOString())
+            .lte('start_at', new Date(`${bugun}T23:59:59+03:00`).toISOString())
+            .is('reminder_sms_sent_at', null)
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[randevu-sms] beklenmeyen hata:', err instanceof Error ? err.message : err)
+  }
 
   revalidatePath('/klinik/panel/muhasebe')
   revalidatePath('/klinik/panel/muhasebe/randevu')
