@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { sendInfoSms } from '@/lib/netgsm'
+import { duzgunAd, smsRandevuOlusturuldu, smsPaketPlanlandi } from './sms-metinleri'
 import { createClient } from '@/lib/supabase/server'
 import { getKlinikStaff, type KlinikRole } from '@/lib/muhasebe-owner'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
@@ -712,13 +713,10 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
       const saat = ilk.toLocaleTimeString('tr-TR', {
         hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul',
       })
-      const ad = (pat.name ?? '').trim().split(/\s+/)
-        .map((w: string) => w.charAt(0).toLocaleUpperCase('tr') + w.slice(1).toLocaleLowerCase('tr'))
-        .join(' ')
-      const islem = treatmentType ? ` İşlem: ${treatmentType}.` : ''
+      const ad = duzgunAd(pat.name)
       const mesaj = occurrences.length > 1
-        ? `Sayın ${ad}, ${occurrences.length} seanslık randevunuz planlandı. İlki ${tarih} ${saat}.${islem} Değişiklik için bize ulaşabilirsiniz.`
-        : `Sayın ${ad}, randevunuz oluşturuldu: ${tarih} ${saat}.${islem} Değişiklik için bize ulaşabilirsiniz.`
+        ? smsPaketPlanlandi(ad, occurrences.length, tarih, saat)
+        : smsRandevuOlusturuldu(ad, tarih, saat)
 
       const res = await sendInfoSms(pat.phone, mesaj)
       if (!res.success) {

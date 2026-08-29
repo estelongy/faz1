@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { sendInfoSms } from '@/lib/netgsm'
+import { duzgunAd, smsHatirlatma } from '@/app/klinik/panel/muhasebe/sms-metinleri'
 
 /**
  * Klinik randevu hatırlatma SMS cron — her sabah 09:00 (TR).
@@ -24,14 +25,6 @@ interface ApptRow {
   treatment_type: string | null
   appointment_type: string | null
   owner_id: string
-}
-
-/** Aynı ziyaretin işlemlerini tek cümlede toplar. */
-function islemMetni(list: { treatment_type: string | null; appointment_type: string | null }[]): string {
-  const adlar = list
-    .map(a => (a.treatment_type ?? a.appointment_type ?? '').trim())
-    .filter(Boolean)
-  return Array.from(new Set(adlar)).join(' + ')
 }
 
 export async function GET(req: NextRequest) {
@@ -101,17 +94,7 @@ export async function GET(req: NextRequest) {
 
       const saat = new Date(first.start_at)
         .toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })
-      const ad = (p.name ?? '').trim().split(/\s+/)
-        .map((w: string) => w.charAt(0).toLocaleUpperCase('tr') + w.slice(1).toLocaleLowerCase('tr'))
-        .join(' ')
-      const islem = islemMetni(grup)
-
-      // encoding:'TR' — Türkçe karakter kullanılabilir
-      const mesaj = [
-        `Sayın ${ad}, bugün saat ${saat} randevunuzu hatırlatırız.`,
-        islem ? `İşlem: ${islem}.` : null,
-        'Değişiklik için bize ulaşabilirsiniz.',
-      ].filter(Boolean).join(' ')
+      const mesaj = smsHatirlatma(duzgunAd(p.name), saat)
 
       const res = await sendInfoSms(p.phone, mesaj)
       if (res.success) {

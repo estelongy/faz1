@@ -159,9 +159,11 @@ export async function sendInfoSms(phone: string, message: string): Promise<Netgs
   }
 
   // Giden SMS ucu encoding:'TR' ile Türkçe karakter destekler — ASCII'ye
-  // düşürmeye gerek yok. TR kodlamada segment 70 karakter; 2 segmenti
-  // aşmamak için 140'ta kesiyoruz (kredi maliyeti öngörülebilir kalsın).
-  const cleaned = message.slice(0, 140)
+  // düşürmeye gerek yok. TR kodlamada segment 70 karakter; klinik metinleri
+  // ~3 segment (link dahil). 400'de kesiyoruz: uzun metin kazara kredi
+  // yakmasın ama randevu mesajının SONUNDAKİ iletişim linki KESİLMESİN
+  // (eski 140 sınırı OTP dönemindendi, linki kırpıyordu).
+  const cleaned = message.slice(0, 400)
 
   const auth = Buffer.from(`${usercode}:${password}`).toString('base64')
 
