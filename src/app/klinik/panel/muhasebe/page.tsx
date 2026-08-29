@@ -34,7 +34,7 @@ export default async function MuhasebePage({
   const rangeStartIso = new Date(Date.now() - 30 * 86_400_000).toISOString()
   const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, stockRes, stockMapRes, availRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, stockRes, stockMapRes, availRes, smsRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date, session_total'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
@@ -88,6 +88,12 @@ export default async function MuhasebePage({
       .from('internal_availability')
       .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
       .eq('owner_id', clinicOwner),
+    // SMS şablonları — satır yoksa kod varsayılanları geçerli
+    supabase
+      .from('internal_sms_settings')
+      .select('klinik_adi, iletisim_link, sablon_olusturma, sablon_paket, sablon_hatirlatma, hatirlatma_saati, hatirlatma_gun_once, olusturma_aktif, hatirlatma_aktif')
+      .eq('owner_id', clinicOwner)
+      .maybeSingle(),
   ])
 
   const patients = patientsRes.data ?? []
@@ -289,6 +295,7 @@ export default async function MuhasebePage({
           id: m.id, match_text: m.match_text, item_id: m.item_id, amount_per_use: Number(m.amount_per_use ?? 1),
         })) as StockMapRow[]}
         availability={normalizeWeek((availRes.data ?? []) as Partial<DayAvailability>[])}
+        smsAyar={smsRes.data ?? null}
       />
     </div>
   )

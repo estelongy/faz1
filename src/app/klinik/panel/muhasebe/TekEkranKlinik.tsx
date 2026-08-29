@@ -17,12 +17,17 @@ import {
   getPatientPhotos, signOutKlinik,
   deleteTreatmentCascade, undoPackageSession, deleteAppointment, deletePayment,
   addStockItem, adjustStock, deleteStockItem, addStockMap, deleteStockMap,
-  updatePatient, deletePatient,
+  updatePatient, deletePatient, saveSmsSettings,
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
+import {
+  doldur, segmentSayisi, type SmsAyar,
+  KLINIK_ADI as VARSAYILAN_KLINIK, ILETISIM_LINK as VARSAYILAN_LINK,
+  VARSAYILAN_OLUSTURMA, VARSAYILAN_PAKET, VARSAYILAN_HATIRLATMA,
+} from './sms-metinleri'
 import {
   findBridge, getBridgeHost, setBridgeHost,
   bridgeUpload, bridgeList, bridgeDelete, bridgeFileUrl,
@@ -99,6 +104,7 @@ interface Props {
   stockItems: StockItemRow[]
   stockMaps: StockMapRow[]
   availability: AvailabilityWeek   // haftalık müsaitlik → slot üretimi
+  smsAyar: SmsAyar | null          // klinik SMS şablonları (yoksa varsayılan)
 }
 
 const TRY = (n: number) =>
@@ -120,16 +126,18 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, displayName, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps, availability }: Props) {
+export default function TekEkranKlinik({ role, displayName, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps, availability, smsAyar }: Props) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
   const dayPickerRef = useRef<HTMLInputElement | null>(null)
   const [search, setSearch] = useState('')
-  const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok'>('gun')
+  const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok' | 'sms'>('gun')
   const [tableSearch, setTableSearch] = useState('')
   const [mobileMenu, setMobileMenu] = useState(false)
   const [hastaDuzenle, setHastaDuzenle] = useState(false)
+  // SMS şablon taslağı: yazarken canlı önizleme için
+  const [smsTaslak, setSmsTaslak] = useState<Record<string, string>>({})
   // Inline randevu düzenleme formu (hangi randevu açık + form alanları)
   // WhatsApp linki açılan ziyaretler — oturum içi, sadece görsel iz (soluklaşır)
   const [waGonderildi, setWaGonderildi] = useState<Set<string>>(new Set())
@@ -563,6 +571,12 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     setMobilePanelOpen(true)
   }
 
+  function submitSmsAyar(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+    run(() => saveSmsSettings(fd))
+  }
+
   function shiftDay(delta: number) {
     const d = new Date(day + 'T12:00:00')
     d.setDate(d.getDate() + delta)
@@ -897,6 +911,12 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
             📦 Stok{stockAll.length > 0 ? ` (${stockAll.length})` : ''}
             {lowStockCount > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/25 text-rose-300">{lowStockCount} azaldı</span>}
           </button>
+          <button
+            onClick={() => { setLeftView(leftView === 'sms' ? 'gun' : 'sms'); setMobilePanelOpen(false) }}
+            title="Hastaya giden SMS metinleri ve gönderim saati"
+            className={`hidden sm:inline-flex px-3 py-2 rounded-lg text-xs font-bold transition-colors ${leftView === 'sms' ? 'bg-sky-500/25 text-sky-200' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
+            ✉️ SMS
+          </button>
           <button onClick={cycleTema}
             title="Tema değiştir (koyu → siyah → açık)"
             className="hidden sm:inline-flex px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
@@ -926,6 +946,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
         {/* Mobil ⋯ açılır menü */}
         {mobileMenu && (
           <div className="sm:hidden flex flex-wrap gap-2 pb-2">
+            <button onClick={() => { setLeftView('sms'); setMobileMenu(false); setMobilePanelOpen(false) }} className={btnGhost}>✉️ SMS</button>
             <button onClick={() => { cycleTema() }} className={btnGhost}>{TEMA_LABEL[tema]}</button>
             <button onClick={() => {
               if (document.fullscreenElement) document.exitFullscreen()
@@ -1201,6 +1222,104 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
       )}
 
       {/* STOK — tam genişlik tablo görünümü */}
+      {/* ── SMS AYARLARI ── klinik kendi metnini ve saatini belirler */}
+      {leftView === 'sms' && (
+        <div className="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-4 space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-lg font-black text-white">✉️ SMS Ayarları</h2>
+            <button onClick={() => setLeftView('gun')} className={btnGhost}>Kapat</button>
+          </div>
+
+          <form onSubmit={submitSmsAyar} className="space-y-4">
+            {/* Klinik kimliği */}
+            <div className="grid sm:grid-cols-2 gap-2">
+              <label className="text-xs text-slate-300 font-bold">Klinik adı (mesajda geçer)
+                <input name="klinik_adi" defaultValue={smsAyar?.klinik_adi ?? ''}
+                  placeholder={VARSAYILAN_KLINIK} className={`${inputCls} mt-1`} />
+              </label>
+              <label className="text-xs text-slate-300 font-bold">İletişim linki / numara
+                <input name="iletisim_link" defaultValue={smsAyar?.iletisim_link ?? ''}
+                  placeholder={VARSAYILAN_LINK} className={`${inputCls} mt-1`} />
+              </label>
+            </div>
+
+            {/* Gönderim zamanı */}
+            <div className="bg-slate-900/40 border border-slate-700/50 rounded-xl p-3 space-y-2">
+              <p className="text-xs font-bold text-slate-300">Hatırlatma zamanı</p>
+              <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
+                <select name="hatirlatma_gun_once" defaultValue={String(smsAyar?.hatirlatma_gun_once ?? 1)}
+                  className={inputCls}>
+                  <option value="0">Randevu günü</option>
+                  <option value="1">1 gün önce</option>
+                  <option value="2">2 gün önce</option>
+                  <option value="3">3 gün önce</option>
+                </select>
+                <span>saat</span>
+                <select name="hatirlatma_saati" defaultValue={String(smsAyar?.hatirlatma_saati ?? 18)}
+                  className={inputCls}>
+                  {Array.from({ length: 24 }, (_, h) => (
+                    <option key={h} value={h}>{String(h).padStart(2, '0')}:00</option>
+                  ))}
+                </select>
+                <span className="text-xs text-slate-500">gönderilsin</span>
+              </div>
+              <div className="flex flex-wrap gap-4 pt-1">
+                <label className="flex items-center gap-2 text-xs text-slate-300">
+                  <input type="checkbox" name="olusturma_aktif" defaultChecked={smsAyar?.olusturma_aktif !== false} />
+                  Randevu oluşturulunca SMS gönder
+                </label>
+                <label className="flex items-center gap-2 text-xs text-slate-300">
+                  <input type="checkbox" name="hatirlatma_aktif" defaultChecked={smsAyar?.hatirlatma_aktif !== false} />
+                  Hatırlatma SMS&apos;i gönder
+                </label>
+              </div>
+            </div>
+
+            {/* Şablonlar */}
+            <div className="space-y-3">
+              <p className="text-xs text-slate-400">
+                Kullanılabilir alanlar:{' '}
+                {['{ad}', '{tarih}', '{saat}', '{klinik}', '{link}', '{seans}'].map(t => (
+                  <code key={t} className="mx-0.5 px-1 py-0.5 rounded bg-slate-900 text-sky-300 text-[11px]">{t}</code>
+                ))}
+              </p>
+              {([
+                ['sablon_olusturma', 'Randevu oluşturulunca', smsAyar?.sablon_olusturma, VARSAYILAN_OLUSTURMA],
+                ['sablon_paket', 'Paket / çok seanslı randevu', smsAyar?.sablon_paket, VARSAYILAN_PAKET],
+                ['sablon_hatirlatma', 'Hatırlatma', smsAyar?.sablon_hatirlatma, VARSAYILAN_HATIRLATMA],
+              ] as const).map(([alan, etiket, deger, varsayilan]) => {
+                const metin = smsTaslak[alan] ?? deger ?? varsayilan
+                const onizleme = doldur(metin, {
+                  ad: 'Emel Berzan', tarih: '31 Ağustos', saat: '14:00', seans: 3,
+                  klinik: smsTaslak.klinik_adi || smsAyar?.klinik_adi || VARSAYILAN_KLINIK,
+                  link: smsTaslak.iletisim_link || smsAyar?.iletisim_link || VARSAYILAN_LINK,
+                })
+                const seg = segmentSayisi(onizleme)
+                return (
+                  <label key={alan} className="block text-xs text-slate-300 font-bold">
+                    {etiket}
+                    <textarea name={alan} rows={3} defaultValue={deger ?? varsayilan}
+                      onChange={e => setSmsTaslak(t => ({ ...t, [alan]: e.target.value }))}
+                      className={`${inputCls} mt-1 font-mono text-[13px] leading-relaxed`} />
+                    <span className="block mt-1 p-2 rounded-lg bg-slate-900/60 text-slate-300 font-normal text-[13px]">
+                      {onizleme}
+                    </span>
+                    <span className={`block mt-0.5 text-[11px] font-normal ${seg > 3 ? 'text-amber-400' : 'text-slate-500'}`}>
+                      {onizleme.length} karakter · {seg} SMS kredisi
+                      {seg > 3 ? ' — uzun mesaj, kredi hızlı biter' : ''}
+                    </span>
+                  </label>
+                )
+              })}
+            </div>
+
+            <button type="submit" disabled={pending} className={btnPrimary}>
+              {pending ? 'Kaydediliyor…' : 'Ayarları Kaydet'}
+            </button>
+          </form>
+        </div>
+      )}
+
       {leftView === 'stok' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">

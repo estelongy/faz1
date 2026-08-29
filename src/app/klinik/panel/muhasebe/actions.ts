@@ -705,7 +705,14 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
       .eq('id', patientId)
       .maybeSingle()
 
-    if (pat?.phone) {
+    // Klinik SMS ayarlari (satir yoksa varsayilan metinler)
+    const { data: smsAyar } = await ctx.supabase
+      .from('internal_sms_settings')
+      .select('klinik_adi, iletisim_link, sablon_olusturma, sablon_paket, olusturma_aktif')
+      .eq('owner_id', ctx.clinicOwnerId)
+      .maybeSingle()
+
+    if (pat?.phone && smsAyar?.olusturma_aktif !== false) {
       const ilk = occurrences[0]
       const tarih = ilk.toLocaleDateString('tr-TR', {
         day: 'numeric', month: 'long', timeZone: 'Europe/Istanbul',
@@ -715,8 +722,8 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
       })
       const ad = duzgunAd(pat.name)
       const mesaj = occurrences.length > 1
-        ? smsPaketPlanlandi(ad, occurrences.length, tarih, saat)
-        : smsRandevuOlusturuldu(ad, tarih, saat)
+        ? smsPaketPlanlandi(ad, occurrences.length, tarih, saat, smsAyar)
+        : smsRandevuOlusturuldu(ad, tarih, saat, smsAyar)
 
       const res = await sendInfoSms(pat.phone, mesaj)
       if (!res.success) {
@@ -1444,3 +1451,56 @@ async function applyStockForUsage(
 }
 
 export { applyStockForUsage as _applyStockForUsage }
+
+// ─── SMS ayarları (klinik başına şablon + gönderim zamanı) ────────────────
+export async function saveSmsSettings(formData: FormData): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const metin = (k: string) => ((formData.get(k) as string | null)?.trim() || null)
+  const saat = Number(formData.get('hatirlatma_saati') ?? 18)
+  const gunOnce = Number(formData.get('hatirlatma_gun_once') ?? 1)
+
+  if (!Number.isInteger(saat) || saat < 0 || saat > 23) {
+    return { ok: false, error: 'Hatırlatma saati 0-23 arasında olmalı.' }
+  }
+  if (!Number.isInteger(gunOnce) || gunOnce < 0 || gunOnce > 7) {
+    return { ok: false, error: 'Kaç gün önce değeri 0-7 arasında olmalı.' }
+  }
+
+  // Şablonda en az {ad} olmalı — hasta adı yoksa mesaj kimliksiz gider
+  for (const [alan, etiket] of [
+    ['sablon_olusturma', 'Randevu oluşturma'],
+    ['sablon_paket', 'Paket'],
+    ['sablon_hatirlatma', 'Hatırlatma'],
+  ] as const) {
+    const v = metin(alan)
+    if (v && !v.includes('{ad}')) {
+      return { ok: false, error: `${etiket} şablonunda {ad} bulunmalı.` }
+    }
+    if (v && v.length > 400) {
+      return { ok: false, error: `${etiket} şablonu 400 karakteri aşamaz.` }
+    }
+  }
+
+  const { error } = await ctx.supabase
+    .from('internal_sms_settings')
+    .upsert({
+      owner_id: ctx.clinicOwnerId,
+      klinik_adi: metin('klinik_adi'),
+      iletisim_link: metin('iletisim_link'),
+      sablon_olusturma: metin('sablon_olusturma'),
+      sablon_paket: metin('sablon_paket'),
+      sablon_hatirlatma: metin('sablon_hatirlatma'),
+      hatirlatma_saati: saat,
+      hatirlatma_gun_once: gunOnce,
+      olusturma_aktif: formData.get('olusturma_aktif') === 'on',
+      hatirlatma_aktif: formData.get('hatirlatma_aktif') === 'on',
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'owner_id' })
+
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
