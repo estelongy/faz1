@@ -22,6 +22,7 @@ import {
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
+import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
 import {
   findBridge, getBridgeHost, setBridgeHost,
   bridgeUpload, bridgeList, bridgeDelete, bridgeFileUrl,
@@ -119,7 +120,7 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps, availability }: Props) {
+export default function TekEkranKlinik({ role, displayName, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps, availability }: Props) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
@@ -130,6 +131,8 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
   const [mobileMenu, setMobileMenu] = useState(false)
   const [hastaDuzenle, setHastaDuzenle] = useState(false)
   // Inline randevu düzenleme formu (hangi randevu açık + form alanları)
+  // WhatsApp linki açılan ziyaretler — oturum içi, sadece görsel iz (soluklaşır)
+  const [waGonderildi, setWaGonderildi] = useState<Set<string>>(new Set())
   const [editAppt, setEditAppt] = useState<{ id: string; patientId: string; tarih: string; saat: string; sure: number; islem: string } | null>(null)
   // Aynı ziyarette birden çok işlem: ek satırlar
   const [extraIslemler, setExtraIslemler] = useState<{ id: string }[]>([])
@@ -564,6 +567,25 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
     const d = new Date(day + 'T12:00:00')
     d.setDate(d.getDate() + delta)
     setDay(d.toLocaleDateString('en-CA'))
+  }
+
+  // ── WhatsApp randevu bildirimi ──
+  // wa.me linki: mesaj hazir gelir, GONDERME karari hekimde kalir.
+  function waLinkFor(grup: ApptRow[], tur: 'olusturuldu' | 'hatirlatma'): string | null {
+    const a = grup[0]
+    if (!a) return null
+    const p = patients.find(pp => pp.id === a.patient_id)
+    if (!p) return null
+    const islemler = grup.map(x => {
+      const pk = x.package_treatment_id ? pkgById.get(x.package_treatment_id) : null
+      return x.treatment_type ?? x.appointment_type ?? (pk ? pk.name : '')
+    })
+    return whatsappLink(p.phone, randevuMesaji(tur, {
+      hastaAdi: p.name,
+      startAt: a.start_at,
+      islemler,
+      klinikAdi: displayName,
+    }))
   }
 
   // ── Slot seçici — hem yeni randevu hem düzenleme formunda kullanılır ──
@@ -1353,6 +1375,55 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
 
         {/* SOL — GÜN AKIŞI veya ALACAKLAR */}
         <div className={`space-y-2 ${mobilePanelOpen ? 'hidden lg:block' : ''}`}>
+
+          {/* SABAH HATIRLATMA ŞERİDİ — bugüne bakarken, gönderilmemiş varsa.
+              wa.me otomatik gönderemez (link tıklanmalı); bu şerit sabah
+              "kimlere hatırlatma gitmeli" sorusunu tek yerde toplar. */}
+          {leftView === 'gun' && day === todayIso() && (() => {
+            const bekleyen = dayVisits.filter(g =>
+              g[0].status === 'scheduled' &&
+              !waGonderildi.has(g[0].id) &&
+              normalizePhone(patients.find(p => p.id === g[0].patient_id)?.phone) !== null)
+            if (bekleyen.length === 0) return null
+            return (
+              <div className="rounded-xl border border-emerald-600/40 bg-emerald-600/10 p-3">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="text-sm font-bold text-emerald-300">
+                    💬 Bugün {bekleyen.length} hastaya hatırlatma
+                  </span>
+                  <button onClick={() => setWaGonderildi(prev => {
+                    const n = new Set(prev)
+                    for (const g of bekleyen) n.add(g[0].id)
+                    return n
+                  })}
+                    className="text-[11px] font-semibold text-slate-400 hover:text-slate-200 shrink-0"
+                    title="Şeridi bugünlük kapat">
+                    Gizle
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {bekleyen.map(g => {
+                    const p = patients.find(pp => pp.id === g[0].patient_id)
+                    const link = waLinkFor(g, 'hatirlatma')
+                    if (!link) return null
+                    const saat = new Date(g[0].start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })
+                    return (
+                      <a key={g[0].id} href={link} target="_blank" rel="noopener noreferrer"
+                        onClick={() => setWaGonderildi(prev => new Set(prev).add(g[0].id))}
+                        title={`${p?.name ?? ''} — WhatsApp'ta aç`}
+                        className="px-2 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-200 text-xs font-semibold">
+                        <span className="tabular-nums">{saat}</span> {p?.name?.split(' ')[0] ?? ''}
+                      </a>
+                    )
+                  })}
+                </div>
+                <p className="text-[10px] text-emerald-400/60 mt-1.5">
+                  Tıklayınca WhatsApp mesaj hazır açılır — göndermeyi siz onaylarsınız.
+                </p>
+              </div>
+            )
+          })()}
+
           {leftView === 'gun' && dayAppts.length === 0 && (
             <div className="text-center py-6 bg-slate-800/30 border border-dashed border-slate-700 rounded-xl">
               <p className="text-slate-400 text-sm">Bekleyen randevu yok.</p>
@@ -1446,6 +1517,25 @@ export default function TekEkranKlinik({ role, patients, appointments, txs, cata
                         </button>
                       )
                     })}
+                    {/* WhatsApp: mesaj hazır açılır, gönderme kararı hekimde */}
+                    {a.status === 'scheduled' && (() => {
+                      const link = waLinkFor(grup, day === todayIso() ? 'hatirlatma' : 'olusturuldu')
+                      if (!link) {
+                        return (
+                          <span className="text-[10px] text-slate-600 shrink-0" title="Hastanın telefonu kayıtlı değil — hasta kartından ekleyin">
+                            📵
+                          </span>
+                        )
+                      }
+                      return (
+                        <a href={link} target="_blank" rel="noopener noreferrer"
+                          onClick={() => setWaGonderildi(prev => new Set(prev).add(grup[0].id))}
+                          title={day === todayIso() ? 'WhatsApp ile bugünkü randevuyu hatırlat' : 'WhatsApp ile randevu bilgisi gönder'}
+                          className={`text-xs shrink-0 ${waGonderildi.has(grup[0].id) ? 'opacity-40' : 'hover:scale-110'} transition-transform`}>
+                          💬
+                        </a>
+                      )
+                    })()}
                   </span>
                   {a.status === 'scheduled' && (
                     <div className="flex gap-1 shrink-0" onClick={e => e.stopPropagation()}>
