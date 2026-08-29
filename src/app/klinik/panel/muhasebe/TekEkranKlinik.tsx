@@ -1389,17 +1389,39 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
               <div className="rounded-xl border border-emerald-600/40 bg-emerald-600/10 p-3">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-sm font-bold text-emerald-300">
-                    💬 Bugün {bekleyen.length} hastaya hatırlatma
+                    💬 Bugün {bekleyen.length} hastaya son hatırlatma
                   </span>
-                  <button onClick={() => setWaGonderildi(prev => {
-                    const n = new Set(prev)
-                    for (const g of bekleyen) n.add(g[0].id)
-                    return n
-                  })}
-                    className="text-[11px] font-semibold text-slate-400 hover:text-slate-200 shrink-0"
-                    title="Şeridi bugünlük kapat">
-                    Gizle
-                  </button>
+                  <span className="flex items-center gap-2 shrink-0">
+                    {bekleyen.length > 1 && (
+                      <button onClick={() => {
+                        // Hepsini sırayla aç: tarayıcı sekme engelini tetiklememek
+                        // için aralıklı açılır; her sekmede sadece Gönder'e basılır.
+                        bekleyen.forEach((g, i) => {
+                          const link = waLinkFor(g, 'hatirlatma')
+                          if (!link) return
+                          setTimeout(() => window.open(link, '_blank', 'noopener,noreferrer'), i * 600)
+                        })
+                        setWaGonderildi(prev => {
+                          const n = new Set(prev)
+                          for (const g of bekleyen) n.add(g[0].id)
+                          return n
+                        })
+                      }}
+                        className="text-[11px] font-bold px-2 py-1 rounded-md bg-emerald-600/30 text-emerald-200 hover:bg-emerald-600/50"
+                        title="Tüm hastaların WhatsApp'ını sırayla aç">
+                        Hepsini aç
+                      </button>
+                    )}
+                    <button onClick={() => setWaGonderildi(prev => {
+                      const n = new Set(prev)
+                      for (const g of bekleyen) n.add(g[0].id)
+                      return n
+                    })}
+                      className="text-[11px] font-semibold text-slate-400 hover:text-slate-200"
+                      title="Şeridi bugünlük kapat">
+                      Gizle
+                    </button>
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {bekleyen.map(g => {
@@ -1418,7 +1440,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   })}
                 </div>
                 <p className="text-[10px] text-emerald-400/60 mt-1.5">
-                  Tıklayınca WhatsApp mesaj hazır açılır — göndermeyi siz onaylarsınız.
+                  SMS dün akşam gitti. WhatsApp son hatırlatma — hasta buradan yazışabilir.
                 </p>
               </div>
             )

@@ -4,9 +4,11 @@ import { sendInfoSms } from '@/lib/netgsm'
 import { duzgunAd, smsHatirlatma } from '@/app/klinik/panel/muhasebe/sms-metinleri'
 
 /**
- * Klinik randevu hatırlatma SMS cron — her sabah 09:00 (TR).
+ * Klinik randevu hatırlatma SMS cron — her akşam 18:00 (TR).
  *
- * O GÜN randevusu olan hastalara tek seferlik hatırlatma gönderir.
+ * YARIN randevusu olan hastalara tek seferlik hatırlatma gönderir.
+ * (Randevu günü sabahı ayrıca WhatsApp'tan hatırlatılır — o kanal
+ * çift yönlü olduğu için hasta "geç kalacağım" diye yazabilir.)
  * Gönderilenler reminder_sms_sent_at ile işaretlenir; cron iki kez çalışsa
  * bile aynı hastaya ikinci SMS gitmez.
  *
@@ -41,8 +43,9 @@ export async function GET(req: NextRequest) {
 
   const admin = createServiceClient()
 
-  // Bugünün TR sınırları — sunucu UTC, gün TR'ye göre hesaplanır
+  // YARININ TR sınırları — sunucu UTC, gün TR'ye göre hesaplanır
   const trNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Istanbul' }))
+  trNow.setDate(trNow.getDate() + 1)
   const y = trNow.getFullYear()
   const m = String(trNow.getMonth() + 1).padStart(2, '0')
   const d = String(trNow.getDate()).padStart(2, '0')
@@ -65,7 +68,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
     if (!appts || appts.length === 0) {
-      return NextResponse.json({ ok: true, sent: 0, note: 'Bugün hatırlatılacak randevu yok' })
+      return NextResponse.json({ ok: true, sent: 0, note: 'Yarın için hatırlatılacak randevu yok' })
     }
 
     // Hasta bilgileri (telefon + ad)

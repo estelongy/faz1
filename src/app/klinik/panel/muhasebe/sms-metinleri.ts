@@ -35,8 +35,8 @@ export function smsPaketPlanlandi(ad: string, seansSayisi: number, tarih: string
     + `Değişiklik veya Bilgi İçin Bize ulaşabilirsiniz. ${ILETISIM_LINK}`
 }
 
-/** Randevu günü sabah gönderilen hatırlatma. */
+/** Randevudan BİR GÜN ÖNCE akşam gönderilen hatırlatma. */
 export function smsHatirlatma(ad: string, saat: string): string {
-  return `Sayın ${ad}, ${KLINIK_ADI}'nde bugün Saat ${saat} işlem randevunuz bulunmaktadır. `
+  return `Sayın ${ad}, ${KLINIK_ADI}'nde yarın Saat ${saat} işlem randevunuz bulunmaktadır. `
     + `Değişiklik veya Bilgi İçin Bize ulaşabilirsiniz. ${ILETISIM_LINK}`
 }

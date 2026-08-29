@@ -722,8 +722,10 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
       if (!res.success) {
         console.error('[randevu-sms] gonderilemedi:', pat.name, res.error)
       } else {
-        // BUGÜNE randevu verildiyse sabah hatırlatması artık gereksiz —
-        // hasta iki mesaj almasın. İlk seansı bugün olanlar işaretlenir.
+        // Randevu BUGÜN ise akşamki hatırlatma anlamsız (gün geçmiş olur) —
+        // işaretlenir ki cron boşuna göndermesin.
+        // YARIN ise hatırlatma YİNE GİTMELİ: oluşturma mesajı bilgi, akşamki
+        // hatırlatma ise "yarın randevunuz var" uyarısı; ikisi farklı iş görür.
         const bugun = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
         const ilkGun = ilk.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
         if (ilkGun === bugun) {
@@ -733,8 +735,8 @@ export async function createAppointmentForPatient(formData: FormData): Promise<R
             .eq('patient_id', patientId)
             .eq('owner_id', ctx.clinicOwnerId)
             .eq('status', 'scheduled')
-            .gte('start_at', new Date(`${bugun}T00:00:00+03:00`).toISOString())
-            .lte('start_at', new Date(`${bugun}T23:59:59+03:00`).toISOString())
+            .gte('start_at', new Date(`${ilkGun}T00:00:00+03:00`).toISOString())
+            .lte('start_at', new Date(`${ilkGun}T23:59:59+03:00`).toISOString())
             .is('reminder_sms_sent_at', null)
         }
       }
