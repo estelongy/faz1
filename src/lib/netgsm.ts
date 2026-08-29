@@ -9,6 +9,9 @@
  */
 
 const NETGSM_URL = 'https://api.netgsm.com.tr/sms/rest/v2/otp'
+// Bilgilendirme (toplu/giden) SMS ayri uctan gider ve AYRI paketten duser.
+// OTP paketi girisin yakiti — hatirlatma icin OTP ucu KULLANILMAZ.
+const NETGSM_SEND_URL = 'https://api.netgsm.com.tr/sms/rest/v2/send'
 
 export interface NetgsmResult {
   success: boolean
@@ -155,20 +158,15 @@ export async function sendInfoSms(phone: string, message: string): Promise<Netgs
     return { success: false, error: 'Netgsm env degiskenleri tanimli degil' }
   }
 
-  // Türkçe karakterleri ASCII'ye düşür (OTP endpoint GSM-7 bandı, TR karakter yok)
-  const cleaned = message
-    .replace(/ı/g, 'i').replace(/İ/g, 'I')
-    .replace(/ş/g, 's').replace(/Ş/g, 'S')
-    .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
-    .replace(/ü/g, 'u').replace(/Ü/g, 'U')
-    .replace(/ö/g, 'o').replace(/Ö/g, 'O')
-    .replace(/ç/g, 'c').replace(/Ç/g, 'C')
-    .slice(0, 155)
+  // Giden SMS ucu encoding:'TR' ile Türkçe karakter destekler — ASCII'ye
+  // düşürmeye gerek yok. TR kodlamada segment 70 karakter; 2 segmenti
+  // aşmamak için 140'ta kesiyoruz (kredi maliyeti öngörülebilir kalsın).
+  const cleaned = message.slice(0, 140)
 
   const auth = Buffer.from(`${usercode}:${password}`).toString('base64')
 
   try {
-    const res = await fetch(NETGSM_URL, {
+    const res = await fetch(NETGSM_SEND_URL, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${auth}`,
@@ -176,8 +174,8 @@ export async function sendInfoSms(phone: string, message: string): Promise<Netgs
       },
       body: JSON.stringify({
         msgheader,
-        msg: cleaned,
-        no: normalized,
+        messages: [{ msg: cleaned, no: normalized }],
+        encoding: 'TR',
       }),
     })
 
@@ -187,6 +185,7 @@ export async function sendInfoSms(phone: string, message: string): Promise<Netgs
       return { success: false, error: `Netgsm parse hatasi: ${text.slice(0, 100)}` }
     }
 
+    // Giden SMS ucu basaride '00' doner (jobid ile birlikte)
     if (json.code === '00') {
       return { success: true, jobid: json.jobid, code: json.code }
     }
