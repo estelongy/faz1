@@ -1263,6 +1263,10 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                 </select>
                 <span className="text-xs text-slate-500">gönderilsin</span>
               </div>
+              <p className="text-[11px] text-amber-400/80">
+                Not: Şu an tüm hatırlatmalar 18:00&apos;de gönderiliyor — saat seçimi
+                sunucu planı yükseltilince devreye girecek. &quot;Kaç gün önce&quot; ayarı çalışıyor.
+              </p>
               <div className="flex flex-wrap gap-4 pt-1">
                 <label className="flex items-center gap-2 text-xs text-slate-300">
                   <input type="checkbox" name="olusturma_aktif" defaultChecked={smsAyar?.olusturma_aktif !== false} />

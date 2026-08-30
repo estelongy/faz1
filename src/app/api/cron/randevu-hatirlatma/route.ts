@@ -4,10 +4,12 @@ import { sendInfoSms } from '@/lib/netgsm'
 import { duzgunAd, smsHatirlatma } from '@/app/klinik/panel/muhasebe/sms-metinleri'
 
 /**
- * Klinik randevu hatırlatma SMS cron — SAAT BAŞI çalışır.
+ * Klinik randevu hatırlatma SMS cron — günde bir kez, 18:00 TR.
  *
- * Her klinik kendi ayarladığı saatte ve kaç gün önce istiyorsa o gün
- * için gönderir (internal_sms_settings; varsayılan 18:00, 1 gün önce).
+ * Her klinik kaç gün önce istiyorsa o gün için gönderir
+ * (internal_sms_settings; varsayılan 1 gün önce).
+ * Saat ayarı da tabloda tutulur ama Vercel Hobby planı günde TEK cron'a
+ * izin verdiği için şimdilik herkes 18:00'de alır.
  * (Randevu günü sabahı ayrıca WhatsApp'tan hatırlatılır — o kanal
  * çift yönlü olduğu için hasta "geç kalacağım" diye yazabilir.)
  * Gönderilenler reminder_sms_sent_at ile işaretlenir; cron iki kez çalışsa
@@ -46,7 +48,6 @@ export async function GET(req: NextRequest) {
 
   // Cron saatte bir çalışır; her klinik KENDİ ayarladığı saatte gönderir.
   const trNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Istanbul' }))
-  const suAnkiSaat = trNow.getHours()
 
   try {
     // Klinik SMS ayarları — satırı olmayan klinik varsayılanı kullanır (18:00, 1 gün önce)
@@ -56,7 +57,6 @@ export async function GET(req: NextRequest) {
     const ayarById = new Map((ayarlar ?? []).map(a => [a.owner_id, a]))
 
     // Bu saatte gönderim yapacak kliniklerin hedef günleri
-    const VARSAYILAN_SAAT = 18
     const VARSAYILAN_GUN = 1
     const hedefler = new Map<string, { bas: string; bit: string }>()
     const ownerIds = new Set<string>()
@@ -72,8 +72,10 @@ export async function GET(req: NextRequest) {
     for (const oid of Array.from(ownerIds)) {
       const ayar = ayarById.get(oid)
       if (ayar?.hatirlatma_aktif === false) continue
-      const saat = ayar?.hatirlatma_saati ?? VARSAYILAN_SAAT
-      if (saat !== suAnkiSaat) continue
+      // NOT: Vercel Hobby planı günde TEK cron'a izin veriyor, bu yüzden
+      // saat filtresi uygulanamıyor — cron ne zaman çalışırsa o zaman
+      // gönderilir (vercel.json: 15:00 UTC = 18:00 TR). Ayarlanan saat
+      // Pro plana geçilince devreye girer; şimdilik bilgi amaçlı tutuluyor.
       const gunOnce = ayar?.hatirlatma_gun_once ?? VARSAYILAN_GUN
       const hedef = new Date(trNow)
       hedef.setDate(hedef.getDate() + gunOnce)
@@ -87,7 +89,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (hedefler.size === 0) {
-      return NextResponse.json({ ok: true, sent: 0, note: `Saat ${suAnkiSaat}:00 — gönderim zamanı gelen klinik yok` })
+      return NextResponse.json({ ok: true, sent: 0, note: 'Gönderim yapacak klinik yok' })
     }
 
     // Hedef günü olan kliniklerin randevuları
