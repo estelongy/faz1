@@ -1517,18 +1517,30 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   <span className="flex items-center gap-2 shrink-0">
                     {bekleyen.length > 1 && (
                       <button onClick={() => {
-                        // Hepsini sırayla aç: tarayıcı sekme engelini tetiklememek
-                        // için aralıklı açılır; her sekmede sadece Gönder'e basılır.
-                        bekleyen.forEach((g, i) => {
+                        // Hepsini AYNI TIKLAMADA aç. setTimeout ile açmak işe yaramıyordu:
+                        // tarayıcı yalnız ilk window.open'ı kullanıcı jestine bağlı sayıyor,
+                        // zamanlayıcıdakiler pop-up engeline takılıyordu (ilk hasta açılıp
+                        // gerisi sessizce düşüyordu).
+                        const acildi: string[] = []
+                        let engellendi = 0
+                        for (const g of bekleyen) {
                           const link = waLinkFor(g, 'hatirlatma')
-                          if (!link) return
-                          setTimeout(() => window.open(link, '_blank', 'noopener,noreferrer'), i * 600)
-                        })
+                          if (!link) continue
+                          const w = window.open(link, '_blank', 'noopener,noreferrer')
+                          if (w) acildi.push(g[0].id)
+                          else engellendi++
+                        }
+                        // Yalnız GERÇEKTEN açılanlar işaretlenir; engellenenler şeritte kalır
                         setWaGonderildi(prev => {
                           const n = new Set(prev)
-                          for (const g of bekleyen) n.add(g[0].id)
+                          for (const id of acildi) n.add(id)
                           return n
                         })
+                        if (engellendi > 0) {
+                          setError(`${engellendi} sekme tarayıcı tarafından engellendi. `
+                            + 'Adres çubuğundaki "pop-up engellendi" simgesinden bu siteye izin verin '
+                            + '— ya da kalan hastalara tek tek tıklayın.')
+                        }
                       }}
                         className="text-[11px] font-bold px-2 py-1 rounded-md bg-emerald-600/30 text-emerald-200 hover:bg-emerald-600/50"
                         title="Tüm hastaların WhatsApp'ını sırayla aç">
