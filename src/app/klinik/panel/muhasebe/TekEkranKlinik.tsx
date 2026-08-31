@@ -1514,52 +1514,46 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   <span className="text-sm font-bold text-emerald-300">
                     💬 Bugün {bekleyen.length} hastaya son hatırlatma
                   </span>
-                  <span className="flex items-center gap-2 shrink-0">
-                    {bekleyen.length > 1 && (
-                      <button onClick={() => {
-                        // Hepsini AYNI TIKLAMADA aç. setTimeout ile açmak işe yaramıyordu:
-                        // tarayıcı yalnız ilk window.open'ı kullanıcı jestine bağlı sayıyor,
-                        // zamanlayıcıdakiler pop-up engeline takılıyordu (ilk hasta açılıp
-                        // gerisi sessizce düşüyordu).
-                        const acildi: string[] = []
-                        let engellendi = 0
-                        for (const g of bekleyen) {
-                          const link = waLinkFor(g, 'hatirlatma')
-                          if (!link) continue
-                          const w = window.open(link, '_blank', 'noopener,noreferrer')
-                          if (w) acildi.push(g[0].id)
-                          else engellendi++
-                        }
-                        // Yalnız GERÇEKTEN açılanlar işaretlenir; engellenenler şeritte kalır
-                        setWaGonderildi(prev => {
-                          const n = new Set(prev)
-                          for (const id of acildi) n.add(id)
-                          return n
-                        })
-                        if (engellendi > 0) {
-                          setError(`${engellendi} sekme tarayıcı tarafından engellendi. `
-                            + 'Adres çubuğundaki "pop-up engellendi" simgesinden bu siteye izin verin '
-                            + '— ya da kalan hastalara tek tek tıklayın.')
-                        }
-                      }}
-                        className="text-[11px] font-bold px-2 py-1 rounded-md bg-emerald-600/30 text-emerald-200 hover:bg-emerald-600/50"
-                        title="Tüm hastaların WhatsApp'ını sırayla aç">
-                        Hepsini aç
-                      </button>
-                    )}
-                    <button onClick={() => setWaGonderildi(prev => {
-                      const n = new Set(prev)
-                      for (const g of bekleyen) n.add(g[0].id)
-                      return n
-                    })}
-                      className="text-[11px] font-semibold text-slate-400 hover:text-slate-200"
-                      title="Şeridi bugünlük kapat">
-                      Gizle
-                    </button>
-                  </span>
+                  <button onClick={() => setWaGonderildi(prev => {
+                    const n = new Set(prev)
+                    for (const g of bekleyen) n.add(g[0].id)
+                    return n
+                  })}
+                    className="text-[11px] font-semibold text-slate-400 hover:text-slate-200 shrink-0"
+                    title="Şeridi bugünlük kapat">
+                    Gizle
+                  </button>
                 </div>
+
+                {/* SIRADAKİ HASTA — tek büyük buton.
+                    Toplu açma (çoklu window.open) PWA modunda çalışmıyor: sekmeler
+                    sessizce açılmıyor, uyarı da vermiyor. Tek tıklama = tek window.open
+                    her yerde çalışır; basınca sıradakine geçer. */}
+                {(() => {
+                  const g = bekleyen[0]
+                  const p = patients.find(pp => pp.id === g[0].patient_id)
+                  const link = waLinkFor(g, 'hatirlatma')
+                  if (!link) return null
+                  const saat = new Date(g[0].start_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })
+                  return (
+                    <a href={link} target="_blank" rel="noopener noreferrer"
+                      onClick={() => setWaGonderildi(prev => new Set(prev).add(g[0].id))}
+                      className="flex items-center justify-between gap-3 w-full px-3 py-2.5 mb-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-colors">
+                      <span className="flex items-center gap-2 min-w-0">
+                        <span className="text-lg shrink-0">💬</span>
+                        <span className="text-left min-w-0">
+                          <span className="block text-sm font-bold truncate">{p?.name ?? ''}</span>
+                          <span className="block text-[11px] text-emerald-100 tabular-nums">{saat} randevusu</span>
+                        </span>
+                      </span>
+                      <span className="text-xs font-bold shrink-0 bg-white/20 px-2 py-1 rounded-lg">
+                        {bekleyen.length > 1 ? `Aç · ${bekleyen.length - 1} kaldı` : 'Aç · son'}
+                      </span>
+                    </a>
+                  )
+                })()}
                 <div className="flex flex-wrap gap-1.5">
-                  {bekleyen.map(g => {
+                  {bekleyen.slice(1).map(g => {
                     const p = patients.find(pp => pp.id === g[0].patient_id)
                     const link = waLinkFor(g, 'hatirlatma')
                     if (!link) return null
@@ -1575,7 +1569,8 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   })}
                 </div>
                 <p className="text-[10px] text-emerald-400/60 mt-1.5">
-                  SMS dün akşam gitti. WhatsApp son hatırlatma — hasta buradan yazışabilir.
+                  Sıradaki hastayı açar, gönderdikten sonra tekrar basarsın. SMS dün akşam
+                  gitti; WhatsApp son hatırlatma — hasta buradan yazışabilir.
                 </p>
               </div>
             )
