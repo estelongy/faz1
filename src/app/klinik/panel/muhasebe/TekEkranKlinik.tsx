@@ -1092,7 +1092,15 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       <tr key={p.id}
                         className="border-b border-slate-800/80 hover:bg-slate-800/40 cursor-pointer"
                         onClick={() => { pickPatient(p.id); setLeftView('gun') }}>
-                        <td className="px-4 py-2.5 text-white font-semibold">{p.name}</td>
+                        <td className="px-4 py-2.5 text-white font-semibold">
+                          {p.name}
+                          {p.patient_code && (
+                            <span className={`block text-[10px] font-mono font-normal ${
+                              p.patient_code.endsWith('-HATA') ? 'text-rose-400' : 'text-slate-500'}`}>
+                              {p.patient_code}
+                            </span>
+                          )}
+                        </td>
                         <td data-label="Telefon" className="px-3 py-2.5 text-slate-400">{p.phone ?? '—'}</td>
                         <td data-label="Toplam işlem" className="px-3 py-2.5 text-right tabular-nums text-slate-300">{TRY(p.islemTotal)}</td>
                         <td data-label="Bakiye" className={`px-3 py-2.5 text-right tabular-nums font-bold ${p.remaining > 0 ? 'text-rose-300' : 'text-emerald-400/80'}`}>
@@ -1833,9 +1841,20 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                           title="Hastayı sil (sadece kaydı olmayan hastalar)"
                           className="text-slate-600 hover:text-rose-300 text-sm shrink-0" aria-label="Hastayı sil">🗑</button>
                       </div>
-                      <p className="text-sm text-slate-400 mt-0.5">
-                        {selected.phone ?? 'Telefon yok'}
-                        {selected.notes ? ` · ${selected.notes}` : ''}
+                      <p className="text-sm text-slate-400 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                        {selected.patient_code && (
+                          <span className={`text-[11px] font-mono font-bold px-1.5 py-0.5 rounded tabular-nums ${
+                            selected.patient_code.endsWith('-HATA')
+                              ? 'bg-rose-500/20 text-rose-300'
+                              : 'bg-slate-700/60 text-slate-300'}`}
+                            title={selected.patient_code.endsWith('-HATA')
+                              ? 'Bu kayıtta telefon çakışması var — notu okuyun'
+                              : 'Hasta kodu'}>
+                            {selected.patient_code}
+                          </span>
+                        )}
+                        <span>{selected.phone ?? 'Telefon yok'}</span>
+                        {selected.notes ? <span>· {selected.notes}</span> : null}
                       </p>
                     </>
                   )}

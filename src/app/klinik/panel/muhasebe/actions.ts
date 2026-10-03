@@ -42,10 +42,37 @@ export async function addPatient(formData: FormData): Promise<Result> {
   if (name.length < 2) return { ok: false, error: 'Hasta adı en az 2 karakter.' }
   if (name.length > 120) return { ok: false, error: 'Hasta adı çok uzun.' }
 
+  // Mukerrer kaydi ONCEDEN yakala: DB trigger'i da engelliyor ama burada
+  // hastanin adini/kodunu gosterip "mevcut hastayi sec" diyebiliyoruz.
+  if (phone) {
+    const salt = phone.replace(/\D/g, '')
+    if (salt) {
+      const { data: hepsi } = await ctx.supabase
+        .from('internal_patient')
+        .select('name, phone, patient_code')
+        .eq('owner_id', ctx.clinicOwnerId)
+      const varOlan = (hepsi ?? []).find(p => (p.phone ?? '').replace(/\D/g, '') === salt)
+      if (varOlan) {
+        return {
+          ok: false,
+          error: `Bu telefon zaten kayıtlı: ${varOlan.name}`
+            + (varOlan.patient_code ? ` (${varOlan.patient_code})` : '')
+            + '. Yeni kayıt açmak yerine yukarıdan arayıp mevcut hastayı seçin.',
+        }
+      }
+    }
+  }
+
   const { error } = await ctx.supabase.from('internal_patient').insert({
     owner_id: ctx.clinicOwnerId, name, phone, notes, created_by: ctx.user.id,
   })
-  if (error) return { ok: false, error: error.message }
+  if (error) {
+    // DB trigger'i (yaris durumunda) devreye girerse ham mesaji gosterme
+    if (error.code === '23505' || /zaten kayıtlı/i.test(error.message)) {
+      return { ok: false, error: error.message.replace(/^.*?:\s*/, 'Bu telefon zaten kayıtlı: ') }
+    }
+    return { ok: false, error: error.message }
+  }
   revalidatePath('/klinik/panel/muhasebe')
   return { ok: true }
 }
@@ -60,6 +87,25 @@ export async function updatePatient(id: string, formData: FormData): Promise<Res
 
   if (name.length < 2) return { ok: false, error: 'Hasta adı en az 2 karakter.' }
   if (name.length > 120) return { ok: false, error: 'Hasta adı çok uzun.' }
+
+  // Telefon baskasina aitse engelle
+  if (phone) {
+    const salt = phone.replace(/\D/g, '')
+    if (salt) {
+      const { data: hepsi } = await ctx.supabase
+        .from('internal_patient')
+        .select('id, name, phone, patient_code')
+        .eq('owner_id', ctx.clinicOwnerId)
+      const baskasi = (hepsi ?? []).find(p => p.id !== id && (p.phone ?? '').replace(/\D/g, '') === salt)
+      if (baskasi) {
+        return {
+          ok: false,
+          error: `Bu telefon başka hastaya ait: ${baskasi.name}`
+            + (baskasi.patient_code ? ` (${baskasi.patient_code})` : '') + '.',
+        }
+      }
+    }
+  }
 
   const { error } = await ctx.supabase
     .from('internal_patient')

@@ -35,7 +35,7 @@ export default async function MuhasebePage({
   const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
   const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, stockRes, stockMapRes, availRes, smsRes] = await Promise.all([
-    supabase.from('internal_patient').select('id, name, phone, notes').order('created_at', { ascending: false }),
+    supabase.from('internal_patient').select('id, name, patient_code, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date, session_total'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
     supabase
@@ -113,7 +113,7 @@ export default async function MuhasebePage({
     const lastP = ps.map(pay => pay.paid_at).sort().pop()
     const lastActivity = [lastT, lastP].filter(Boolean).sort().pop() ?? null
     return {
-      id: p.id, name: p.name, phone: p.phone, notes: p.notes,
+      id: p.id, name: p.name, patient_code: p.patient_code ?? null, phone: p.phone, notes: p.notes,
       total_amount: totalAmount, paid_amount: paidAmount,
       remaining: totalAmount - paidAmount,
       treatment_count: ts.length, last_activity: lastActivity,

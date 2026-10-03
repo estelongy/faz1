@@ -9,6 +9,7 @@ import { addQuickEntry } from './actions'
 export interface PatientRow {
   id: string
   name: string
+  patient_code: string | null   // IG031026-A1G — DB trigger'i uretir
   phone: string | null
   notes: string | null
   total_amount: number
