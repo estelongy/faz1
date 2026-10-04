@@ -22,6 +22,7 @@ import {
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
 import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
+import { kademeFiyati } from '@/lib/uyelik'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
 import {
@@ -740,6 +741,20 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   }
 
   // ── Form gönderimleri (optimistic push + action) ──
+  // ─── Kademe indirimi (işlem formu) ───
+  // Girilen tutar SON PAZARLIK tutarıdır; üye indirimi onun üstüne uygulanır.
+  // docs/uyelik-sistemi.md §5
+  const islemTutarRef = useRef<HTMLInputElement>(null)
+  const [islemTutar, setIslemTutar] = useState('')
+  const uyelikIndirimi = useMemo(() => {
+    if (!selected || selected.uyelik.kademe === 'primula') return null
+    const girilen = Number(islemTutar.replace(',', '.'))
+    if (!Number.isFinite(girilen) || girilen <= 0) return null
+    const indirimli = kademeFiyati(girilen, selected.uyelik.kademe)
+    if (indirimli >= girilen) return null
+    return { girilen, indirimli, oran: selected.uyelik.indirim }
+  }, [selected, islemTutar])
+
   function submitIslem(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!selectedId) return
@@ -770,6 +785,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     if (newTxs.length) setOptTxs(prev => [...prev, ...newTxs])
     if (fromApptId) setApptStatusOv(prev => ({ ...prev, [fromApptId]: 'completed' }))
     setExtraIslemler([])
+    setIslemTutar('')
 
     run(() => addQuickEntry(fd))
   }
@@ -2101,7 +2117,8 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         {catalog.map(c => <option key={c.id} value={c.name} />)}
                       </datalist>
                     </div>
-                    <input name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal" className={inputCls} />
+                    <input ref={islemTutarRef} name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal"
+                      onChange={e => setIslemTutar(e.target.value)} className={inputCls} />
                     <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
                     <button type="button"
                       onClick={() => setExtraIslemler(prev => [...prev, { id: oid() }])}
@@ -2110,6 +2127,28 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       + İşlem
                     </button>
                   </div>
+
+                  {/* Kademe indirimi — pazarlik bittikten SONRA uygulanir.
+                      Girilen tutar son pazarlik tutaridir; uyelik indirimi onun ustune biner. */}
+                  {uyelikIndirimi && (
+                    <div className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/30">
+                      <span className="text-xs text-amber-200 font-semibold">
+                        {selected?.uyelik.kademeAdi} · %{uyelikIndirimi.oran} üye indirimi
+                      </span>
+                      <span className="text-xs text-slate-300 tabular-nums">
+                        {TRY(uyelikIndirimi.girilen)} → <b className="text-amber-200">{TRY(uyelikIndirimi.indirimli)}</b>
+                      </span>
+                      <button type="button"
+                        onClick={() => {
+                          const v = String(uyelikIndirimi.indirimli)
+                          if (islemTutarRef.current) islemTutarRef.current.value = v
+                          setIslemTutar(v)
+                        }}
+                        className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900">
+                        Uygula
+                      </button>
+                    </div>
+                  )}
 
                   {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
                   {extraIslemler.map((row, i) => (
