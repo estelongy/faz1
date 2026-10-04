@@ -26,9 +26,13 @@ export default function UyelikRozet({
         title={`%${uyelik.indirim} üye indirimi`}>
         {uyelik.kademeAdi}
       </span>
-      {kalan && uyelik.sonrakiKademeAdi && uyelik.kalanTl > 0 && (
+      {kalan && uyelik.sonrakiKademeAdi && (uyelik.kalanTl > 0 || uyelik.kalanZiyaret > 0) && (
         <span className="text-[11px] text-slate-500 truncate">
-          {uyelik.sonrakiKademeAdi}&rsquo;ya {TRY(uyelik.kalanTl)}
+          {uyelik.sonrakiKademeAdi}&rsquo;ya{' '}
+          {/* Optima'ya kadar ölçü para, üstünde ziyaret. */}
+          {uyelik.kalanZiyaret > 0
+            ? `${uyelik.kalanZiyaret} ziyaret`
+            : TRY(uyelik.kalanTl)}
         </span>
       )}
     </span>

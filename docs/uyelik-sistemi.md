@@ -89,15 +89,22 @@ işlemle Optima olunur. Sistem gülünç olur.
 | **Primula** | kayıt | — | %5 |
 | **Elita** | 50.000 | **35.000** | %10 |
 | **Optima** | 150.000 | **100.000** | **%20 — TAVAN** |
-| **Maxima** | Optima + 1 yıl düzenli takip | | %20 + hediye |
-| **Suprema** | Optima + 3 yıl düzenli takip | | %20 + hediye + bakım |
+| **Maxima** | Optima'dan sonra **+3 ziyaret** | | %20 + hediye |
+| **Suprema** | Optima'dan sonra **+5 ziyaret** | | %20 + hediye + bakım |
 
 **Çift eşik mantığı:** tek seferde gelen daha yüksek eşik öder, düzenli gelen daha
 düşük. Sadakat indirimi eşiğin kendisinde.
 
-**Düzenli takip:** 3 ayda bir bakım ve kontrol, aralarında 4 aydan uzun boşluk yok.
-Kontrol de temas sayılır — işlem yapılması şart değil. (Optima'ya kadar sadece
-**paralı** ziyaret sayılır; kontrol Optima'dan sonra devreye girer.)
+### Optima üstünde ölçü değişir: para değil ZİYARET
+Optima zaten parayı ödemiştir. Sonrası **tutardan bağımsız** — amaç bağı pekiştirmek.
+Maxima = Optima'ya ulaşılan ziyaretten sonra 3 ziyaret daha; Suprema = 5 ziyaret daha.
+3 aylık ritimde kabaca 1 yıl ve 1.5-2 yıl eder — ama süre şartı YOK, sayaç ziyarettir.
+
+Bu seçim bilinçli: "1 yıl düzenli takip" kuralı **kontrol ziyareti kaydı** gerektiriyordu
+(sistemde yok, hasta para bırakmadan gelince iz kalmıyor). Ziyaret sayısı bugünkü
+veriyle ölçülebiliyor, ek tablo istemiyor.
+
+Hastaya gösterim de buna göre değişir: Optima'ya kadar "₺12.000", üstünde "2 ziyaret".
 
 ---
 

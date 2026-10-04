@@ -44,6 +44,13 @@ const ESIK = {
   optima: { tek: 150_000, coklu: 100_000 },
 } as const
 
+/**
+ * Optima'dan SONRAKİ ziyaret sayısı. Tutardan bağımsız — amaç bağı pekiştirmek.
+ * Optima zaten parayı ödemiş; sonrası sadece gelmek.
+ * 3 ziyaret ≈ 1 yıl, 5 ziyaret ≈ 1.5-2 yıl (3 aylık ritimde).
+ */
+const SONRAKI_ZIYARET = { maxima: 3, suprema: 5 } as const
+
 export interface UyelikOdeme {
   amount: number | string | null
   paid_at: string | null
@@ -63,10 +70,12 @@ export interface UyelikDurumu {
   puan: number
   ziyaret: number
   tahsilat: number
-  /** Bir üst kademeye kalan — TL cinsinden, hastaya gösterilen sayı. */
   sonrakiKademe: Kademe | null
   sonrakiKademeAdi: string | null
+  /** Bir üst kademeye kalan — TL. Optima'ya kadar ölçü budur. */
   kalanTl: number
+  /** Optima üstünde ölçü ziyaret: Maxima/Suprema'ya kalan ziyaret sayısı. */
+  kalanZiyaret: number
 }
 
 function gunAnahtari(iso: string | null): string | null {
@@ -104,15 +113,41 @@ export function uyelikHesapla(odemeler: UyelikOdeme[], islemler: UyelikIslem[]):
   const elitaEsik = tekMi ? ESIK.elita.tek : ESIK.elita.coklu
   const optimaEsik = tekMi ? ESIK.optima.tek : ESIK.optima.coklu
 
+  // Optima'ya KAÇINCI ziyarette ulaşıldı? Sonrası Maxima/Suprema'yı açar.
+  let optimaZiyareti = 0
+  {
+    let birikim = 0
+    for (let i = 0; i < ziyaretler.length; i++) {
+      birikim += ziyaretler[i] * siraCarpani(i + 1)
+      const esik = i === 0 ? ESIK.optima.tek : ESIK.optima.coklu
+      if (birikim >= esik) { optimaZiyareti = i + 1; break }
+    }
+  }
+  const optimaSonrasi = optimaZiyareti > 0 ? ziyaret - optimaZiyareti : 0
+
   const kademe: Kademe =
-    puan >= optimaEsik ? 'optima' : puan >= elitaEsik ? 'elita' : 'primula'
+    optimaZiyareti > 0
+      ? (optimaSonrasi >= SONRAKI_ZIYARET.suprema ? 'suprema'
+        : optimaSonrasi >= SONRAKI_ZIYARET.maxima ? 'maxima'
+        : 'optima')
+      : puan >= elitaEsik ? 'elita' : 'primula'
 
   // Kalan: bir üst eşiğe ulaşmak için BUGÜN gereken ek tahsilat.
   // Bir sonraki ziyaret, sıradaki çarpanla gelir — hastaya o para gösterilir.
   const sonrakiEsik =
     kademe === 'primula' ? elitaEsik : kademe === 'elita' ? optimaEsik : null
   const sonrakiKademe: Kademe | null =
-    kademe === 'primula' ? 'elita' : kademe === 'elita' ? 'optima' : null
+    kademe === 'primula' ? 'elita'
+    : kademe === 'elita' ? 'optima'
+    : kademe === 'optima' ? 'maxima'
+    : kademe === 'maxima' ? 'suprema'
+    : null
+
+  // Optima üstünde ölçü para değil ZİYARET.
+  const kalanZiyaret =
+    kademe === 'optima' ? SONRAKI_ZIYARET.maxima - optimaSonrasi
+    : kademe === 'maxima' ? SONRAKI_ZIYARET.suprema - optimaSonrasi
+    : 0
 
   let kalanTl = 0
   if (sonrakiEsik !== null) {
@@ -139,6 +174,7 @@ export function uyelikHesapla(odemeler: UyelikOdeme[], islemler: UyelikIslem[]):
     sonrakiKademe,
     sonrakiKademeAdi: sonrakiKademe ? KADEME_ADI[sonrakiKademe] : null,
     kalanTl,
+    kalanZiyaret,
   }
 }
 
