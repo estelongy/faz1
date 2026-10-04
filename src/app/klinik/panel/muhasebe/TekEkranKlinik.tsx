@@ -746,19 +746,44 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   // docs/uyelik-sistemi.md §5
   const islemTutarRef = useRef<HTMLInputElement>(null)
   const [islemTutar, setIslemTutar] = useState('')
+  // İndirim bir kez uygulandıysa şerit de onay kutusu da susar (üst üste binmesin).
+  const [indirimUygulandi, setIndirimUygulandi] = useState(false)
   const uyelikIndirimi = useMemo(() => {
+    if (indirimUygulandi) return null
     if (!selected || selected.uyelik.kademe === 'primula') return null
     const girilen = Number(islemTutar.replace(',', '.'))
     if (!Number.isFinite(girilen) || girilen <= 0) return null
     const indirimli = kademeFiyati(girilen, selected.uyelik.kademe)
     if (indirimli >= girilen) return null
     return { girilen, indirimli, oran: selected.uyelik.indirim }
-  }, [selected, islemTutar])
+  }, [selected, islemTutar, indirimUygulandi])
 
   function submitIslem(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!selectedId) return
     const fd = new FormData(e.currentTarget)
+
+    // Kademe indirimi uygulanmadan kaydedilmek üzere mi? Unutmaya karşı sor.
+    // Girilen tutar hâlâ indirimsiz haldeyse (şerit duruyorsa) onay iste.
+    if (uyelikIndirimi && selected) {
+      const u = uyelikIndirimi
+      setConfirmBox({
+        title: `${selected.uyelik.kademeAdi} üyesi — indirim uygulanmadı`,
+        lines: [
+          `${selected.name} · %${u.oran} üye indirimi hakkı var`,
+          `Girilen tutar ${TRY(u.girilen)} · indirimli ${TRY(u.indirimli)} (fark ${TRY(u.girilen - u.indirimli)})`,
+          'İndirimi uygulamadan kaydetmek istediğinizden emin misiniz?',
+        ],
+        confirmLabel: `İndirimsiz Kaydet · ${TRY(u.girilen)}`,
+        action: () => kaydetIslem(fd),
+      })
+      return
+    }
+    kaydetIslem(fd)
+  }
+
+  function kaydetIslem(fd: FormData) {
+    if (!selectedId) return
     fd.set('existing_patient_id', selectedId)
     if (fromApptId) fd.set('complete_appointment_id', fromApptId)
 
@@ -786,6 +811,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     if (fromApptId) setApptStatusOv(prev => ({ ...prev, [fromApptId]: 'completed' }))
     setExtraIslemler([])
     setIslemTutar('')
+    setIndirimUygulandi(false)
 
     run(() => addQuickEntry(fd))
   }
@@ -2118,7 +2144,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       </datalist>
                     </div>
                     <input ref={islemTutarRef} name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal"
-                      onChange={e => setIslemTutar(e.target.value)} className={inputCls} />
+                      onChange={e => { setIslemTutar(e.target.value); setIndirimUygulandi(false) }} className={inputCls} />
                     <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
                     <button type="button"
                       onClick={() => setExtraIslemler(prev => [...prev, { id: oid() }])}
@@ -2143,6 +2169,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                           const v = String(uyelikIndirimi.indirimli)
                           if (islemTutarRef.current) islemTutarRef.current.value = v
                           setIslemTutar(v)
+                          setIndirimUygulandi(true)
                         }}
                         className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900">
                         Uygula
