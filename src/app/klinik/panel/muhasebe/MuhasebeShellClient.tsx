@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import MuhasebeListClient from './MuhasebeListClient'
 import { addQuickEntry } from './actions'
 
+import type { UyelikDurumu } from '@/lib/uyelik'
+
 export interface PatientRow {
   id: string
   name: string
@@ -17,6 +19,8 @@ export interface PatientRow {
   remaining: number
   treatment_count: number
   last_activity: string | null
+  /** Exclusive Member kademesi — docs/uyelik-sistemi.md */
+  uyelik: UyelikDurumu
 }
 
 interface DayTreatment {

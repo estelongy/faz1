@@ -10,6 +10,7 @@ import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
 import MuhasebeAppView from '@/components/klinik-panel/MuhasebeAppView'
 import { normalizeWeek, type DayAvailability } from './randevu/slot-utils'
+import { uyelikHesapla } from '@/lib/uyelik'
 
 export const metadata: Metadata = {
   title: 'Muhasebe | Klinik Paneli',
@@ -117,6 +118,7 @@ export default async function MuhasebePage({
       total_amount: totalAmount, paid_amount: paidAmount,
       remaining: totalAmount - paidAmount,
       treatment_count: ts.length, last_activity: lastActivity,
+      uyelik: uyelikHesapla(ps, ts),
     }
   })
 

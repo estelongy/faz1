@@ -21,6 +21,7 @@ import {
 } from './actions'
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
+import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
 import {
@@ -1093,7 +1094,10 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         className="border-b border-slate-800/80 hover:bg-slate-800/40 cursor-pointer"
                         onClick={() => { pickPatient(p.id); setLeftView('gun') }}>
                         <td className="px-4 py-2.5 text-white font-semibold">
-                          {p.name}
+                          <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                            <span className="min-w-0">{p.name}</span>
+                            {p.uyelik.kademe !== 'primula' && <UyelikRozet uyelik={p.uyelik} />}
+                          </span>
                           {p.patient_code && (
                             <span className={`block text-[10px] font-mono font-normal ${
                               p.patient_code.endsWith('-HATA') ? 'text-rose-400' : 'text-slate-500'}`}>
@@ -1853,6 +1857,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                             {selected.patient_code}
                           </span>
                         )}
+                        <UyelikRozet uyelik={selected.uyelik} kalan />
                         <span>{selected.phone ?? 'Telefon yok'}</span>
                         {selected.notes ? <span>· {selected.notes}</span> : null}
                       </p>
