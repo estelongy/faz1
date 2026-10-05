@@ -22,6 +22,8 @@ import {
 import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
 import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
+import ReferansPanel from './ReferansPanel'
+import type { ReferansAyar, ReferansTeklif, ReferansorRow, ReferansKod } from './referans-tipler'
 import { kademeFiyati } from '@/lib/uyelik'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
@@ -107,6 +109,11 @@ interface Props {
   stockMaps: StockMapRow[]
   availability: AvailabilityWeek   // haftalık müsaitlik → slot üretimi
   smsAyar: SmsAyar | null          // klinik SMS şablonları (yoksa varsayılan)
+  // ─── Referans sistemi (kural motoru Postgres'te) ───
+  refAyar: ReferansAyar | null
+  refTeklifler: ReferansTeklif[]
+  refReferansorler: ReferansorRow[]
+  refKodlar: ReferansKod[]
 }
 
 const TRY = (n: number) =>
@@ -128,13 +135,15 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   no_show: { label: 'Gelmedi', cls: 'bg-rose-500/20 text-rose-300' },
 }
 
-export default function TekEkranKlinik({ role, displayName, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps, availability, smsAyar }: Props) {
+export default function TekEkranKlinik({ role, displayName, patients, appointments, txs, catalog, packages, promises, stockItems, stockMaps, availability, smsAyar, refAyar, refTeklifler, refReferansorler, refKodlar }: Props) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [day, setDay] = useState(todayIso())
   const dayPickerRef = useRef<HTMLInputElement | null>(null)
   const [search, setSearch] = useState('')
-  const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok' | 'sms'>('gun')
+  const [leftView, setLeftView] = useState<'gun' | 'alacak' | 'hastalar' | 'stok' | 'sms' | 'referans'>('gun')
+  // Referans: [Geldi]/[Gelmedi] bekleyen kod sayısı — sekme rozetinde görünür.
+  const refBekleyen = refKodlar.filter(k => k.geldi === null && k.durum === 'aktif').length
   const [tableSearch, setTableSearch] = useState('')
   const [mobileMenu, setMobileMenu] = useState(false)
   const [hastaDuzenle, setHastaDuzenle] = useState(false)
@@ -960,6 +969,13 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
             className={`hidden sm:inline-flex px-3 py-2 rounded-lg text-xs font-bold transition-colors ${leftView === 'sms' ? 'bg-sky-500/25 text-sky-200' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
             ✉️ SMS
           </button>
+          <button
+            onClick={() => { setLeftView(leftView === 'referans' ? 'gun' : 'referans'); setMobilePanelOpen(false) }}
+            title="Referans kodları, referansörler ve teklifler"
+            className={`hidden sm:inline-flex px-3 py-2 rounded-lg text-xs font-bold transition-colors ${leftView === 'referans' ? 'bg-violet-500/25 text-violet-200' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'}`}>
+            🤝 Referans
+            {refBekleyen > 0 && <span className="ml-1.5 text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-500/25 text-amber-300">{refBekleyen}</span>}
+          </button>
           <button onClick={cycleTema}
             title="Tema değiştir (koyu → siyah → açık)"
             className="hidden sm:inline-flex px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
@@ -990,6 +1006,9 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
         {mobileMenu && (
           <div className="sm:hidden flex flex-wrap gap-2 pb-2">
             <button onClick={() => { setLeftView('sms'); setMobileMenu(false); setMobilePanelOpen(false) }} className={btnGhost}>✉️ SMS</button>
+            <button onClick={() => { setLeftView('referans'); setMobileMenu(false); setMobilePanelOpen(false) }} className={btnGhost}>
+              🤝 Referans{refBekleyen > 0 ? ` (${refBekleyen})` : ''}
+            </button>
             <button onClick={() => { cycleTema() }} className={btnGhost}>{TEMA_LABEL[tema]}</button>
             <button onClick={() => {
               if (document.fullscreenElement) document.exitFullscreen()
@@ -1375,6 +1394,25 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
               {pending ? 'Kaydediliyor…' : 'Ayarları Kaydet'}
             </button>
           </form>
+        </div>
+      )}
+
+      {leftView === 'referans' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-black text-white">
+              🤝 Referans
+              {refBekleyen > 0 && <span className="text-amber-300 text-sm font-bold ml-2">({refBekleyen} kod bekliyor)</span>}
+            </h2>
+            <button onClick={() => setLeftView('gun')} className={btnGhost}>‹ Gün akışına dön</button>
+          </div>
+          <ReferansPanel
+            ayar={refAyar}
+            teklifler={refTeklifler}
+            referansorler={refReferansorler}
+            kodlar={refKodlar}
+            patients={patients}
+          />
         </div>
       )}
 

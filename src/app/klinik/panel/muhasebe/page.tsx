@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, clinicOwnerIdFor, getKlinikStaff } from '@/lib/muhasebe-owner'
 import TekEkranKlinik, { type ApptRow, type TxRow, type PackageRow, type PromiseRow, type StockItemRow, type StockMapRow } from './TekEkranKlinik'
 import { type DayGroup, type PatientRow, type CatalogItem, type AppointmentPrefill } from './MuhasebeShellClient'
+import type { ReferansTeklif, ReferansorRow, ReferansKod } from './referans-tipler'
 import { type AppointmentRow } from './randevu/RandevuListClient'
 import { getServerFlavor } from '@/lib/server-flavor'
 import MuhasebeAppView from '@/components/klinik-panel/MuhasebeAppView'
@@ -35,7 +36,7 @@ export default async function MuhasebePage({
   const rangeStartIso = new Date(Date.now() - 30 * 86_400_000).toISOString()
   const rangeEndIso = new Date(Date.now() + 90 * 86_400_000).toISOString()
 
-  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, stockRes, stockMapRes, availRes, smsRes] = await Promise.all([
+  const [patientsRes, treatmentsRes, paymentsRes, catalogRes, upcomingRes, rangeRes, pkgApptsRes, promisesRes, stockRes, stockMapRes, availRes, smsRes, refSetRes, refOfferRes, refRefRes, refCodeRes] = await Promise.all([
     supabase.from('internal_patient').select('id, name, patient_code, phone, notes').order('created_at', { ascending: false }),
     supabase.from('internal_treatment').select('id, patient_id, name, amount, treatment_date, session_total'),
     supabase.from('internal_payment').select('id, patient_id, amount, paid_at, method, treatment_id'),
@@ -95,6 +96,23 @@ export default async function MuhasebePage({
       .select('klinik_adi, iletisim_link, sablon_olusturma, sablon_paket, sablon_hatirlatma, hatirlatma_saati, hatirlatma_gun_once, olusturma_aktif, hatirlatma_aktif')
       .eq('owner_id', clinicOwner)
       .maybeSingle(),
+    // ─── Referans sistemi ───
+    supabase.from('referral_settings')
+      .select('isletme_kodu, aktif, kod_omru_gun, aylik_limit')
+      .eq('owner_id', clinicOwner).maybeSingle(),
+    supabase.from('referral_offer')
+      .select('id, baslik, ayricalik, aktif, kontenjan, gecerli_bitis')
+      .eq('owner_id', clinicOwner)
+      .order('created_at', { ascending: false }),
+    supabase.from('referral_referrer')
+      .select('id, patient_id, kod_harf, kod_rakam, aktif')
+      .eq('owner_id', clinicOwner),
+    // Kodlar + kime kilitlendiği + hangi teklif — tek sorguda
+    supabase.from('referral_code')
+      .select('id, kod, durum, son_kullanma, created_at, link_id, referral_link!inner(referrer_id, kilitli_ad, kilitli_tel, offer_id), referral_visit(geldi, isaretlendi_at)')
+      .eq('owner_id', clinicOwner)
+      .order('created_at', { ascending: false })
+      .limit(200),
   ])
 
   const patients = patientsRes.data ?? []
@@ -298,6 +316,25 @@ export default async function MuhasebePage({
         })) as StockMapRow[]}
         availability={normalizeWeek((availRes.data ?? []) as Partial<DayAvailability>[])}
         smsAyar={smsRes.data ?? null}
+        refAyar={refSetRes.data ?? null}
+        refTeklifler={(refOfferRes.data ?? []) as ReferansTeklif[]}
+        refReferansorler={(refRefRes.data ?? []).map(r => ({
+          id: r.id, patient_id: r.patient_id,
+          onek: `${r.kod_harf}${r.kod_rakam}`, aktif: r.aktif,
+        })) as ReferansorRow[]}
+        refKodlar={(refCodeRes.data ?? []).map((c: Record<string, unknown>) => {
+          const link = (Array.isArray(c.referral_link) ? c.referral_link[0] : c.referral_link) as Record<string, unknown> | null
+          const vis = (Array.isArray(c.referral_visit) ? c.referral_visit[0] : c.referral_visit) as Record<string, unknown> | null
+          return {
+            id: String(c.id), kod: String(c.kod), durum: String(c.durum),
+            son_kullanma: String(c.son_kullanma), created_at: String(c.created_at),
+            referrer_id: link ? String(link.referrer_id) : '',
+            offer_id: link ? String(link.offer_id) : '',
+            musteri_ad: (link?.kilitli_ad as string) ?? null,
+            musteri_tel: (link?.kilitli_tel as string) ?? null,
+            geldi: (vis?.geldi as boolean | null) ?? null,
+          }
+        }) as ReferansKod[]}
       />
     </div>
   )
