@@ -243,8 +243,10 @@ export default function ReferansPanel({
             }}>
             <input name="baslik" placeholder="Teklif başlığı * (örn. Botoks tanışma)" required className={inputCls} />
             <input name="ayricalik" placeholder="Müşteriye görünen ayrıcalık *" required className={inputCls} />
-            <div className="grid grid-cols-2 gap-2">
-              <input name="kontenjan" type="number" min="0" placeholder="Kontenjan (boş = sınırsız)" className={inputCls} />
+            <div className="grid grid-cols-3 gap-2">
+              <input name="odul_tutar" type="number" min="0" placeholder="Referansör ödülü ₺"
+                className={inputCls} title="Gelen her kişi için referansöre yazılacak tutar" />
+              <input name="kontenjan" type="number" min="0" placeholder="Kontenjan" className={inputCls} />
               <input name="gecerli_bitis" type="date" className={inputCls} title="Geçerlilik bitişi" />
             </div>
             <button type="submit" disabled={pending} className={btnPrimary}>Teklif Ekle</button>
@@ -257,6 +259,7 @@ export default function ReferansPanel({
                   <p className="text-sm font-semibold text-white line-clamp-2 leading-tight">{t.baslik}</p>
                   <p className="text-xs text-slate-400 line-clamp-2 mt-0.5">{t.ayricalik}</p>
                   <p className="text-[11px] text-slate-500 mt-1">
+                    {t.odul_tutar > 0 ? `Ödül ₺${t.odul_tutar.toLocaleString('tr-TR')} · ` : ''}
                     {t.kontenjan ? `Kontenjan ${t.kontenjan}` : 'Sınırsız'}
                     {t.gecerli_bitis ? ` · ${t.gecerli_bitis} tarihine kadar` : ''}
                   </p>

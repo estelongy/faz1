@@ -101,7 +101,7 @@ export default async function MuhasebePage({
       .select('isletme_kodu, aktif, kod_omru_gun, aylik_limit')
       .eq('owner_id', clinicOwner).maybeSingle(),
     supabase.from('referral_offer')
-      .select('id, baslik, ayricalik, aktif, kontenjan, gecerli_bitis')
+      .select('id, baslik, ayricalik, aktif, kontenjan, gecerli_bitis, odul_tutar')
       .eq('owner_id', clinicOwner)
       .order('created_at', { ascending: false }),
     supabase.from('referral_referrer')

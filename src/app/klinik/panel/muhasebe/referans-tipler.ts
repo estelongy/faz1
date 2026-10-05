@@ -14,6 +14,8 @@ export interface ReferansTeklif {
   aktif: boolean
   kontenjan: number | null
   gecerli_bitis: string | null
+  /** Gelen her kişi için referansöre yazılan tutar. */
+  odul_tutar: number
 }
 
 export interface ReferansorRow {
