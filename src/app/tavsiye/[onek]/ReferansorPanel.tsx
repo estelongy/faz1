@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { uretLinkOnek } from './actions'
+import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
 
 export interface PanelVerisi {
   onek: string
@@ -9,7 +10,10 @@ export interface PanelVerisi {
   aktif: boolean
   referrer_id: string
   bakiye: number
-  teklifler: { id: string; baslik: string; ayricalik: string; odul: number }[]
+  teklifler: {
+    id: string; baslik: string; ayricalik: string; odul: number
+    tur: string; gecerli_zaman: string | null
+  }[]
   davetler: {
     kod: string; durum: string; musteri: string | null; teklif: string
     geldi: boolean | null; tarih: string; son: string
@@ -96,8 +100,14 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
           <p className="text-sm text-slate-500">Şu an aktif teklif yok.</p>
         ) : veri.teklifler.map(t => (
           <div key={t.id} className="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <span className={`inline-block text-[11px] font-bold px-1.5 py-0.5 rounded ring-1 mb-1.5 ${turBilgi(t.tur).ton}`}>
+              {turBilgi(t.tur).ikon} {turBilgi(t.tur).ad}
+            </span>
             <p className="text-sm font-bold text-white line-clamp-2 leading-tight">{t.baslik}</p>
             <p className="text-xs text-slate-400 mt-1 line-clamp-3">{t.ayricalik}</p>
+            {t.gecerli_zaman && (
+              <p className="text-[11px] text-teal-300/90 mt-1">🕐 {t.gecerli_zaman}</p>
+            )}
             {t.odul > 0 && (
               <p className="text-[11px] text-violet-300 font-semibold mt-1">
                 Gelen her kişi için {TRY(t.odul)}

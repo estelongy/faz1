@@ -70,9 +70,14 @@ export async function addReferansTeklif(formData: FormData): Promise<Result> {
   const bitis = ((formData.get('gecerli_bitis') as string) ?? '').trim() || null
   const odul = Number(String(formData.get('odul_tutar') ?? '0').replace(',', '.'))
 
+  const tur = ((formData.get('tur') as string) ?? 'genel').trim()
+  const zaman = ((formData.get('gecerli_zaman') as string) ?? '').trim() || null
+
   const { error } = await ctx.supabase.from('referral_offer').insert({
     owner_id: ctx.clinicOwnerId,
-    baslik, ayricalik,
+    baslik, ayricalik, tur,
+    gecerli_zaman: tur === 'sakin_saat' ? zaman : null,
+    gorsel_izni: tur === 'model' && formData.get('gorsel_izni') === 'on',
     kontenjan: Number.isFinite(kont) && kont > 0 ? kont : null,
     gecerli_bitis: bitis,
     odul_tutar: Number.isFinite(odul) && odul > 0 ? odul : 0,

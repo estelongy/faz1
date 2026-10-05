@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react'
 import type { PatientRow } from './MuhasebeShellClient'
-import { kisaKod, type ReferansAyar, type ReferansTeklif, type ReferansorRow, type ReferansKod } from './referans-tipler'
+import { kisaKod, KAMPANYA_TURLERI, turBilgi, type KampanyaTur, type ReferansAyar, type ReferansTeklif, type ReferansorRow, type ReferansKod } from './referans-tipler'
 import {
   saveReferansAyar, addReferansTeklif, toggleReferansTeklif,
   addReferansor, toggleReferansor, uretReferansLink, isaretleReferansZiyaret,
@@ -36,6 +36,7 @@ export default function ReferansPanel({
   const [arama, setArama] = useState('')
   const [sekme, setSekme] = useState<'kodlar' | 'referansorler' | 'teklifler' | 'ayar'>('kodlar')
   const [yeniRefArama, setYeniRefArama] = useState('')
+  const [yeniTur, setYeniTur] = useState<KampanyaTur>('tanisma')
 
   const isletmeKodu = ayar?.isletme_kodu ?? 'GOK'
 
@@ -91,7 +92,7 @@ export default function ReferansPanel({
         {([
           ['kodlar', `Kodlar${bekleyen.length ? ` · ${bekleyen.length} bekliyor` : ''}`],
           ['referansorler', `Referansörler · ${referansorler.length}`],
-          ['teklifler', `Teklifler · ${teklifler.filter(t => t.aktif).length}`],
+          ['teklifler', `Kampanyalar · ${teklifler.filter(t => t.aktif).length}`],
           ['ayar', 'Ayarlar'],
         ] as const).map(([k, etiket]) => (
           <button key={k} onClick={() => setSekme(k)}
@@ -241,38 +242,87 @@ export default function ReferansPanel({
               form.reset()
               run(() => addReferansTeklif(fd))
             }}>
-            <input name="baslik" placeholder="Teklif başlığı * (örn. Botoks tanışma)" required className={inputCls} />
+            {/* Tür — referansörün taşıdığı haberin cinsi */}
+            <div>
+              <p className="text-[11px] font-bold text-slate-400 mb-1.5">Kampanya türü</p>
+              <div className="flex flex-wrap gap-1.5">
+                {KAMPANYA_TURLERI.map(t => (
+                  <button key={t.k} type="button" onClick={() => setYeniTur(t.k)}
+                    title={t.aciklama}
+                    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold ring-1 transition-colors ${
+                      yeniTur === t.k ? t.ton : 'bg-slate-800 ring-slate-700 text-slate-400 hover:bg-slate-700'}`}>
+                    {t.ikon} {t.ad}
+                  </button>
+                ))}
+              </div>
+              <input type="hidden" name="tur" value={yeniTur} />
+              <p className="text-[11px] text-slate-500 mt-1.5">{turBilgi(yeniTur).aciklama}</p>
+            </div>
+
+            <input name="baslik" placeholder="Kampanya başlığı * (örn. Botoks tanışma)" required className={inputCls} />
             <input name="ayricalik" placeholder="Müşteriye görünen ayrıcalık *" required className={inputCls} />
+
+            {/* Sakin saat: hangi gün/saat geçerli */}
+            {yeniTur === 'sakin_saat' && (
+              <input name="gecerli_zaman" placeholder="Geçerli gün/saat (örn. Salı–Çarşamba 10:00-14:00)"
+                className={inputCls} />
+            )}
+
+            {/* Model: görsel kullanım izni */}
+            {yeniTur === 'model' && (
+              <label className="flex items-start gap-2 text-xs text-slate-300 bg-fuchsia-500/10 ring-1 ring-fuchsia-500/25 rounded-lg px-2.5 py-2">
+                <input type="checkbox" name="gorsel_izni" defaultChecked className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>
+                  Müşteriden <b>görsel kullanım izni</b> istenir; rıza ayrı sürümle kaydedilir.
+                  <span className="block text-slate-500 mt-0.5">
+                    Fotoğraf sağlık verisidir — izin yazılı alınmadan kullanılamaz.
+                  </span>
+                </span>
+              </label>
+            )}
+
             <div className="grid grid-cols-3 gap-2">
               <input name="odul_tutar" type="number" min="0" placeholder="Referansör ödülü ₺"
                 className={inputCls} title="Gelen her kişi için referansöre yazılacak tutar" />
               <input name="kontenjan" type="number" min="0" placeholder="Kontenjan" className={inputCls} />
               <input name="gecerli_bitis" type="date" className={inputCls} title="Geçerlilik bitişi" />
             </div>
-            <button type="submit" disabled={pending} className={btnPrimary}>Teklif Ekle</button>
+            <button type="submit" disabled={pending} className={btnPrimary}>Kampanya Ekle</button>
           </form>
 
-          {teklifler.map(t => (
-            <div key={t.id} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
-              <div className="flex items-start gap-2">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white line-clamp-2 leading-tight">{t.baslik}</p>
-                  <p className="text-xs text-slate-400 line-clamp-2 mt-0.5">{t.ayricalik}</p>
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    {t.odul_tutar > 0 ? `Ödül ₺${t.odul_tutar.toLocaleString('tr-TR')} · ` : ''}
-                    {t.kontenjan ? `Kontenjan ${t.kontenjan}` : 'Sınırsız'}
-                    {t.gecerli_bitis ? ` · ${t.gecerli_bitis} tarihine kadar` : ''}
-                  </p>
+          {teklifler.map(t => {
+            const tb = turBilgi(t.tur)
+            return (
+              <div key={t.id} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
+                <div className="flex items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <span className={`inline-block text-[11px] font-bold px-1.5 py-0.5 rounded ring-1 mb-1 ${tb.ton}`}>
+                      {tb.ikon} {tb.ad}
+                    </span>
+                    <p className="text-sm font-semibold text-white line-clamp-2 leading-tight">{t.baslik}</p>
+                    <p className="text-xs text-slate-400 line-clamp-2 mt-0.5">{t.ayricalik}</p>
+                    {t.gecerli_zaman && (
+                      <p className="text-[11px] text-teal-300/90 mt-0.5">🕐 {t.gecerli_zaman}</p>
+                    )}
+                    {t.gorsel_izni && (
+                      <p className="text-[11px] text-fuchsia-300/90 mt-0.5">📸 Görsel kullanım izni istenir</p>
+                    )}
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      {t.odul_tutar > 0 ? `Ödül ₺${t.odul_tutar.toLocaleString('tr-TR')} · ` : ''}
+                      {t.kontenjan ? `Kontenjan ${t.kontenjan}` : 'Sınırsız'}
+                      {t.gecerli_bitis ? ` · ${t.gecerli_bitis} tarihine kadar` : ''}
+                    </p>
+                  </div>
+                  <button disabled={pending}
+                    onClick={() => run(() => toggleReferansTeklif(t.id, !t.aktif))}
+                    className={`text-[11px] font-bold px-2 py-1 rounded shrink-0 ${
+                      t.aktif ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-500'}`}>
+                    {t.aktif ? 'Aktif' : 'Pasif'}
+                  </button>
                 </div>
-                <button disabled={pending}
-                  onClick={() => run(() => toggleReferansTeklif(t.id, !t.aktif))}
-                  className={`text-[11px] font-bold px-2 py-1 rounded shrink-0 ${
-                    t.aktif ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-500'}`}>
-                  {t.aktif ? 'Aktif' : 'Pasif'}
-                </button>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
