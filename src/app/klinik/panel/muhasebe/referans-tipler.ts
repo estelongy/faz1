@@ -13,8 +13,7 @@ export interface ReferansAyar {
  * Şimdilik ETİKET: davranış kuralı yok.
  */
 export type KampanyaTur =
-  | 'tanisma' | 'sakin_saat' | 'model' | 'organizasyon'
-  | 'mevsim' | 'yeniden_cagri' | 'yeni_hizmet' | 'genel'
+  | 'tanisma' | 'sakin_saat' | 'model' | 'yeni_hizmet' | 'genel'
 
 export const KAMPANYA_TURLERI: {
   k: KampanyaTur; ad: string; ikon: string; aciklama: string; ton: string
@@ -25,12 +24,6 @@ export const KAMPANYA_TURLERI: {
     ton: 'bg-teal-500/15 text-teal-300 ring-teal-500/30' },
   { k: 'model',         ad: 'Model',         ikon: '📸', aciklama: 'Görsel kullanım izni karşılığı ekstra indirim',
     ton: 'bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30' },
-  { k: 'organizasyon',  ad: 'Organizasyon',  ikon: '👥', aciklama: 'Grup/toplu gelenler — düğün, şirket',
-    ton: 'bg-indigo-500/15 text-indigo-300 ring-indigo-500/30' },
-  { k: 'mevsim',        ad: 'Mevsim',        ikon: '🌿', aciklama: 'Zamana bağlı — "yaza girmeden"',
-    ton: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30' },
-  { k: 'yeniden_cagri', ad: 'Yeniden çağrı', ikon: '🔄', aciklama: 'Uzun süredir gelmeyene — "dönüş zamanı"',
-    ton: 'bg-amber-500/15 text-amber-300 ring-amber-500/30' },
   { k: 'yeni_hizmet',   ad: 'Yeni hizmet',   ikon: '✨', aciklama: 'Yeni cihaz/işlem — "ilk deneyenlere"',
     ton: 'bg-violet-500/15 text-violet-300 ring-violet-500/30' },
   { k: 'genel',         ad: 'Genel',         ikon: '📋', aciklama: 'Herkese açık, ayrım yok',
