@@ -3,7 +3,8 @@
 import { headers } from 'next/headers'
 import { redis } from '@/lib/redis'
 import { createClient } from '@/lib/supabase/server'
-import { sendOtpSms, generateOtpCode, normalizePhone, mapNetgsmError } from '@/lib/netgsm'
+import { sendInfoSms, generateOtpCode, normalizePhone, mapNetgsmError } from '@/lib/netgsm'
+import { smsDogrulamaMetni, smsKodOzetMetni } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
 
 /**
  * Müşteri akışı — şifresiz, iki adım:
@@ -57,7 +58,9 @@ export async function kodGonder(token: string, hamTel: string): Promise<Gonder> 
   }
 
   const kod = generateOtpCode()
-  const res = await sendOtpSms(tel, kod)
+  // Genel OTP metni ("Gençlik yolculuğuna hoş geldiniz") burada yanlış bağlam:
+  // kişi kayıt olmuyor, bir davet linki açmış.
+  const res = await sendInfoSms(tel, smsDogrulamaMetni(kod))
   if (!res.success) {
     console.error('[referans-otp] Netgsm:', res.error)
     return { ok: false, error: mapNetgsmError(res.code ?? '') }
@@ -92,6 +95,8 @@ export async function dogrulaVeKilitle(
 
   // Kilitleme ve indirim kodu üretimi tek transaction'da, satır kilidiyle.
   const supabase = await createClient()
+  const { data: davet } = await supabase.rpc('referral_davet_goster', { p_token: token })
+  const d = (davet ?? null) as Record<string, unknown> | null
   const { data, error } = await supabase.rpc('referral_kilitle', {
     p_token: token,
     p_ad: temizAd,
@@ -107,6 +112,19 @@ export async function dogrulaVeKilitle(
 
   await redis.del(otpKey(token))
   await redis.del(denemeKey(token))
+
+  // Kod özeti — müşteri sayfayı kapatsa da kodu telefonunda kalsın.
+  // Gönderilemezse akış bozulmaz: kod zaten ekranda.
+  try {
+    await sendInfoSms(kayit.tel, smsKodOzetMetni({
+      musteriAd: temizAd,
+      kisaKod: String(row.kisa),
+      ayricalik: (d?.ayricalik as string) ?? '',
+      sonKullanma: String(row.son_kullanma),
+    }))
+  } catch (err) {
+    console.error('[referans-kod-sms]', err)
+  }
 
   return {
     ok: true,

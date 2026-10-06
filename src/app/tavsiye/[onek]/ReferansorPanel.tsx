@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { uretLinkOnek } from './actions'
 import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
+import { waDavetMetni } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
 
 export interface PanelVerisi {
   onek: string
@@ -18,25 +19,63 @@ export interface PanelVerisi {
     kod: string; durum: string; musteri: string | null; teklif: string
     geldi: boolean | null; tarih: string; son: string
   }[]
-  bekleyen_link: { token: string; teklif: string; son: string }[]
+  bekleyen_link: {
+    token: string; teklif: string; son: string
+    ayricalik: string | null; gecerli_zaman: string | null
+  }[]
 }
 
 const TRY = (n: number) => '₺' + Math.round(n).toLocaleString('tr-TR')
 
+/** '0532 123 45 67' → '905321234567'. Geçersizse null. */
+function waNumara(ham: string): string | null {
+  let d = ham.replace(/\D/g, '')
+  if (!d) return null
+  if (d.startsWith('00')) d = d.slice(2)
+  if (d.length === 11 && d.startsWith('0')) d = '90' + d.slice(1)
+  else if (d.length === 10 && d.startsWith('5')) d = '90' + d
+  return d.length >= 11 && d.length <= 15 ? d : null
+}
+
 export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   const [pending, startTransition] = useTransition()
   const [hata, setHata] = useState<string | null>(null)
-  const [yeniLink, setYeniLink] = useState<{ url: string; teklif: string } | null>(null)
+  const [yeniLink, setYeniLink] = useState<{ url: string; mesaj: string } | null>(null)
+  // Kampanya başına girilen telefon — sadece WhatsApp'ı o sohbette açmak için.
+  const [telefonlar, setTelefonlar] = useState<Record<string, string>>({})
 
   const gelen = veri.davetler.filter(d => d.geldi === true).length
   const bekleyen = veri.davetler.filter(d => d.geldi === null && d.durum === 'aktif').length
 
-  function uret(offerId: string, teklifAdi: string) {
+  /**
+   * Davet bağlantısı üretir ve WhatsApp'ı arkadaşın sohbetinde açar.
+   * Mesaj referansörün KENDİ telefonundan gider — biz bir yere bağlanmıyoruz,
+   * numara sisteme kaydedilmiyor, SMS maliyeti yok.
+   */
+  function uret(offerId: string, hamTel: string) {
     setHata(null)
+    const t = veri.teklifler.find(x => x.id === offerId)
+    const wa = waNumara(hamTel)
+    if (hamTel.trim() && !wa) {
+      setHata('Telefon numarası geçersiz. Örn: 0532 123 45 67')
+      return
+    }
     startTransition(async () => {
       const r = await uretLinkOnek(veri.onek, offerId)
       if (!r.ok) { setHata(r.error); return }
-      setYeniLink({ url: `${window.location.origin}/t/${r.token}`, teklif: teklifAdi })
+      const url = `${window.location.origin}/t/${r.token}`
+      const mesaj = waDavetMetni({
+        ayricalik: t?.ayricalik ?? '',
+        gecerliZaman: t?.gecerli_zaman ?? null,
+        url,
+      })
+      setYeniLink({ url, mesaj })
+      setTelefonlar(p => ({ ...p, [offerId]: '' }))
+      // Numara girildiyse doğrudan o sohbeti aç; yoksa kişi seçtirir.
+      window.open(
+        `https://wa.me/${wa ?? ''}?text=${encodeURIComponent(mesaj)}`,
+        '_blank', 'noopener',
+      )
     })
   }
 
@@ -76,7 +115,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
           </p>
           <div className="flex gap-2">
             <a
-              href={`https://wa.me/?text=${encodeURIComponent(`${yeniLink.teklif}\n\n${yeniLink.url}`)}`}
+              href={`https://wa.me/?text=${encodeURIComponent(yeniLink.mesaj)}`}
               target="_blank" rel="noopener noreferrer"
               className="flex-1 text-center px-3 py-2.5 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white">
               WhatsApp&rsquo;tan Gönder
@@ -113,10 +152,21 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 Gelen her kişi için {TRY(t.odul)}
               </p>
             )}
-            <button onClick={() => uret(t.id, `${t.baslik} — ${t.ayricalik}`)} disabled={pending}
-              className="w-full mt-2.5 px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50">
-              {pending ? 'Hazırlanıyor…' : 'Davet Bağlantısı Oluştur'}
-            </button>
+            {/* Arkadaşının numarası — WhatsApp onun sohbetinde açılır.
+                Mesaj referansörün KENDİ telefonundan gider: SMS maliyeti yok,
+                numara bize kaydedilmez. */}
+            <form className="mt-2.5 space-y-2"
+              onSubmit={e => { e.preventDefault(); uret(t.id, telefonlar[t.id] ?? '') }}>
+              <input
+                value={telefonlar[t.id] ?? ''}
+                onChange={e => setTelefonlar(p => ({ ...p, [t.id]: e.target.value }))}
+                placeholder="Arkadaşının numarası" inputMode="tel"
+                className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500" />
+              <button type="submit" disabled={pending}
+                className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50">
+                {pending ? 'Hazırlanıyor…' : 'WhatsApp’tan Gönder'}
+              </button>
+            </form>
           </div>
         ))}
       </section>
