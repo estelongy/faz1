@@ -73,11 +73,15 @@ export function smsDavetDogrulama(opts: {
 }): string {
   const ad = duzgunAd(opts.musteriAd).split(' ')[0]
   const eden = duzgunAd(opts.referansorAd)
+  // Ayrıcalık metninden yalnızca oranı al ("...%25 indirim" → "%25").
+  // Kampanya detayı (saat, işlem adı) SMS'e girmez — kısa kalsın.
+  const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
+  const fayda = oran ? `${oran} indirimden` : 'ayricaliktan'
+
   return smsSadelestir([
-    `Sayin ${ad}, ${eden || 'bir tanidiginiz'} sizi ${KLINIK} klinigine davet etti.`,
-    opts.ayricalik.trim(),
-    `Onay kodunuz: ${opts.kod}`,
-    'Kodu sizi davet eden kisiye soyleyin. Istemiyorsaniz yanitlamayin.',
+    `Tebrikler ${ad}, ${eden || 'bir tanidiginiz'} referansi ile ${KLINIK}`
+      + ` kliniginde gecerli ${fayda} yararlanmak icin onay kodunuz: ${opts.kod}`,
+    'Onay kodunuzu referansore ileterek indirim kodunuzu aninda aktif edebilirsiniz.',
   ].join('\n'))
 }
 
