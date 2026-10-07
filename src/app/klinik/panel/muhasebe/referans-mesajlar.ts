@@ -67,26 +67,22 @@ function saatiIceriyor(ayricalik: string, zaman: string): boolean {
  */
 export function smsDavetDogrulama(opts: {
   musteriAd: string
-  referansorAd: string | null
   ayricalik: string
   kod: string
+  /** Kod ömrü (gün) — ayarlardan gelir, sabit yazılmaz. */
+  gecerlilikGun?: number
 }): string {
   const ad = duzgunAd(opts.musteriAd).split(' ')[0]
-  const eden = duzgunAd(opts.referansorAd)
   // Ayrıcalık metninden yalnızca oranı al ("...%25 indirim" → "%25").
   // Kampanya detayı (saat, işlem adı) SMS'e girmez — tek kredide kalsın.
   const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
-  const fayda = oran ? `${oran} indiriminiz` : 'ayricaliginiz'
-
-  // Referansörün yalnızca adı — soyadı yer kaplıyor, zaten tanıyor.
-  const kisaEden = eden ? eden.split(' ')[0] : null
+  const fayda = oran ? `${oran} size ozel indirim` : 'size ozel bir ayricalik'
+  const sure = opts.gecerlilikGun ? `${opts.gecerlilikGun} gun icinde ` : ''
 
   return smsSadelestir([
-    `Tebrikler ${ad}, ${KLINIK} kliniginde on onayli ${fayda} var.`,
+    `Tebrikler ${ad}! ${KLINIK} kliniginde ${fayda} kazandiniz.`,
     `Onay kodu: ${opts.kod}`,
-    // "Izzet'e iletin" demiyoruz: Türkçe yönelme eki sesliye göre değişiyor
-    // (Izzet'e / Ayse'ye). "ile paylasin" ek istemiyor, her isimde doğru.
-    `Kodu ${kisaEden ?? 'sizi davet eden kisi'} ile paylasin, indiriminiz aktif olsun.`,
+    `Kodu referansiniza iletin, ${sure}kullanin!`,
   ].join('\n'))
 }
 

@@ -66,11 +66,15 @@ export async function davetBaslat(
   const { data: davet } = await supabase.rpc('referral_davet_goster', { p_token: row.token })
   const d = (davet ?? null) as Record<string, unknown> | null
 
+  // Kod ömrü ayarlardan; SMS'te "7 gun gecerli" diye sabit yazmıyoruz.
+  const { data: ayar } = await supabase
+    .from('referral_settings').select('kod_omru_gun').maybeSingle()
+
   const kod = generateOtpCode()
   const res = await sendInfoSms(tel, smsDavetDogrulama({
     musteriAd: temizAd,
-    referansorAd: (d?.referansor as string) ?? null,
     ayricalik: (d?.ayricalik as string) ?? '',
+    gecerlilikGun: ayar?.kod_omru_gun ?? undefined,
     kod,
   }))
   if (!res.success) {
