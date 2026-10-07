@@ -76,7 +76,7 @@ export function smsDavetDogrulama(opts: {
   // Ayrıcalık metninden yalnızca oranı al ("...%25 indirim" → "%25").
   // Kampanya detayı (saat, işlem adı) SMS'e girmez — tek kredide kalsın.
   const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
-  const fayda = oran ? `${oran} size ozel indirim` : 'size ozel bir ayricalik'
+  const fayda = oran ? `size ozel ${oran} indirim` : 'size ozel bir ayricalik'
   const sure = opts.gecerlilikGun ? `${opts.gecerlilikGun} gun icinde ` : ''
 
   return smsSadelestir([
