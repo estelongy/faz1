@@ -59,6 +59,29 @@ function saatiIceriyor(ayricalik: string, zaman: string): boolean {
 }
 
 /**
+ * 2b) Referansör akışı — müşteriye giden davet + doğrulama SMS'i.
+ *
+ * Müşteri hiçbir ekran görmüyor; tek aldığı şey bu mesaj. O yüzden üç şeyi
+ * birden söylemeli: kim davet etti, ne kazanacak, kodu kime söyleyecek.
+ * Rıza da burada alınır ("istemiyorsanız yanıtlamayın").
+ */
+export function smsDavetDogrulama(opts: {
+  musteriAd: string
+  referansorAd: string | null
+  ayricalik: string
+  kod: string
+}): string {
+  const ad = duzgunAd(opts.musteriAd).split(' ')[0]
+  const eden = duzgunAd(opts.referansorAd)
+  return smsSadelestir([
+    `Sayin ${ad}, ${eden || 'bir tanidiginiz'} sizi ${KLINIK} klinigine davet etti.`,
+    opts.ayricalik.trim(),
+    `Onay kodunuz: ${opts.kod}`,
+    'Kodu sizi davet eden kisiye soyleyin. Istemiyorsaniz yanitlamayin.',
+  ].join('\n'))
+}
+
+/**
  * 2) SMS doğrulama kodu.
  *
  * Genel OTP metni ("Gençlik yolculuğuna hoş geldiniz") burada yanlış bağlam —

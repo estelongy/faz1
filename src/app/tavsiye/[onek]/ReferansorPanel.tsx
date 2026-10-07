@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { uretLinkOnek } from './actions'
+import { davetBaslat, kodDogrula } from './actions'
 import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
-import { waDavetMetni } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
 
 export interface PanelVerisi {
   onek: string
@@ -19,76 +18,70 @@ export interface PanelVerisi {
     kod: string; durum: string; musteri: string | null; teklif: string
     geldi: boolean | null; tarih: string; son: string
   }[]
+  /** Doğrulama bekleyenler — referansör kodu sorup girecek. */
   bekleyen_link: {
     token: string; teklif: string; son: string
     ayricalik: string | null; gecerli_zaman: string | null
+    aday_ad: string | null; aday_tel: string | null
   }[]
 }
 
 const TRY = (n: number) => '₺' + Math.round(n).toLocaleString('tr-TR')
 
-/** '0532 123 45 67' → '905321234567'. Geçersizse null. */
-function waNumara(ham: string): string | null {
-  let d = ham.replace(/\D/g, '')
-  if (!d) return null
-  if (d.startsWith('00')) d = d.slice(2)
-  if (d.length === 11 && d.startsWith('0')) d = '90' + d.slice(1)
-  else if (d.length === 10 && d.startsWith('5')) d = '90' + d
-  return d.length >= 11 && d.length <= 15 ? d : null
+const inputCls = 'w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500'
+
+function maskeTel(tel: string | null): string {
+  if (!tel) return ''
+  const d = tel.replace(/\D/g, '')
+  if (d.length < 10) return tel
+  return `${d.slice(0, 4)} *** ** ${d.slice(-2)}`
 }
 
 export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   const [pending, startTransition] = useTransition()
   const [hata, setHata] = useState<string | null>(null)
-  const [yeniLink, setYeniLink] = useState<{ url: string; mesaj: string } | null>(null)
-  // Kampanya başına girilen telefon — sadece WhatsApp'ı o sohbette açmak için.
-  const [telefonlar, setTelefonlar] = useState<Record<string, string>>({})
+  const [altinKod, setAltinKod] = useState<{ kod: string; kisa: string } | null>(null)
+
+  // Kampanya başına ad/telefon girişi
+  const [form, setForm] = useState<Record<string, { ad: string; tel: string }>>({})
+  // Bekleyen davet başına doğrulama kodu girişi
+  const [kodlar, setKodlar] = useState<Record<string, string>>({})
 
   const gelen = veri.davetler.filter(d => d.geldi === true).length
-  const bekleyen = veri.davetler.filter(d => d.geldi === null && d.durum === 'aktif').length
+  const bekleyen = veri.bekleyen_link.length
 
-  /**
-   * Davet bağlantısı üretir ve WhatsApp'ı arkadaşın sohbetinde açar.
-   * Mesaj referansörün KENDİ telefonundan gider — biz bir yere bağlanmıyoruz,
-   * numara sisteme kaydedilmiyor, SMS maliyeti yok.
-   */
-  function uret(offerId: string, hamTel: string) {
-    setHata(null)
-    const t = veri.teklifler.find(x => x.id === offerId)
-    const wa = waNumara(hamTel)
-    if (hamTel.trim() && !wa) {
-      setHata('Telefon numarası geçersiz. Örn: 0532 123 45 67')
-      return
-    }
+  const alan = (id: string) => form[id] ?? { ad: '', tel: '' }
+
+  /** 1. adım — ad + telefon gir, müşteriye doğrulama SMS'i gitsin. */
+  function basla(offerId: string) {
+    setHata(null); setAltinKod(null)
+    const f = alan(offerId)
     startTransition(async () => {
-      const r = await uretLinkOnek(veri.onek, offerId)
+      const r = await davetBaslat(veri.onek, offerId, f.ad, f.tel)
       if (!r.ok) { setHata(r.error); return }
-      const url = `${window.location.origin}/t/${r.token}`
-      const mesaj = waDavetMetni({
-        ayricalik: t?.ayricalik ?? '',
-        gecerliZaman: t?.gecerli_zaman ?? null,
-        url,
-      })
-      setYeniLink({ url, mesaj })
-      setTelefonlar(p => ({ ...p, [offerId]: '' }))
-      // Numara girildiyse doğrudan o sohbeti aç; yoksa kişi seçtirir.
-      window.open(
-        `https://wa.me/${wa ?? ''}?text=${encodeURIComponent(mesaj)}`,
-        '_blank', 'noopener',
-      )
+      setForm(p => ({ ...p, [offerId]: { ad: '', tel: '' } }))
+    })
+  }
+
+  /** 2. adım — müşteriden alınan kodu gir, altın kod üretilsin. */
+  function dogrula(token: string) {
+    setHata(null)
+    startTransition(async () => {
+      const r = await kodDogrula(veri.onek, token, kodlar[token] ?? '')
+      if (!r.ok) { setHata(r.error); return }
+      setAltinKod({ kod: r.kod, kisa: r.kisa })
+      setKodlar(p => ({ ...p, [token]: '' }))
     })
   }
 
   return (
     <div className="space-y-4">
-      {/* Başlık */}
       <header>
         <p className="text-xs font-bold text-violet-300 tracking-wider">ESTELONGY TAVSİYE</p>
         <h1 className="text-xl font-black text-white mt-0.5 leading-tight">{veri.ad}</h1>
         <p className="font-mono text-sm text-slate-500 mt-0.5">{veri.onek}</p>
       </header>
 
-      {/* Özet */}
       <div className="grid grid-cols-3 gap-2">
         {[
           ['Gelen', String(gelen), 'text-emerald-300'],
@@ -106,104 +99,103 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
         <p className="text-sm font-semibold px-3 py-2 rounded-lg bg-rose-500/15 text-rose-300">{hata}</p>
       )}
 
-      {/* Yeni üretilen link — paylaşıma hazır */}
-      {yeniLink && (
-        <div className="bg-emerald-500/10 ring-1 ring-emerald-500/30 rounded-xl p-3 space-y-2">
-          <p className="text-xs font-bold text-emerald-300">Davet bağlantınız hazır</p>
-          <p className="text-[11px] text-slate-400 break-all font-mono bg-slate-900/60 rounded-lg px-2 py-1.5">
-            {yeniLink.url}
+      {/* Altın kod çıktı */}
+      {altinKod && (
+        <div className="bg-amber-500/10 ring-1 ring-amber-500/40 rounded-2xl p-5 text-center space-y-2">
+          <p className="text-xs font-bold text-amber-300">ALTIN KOD HAZIR</p>
+          <p className="font-mono text-xs text-slate-500">{altinKod.kod.split('-')[0]}-</p>
+          <p className="font-mono text-4xl font-black text-amber-300 tracking-[0.2em]">
+            {altinKod.kisa}
           </p>
-          <div className="flex gap-2">
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent(yeniLink.mesaj)}`}
-              target="_blank" rel="noopener noreferrer"
-              className="flex-1 text-center px-3 py-2.5 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white">
-              WhatsApp&rsquo;tan Gönder
-            </a>
-            <button
-              onClick={() => { navigator.clipboard?.writeText(yeniLink.url).catch(() => {}) }}
-              className="px-3 py-2.5 rounded-lg text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300">
-              Kopyala
-            </button>
-          </div>
-          <p className="text-[11px] text-slate-500">
-            Bağlantıyı açan kişi numarasını girip kodunu alır. Her bağlantı tek kişiye özeldir.
+          <p className="text-[11px] text-slate-400">
+            Kod müşteriye SMS&rsquo;le de gönderildi. Klinikte bunu söylemesi yeterli.
           </p>
+          <button
+            onClick={() => navigator.clipboard?.writeText(altinKod.kisa).catch(() => {})}
+            className="w-full mt-1 px-3 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-200">
+            Kodu Kopyala
+          </button>
         </div>
       )}
 
-      {/* Teklifler */}
-      <section className="space-y-2">
-        <h2 className="text-sm font-black text-white">Tavsiye edebileceklerim</h2>
-        {veri.teklifler.length === 0 ? (
-          <p className="text-sm text-slate-500">Şu an aktif teklif yok.</p>
-        ) : veri.teklifler.map(t => (
-          <div key={t.id} className="bg-slate-900 border border-slate-800 rounded-xl p-3">
-            <span className={`inline-block text-[11px] font-bold px-1.5 py-0.5 rounded ring-1 mb-1.5 ${turBilgi(t.tur).ton}`}>
-              {turBilgi(t.tur).ikon} {turBilgi(t.tur).ad}
-            </span>
-            <p className="text-sm font-bold text-white line-clamp-2 leading-tight">{t.baslik}</p>
-            <p className="text-xs text-slate-400 mt-1 line-clamp-3">{t.ayricalik}</p>
-            {t.gecerli_zaman && (
-              <p className="text-[11px] text-teal-300/90 mt-1">🕐 {t.gecerli_zaman}</p>
-            )}
-            {t.odul > 0 && (
-              <p className="text-[11px] text-violet-300 font-semibold mt-1">
-                Gelen her kişi için {TRY(t.odul)}
-              </p>
-            )}
-            {/* Arkadaşının numarası — WhatsApp onun sohbetinde açılır.
-                Mesaj referansörün KENDİ telefonundan gider: SMS maliyeti yok,
-                numara bize kaydedilmez. */}
-            <form className="mt-2.5 space-y-2"
-              onSubmit={e => { e.preventDefault(); uret(t.id, telefonlar[t.id] ?? '') }}>
-              <input
-                value={telefonlar[t.id] ?? ''}
-                onChange={e => setTelefonlar(p => ({ ...p, [t.id]: e.target.value }))}
-                placeholder="Arkadaşının numarası" inputMode="tel"
-                className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500" />
-              <button type="submit" disabled={pending}
-                className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50">
-                {pending ? 'Hazırlanıyor…' : 'WhatsApp’tan Gönder'}
-              </button>
-            </form>
-          </div>
-        ))}
-      </section>
-
-      {/* Henüz kullanılmamış linkler */}
+      {/* ── Doğrulama bekleyenler — ÖNCE, çünkü iş burada ── */}
       {veri.bekleyen_link.length > 0 && (
         <section className="space-y-2">
-          <h2 className="text-sm font-black text-white">Gönderilmeyi bekleyen bağlantılar</h2>
+          <h2 className="text-sm font-black text-white">Onay bekleyenler</h2>
+          <p className="text-[11px] text-slate-500 -mt-1">
+            Arayıp SMS&rsquo;le gelen onay kodunu sorun, buraya yazın.
+          </p>
           {veri.bekleyen_link.map(l => (
-            <div key={l.token} className="bg-slate-900 border border-slate-800 rounded-xl p-3">
-              <p className="text-xs font-semibold text-slate-300 line-clamp-1">{l.teklif}</p>
-              <p className="text-[11px] text-slate-500 mt-0.5">{l.son} tarihine kadar geçerli</p>
-              <div className="flex gap-2 mt-2">
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(`${l.teklif}\n\n${typeof window !== 'undefined' ? window.location.origin : ''}/t/${l.token}`)}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex-1 text-center px-3 py-2 rounded-lg text-xs font-bold bg-emerald-600/80 hover:bg-emerald-500 text-white">
-                  WhatsApp
-                </a>
-                <button
-                  onClick={() => {
-                    navigator.clipboard?.writeText(`${window.location.origin}/t/${l.token}`).catch(() => {})
-                  }}
-                  className="px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300">
-                  Kopyala
+            <div key={l.token} className="bg-slate-900 border border-amber-500/30 rounded-xl p-3">
+              <p className="text-sm font-semibold text-white line-clamp-1">{l.aday_ad ?? '—'}</p>
+              <p className="text-xs text-slate-500">
+                {maskeTel(l.aday_tel)} · {l.teklif}
+              </p>
+              <form className="flex gap-2 mt-2.5"
+                onSubmit={e => { e.preventDefault(); dogrula(l.token) }}>
+                <input
+                  value={kodlar[l.token] ?? ''}
+                  onChange={e => setKodlar(p => ({
+                    ...p, [l.token]: e.target.value.replace(/\D/g, '').slice(0, 6),
+                  }))}
+                  placeholder="______" inputMode="numeric"
+                  className={`${inputCls} text-center font-mono tracking-[0.3em]`} />
+                <button type="submit" disabled={pending || (kodlar[l.token] ?? '').length < 6}
+                  className="px-4 py-2.5 rounded-lg text-sm font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 disabled:opacity-40 whitespace-nowrap">
+                  {pending ? '…' : 'Kodu Al'}
                 </button>
-              </div>
+              </form>
             </div>
           ))}
         </section>
       )}
 
-      {/* Davet geçmişi */}
+      {/* ── Kampanyalar — yeni davet ── */}
+      <section className="space-y-2">
+        <h2 className="text-sm font-black text-white">Tavsiye edebileceklerim</h2>
+        {veri.teklifler.length === 0 ? (
+          <p className="text-sm text-slate-500">Şu an aktif kampanya yok.</p>
+        ) : veri.teklifler.map(t => {
+          const f = alan(t.id)
+          return (
+            <div key={t.id} className="bg-slate-900 border border-slate-800 rounded-xl p-3">
+              <span className={`inline-block text-[11px] font-bold px-1.5 py-0.5 rounded ring-1 mb-1.5 ${turBilgi(t.tur).ton}`}>
+                {turBilgi(t.tur).ikon} {turBilgi(t.tur).ad}
+              </span>
+              <p className="text-sm font-bold text-white line-clamp-2 leading-tight">{t.baslik}</p>
+              <p className="text-xs text-slate-400 mt-1 line-clamp-3">{t.ayricalik}</p>
+              {t.gecerli_zaman && (
+                <p className="text-[11px] text-teal-300/90 mt-1">🕐 {t.gecerli_zaman}</p>
+              )}
+              {t.odul > 0 && (
+                <p className="text-[11px] text-violet-300 font-semibold mt-1">
+                  Gelen her kişi için {TRY(t.odul)}
+                </p>
+              )}
+
+              <form className="mt-2.5 space-y-2"
+                onSubmit={e => { e.preventDefault(); basla(t.id) }}>
+                <input value={f.ad}
+                  onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), ad: e.target.value } }))}
+                  placeholder="Adı Soyadı" className={inputCls} />
+                <input value={f.tel}
+                  onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), tel: e.target.value } }))}
+                  placeholder="Telefonu" inputMode="tel" className={inputCls} />
+                <button type="submit" disabled={pending || !f.ad.trim() || !f.tel.trim()}
+                  className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50">
+                  {pending ? 'Gönderiliyor…' : 'Davet Gönder'}
+                </button>
+              </form>
+            </div>
+          )
+        })}
+      </section>
+
+      {/* ── Geçmiş ── */}
       <section className="space-y-2">
         <h2 className="text-sm font-black text-white">Tavsiyelerim</h2>
         {veri.davetler.length === 0 ? (
-          <p className="text-sm text-slate-500">Henüz tavsiye bağlantınız kullanılmadı.</p>
+          <p className="text-sm text-slate-500">Henüz altın kod üretmediniz.</p>
         ) : veri.davetler.map(d => (
           <div key={d.kod} className="bg-slate-900 border border-slate-800 rounded-xl p-3">
             <div className="flex items-start gap-2">
