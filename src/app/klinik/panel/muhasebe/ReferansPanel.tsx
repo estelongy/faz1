@@ -58,16 +58,18 @@ export default function ReferansPanel({
     })
   }
 
+  const bekleyen = kodlar.filter(k => k.geldi === null && k.durum === 'aktif')
+
+  // Arama boşken SADECE bekleyenler listelenir — kasada bakılan budur.
+  // Geçmiş kodlar yüzlerceyi bulur; onlara ancak kod yazarak ulaşılır.
   // Arama: müşteri sadece kısa kodu söyler ("K7MP"); tam kod ve ad da aranır.
   const filtreliKodlar = useMemo(() => {
     const q = arama.trim().toUpperCase().replace(/-/g, '')
-    if (!q) return kodlar
+    if (!q) return bekleyen
     return kodlar.filter(k =>
       k.kod.toUpperCase().replace(/-/g, '').includes(q) ||
       (k.musteri_ad ?? '').toUpperCase().includes(arama.trim().toUpperCase()))
-  }, [kodlar, arama])
-
-  const bekleyen = kodlar.filter(k => k.geldi === null && k.durum === 'aktif')
+  }, [kodlar, bekleyen, arama])
 
   const mevcutRefIds = useMemo(
     () => new Set(referansorler.map(r => r.patient_id)), [referansorler])
@@ -110,9 +112,17 @@ export default function ReferansPanel({
             placeholder="Müşterinin söylediği kod (örn. K7MP) veya adı"
             className={inputCls} />
 
+          {!arama && (
+            <p className="text-[11px] text-slate-500 -mt-1">
+              Bekleyen kodlar listeleniyor. Geçmişe ulaşmak için kodu yazın.
+            </p>
+          )}
+
           {filtreliKodlar.length === 0 ? (
             <p className="text-sm text-slate-500 py-6 text-center">
-              {arama ? 'Kod bulunamadı.' : 'Henüz kod üretilmedi.'}
+              {arama ? 'Kod bulunamadı.'
+                : kodlar.length ? 'Bekleyen kod yok.'
+                : 'Henüz kod üretilmedi.'}
             </p>
           ) : filtreliKodlar.map(k => {
             const ref = referansorler.find(r => r.id === k.referrer_id)
@@ -143,19 +153,15 @@ export default function ReferansPanel({
                   Referansör: <span className="text-slate-300">{refHasta?.name ?? '—'}</span>
                 </p>
 
+                {/* "Gelmedi" butonu kaldırıldı: hiçbir şey değiştirmiyordu,
+                    kod zaten süresi dolunca kendiliğinden ölüyor. Gelmezse
+                    hiçbir şeye basılmaz. */}
                 {k.geldi === null && k.durum === 'aktif' && (
-                  <div className="flex gap-2 mt-2.5">
-                    <button disabled={pending}
-                      onClick={() => run(() => isaretleReferansZiyaret(k.id, true))}
-                      className="flex-1 px-3 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50">
-                      Geldi
-                    </button>
-                    <button disabled={pending}
-                      onClick={() => run(() => isaretleReferansZiyaret(k.id, false))}
-                      className="px-3 py-2 rounded-lg text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 disabled:opacity-50">
-                      Gelmedi
-                    </button>
-                  </div>
+                  <button disabled={pending}
+                    onClick={() => run(() => isaretleReferansZiyaret(k.id, true))}
+                    className="w-full mt-2.5 px-3 py-2.5 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50">
+                    Geldi
+                  </button>
                 )}
               </div>
             )
