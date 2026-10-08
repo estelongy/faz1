@@ -60,16 +60,17 @@ export default function ReferansPanel({
 
   const bekleyen = kodlar.filter(k => k.geldi === null && k.durum === 'aktif')
 
-  // Arama boşken SADECE bekleyenler listelenir — kasada bakılan budur.
-  // Geçmiş kodlar yüzlerceyi bulur; onlara ancak kod yazarak ulaşılır.
-  // Arama: müşteri sadece kısa kodu söyler ("K7MP"); tam kod ve ad da aranır.
+  // Arama boşken HİÇBİR ŞEY listelenmez. Kasada akış şu: müşteri kodu söyler,
+  // personel yazar, kart çıkar. Liste göstermenin işlevi yok — 100 satır
+  // arasından göz taramak yavaş ve hatalı.
+  // Müşteri sadece kısa kodu söyler ("K7MP"); tam kod ve ad da aranır.
   const filtreliKodlar = useMemo(() => {
     const q = arama.trim().toUpperCase().replace(/-/g, '')
-    if (!q) return bekleyen
+    if (!q) return []
     return kodlar.filter(k =>
       k.kod.toUpperCase().replace(/-/g, '').includes(q) ||
       (k.musteri_ad ?? '').toUpperCase().includes(arama.trim().toUpperCase()))
-  }, [kodlar, bekleyen, arama])
+  }, [kodlar, arama])
 
   const mevcutRefIds = useMemo(
     () => new Set(referansorler.map(r => r.patient_id)), [referansorler])
@@ -108,21 +109,28 @@ export default function ReferansPanel({
       {/* ══ KODLAR ══ */}
       {sekme === 'kodlar' && (
         <div className="space-y-2">
+          {/* Özet — liste değil sayı. İşletme "kaç kod dolaşımda" bilsin. */}
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              ['Dolaşımda', String(bekleyen.length), 'text-amber-300'],
+              ['Gelen', String(kodlar.filter(k => k.geldi === true).length), 'text-emerald-300'],
+              ['Toplam', String(kodlar.length), 'text-slate-300'],
+            ].map(([etiket, deger, renk]) => (
+              <div key={etiket} className="bg-slate-900/60 border border-slate-800 rounded-xl px-2 py-2 text-center">
+                <p className={`text-lg font-black tabular-nums ${renk}`}>{deger}</p>
+                <p className="text-[11px] text-slate-500 font-semibold">{etiket}</p>
+              </div>
+            ))}
+          </div>
+
           <input value={arama} onChange={e => setArama(e.target.value)}
             placeholder="Müşterinin söylediği kod (örn. K7MP) veya adı"
-            className={inputCls} />
-
-          {!arama && (
-            <p className="text-[11px] text-slate-500 -mt-1">
-              Bekleyen kodlar listeleniyor. Geçmişe ulaşmak için kodu yazın.
-            </p>
-          )}
+            className={inputCls} autoFocus />
 
           {filtreliKodlar.length === 0 ? (
             <p className="text-sm text-slate-500 py-6 text-center">
               {arama ? 'Kod bulunamadı.'
-                : kodlar.length ? 'Bekleyen kod yok.'
-                : 'Henüz kod üretilmedi.'}
+                : 'Müşterinin söylediği kodu yazın.'}
             </p>
           ) : filtreliKodlar.map(k => {
             const ref = referansorler.find(r => r.id === k.referrer_id)
