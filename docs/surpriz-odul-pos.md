@@ -152,6 +152,79 @@ piyango ekseninde değil.
 alıp müşterilere anlatmak "açıklama" sayılır, yenilik kaybolur. TR'de 12 aylık
 hoşgörü süresi var ama riskli.
 
+### Donanım seçeneği — "kibrit kutusu"
+
+POS ile kasa/CRM arasına fiziksel bir cihaz koyma fikri (7 Ekim görüşmesi).
+
+**Patent açısından güçlendirir.** Yazılımda "iş yöntemi" diye reddedilen şey,
+fiziksel cihazda teknik buluş olarak değerlendirilir; SMK m.82 dışlaması
+donanımda uygulanmaz. Ve donanımın çözeceği gerçek teknik problemler var:
+protokol dönüştürme, güvenli elemanda tohum saklama, gecikmeyi ödeme akışını
+bozmayacak seviyede tutma.
+
+**Ama üç sert gerçek:**
+
+| | |
+|---|---|
+| **Sertifikasyon** | POS ile kasa arasına giren her şey PCI-DSS kapsamında. Kart verisi akışına dokunuyorsa sertifikasyon zorunlu, maliyeti altı haneli. |
+| **Kurulum** | Her işletmede montaj, kablo, arıza, destek. Yazılım sıfır maliyetle yayılır, donanım yayılmaz. **Hopi'nin donanıma girmeme sebebi budur.** |
+| **Prior art** | Payment gateway appliance / loyalty terminal alanı dolu olabilir — taranmadı. |
+
+**Ayırt edici soru: cihaz ne yapacak ki yazılım yapamasın?**
+
+Tek işi "kodu doğrula, indirimi hesapla" ise bunu API zaten yapıyor; cihaz
+yalnızca maliyet ve kurulum getirir.
+
+Cihaz ancak **çevrimdışı karar** veriyorsa anlamlı: işletmenin bağlantısı
+yokken bile kod doğrulanıyor, ödül kararı veriliyor, sonra senkronize oluyor.
+Patent iddiası da orada.
+
+---
+
+## 5b. Piyangodan ayrışma
+
+Türkiye'de şans oyunu düzenlemek Milli Piyango tekelinde. Sistem "çekiliş"
+sayılırsa izin gerekir. Ayrım dört noktada kurulur.
+
+> ⚠️ Aşağıdakiler **hukuki görüş değil**, okumadır. Promosyon/çekiliş sınırı
+> Milli Piyango İdaresi'nin yorumuna bağlı ve belirsiz. Ölçek büyüyünce
+> avukat görüşü şart — hatta patent başvurusundan ÖNCE, çünkü uygulanamayacak
+> bir şeyin patentini almak para yakmaktır.
+
+### 1. Bedel yok
+Piyangoda bilet satın alınır. Burada kod **bedava** — referansör veriyor,
+müşteri para ödemiyor. Kazanma hakkı için hiçbir ödeme yapılmıyor.
+
+⚠️ Gri alan: "kodu kullanmak için şu tutarda alışveriş yapmalısın" denirse
+bedel dolaylı olarak var sayılabilir.
+
+### 2. Kaybeden yok — en güçlü ayrım
+Şans oyununun tanımı "bir kısmı kazanır, çoğu kaybeder".
+
+Burada **her kod indirim kazandırıyor**; sürpriz ödül onun ÜSTÜNE ek.
+Kimse eli boş dönmüyor. Bu yüzden şans oyunu tanımına girmiyor.
+
+### 3. Kazanç hizmet, nakit değil
+İşletmenin kendi ürünü/hizmeti verilirse promosyon sayılır. Telefon bile
+nakit değil ama nakde çevrilebilir — **kendi hizmetin** olması daha güvenli.
+
+### 4. Düzenleyen işletme, platform değil
+Ödül havuzunu işletme finanse ediyor; platform yalnızca dağıtım mekanizması.
+Bu, platformun "şans oyunu düzenleyicisi" sayılmasını engeller — ama
+işletmeyi korumaz.
+
+### Dil de değişmeli
+
+| Kullanma | Kullan |
+|---|---|
+| Çekiliş, kura | **Sürpriz ödül** |
+| Kazandınız | **Size özel hediyemiz var** |
+| Talih, şanslı kişi | — hiç kullanma |
+| Bilet | Kod |
+
+İndirim tarafı zaten sorunsuz: ona **promosyon / kampanya indirimi** denir.
+Riskli olan indirim değil, sürpriz ödül katmanı.
+
 ---
 
 ## 6. Gerçek engeller
