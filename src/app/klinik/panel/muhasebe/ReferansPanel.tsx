@@ -11,6 +11,8 @@ import {
 const inputCls = 'w-full px-2.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500'
 const btnPrimary = 'px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50'
 
+const TRY = (n: number) => '₺' + Math.round(n).toLocaleString('tr-TR')
+
 const gunFarki = (iso: string) =>
   Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000)
 
@@ -37,6 +39,8 @@ export default function ReferansPanel({
   const [sekme, setSekme] = useState<'kodlar' | 'referansorler' | 'teklifler' | 'ayar'>('kodlar')
   const [yeniRefArama, setYeniRefArama] = useState('')
   const [yeniTur, setYeniTur] = useState<KampanyaTur>('tanisma')
+  // Kod başına girilen hesap tutarı — indirim bundan hesaplanır.
+  const [tutarlar, setTutarlar] = useState<Record<string, string>>({})
 
   const isletmeKodu = ayar?.isletme_kodu ?? 'GOK'
 
@@ -48,6 +52,14 @@ export default function ReferansPanel({
   const teklifAdi = useMemo(() => {
     const m = new Map(teklifler.map(t => [t.id, t.baslik]))
     return (id: string) => m.get(id) ?? '—'
+  }, [teklifler])
+
+  // İndirim oranı kampanyanın ayrıcalık metninden okunur ("...%25 indirim").
+  const teklifOrani = useMemo(() => {
+    const m = new Map(teklifler.map(t => [
+      t.id, Number(t.ayricalik.match(/%\s*(\d+)/)?.[1] ?? 0),
+    ]))
+    return (id: string) => m.get(id) ?? 0
   }, [teklifler])
 
   function run(fn: () => Promise<{ ok: boolean; error?: string }>) {
@@ -161,16 +173,41 @@ export default function ReferansPanel({
                   Referansör: <span className="text-slate-300">{refHasta?.name ?? '—'}</span>
                 </p>
 
-                {/* "Gelmedi" butonu kaldırıldı: hiçbir şey değiştirmiyordu,
-                    kod zaten süresi dolunca kendiliğinden ölüyor. Gelmezse
-                    hiçbir şeye basılmaz. */}
-                {k.geldi === null && k.durum === 'aktif' && (
-                  <button disabled={pending}
-                    onClick={() => run(() => isaretleReferansZiyaret(k.id, true))}
-                    className="w-full mt-2.5 px-3 py-2.5 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50">
-                    Geldi
-                  </button>
-                )}
+                {/* Hesap tutarı girilir, indirim kampanyadan otomatik hesaplanır.
+                    "Geldi" tek başına kampanya kârlılığını ölçmüyordu.
+                    Gelmezse hiçbir şeye basılmaz — kod süresi dolunca ölür. */}
+                {k.geldi === null && k.durum === 'aktif' && (() => {
+                  const oran = teklifOrani(k.offer_id)
+                  const hesap = Number((tutarlar[k.id] ?? '').replace(',', '.'))
+                  const gecerli = Number.isFinite(hesap) && hesap > 0
+                  const indirim = gecerli ? Math.round(hesap * oran / 100) : 0
+                  return (
+                    <form className="mt-2.5 space-y-2"
+                      onSubmit={e => {
+                        e.preventDefault()
+                        run(() => isaretleReferansZiyaret(k.id, true, hesap, indirim))
+                        setTutarlar(p => ({ ...p, [k.id]: '' }))
+                      }}>
+                      <div className="flex gap-2">
+                        <input
+                          value={tutarlar[k.id] ?? ''}
+                          onChange={e => setTutarlar(p => ({ ...p, [k.id]: e.target.value }))}
+                          placeholder="Hesap tutarı ₺" inputMode="decimal"
+                          className={inputCls} />
+                        <button type="submit" disabled={pending || !gecerli}
+                          className="px-5 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-40 whitespace-nowrap">
+                          Geldi
+                        </button>
+                      </div>
+                      {gecerli && oran > 0 && (
+                        <p className="text-xs text-slate-400 tabular-nums">
+                          %{oran} indirim: <span className="text-rose-300">−{TRY(indirim)}</span>
+                          {' · '}Tahsil: <span className="text-emerald-300 font-bold">{TRY(hesap - indirim)}</span>
+                        </p>
+                      )}
+                    </form>
+                  )
+                })()}
               </div>
             )
           })}

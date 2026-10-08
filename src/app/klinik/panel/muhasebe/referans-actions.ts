@@ -121,9 +121,13 @@ export async function uretReferansLink(referrerId: string, offerId: string): Pro
 
 // ── Geldi / Gelmedi ──────────────────────────────────────────────────
 export async function isaretleReferansZiyaret(
-  codeId: string, geldi: boolean, patientId?: string,
+  codeId: string, geldi: boolean,
+  hesap?: number, indirim?: number, patientId?: string,
 ): Promise<Result> {
   return rpc('referral_isaretle', {
-    p_code: codeId, p_geldi: geldi, p_patient: patientId ?? null, p_treatment: null,
+    p_code: codeId, p_geldi: geldi,
+    p_patient: patientId ?? null, p_treatment: null,
+    p_hesap: Number.isFinite(hesap) ? hesap : null,
+    p_indirim: Number.isFinite(indirim) ? indirim : null,
   })
 }
