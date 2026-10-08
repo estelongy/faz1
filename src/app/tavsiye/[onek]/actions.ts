@@ -46,11 +46,15 @@ export async function davetBaslat(
   const tel = normalizePhone(hamTel)
   if (!tel) return { ok: false, error: 'Telefon numarası geçersiz.' }
 
-  // Aynı numaraya saatte en fazla 3 SMS
-  const istek = await redis.incr(istekKey(tel))
-  if (istek === 1) await redis.expire(istekKey(tel), 3600)
-  if (istek > ISTEK_SINIR) {
-    return { ok: false, error: 'Bu numaraya çok fazla istek gönderildi. Bir saat sonra deneyin.' }
+  // Aynı numaraya saatte en fazla N SMS.
+  // Sayaç yalnızca OKUNUR; artırma SMS gerçekten gidince yapılır — yoksa
+  // DB hatası veya SMS arızasında kota boşa yanıyordu.
+  const gonderilen = Number(await redis.get<number>(istekKey(tel)) ?? 0)
+  if (gonderilen >= ISTEK_SINIR) {
+    return {
+      ok: false,
+      error: `Bu numaraya son bir saatte ${ISTEK_SINIR} kod gönderildi. Biraz sonra tekrar deneyin.`,
+    }
   }
 
   const supabase = await createClient()
@@ -81,6 +85,10 @@ export async function davetBaslat(
     console.error('[referans-davet-sms] Netgsm:', res.error)
     return { ok: false, error: mapNetgsmError(res.code ?? '') }
   }
+
+  // SMS gitti — kotayı şimdi yak.
+  const sayac = await redis.incr(istekKey(tel))
+  if (sayac === 1) await redis.expire(istekKey(tel), 3600)
 
   await redis.set(otpKey(row.token), { kod, tel }, { ex: OTP_TTL_SEC })
   await redis.del(denemeKey(row.token))

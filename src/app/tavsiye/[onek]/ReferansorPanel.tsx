@@ -22,6 +22,7 @@ export interface PanelVerisi {
   bekleyen_link: {
     token: string; teklif: string; son: string
     ayricalik: string | null; gecerli_zaman: string | null
+    offer_id: string
     aday_ad: string | null; aday_tel: string | null
   }[]
 }
@@ -60,6 +61,15 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
       const r = await davetBaslat(veri.onek, offerId, f.ad, f.tel)
       if (!r.ok) { setHata(r.error); return }
       setForm(p => ({ ...p, [offerId]: { ad: '', tel: '' } }))
+    })
+  }
+
+  /** Onay kodu süresi dolduysa aynı kişiye yeni kod gönderir. */
+  function tekrarGonder(offerId: string, ad: string, tel: string) {
+    setHata(null); setAltinKod(null)
+    startTransition(async () => {
+      const r = await davetBaslat(veri.onek, offerId, ad, tel)
+      if (!r.ok) { setHata(r.error); return }
     })
   }
 
@@ -145,6 +155,12 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                   {pending ? '…' : 'Kodu Al'}
                 </button>
               </form>
+              {/* Onay kodunun süresi 30 dk; dolduysa buradan yenisi gönderilir. */}
+              <button type="button" disabled={pending}
+                onClick={() => tekrarGonder(l.offer_id, l.aday_ad ?? '', l.aday_tel ?? '')}
+                className="mt-2 text-[11px] font-semibold text-slate-500 hover:text-slate-300 disabled:opacity-40">
+                Kod gelmedi mi? Yeni onay kodu gönder
+              </button>
             </div>
           ))}
         </section>
