@@ -23,7 +23,8 @@ import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
 import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
 import type { ReferansKod } from './referans-tipler'
-import { kademeFiyati } from '@/lib/uyelik'
+import { HOSGELDIN_ORAN } from '@/lib/uyelik'
+import { uyelikKodGonder, uyelikOnayla, referansKoduUygula } from './uyelik-actions'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
 import {
@@ -754,14 +755,30 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   const [islemTutar, setIslemTutar] = useState('')
   // İndirim bir kez uygulandıysa şerit de onay kutusu da susar (üst üste binmesin).
   const [indirimUygulandi, setIndirimUygulandi] = useState(false)
+  // ─── Üyelik başlatma (kutucuk → SMS → kod) ───
+  const [uyelikAcik, setUyelikAcik] = useState(false)
+  const [uyelikKabul, setUyelikKabul] = useState(false)
+  const [uyelikKodGonderildi, setUyelikKodGonderildi] = useState(false)
+  const [uyelikKod, setUyelikKod] = useState('')
+  // ─── Referans kodu uygulama (listesiz, sadece arama) ───
+  const [refKodArama, setRefKodArama] = useState('')
+  const [refSonuc, setRefSonuc] = useState<string | null>(null)
   const uyelikIndirimi = useMemo(() => {
     if (indirimUygulandi) return null
-    if (!selected || selected.uyelik.kademe === 'primula') return null
+    if (!selected?.uyelik.uye) return null       // üye değilse indirim yok
     const girilen = Number(islemTutar.replace(',', '.'))
     if (!Number.isFinite(girilen) || girilen <= 0) return null
-    const indirimli = kademeFiyati(girilen, selected.uyelik.kademe)
+
+    // Primula'da sürekli indirim yok; onun yerine TEK SEFERLİK hoş geldin.
+    // Kademe indirimi varsa (Elita+) o uygulanır, ikisi birleşmez.
+    const kademeOran = selected.uyelik.indirim
+    const hosgeldin = selected.uyelik.hosgeldinVar && kademeOran < HOSGELDIN_ORAN
+    const oran = hosgeldin ? HOSGELDIN_ORAN : kademeOran
+    if (oran <= 0) return null
+
+    const indirimli = Math.round(girilen * (1 - oran / 100))
     if (indirimli >= girilen) return null
-    return { girilen, indirimli, oran: selected.uyelik.indirim }
+    return { girilen, indirimli, oran, hosgeldin }
   }, [selected, islemTutar, indirimUygulandi])
 
   function submitIslem(e: React.FormEvent<HTMLFormElement>) {
@@ -774,9 +791,13 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     if (uyelikIndirimi && selected) {
       const u = uyelikIndirimi
       setConfirmBox({
-        title: `${selected.uyelik.kademeAdi} üyesi — indirim uygulanmadı`,
+        title: u.hosgeldin
+          ? 'Hoş geldin indirimi uygulanmadı'
+          : `${selected.uyelik.kademeAdi} üyesi — indirim uygulanmadı`,
         lines: [
-          `${selected.name} · %${u.oran} üye indirimi hakkı var`,
+          u.hosgeldin
+            ? `${selected.name} · %${u.oran} tek seferlik hoş geldin indirimi hakkı var`
+            : `${selected.name} · %${u.oran} üye indirimi hakkı var`,
           `Girilen tutar ${TRY(u.girilen)} · indirimli ${TRY(u.indirimli)} (fark ${TRY(u.girilen - u.indirimli)})`,
           'İndirimi uygulamadan kaydetmek istediğinizden emin misiniz?',
         ],
@@ -1153,7 +1174,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         <td className="px-4 py-2.5 text-white font-semibold">
                           <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
                             <span className="min-w-0">{p.name}</span>
-                            {p.uyelik.kademe !== 'primula' && <UyelikRozet uyelik={p.uyelik} />}
+                            <UyelikRozet uyelik={p.uyelik} />
                           </span>
                           {p.patient_code && (
                             <span className={`block text-[10px] font-mono font-normal ${
@@ -1915,6 +1936,12 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                           </span>
                         )}
                         <UyelikRozet uyelik={selected.uyelik} kalan />
+                        {!selected.uyelik.uye && (
+                          <button onClick={() => { setUyelikAcik(true); setUyelikKod('') }}
+                            className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 hover:bg-violet-500/30">
+                            + Üye yap
+                          </button>
+                        )}
                         <span>{selected.phone ?? 'Telefon yok'}</span>
                         {selected.notes ? <span>· {selected.notes}</span> : null}
                       </p>
@@ -1927,6 +1954,91 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     : <p className="text-emerald-300 font-bold text-sm">Bakiye kapalı</p>}
                   <p className="text-xs text-slate-500 mt-0.5">{selected.treatment_count} işlem · {TRY(selected.total_amount)}</p>
                 </div>
+              </div>
+
+              {/* ── Üyelik başlatma: kutucuk → SMS → kod ──
+                  Hasta onaylamadan üye olmuyor; rıza SMS ile kanıtlanıyor. */}
+              {uyelikAcik && !selected.uyelik.uye && (
+                <div className="bg-violet-500/10 ring-1 ring-violet-500/30 rounded-xl p-3 space-y-2 mb-3">
+                  <div className="flex items-start gap-2">
+                    <p className="text-xs font-bold text-violet-200 flex-1">
+                      Exclusive Member üyeliği başlat
+                    </p>
+                    <button onClick={() => { setUyelikAcik(false); setUyelikKodGonderildi(false); setUyelikKabul(false) }}
+                      className="text-slate-500 hover:text-slate-300 text-sm">✕</button>
+                  </div>
+
+                  {!uyelikKodGonderildi ? (
+                    <>
+                      <label className="flex items-start gap-2 text-xs text-slate-300">
+                        <input type="checkbox" checked={uyelikKabul}
+                          onChange={e => setUyelikKabul(e.target.checked)}
+                          className="w-4 h-4 mt-0.5 shrink-0" />
+                        <span>
+                          Hasta üyeliği kabul etti. Telefonuna onay kodu gönderilecek.
+                          <span className="block text-slate-500 mt-0.5">
+                            {selected.phone ?? 'Telefon kayıtlı değil — önce ekleyin'}
+                          </span>
+                        </span>
+                      </label>
+                      <button disabled={pending || !uyelikKabul || !selected.phone}
+                        onClick={() => startTransition(async () => {
+                          const r = await uyelikKodGonder(selected.id)
+                          if (r.ok) setUyelikKodGonderildi(true)
+                          else setError(r.error)
+                        })}
+                        className="w-full px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-40">
+                        {pending ? 'Gönderiliyor…' : 'Onay Kodu Gönder'}
+                      </button>
+                    </>
+                  ) : (
+                    <form className="flex gap-2"
+                      onSubmit={e => {
+                        e.preventDefault()
+                        startTransition(async () => {
+                          const r = await uyelikOnayla(selected.id, uyelikKod)
+                          if (r.ok) { setUyelikAcik(false); setUyelikKodGonderildi(false); setUyelikKabul(false); setUyelikKod('') }
+                          else setError(r.error)
+                        })
+                      }}>
+                      <input value={uyelikKod}
+                        onChange={e => setUyelikKod(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        placeholder="______" inputMode="numeric"
+                        className={`${inputCls} text-center font-mono tracking-[0.3em]`} />
+                      <button type="submit" disabled={pending || uyelikKod.length < 6}
+                        className="px-4 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-40 whitespace-nowrap">
+                        {pending ? '…' : 'Üyeliği Başlat'}
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
+
+              {/* ── Referans kodu uygula — LİSTESİZ, sadece arama ──
+                  Müşteri kısa kodu söyler, personel yazar. */}
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <form className="flex gap-2 flex-1 min-w-[240px]"
+                  onSubmit={e => {
+                    e.preventDefault()
+                    setRefSonuc(null)
+                    startTransition(async () => {
+                      const r = await referansKoduUygula(refKodArama)
+                      if (r.ok) { setRefSonuc(`${r.kod} uygulandı · %${r.oran} indirim`); setRefKodArama('') }
+                      else setError(r.error)
+                    })
+                  }}>
+                  <input value={refKodArama}
+                    onChange={e => setRefKodArama(e.target.value.toUpperCase().slice(0, 12))}
+                    placeholder="Referans kodu (örn. 6T73)"
+                    className={`${inputCls} font-mono`} />
+                  <button type="submit" disabled={pending || refKodArama.trim().length < 3}
+                    className="px-3 py-2 rounded-lg text-sm font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 disabled:opacity-40 whitespace-nowrap">
+                    Uygula
+                  </button>
+                </form>
+                {refSonuc && (
+                  <p className="text-xs font-semibold text-emerald-300">{refSonuc}</p>
+                )}
               </div>
 
               {/* Aksiyon çubuğu */}
@@ -2174,7 +2286,9 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   {uyelikIndirimi && (
                     <div className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/30">
                       <span className="text-xs text-amber-200 font-semibold">
-                        {selected?.uyelik.kademeAdi} · %{uyelikIndirimi.oran} üye indirimi
+                        {uyelikIndirimi.hosgeldin
+                          ? `Hoş geldin · %${uyelikIndirimi.oran} (tek seferlik)`
+                          : `${selected?.uyelik.kademeAdi} · %${uyelikIndirimi.oran} üye indirimi`}
                       </span>
                       <span className="text-xs text-slate-300 tabular-nums">
                         {TRY(uyelikIndirimi.girilen)} → <b className="text-amber-200">{TRY(uyelikIndirimi.indirimli)}</b>

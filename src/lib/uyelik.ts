@@ -21,14 +21,29 @@ export const KADEME_ADI: Record<Kademe, string> = {
   suprema: 'Suprema',
 }
 
-/** Liste fiyatından düşülen oran. Optima'dan sonra sabit — %20 tavandır. */
+/**
+ * Liste fiyatından düşülen oran. Optima'dan sonra sabit — %20 tavandır.
+ *
+ * Primula %0: sürekli %5 görünmüyordu (8.000 TL'de 400 TL), ayrıcalık değil
+ * fiyat haline geliyordu ve Elita'ya geçişi değersizleştiriyordu. Yerine
+ * tek seferlik HOŞ GELDİN indirimi kondu (bkz. HOSGELDIN_ORAN).
+ */
 export const KADEME_INDIRIM: Record<Kademe, number> = {
-  primula: 5,
+  primula: 0,
   elita: 10,
   optima: 20,
   maxima: 20,
   suprema: 20,
 }
+
+/**
+ * Tek seferlik hoş geldin indirimi — yalnızca ONAYLI üyenin ilk işleminde.
+ * Sürekli %5'ten daha iyi: bir kez ve büyük olduğu için hatırlanıyor,
+ * taban fiyatı bozmuyor, Elita'yı (%10 sürekli) gerçek bir hedef yapıyor.
+ *
+ * Referansla gelen hastaya UYGULANMAZ — o zaten kampanya indirimini alıyor.
+ */
+export const HOSGELDIN_ORAN = 10
 
 /** Sıra çarpanı: 1., 2., 3., 4., 5. ziyaret — 6. ve sonrası sabit ×6. */
 export function siraCarpani(sira: number): number {
@@ -64,6 +79,10 @@ export interface UyelikIslem {
 }
 
 export interface UyelikDurumu {
+  /** Hasta üyeliği SMS ile onayladı mı. false ise kademe GÖSTERİLMEZ. */
+  uye: boolean
+  /** Tek seferlik hoş geldin indirimi hâlâ kullanılabilir mi. */
+  hosgeldinVar: boolean
   kademe: Kademe
   kademeAdi: string
   indirim: number
@@ -103,7 +122,19 @@ export function ziyaretTutarlari(odemeler: UyelikOdeme[], islemler: UyelikIslem[
   return Array.from(gunler.values()).sort((a, b) => b - a)
 }
 
-export function uyelikHesapla(odemeler: UyelikOdeme[], islemler: UyelikIslem[]): UyelikDurumu {
+export interface UyelikKaydi {
+  /** internal_patient.uyelik_onay_at — null ise üye değil. */
+  uyelik_onay_at: string | null
+  /** internal_patient.hosgeldin_kullanildi_at */
+  hosgeldin_kullanildi_at?: string | null
+}
+
+export function uyelikHesapla(
+  odemeler: UyelikOdeme[], islemler: UyelikIslem[], kayit?: UyelikKaydi | null,
+): UyelikDurumu {
+  const uye = Boolean(kayit?.uyelik_onay_at)
+  const hosgeldinVar = uye && !kayit?.hosgeldin_kullanildi_at
+
   const ziyaretler = ziyaretTutarlari(odemeler, islemler)
   const ziyaret = ziyaretler.length
   const tahsilat = ziyaretler.reduce((s, t) => s + t, 0)
@@ -165,6 +196,8 @@ export function uyelikHesapla(odemeler: UyelikOdeme[], islemler: UyelikIslem[]):
   }
 
   return {
+    uye,
+    hosgeldinVar,
     kademe,
     kademeAdi: KADEME_ADI[kademe],
     indirim: KADEME_INDIRIM[kademe],

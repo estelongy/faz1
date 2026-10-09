@@ -19,6 +19,10 @@ const TRY = (n: number) =>
 export default function UyelikRozet({
   uyelik, kalan = false,
 }: { uyelik: UyelikDurumu; kalan?: boolean }) {
+  // Üye olmayanda kademe GÖSTERİLMEZ. Hasta onaylamadan üye sayılmıyor;
+  // rozet göstermek "siz üyesiniz" demek olur. Bkz. docs/uyelik-sistemi.md
+  if (!uyelik.uye) return null
+
   return (
     <span className="inline-flex items-baseline gap-1.5 min-w-0">
       <span
