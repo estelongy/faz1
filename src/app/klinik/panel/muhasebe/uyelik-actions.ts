@@ -39,7 +39,9 @@ async function ctx() {
 }
 
 /** 1) Hastaya üyelik onay kodu gönderir. */
-export async function uyelikKodGonder(patientId: string): Promise<Sonuc> {
+export async function uyelikKodGonder(
+  patientId: string, referansor = false,
+): Promise<Sonuc> {
   const c = await ctx()
   if (!c) return { ok: false, error: 'Yetkisiz' }
 
@@ -63,8 +65,10 @@ export async function uyelikKodGonder(patientId: string): Promise<Sonuc> {
   const kod = generateOtpCode()
   const ad = duzgunAd(hasta.name).split(' ')[0]
   const mesaj = smsSadelestir([
-    `Sayin ${ad}, Dr. Izzet GOK Exclusive Member uyeligi icin onay kodunuz: ${kod}`,
-    'Uye olmak istemiyorsaniz kodu paylasmayin.',
+    referansor
+      ? `Sayin ${ad}, Dr. Izzet GOK Exclusive Member uyeligi ve referansorluk icin onay kodunuz: ${kod}`
+      : `Sayin ${ad}, Dr. Izzet GOK Exclusive Member uyeligi icin onay kodunuz: ${kod}`,
+    'Kabul etmiyorsaniz kodu paylasmayin.',
   ].join('\n'))
 
   const res = await sendInfoSms(tel, mesaj)
@@ -82,7 +86,9 @@ export async function uyelikKodGonder(patientId: string): Promise<Sonuc> {
 }
 
 /** 2) Personel kodu girer → üyelik başlar. */
-export async function uyelikOnayla(patientId: string, girilenKod: string): Promise<Sonuc> {
+export async function uyelikOnayla(
+  patientId: string, girilenKod: string, referansor = false,
+): Promise<Sonuc> {
   const c = await ctx()
   if (!c) return { ok: false, error: 'Yetkisiz' }
 
@@ -103,6 +109,7 @@ export async function uyelikOnayla(patientId: string, girilenKod: string): Promi
   const { error } = await c.supabase.rpc('uyelik_baslat', {
     p_owner: c.ownerId, p_patient: patientId,
     p_tel: kayit.tel, p_metin_sur: METIN_SURUM,
+    p_referansor: referansor,
   })
   if (error) return { ok: false, error: error.message }
 

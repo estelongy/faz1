@@ -758,6 +758,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   // ─── Üyelik başlatma (kutucuk → SMS → kod) ───
   const [uyelikAcik, setUyelikAcik] = useState(false)
   const [uyelikKabul, setUyelikKabul] = useState(false)
+  const [uyelikRefKabul, setUyelikRefKabul] = useState(false)
   const [uyelikKodGonderildi, setUyelikKodGonderildi] = useState(false)
   const [uyelikKod, setUyelikKod] = useState('')
   // ─── Referans kodu uygulama (listesiz, sadece arama) ───
@@ -1965,7 +1966,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     <p className="text-xs font-bold text-violet-200 flex-1">
                       Exclusive Member üyeliği başlat
                     </p>
-                    <button onClick={() => { setUyelikAcik(false); setUyelikKodGonderildi(false); setUyelikKabul(false) }}
+                    <button onClick={() => { setUyelikAcik(false); setUyelikKodGonderildi(false); setUyelikKabul(false); setUyelikRefKabul(false) }}
                       className="text-slate-500 hover:text-slate-300 text-sm">✕</button>
                   </div>
 
@@ -1982,9 +1983,22 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                           </span>
                         </span>
                       </label>
+                      {/* Referansörlük ayrı bir rıza: başkasının numarasını
+                          sisteme girmeyi kabul etmek demek. Aynı SMS'te alınır. */}
+                      <label className="flex items-start gap-2 text-xs text-slate-300">
+                        <input type="checkbox" checked={uyelikRefKabul}
+                          onChange={e => setUyelikRefKabul(e.target.checked)}
+                          className="w-4 h-4 mt-0.5 shrink-0" />
+                        <span>
+                          Referansör olmak istiyor
+                          <span className="block text-slate-500 mt-0.5">
+                            Tanıdıklarına kampanya daveti gönderebilir
+                          </span>
+                        </span>
+                      </label>
                       <button disabled={pending || !uyelikKabul || !selected.phone}
                         onClick={() => startTransition(async () => {
-                          const r = await uyelikKodGonder(selected.id)
+                          const r = await uyelikKodGonder(selected.id, uyelikRefKabul)
                           if (r.ok) setUyelikKodGonderildi(true)
                           else setError(r.error)
                         })}
@@ -1997,8 +2011,8 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       onSubmit={e => {
                         e.preventDefault()
                         startTransition(async () => {
-                          const r = await uyelikOnayla(selected.id, uyelikKod)
-                          if (r.ok) { setUyelikAcik(false); setUyelikKodGonderildi(false); setUyelikKabul(false); setUyelikKod('') }
+                          const r = await uyelikOnayla(selected.id, uyelikKod, uyelikRefKabul)
+                          if (r.ok) { setUyelikAcik(false); setUyelikKodGonderildi(false); setUyelikKabul(false); setUyelikRefKabul(false); setUyelikKod('') }
                           else setError(r.error)
                         })
                       }}>
