@@ -2015,45 +2015,6 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                 </div>
               )}
 
-              {/* ── Referans kodu uygula — LİSTESİZ, sadece arama ──
-                  Müşteri kısa kodu söyler, personel yazar. */}
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <form className="flex gap-2 flex-1 min-w-[280px]"
-                  onSubmit={e => {
-                    e.preventDefault()
-                    setRefSonuc(null)
-                    const tutar = Number(refTutar.replace(',', '.'))
-                    startTransition(async () => {
-                      const r = await referansKoduUygula(
-                        refKodArama, Number.isFinite(tutar) && tutar > 0 ? tutar : undefined)
-                      if (r.ok) {
-                        const ind = Number.isFinite(tutar) && tutar > 0 && r.oran > 0
-                          ? Math.round(tutar * r.oran / 100) : 0
-                        setRefSonuc(ind > 0
-                          ? `${r.kod} · %${r.oran} indirim −${TRY(ind)} · Tahsil ${TRY(tutar - ind)}`
-                          : `${r.kod} uygulandı · %${r.oran} indirim`)
-                        setRefKodArama(''); setRefTutar('')
-                      } else setError(r.error)
-                    })
-                  }}>
-                  <input value={refKodArama}
-                    onChange={e => setRefKodArama(e.target.value.toUpperCase().slice(0, 12))}
-                    placeholder="Referans kodu"
-                    className={`${inputCls} font-mono w-32 shrink-0`} />
-                  <input value={refTutar}
-                    onChange={e => setRefTutar(e.target.value)}
-                    placeholder="Hesap tutarı ₺" inputMode="decimal"
-                    className={inputCls} />
-                  <button type="submit" disabled={pending || refKodArama.trim().length < 3}
-                    className="px-3 py-2 rounded-lg text-sm font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 disabled:opacity-40 whitespace-nowrap">
-                    Uygula
-                  </button>
-                </form>
-                {refSonuc && (
-                  <p className="text-xs font-semibold text-emerald-300">{refSonuc}</p>
-                )}
-              </div>
-
               {/* Aksiyon çubuğu */}
               <div className="flex flex-wrap gap-2">
                 {(['islem', 'tahsilat', 'randevu', 'foto'] as const).map(k => (
@@ -2318,6 +2279,42 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       </button>
                     </div>
                   )}
+
+                  {/* Referans kodu — üyelik indiriminin ALTINDA, aynı akışta.
+                      Listesiz: müşteri kısa kodu söyler, personel yazar. */}
+                  <div className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded-lg bg-slate-800/40 ring-1 ring-slate-700">
+                    <input value={refKodArama}
+                      onChange={e => setRefKodArama(e.target.value.toUpperCase().slice(0, 12))}
+                      placeholder="Referans kodu"
+                      className="w-28 px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500" />
+                    <input value={refTutar}
+                      onChange={e => setRefTutar(e.target.value)}
+                      placeholder="Hesap tutarı ₺" inputMode="decimal"
+                      className="w-32 px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500" />
+                    <button type="button" disabled={pending || refKodArama.trim().length < 3}
+                      onClick={() => {
+                        setRefSonuc(null)
+                        const tutar = Number(refTutar.replace(',', '.'))
+                        startTransition(async () => {
+                          const r = await referansKoduUygula(
+                            refKodArama, Number.isFinite(tutar) && tutar > 0 ? tutar : undefined)
+                          if (r.ok) {
+                            const ind = Number.isFinite(tutar) && tutar > 0 && r.oran > 0
+                              ? Math.round(tutar * r.oran / 100) : 0
+                            setRefSonuc(ind > 0
+                              ? `${r.kod} · %${r.oran} −${TRY(ind)} · Tahsil ${TRY(tutar - ind)}`
+                              : `${r.kod} uygulandı · %${r.oran}`)
+                            setRefKodArama(''); setRefTutar('')
+                          } else setError(r.error)
+                        })
+                      }}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900 disabled:opacity-40">
+                      Uygula
+                    </button>
+                    {refSonuc && (
+                      <span className="text-xs font-semibold text-emerald-300">{refSonuc}</span>
+                    )}
+                  </div>
 
                   {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
                   {extraIslemler.map((row, i) => (
