@@ -2278,6 +2278,42 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
                   </div>
 
+                  {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
+                  {extraIslemler.map((row, i) => (
+                    <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),110px,130px,auto] gap-2">
+                      <input name={`extra_name_${i}`} list="katalog-listesi" placeholder={`${i + 2}. işlem adı`} className={inputCls} />
+                      <input name={`extra_amount_${i}`} placeholder="Ücret ₺" inputMode="decimal"
+                        value={ekTutarlar[row.id] ?? ''}
+                        onChange={e => setEkTutarlar(p => ({ ...p, [row.id]: e.target.value }))}
+                        className={inputCls} />
+                      <select name={`extra_session_${i}`} defaultValue="" className={inputCls} title="Paketse seans sayısı">
+                        <option value="">Tek seans</option>
+                        {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n}</option>)}
+                      </select>
+                      <button type="button"
+                        onClick={() => setExtraIslemler(prev => prev.filter(r => r.id !== row.id))}
+                        className="px-3 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400"
+                        aria-label="Satırı kaldır">✕</button>
+                    </div>
+                  ))}
+                  <button type="button"
+                    onClick={() => setExtraIslemler(prev => [...prev, { id: oid() }])}
+                    className="w-full px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-dashed border-slate-600">
+                    + Aynı ziyarete işlem ekle
+                  </button>
+
+                  {/* ── TOPLAM ve indirimler — tüm işlemler girildikten SONRA ──
+                      İndirim ziyaretin toplamına uygulanır, sonra her kalem
+                      oransal düşer. Bu yüzden blok en altta. */}
+                  {ziyaretToplam > 0 && (
+                    <div className="flex items-baseline justify-between px-2.5 py-1.5 rounded-lg bg-slate-800/60">
+                      <span className="text-xs font-bold text-slate-400">
+                        Ziyaret toplamı{extraIslemler.length > 0 ? ` (${extraIslemler.length + 1} işlem)` : ''}
+                      </span>
+                      <span className="text-sm font-black text-white tabular-nums">{TRY(ziyaretToplam)}</span>
+                    </div>
+                  )}
+
                   {/* Kademe indirimi — pazarlik bittikten SONRA uygulanir.
                       Girilen tutar son pazarlik tutaridir; uyelik indirimi onun ustune biner. */}
                   {uyelikIndirimi && (
@@ -2397,30 +2433,6 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       </button>
                     </div>
                   )}
-
-                  {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
-                  {extraIslemler.map((row, i) => (
-                    <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),110px,130px,auto] gap-2">
-                      <input name={`extra_name_${i}`} list="katalog-listesi" placeholder={`${i + 2}. işlem adı`} className={inputCls} />
-                      <input name={`extra_amount_${i}`} placeholder="Ücret ₺" inputMode="decimal"
-                        value={ekTutarlar[row.id] ?? ''}
-                        onChange={e => setEkTutarlar(p => ({ ...p, [row.id]: e.target.value }))}
-                        className={inputCls} />
-                      <select name={`extra_session_${i}`} defaultValue="" className={inputCls} title="Paketse seans sayısı">
-                        <option value="">Tek seans</option>
-                        {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n}</option>)}
-                      </select>
-                      <button type="button"
-                        onClick={() => setExtraIslemler(prev => prev.filter(r => r.id !== row.id))}
-                        className="px-3 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400"
-                        aria-label="Satırı kaldır">✕</button>
-                    </div>
-                  ))}
-                  <button type="button"
-                    onClick={() => setExtraIslemler(prev => [...prev, { id: oid() }])}
-                    className="w-full px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-dashed border-slate-600">
-                    + Aynı ziyarete işlem ekle
-                  </button>
 
                   <input type="hidden" name="extra_count" value={extraIslemler.length} />
                   <div className="grid sm:grid-cols-[130px,120px,140px,1fr] gap-2">
