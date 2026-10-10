@@ -2402,6 +2402,9 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         {refBulunan.musteri && (
                           <span className="text-xs text-slate-300">{refBulunan.musteri}</span>
                         )}
+                        {refBulunan.teklif && (
+                          <span className="text-xs text-violet-300 font-semibold">{refBulunan.teklif}</span>
+                        )}
                         <span className="text-xs text-slate-400">%{refBulunan.oran}</span>
                         {ziyaretToplam > 0 && oran > 0 && (
                           <span className="text-xs text-slate-300 tabular-nums">
