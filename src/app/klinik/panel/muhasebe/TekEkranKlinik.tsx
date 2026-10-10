@@ -24,7 +24,7 @@ import SeriKamera from './SeriKamera'
 import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
 import type { ReferansKod } from './referans-tipler'
 import { HOSGELDIN_ORAN } from '@/lib/uyelik'
-import { uyelikKodGonder, uyelikOnayla, referansKoduUygula } from './uyelik-actions'
+import { uyelikKodGonder, uyelikOnayla, referansKoduBul, referansKoduOnayla } from './uyelik-actions'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
 import {
@@ -763,12 +763,26 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   const [uyelikKod, setUyelikKod] = useState('')
   // ─── Referans kodu uygulama (listesiz, sadece arama) ───
   const [refKodArama, setRefKodArama] = useState('')
-  const [refTutar, setRefTutar] = useState('')
   const [refSonuc, setRefSonuc] = useState<string | null>(null)
+  // Bulunan kod — personel içeriği görüp onaylayana kadar uygulanmaz.
+  const [refBulunan, setRefBulunan] = useState<{
+    codeId: string; kod: string; oran: number
+    musteri: string | null; teklif: string; ayricalik: string
+  } | null>(null)
+  // Ek işlem tutarları — indirim ZİYARET TOPLAMINA uygulanır.
+  const [ekTutarlar, setEkTutarlar] = useState<Record<string, string>>({})
+  /** Ziyaret toplamı: ana işlem + ek işlemler. İndirim buna uygulanır. */
+  const ziyaretToplam = useMemo(() => {
+    const ana = Number(islemTutar.replace(',', '.')) || 0
+    const ekler = extraIslemler.reduce(
+      (t, r) => t + (Number((ekTutarlar[r.id] ?? '').replace(',', '.')) || 0), 0)
+    return ana + ekler
+  }, [islemTutar, extraIslemler, ekTutarlar])
+
   const uyelikIndirimi = useMemo(() => {
     if (indirimUygulandi) return null
     if (!selected?.uyelik.uye) return null       // üye değilse indirim yok
-    const girilen = Number(islemTutar.replace(',', '.'))
+    const girilen = ziyaretToplam
     if (!Number.isFinite(girilen) || girilen <= 0) return null
 
     // Primula'da sürekli indirim yok; onun yerine TEK SEFERLİK hoş geldin.
@@ -781,7 +795,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     const indirimli = Math.round(girilen * (1 - oran / 100))
     if (indirimli >= girilen) return null
     return { girilen, indirimli, oran, hosgeldin }
-  }, [selected, islemTutar, indirimUygulandi])
+  }, [selected, ziyaretToplam, indirimUygulandi])
 
   function submitIslem(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -840,7 +854,9 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     if (fromApptId) setApptStatusOv(prev => ({ ...prev, [fromApptId]: 'completed' }))
     setExtraIslemler([])
     setIslemTutar('')
+    setEkTutarlar({})
     setIndirimUygulandi(false)
+    setRefBulunan(null); setRefKodArama(''); setRefSonuc(null)
 
     run(() => addQuickEntry(fd))
   }
@@ -2294,47 +2310,91 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     </div>
                   )}
 
-                  {/* Referans kodu — üyelik indiriminin ALTINDA, aynı akışta.
-                      Listesiz: müşteri kısa kodu söyler, personel yazar. */}
-                  <div className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded-lg bg-slate-800/40 ring-1 ring-slate-700">
-                    <input value={refKodArama}
-                      onChange={e => setRefKodArama(e.target.value.toUpperCase().slice(0, 12))}
-                      placeholder="Referans kodu"
-                      className="w-28 px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500" />
-                    <input value={refTutar}
-                      onChange={e => setRefTutar(e.target.value)}
-                      placeholder="Hesap tutarı ₺" inputMode="decimal"
-                      className="w-32 px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500" />
-                    <button type="button" disabled={pending || refKodArama.trim().length < 3}
-                      onClick={() => {
-                        setRefSonuc(null)
-                        const tutar = Number(refTutar.replace(',', '.'))
-                        startTransition(async () => {
-                          const r = await referansKoduUygula(
-                            refKodArama, Number.isFinite(tutar) && tutar > 0 ? tutar : undefined)
-                          if (r.ok) {
-                            const ind = Number.isFinite(tutar) && tutar > 0 && r.oran > 0
-                              ? Math.round(tutar * r.oran / 100) : 0
-                            setRefSonuc(ind > 0
-                              ? `${r.kod} · %${r.oran} −${TRY(ind)} · Tahsil ${TRY(tutar - ind)}`
-                              : `${r.kod} uygulandı · %${r.oran}`)
-                            setRefKodArama(''); setRefTutar('')
-                          } else setError(r.error)
-                        })
-                      }}
-                      className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900 disabled:opacity-40">
-                      Uygula
-                    </button>
-                    {refSonuc && (
-                      <span className="text-xs font-semibold text-emerald-300">{refSonuc}</span>
-                    )}
-                  </div>
+                  {/* Referans kodu — BUL, içeriği gör, sonra uygula.
+                      İndirim ziyaret TOPLAMINA uygulanır (çoklu işlem dahil). */}
+                  {!refBulunan ? (
+                    <div className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded-lg bg-slate-800/40 ring-1 ring-slate-700">
+                      <input value={refKodArama}
+                        onChange={e => setRefKodArama(e.target.value.toUpperCase().slice(0, 12))}
+                        placeholder="Referans kodu"
+                        className="w-32 px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500" />
+                      <button type="button" disabled={pending || refKodArama.trim().length < 3}
+                        onClick={() => {
+                          setRefSonuc(null)
+                          startTransition(async () => {
+                            const r = await referansKoduBul(refKodArama)
+                            if (r.ok) setRefBulunan(r)
+                            else setError(r.error)
+                          })
+                        }}
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-700 hover:bg-slate-600 text-slate-200 disabled:opacity-40">
+                        {pending ? '…' : 'Kodu Bul'}
+                      </button>
+                      {refSonuc && (
+                        <span className="text-xs font-semibold text-emerald-300">{refSonuc}</span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="px-2.5 py-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/40 space-y-1.5">
+                      <div className="flex items-start gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-bold text-amber-200">
+                            <span className="font-mono">{refBulunan.kod}</span>
+                            {refBulunan.musteri ? ` · ${refBulunan.musteri}` : ''}
+                          </p>
+                          <p className="text-[11px] text-slate-400 line-clamp-2">{refBulunan.ayricalik}</p>
+                        </div>
+                        <button type="button"
+                          onClick={() => { setRefBulunan(null); setRefKodArama('') }}
+                          className="text-slate-500 hover:text-slate-300 text-sm shrink-0">✕</button>
+                      </div>
+                      {ziyaretToplam > 0 && refBulunan.oran > 0 && (
+                        <p className="text-xs text-slate-300 tabular-nums">
+                          Toplam {TRY(ziyaretToplam)} · %{refBulunan.oran} indirim{' '}
+                          <span className="text-rose-300">−{TRY(Math.round(ziyaretToplam * refBulunan.oran / 100))}</span>
+                          {' → '}
+                          <b className="text-amber-200">{TRY(ziyaretToplam - Math.round(ziyaretToplam * refBulunan.oran / 100))}</b>
+                        </p>
+                      )}
+                      <button type="button" disabled={pending || ziyaretToplam <= 0}
+                        onClick={() => {
+                          const indirim = Math.round(ziyaretToplam * refBulunan.oran / 100)
+                          const oranKat = 1 - refBulunan.oran / 100
+                          startTransition(async () => {
+                            const r = await referansKoduOnayla(refBulunan.codeId, ziyaretToplam, indirim)
+                            if (!r.ok) { setError(r.error); return }
+                            // Her işlem oransal düşer — toplam indirimi dağıtır.
+                            const yeniAna = String(Math.round(
+                              (Number(islemTutar.replace(',', '.')) || 0) * oranKat))
+                            if (islemTutarRef.current) islemTutarRef.current.value = yeniAna
+                            setIslemTutar(yeniAna)
+                            setEkTutarlar(prev => {
+                              const g: Record<string, string> = {}
+                              for (const r2 of extraIslemler) {
+                                const v = Number((prev[r2.id] ?? '').replace(',', '.')) || 0
+                                g[r2.id] = v > 0 ? String(Math.round(v * oranKat)) : (prev[r2.id] ?? '')
+                              }
+                              return g
+                            })
+                            setIndirimUygulandi(true)
+                            setRefSonuc(`${refBulunan.kod} uygulandı · −${TRY(indirim)}`)
+                            setRefBulunan(null); setRefKodArama('')
+                          })
+                        }}
+                        className="w-full px-3 py-2 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 disabled:opacity-40">
+                        {pending ? 'Uygulanıyor…' : ziyaretToplam > 0 ? 'Uygula' : 'Önce işlem tutarı girin'}
+                      </button>
+                    </div>
+                  )}
 
                   {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
                   {extraIslemler.map((row, i) => (
                     <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),110px,130px,auto] gap-2">
                       <input name={`extra_name_${i}`} list="katalog-listesi" placeholder={`${i + 2}. işlem adı`} className={inputCls} />
-                      <input name={`extra_amount_${i}`} placeholder="Ücret ₺" inputMode="decimal" className={inputCls} />
+                      <input name={`extra_amount_${i}`} placeholder="Ücret ₺" inputMode="decimal"
+                        value={ekTutarlar[row.id] ?? ''}
+                        onChange={e => setEkTutarlar(p => ({ ...p, [row.id]: e.target.value }))}
+                        className={inputCls} />
                       <select name={`extra_session_${i}`} defaultValue="" className={inputCls} title="Paketse seans sayısı">
                         <option value="">Tek seans</option>
                         {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n}</option>)}

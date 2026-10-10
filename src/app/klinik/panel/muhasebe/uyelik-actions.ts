@@ -119,6 +119,64 @@ export async function uyelikOnayla(
   return { ok: true }
 }
 
+/** Kodu BULUR, uygulamaz — personel içeriği görüp onaylasın diye. */
+export async function referansKoduBul(kisaKod: string): Promise<
+  | { ok: true; codeId: string; kod: string; oran: number
+      musteri: string | null; teklif: string; ayricalik: string }
+  | { ok: false; error: string }
+> {
+  const c = await ctx()
+  if (!c) return { ok: false, error: 'Yetkisiz' }
+
+  const { data, error } = await c.supabase.rpc('referral_kod_ara', {
+    p_owner: c.ownerId, p_arama: kisaKod.trim(),
+  })
+  if (error) return { ok: false, error: error.message }
+
+  const satirlar = (data ?? []) as Record<string, unknown>[]
+  const aktif = satirlar.find(r => r.durum === 'aktif' && r.geldi === null)
+  if (!aktif) {
+    return {
+      ok: false,
+      error: satirlar.length
+        ? 'Bu kod daha önce kullanılmış veya süresi dolmuş.'
+        : 'Kod bulunamadı.',
+    }
+  }
+
+  const ayricalik = String(aktif.teklif_ayricalik ?? '')
+  return {
+    ok: true,
+    codeId: String(aktif.code_id),
+    kod: String(aktif.kod),
+    oran: Number(ayricalik.match(/%\s*(\d+)/)?.[1] ?? 0),
+    musteri: (aktif.musteri_ad as string) ?? null,
+    teklif: String(aktif.teklif_baslik ?? ''),
+    ayricalik,
+  }
+}
+
+/**
+ * Bulunan kodu uygular: ziyaret "geldi" işaretlenir, hakediş ledger'a düşer.
+ * Tutar ziyaretin TOPLAMI — çoklu işlemde hepsinin toplamı.
+ */
+export async function referansKoduOnayla(
+  codeId: string, hesapTutar: number, indirimTutar: number,
+): Promise<Sonuc> {
+  const c = await ctx()
+  if (!c) return { ok: false, error: 'Yetkisiz' }
+
+  const { error } = await c.supabase.rpc('referral_isaretle', {
+    p_owner: c.ownerId, p_code: codeId, p_geldi: true,
+    p_patient: null, p_treatment: null,
+    p_hesap: hesapTutar, p_indirim: indirimTutar,
+  })
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
 /**
  * Referans kodunu klinik ekranından uygular: ziyaret "geldi" işaretlenir,
  * hakediş ledger'a düşer. Kod arama listesiz — personel kodu yazar.
