@@ -2332,6 +2332,10 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                             {TRY(uyelikIndirimi.girilen)} → <b className="text-amber-200">{TRY(uyelikIndirimi.indirimli)}</b>
                           </span>
                           <button type="button"
+                            disabled={Boolean(refBulunan) && refBulunan!.oran >= uyelikIndirimi.oran}
+                            title={refBulunan && refBulunan.oran >= uyelikIndirimi.oran
+                              ? `Referans kodu %${refBulunan.oran} daha yüksek — onu uygulayın`
+                              : undefined}
                             onClick={() => {
                               const oranKat = 1 - uyelikIndirimi.oran / 100
                               const yeniAna = String(Math.round(
@@ -2348,7 +2352,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                               })
                               setIndirimUygulandi(true)
                             }}
-                            className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900">
+                            className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900 disabled:opacity-40">
                             Uygula
                           </button>
                         </>
@@ -2384,58 +2388,60 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         <span className="text-xs font-semibold text-emerald-300">{refSonuc}</span>
                       )}
                     </div>
-                  ) : (
-                    <div className="px-2.5 py-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/40 space-y-1.5">
-                      <div className="flex items-start gap-2">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold text-amber-200">
-                            <span className="font-mono">{refBulunan.kod}</span>
-                            {refBulunan.musteri ? ` · ${refBulunan.musteri}` : ''}
-                          </p>
-                          <p className="text-[11px] text-slate-400 line-clamp-2">{refBulunan.ayricalik}</p>
-                        </div>
+                  ) : (() => {
+                    // İKİ İNDİRİM BİLEŞİK UYGULANMAZ — büyük olan geçerli.
+                    // Aksi halde %10 + %35 = %41.5 olur, ekranda görünenden
+                    // farklı bir tutar kaydedilirdi.
+                    const uyeOran = uyelikIndirimi?.oran ?? 0
+                    const oran = Math.max(refBulunan.oran, uyeOran)
+                    const indirim = Math.round(ziyaretToplam * oran / 100)
+                    const ustunGeldi = uyeOran > refBulunan.oran
+                    return (
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-2.5 py-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/40">
+                        <span className="text-xs font-bold text-amber-200 font-mono">{refBulunan.kod}</span>
+                        {refBulunan.musteri && (
+                          <span className="text-xs text-slate-300">{refBulunan.musteri}</span>
+                        )}
+                        <span className="text-xs text-slate-400">%{refBulunan.oran}</span>
+                        {ziyaretToplam > 0 && oran > 0 && (
+                          <span className="text-xs text-slate-300 tabular-nums">
+                            {TRY(ziyaretToplam)} → <b className="text-amber-200">{TRY(ziyaretToplam - indirim)}</b>
+                            {ustunGeldi && <span className="text-slate-500"> (üyelik %{uyeOran} geçerli)</span>}
+                          </span>
+                        )}
+                        <button type="button" disabled={pending || ziyaretToplam <= 0}
+                          onClick={() => {
+                            const oranKat = 1 - oran / 100
+                            startTransition(async () => {
+                              const r = await referansKoduOnayla(refBulunan.codeId, ziyaretToplam, indirim)
+                              if (!r.ok) { setError(r.error); return }
+                              // Her işlem oransal düşer — toplam indirimi dağıtır.
+                              const yeniAna = String(Math.round(
+                                (Number(islemTutar.replace(',', '.')) || 0) * oranKat))
+                              if (islemTutarRef.current) islemTutarRef.current.value = yeniAna
+                              setIslemTutar(yeniAna)
+                              setEkTutarlar(prev => {
+                                const g: Record<string, string> = {}
+                                for (const r2 of extraIslemler) {
+                                  const v = Number((prev[r2.id] ?? '').replace(',', '.')) || 0
+                                  g[r2.id] = v > 0 ? String(Math.round(v * oranKat)) : (prev[r2.id] ?? '')
+                                }
+                                return g
+                              })
+                              setIndirimUygulandi(true)
+                              setRefSonuc(`${refBulunan.kod} · %${oran} −${TRY(indirim)}`)
+                              setRefBulunan(null); setRefKodArama('')
+                            })
+                          }}
+                          className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 disabled:opacity-40">
+                          {pending ? '…' : 'Uygula'}
+                        </button>
                         <button type="button"
                           onClick={() => { setRefBulunan(null); setRefKodArama('') }}
-                          className="text-slate-500 hover:text-slate-300 text-sm shrink-0">✕</button>
+                          className="text-slate-500 hover:text-slate-300 text-sm">✕</button>
                       </div>
-                      {ziyaretToplam > 0 && refBulunan.oran > 0 && (
-                        <p className="text-xs text-slate-300 tabular-nums">
-                          Toplam {TRY(ziyaretToplam)} · %{refBulunan.oran} indirim{' '}
-                          <span className="text-rose-300">−{TRY(Math.round(ziyaretToplam * refBulunan.oran / 100))}</span>
-                          {' → '}
-                          <b className="text-amber-200">{TRY(ziyaretToplam - Math.round(ziyaretToplam * refBulunan.oran / 100))}</b>
-                        </p>
-                      )}
-                      <button type="button" disabled={pending || ziyaretToplam <= 0}
-                        onClick={() => {
-                          const indirim = Math.round(ziyaretToplam * refBulunan.oran / 100)
-                          const oranKat = 1 - refBulunan.oran / 100
-                          startTransition(async () => {
-                            const r = await referansKoduOnayla(refBulunan.codeId, ziyaretToplam, indirim)
-                            if (!r.ok) { setError(r.error); return }
-                            // Her işlem oransal düşer — toplam indirimi dağıtır.
-                            const yeniAna = String(Math.round(
-                              (Number(islemTutar.replace(',', '.')) || 0) * oranKat))
-                            if (islemTutarRef.current) islemTutarRef.current.value = yeniAna
-                            setIslemTutar(yeniAna)
-                            setEkTutarlar(prev => {
-                              const g: Record<string, string> = {}
-                              for (const r2 of extraIslemler) {
-                                const v = Number((prev[r2.id] ?? '').replace(',', '.')) || 0
-                                g[r2.id] = v > 0 ? String(Math.round(v * oranKat)) : (prev[r2.id] ?? '')
-                              }
-                              return g
-                            })
-                            setIndirimUygulandi(true)
-                            setRefSonuc(`${refBulunan.kod} uygulandı · −${TRY(indirim)}`)
-                            setRefBulunan(null); setRefKodArama('')
-                          })
-                        }}
-                        className="w-full px-3 py-2 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 disabled:opacity-40">
-                        {pending ? 'Uygulanıyor…' : ziyaretToplam > 0 ? 'Uygula' : 'Önce işlem tutarı girin'}
-                      </button>
-                    </div>
-                  )}
+                    )
+                  })()}
 
                   <input type="hidden" name="extra_count" value={extraIslemler.length} />
                   {/* Son satır: Alınan · Ödeme · Not · Tarih · Kaydet */}
