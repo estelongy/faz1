@@ -2275,7 +2275,10 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     </div>
                     <input ref={islemTutarRef} name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal"
                       onChange={e => { setIslemTutar(e.target.value); setIndirimUygulandi(false) }} className={inputCls} />
-                    <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
+                    <select name="session_total" defaultValue="" className={inputCls} title="Paketse toplam seans sayısı">
+                      <option value="">Tek seans</option>
+                      {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n}</option>)}
+                    </select>
                     {/* Ek satırlardaki ✕ ile hizalansın diye boş alan */}
                     <span className="hidden sm:block w-[38px]" />
                   </div>
@@ -2437,11 +2440,8 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   )}
 
                   <input type="hidden" name="extra_count" value={extraIslemler.length} />
-                  <div className="grid sm:grid-cols-[130px,150px,140px,1fr] gap-2">
-                    <select name="session_total" defaultValue="" className={inputCls} title="Paketse toplam seans sayısı">
-                      <option value="">Tek seans</option>
-                      {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n} seans</option>)}
-                    </select>
+                  {/* Son satır: Alınan · Ödeme · Not · Tarih · Kaydet */}
+                  <div className="grid sm:grid-cols-[150px,130px,minmax(0,1fr),150px,auto] gap-2">
                     <input name="payment_amount" placeholder="Alınan ₺ (toplam)" inputMode="decimal" className={inputCls}
                       title="Tüm işlemler için alınan toplam tutar — hastanın hesabına yazılır" />
                     <select name="payment_method" className={inputCls}>
@@ -2451,11 +2451,12 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       <option value="havale">Havale</option>
                     </select>
                     <input name="treatment_notes" placeholder="Not" className={inputCls} />
+                    <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
+                    <button type="submit" disabled={pending} className={`${btnPrimary} whitespace-nowrap`}>
+                      {pending ? 'Kaydediliyor…' : extraIslemler.length > 0 ? `${extraIslemler.length + 1} İşlemi Kaydet` : 'İşlemi Kaydet'}
+                    </button>
                   </div>
                   <input type="hidden" name="payment_date" value={day} />
-                  <button type="submit" disabled={pending} className={btnPrimary}>
-                    {pending ? 'Kaydediliyor…' : extraIslemler.length > 0 ? `${extraIslemler.length + 1} İşlemi Kaydet` : 'İşlemi Kaydet'}
-                  </button>
                 </form>
               )}
 
