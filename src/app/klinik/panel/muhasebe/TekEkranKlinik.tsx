@@ -2266,7 +2266,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
               {openForm === 'islem' && (
                 <form onSubmit={submitIslem} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
                   {fromApptId && <p className="text-xs text-emerald-300 font-semibold">Randevu işleme alınıyor — kaydedilince randevu tamamlanır.</p>}
-                  <div className="grid sm:grid-cols-[minmax(0,1fr),140px,150px] gap-2">
+                  <div className="grid sm:grid-cols-[minmax(0,1fr),140px,110px,auto] gap-2">
                     <div className="min-w-0">
                       <input name="treatment_name" list="katalog-listesi" placeholder="İşlem adı *" required className={inputCls} />
                       <datalist id="katalog-listesi">
@@ -2276,11 +2276,13 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     <input ref={islemTutarRef} name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal"
                       onChange={e => { setIslemTutar(e.target.value); setIndirimUygulandi(false) }} className={inputCls} />
                     <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
+                    {/* Ek satırlardaki ✕ ile hizalansın diye boş alan */}
+                    <span className="hidden sm:block w-[38px]" />
                   </div>
 
                   {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
                   {extraIslemler.map((row, i) => (
-                    <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),110px,130px,auto] gap-2">
+                    <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),140px,110px,auto] gap-2">
                       <input name={`extra_name_${i}`} list="katalog-listesi" placeholder={`${i + 2}. işlem adı`} className={inputCls} />
                       <input name={`extra_amount_${i}`} placeholder="Ücret ₺" inputMode="decimal"
                         value={ekTutarlar[row.id] ?? ''}
@@ -2435,7 +2437,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   )}
 
                   <input type="hidden" name="extra_count" value={extraIslemler.length} />
-                  <div className="grid sm:grid-cols-[130px,120px,140px,1fr] gap-2">
+                  <div className="grid sm:grid-cols-[130px,150px,140px,1fr] gap-2">
                     <select name="session_total" defaultValue="" className={inputCls} title="Paketse toplam seans sayısı">
                       <option value="">Tek seans</option>
                       {[2, 3, 4, 5, 6, 8, 10, 12].map(n => <option key={n} value={n}>Paket · {n} seans</option>)}
