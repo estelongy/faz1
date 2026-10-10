@@ -24,7 +24,7 @@ import SeriKamera from './SeriKamera'
 import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
 import type { ReferansKod } from './referans-tipler'
 import { HOSGELDIN_ORAN } from '@/lib/uyelik'
-import { uyelikKodGonder, uyelikOnayla, referansKoduBul, referansKoduOnayla } from './uyelik-actions'
+import { uyelikKodGonder, uyelikOnayla, referansKoduBul, referansKoduOnayla, hosgeldinKullanildi, referansGeriAl } from './uyelik-actions'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
 import {
@@ -764,6 +764,8 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   // ─── Referans kodu uygulama (listesiz, sadece arama) ───
   const [refKodArama, setRefKodArama] = useState('')
   const [refSonuc, setRefSonuc] = useState<string | null>(null)
+  // Son uygulanan kod — yanlışlıkla uygulanırsa iptal edilebilsin.
+  const [sonUygulanan, setSonUygulanan] = useState<{ codeId: string; kod: string } | null>(null)
   // Bulunan kod — personel içeriği görüp onaylayana kadar uygulanmaz.
   const [refBulunan, setRefBulunan] = useState<{
     codeId: string; kod: string; oran: number
@@ -2351,6 +2353,10 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                                 return g
                               })
                               setIndirimUygulandi(true)
+                              // Tek seferlik hoş geldin ise "kullanıldı" işaretle.
+                              if (uyelikIndirimi.hosgeldin && selected) {
+                                startTransition(() => { void hosgeldinKullanildi(selected.id) })
+                              }
                             }}
                             className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900 disabled:opacity-40">
                             Uygula
@@ -2385,7 +2391,21 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         <span className="text-xs text-slate-500">aranıyor…</span>
                       )}
                       {refSonuc && (
-                        <span className="text-xs font-semibold text-emerald-300">{refSonuc}</span>
+                        <>
+                          <span className="text-xs font-semibold text-emerald-300">{refSonuc}</span>
+                          {sonUygulanan && (
+                            <button type="button" disabled={pending}
+                              onClick={() => startTransition(async () => {
+                                const r = await referansGeriAl(sonUygulanan.codeId)
+                                if (!r.ok) { setError(r.error); return }
+                                setRefSonuc(null); setSonUygulanan(null); setIndirimUygulandi(false)
+                              })}
+                              title="Kodu geri al — tutarları elle düzeltmeniz gerekir"
+                              className="px-2 py-1 rounded-lg text-xs font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400 disabled:opacity-40">
+                              İptal
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   ) : (() => {
@@ -2433,6 +2453,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                               })
                               setIndirimUygulandi(true)
                               setRefSonuc(`${refBulunan.kod} · %${oran} −${TRY(indirim)}`)
+                              setSonUygulanan({ codeId: refBulunan.codeId, kod: refBulunan.kod })
                               setRefBulunan(null); setRefKodArama('')
                             })
                           }}

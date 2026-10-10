@@ -178,6 +178,42 @@ export async function referansKoduOnayla(
 }
 
 /**
+ * Tek seferlik hoş geldin indirimi kullanıldı diye işaretler.
+ * Bu olmadan "tek seferlik" tanımı çalışmaz — hasta her işlemde %10 alır.
+ */
+export async function hosgeldinKullanildi(patientId: string): Promise<Sonuc> {
+  const c = await ctx()
+  if (!c) return { ok: false, error: 'Yetkisiz' }
+
+  const { error } = await c.supabase
+    .from('internal_patient')
+    .update({ hosgeldin_kullanildi_at: new Date().toISOString() })
+    .eq('id', patientId).eq('owner_id', c.ownerId)
+    .is('hosgeldin_kullanildi_at', null)   // zaten kullanılmışsa dokunma
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+/**
+ * Yanlış uygulanan kodu geri alır. Ledger'dan satır SİLİNMEZ; karşısına
+ * negatif düzeltme satırı yazılır, geçmiş iz kalır.
+ */
+export async function referansGeriAl(codeId: string): Promise<Sonuc> {
+  const c = await ctx()
+  if (!c) return { ok: false, error: 'Yetkisiz' }
+
+  const { error } = await c.supabase.rpc('referral_geri_al', {
+    p_owner: c.ownerId, p_code: codeId,
+  })
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+/**
  * Referans kodunu klinik ekranından uygular: ziyaret "geldi" işaretlenir,
  * hakediş ledger'a düşer. Kod arama listesiz — personel kodu yazar.
  */
