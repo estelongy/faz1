@@ -782,9 +782,6 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   const uyelikIndirimi = useMemo(() => {
     if (indirimUygulandi) return null
     if (!selected?.uyelik.uye) return null       // üye değilse indirim yok
-    const girilen = ziyaretToplam
-    if (!Number.isFinite(girilen) || girilen <= 0) return null
-
     // Primula'da sürekli indirim yok; onun yerine TEK SEFERLİK hoş geldin.
     // Kademe indirimi varsa (Elita+) o uygulanır, ikisi birleşmez.
     const kademeOran = selected.uyelik.indirim
@@ -792,9 +789,11 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     const oran = hosgeldin ? HOSGELDIN_ORAN : kademeOran
     if (oran <= 0) return null
 
-    const indirimli = Math.round(girilen * (1 - oran / 100))
-    if (indirimli >= girilen) return null
-    return { girilen, indirimli, oran, hosgeldin }
+    // Tutar girilmeden de HAK görünsün — personel baştan bilsin.
+    const girilen = ziyaretToplam
+    const hazir = Number.isFinite(girilen) && girilen > 0
+    const indirimli = hazir ? Math.round(girilen * (1 - oran / 100)) : 0
+    return { girilen, indirimli, oran, hosgeldin, hazir }
   }, [selected, ziyaretToplam, indirimUygulandi])
 
   function submitIslem(e: React.FormEvent<HTMLFormElement>) {
@@ -2267,7 +2266,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
               {openForm === 'islem' && (
                 <form onSubmit={submitIslem} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
                   {fromApptId && <p className="text-xs text-emerald-300 font-semibold">Randevu işleme alınıyor — kaydedilince randevu tamamlanır.</p>}
-                  <div className="grid sm:grid-cols-[minmax(0,1fr),110px,130px,auto] gap-2">
+                  <div className="grid sm:grid-cols-[minmax(0,1fr),140px,150px] gap-2">
                     <div className="min-w-0">
                       <input name="treatment_name" list="katalog-listesi" placeholder="İşlem adı *" required className={inputCls} />
                       <datalist id="katalog-listesi">
@@ -2277,12 +2276,6 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     <input ref={islemTutarRef} name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal"
                       onChange={e => { setIslemTutar(e.target.value); setIndirimUygulandi(false) }} className={inputCls} />
                     <input name="treatment_date" type="date" defaultValue={day} className={inputCls} />
-                    <button type="button"
-                      onClick={() => setExtraIslemler(prev => [...prev, { id: oid() }])}
-                      title="Aynı ziyarette başka işlem ekle"
-                      className="px-3 py-2 rounded-lg text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-100 whitespace-nowrap">
-                      + İşlem
-                    </button>
                   </div>
 
                   {/* Kademe indirimi — pazarlik bittikten SONRA uygulanir.
@@ -2294,19 +2287,35 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                           ? `Hoş geldin · %${uyelikIndirimi.oran} (tek seferlik)`
                           : `${selected?.uyelik.kademeAdi} · %${uyelikIndirimi.oran} üye indirimi`}
                       </span>
-                      <span className="text-xs text-slate-300 tabular-nums">
-                        {TRY(uyelikIndirimi.girilen)} → <b className="text-amber-200">{TRY(uyelikIndirimi.indirimli)}</b>
-                      </span>
-                      <button type="button"
-                        onClick={() => {
-                          const v = String(uyelikIndirimi.indirimli)
-                          if (islemTutarRef.current) islemTutarRef.current.value = v
-                          setIslemTutar(v)
-                          setIndirimUygulandi(true)
-                        }}
-                        className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900">
-                        Uygula
-                      </button>
+                      {uyelikIndirimi.hazir ? (
+                        <>
+                          <span className="text-xs text-slate-300 tabular-nums">
+                            {TRY(uyelikIndirimi.girilen)} → <b className="text-amber-200">{TRY(uyelikIndirimi.indirimli)}</b>
+                          </span>
+                          <button type="button"
+                            onClick={() => {
+                              const oranKat = 1 - uyelikIndirimi.oran / 100
+                              const yeniAna = String(Math.round(
+                                (Number(islemTutar.replace(',', '.')) || 0) * oranKat))
+                              if (islemTutarRef.current) islemTutarRef.current.value = yeniAna
+                              setIslemTutar(yeniAna)
+                              setEkTutarlar(prev => {
+                                const g: Record<string, string> = {}
+                                for (const r of extraIslemler) {
+                                  const v = Number((prev[r.id] ?? '').replace(',', '.')) || 0
+                                  g[r.id] = v > 0 ? String(Math.round(v * oranKat)) : (prev[r.id] ?? '')
+                                }
+                                return g
+                              })
+                              setIndirimUygulandi(true)
+                            }}
+                            className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900">
+                            Uygula
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-xs text-slate-500">Tutar girilince hesaplanır</span>
+                      )}
                     </div>
                   )}
 
@@ -2314,22 +2323,24 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       İndirim ziyaret TOPLAMINA uygulanır (çoklu işlem dahil). */}
                   {!refBulunan ? (
                     <div className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded-lg bg-slate-800/40 ring-1 ring-slate-700">
+                      {/* Kod yazılınca OTOMATİK aranır — ayrı buton yok.
+                          4 karakter tamamlanınca bilgi gelir. */}
                       <input value={refKodArama}
-                        onChange={e => setRefKodArama(e.target.value.toUpperCase().slice(0, 12))}
-                        placeholder="Referans kodu"
-                        className="w-32 px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500" />
-                      <button type="button" disabled={pending || refKodArama.trim().length < 3}
-                        onClick={() => {
-                          setRefSonuc(null)
-                          startTransition(async () => {
-                            const r = await referansKoduBul(refKodArama)
-                            if (r.ok) setRefBulunan(r)
-                            else setError(r.error)
-                          })
+                        onChange={e => {
+                          const v = e.target.value.toUpperCase().slice(0, 12)
+                          setRefKodArama(v); setRefSonuc(null)
+                          if (v.trim().length >= 4) {
+                            startTransition(async () => {
+                              const r = await referansKoduBul(v)
+                              if (r.ok) setRefBulunan(r)
+                            })
+                          }
                         }}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-700 hover:bg-slate-600 text-slate-200 disabled:opacity-40">
-                        {pending ? '…' : 'Kodu Bul'}
-                      </button>
+                        placeholder="Referans kodu (varsa)"
+                        className="w-40 px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500" />
+                      {pending && refKodArama.length >= 4 && (
+                        <span className="text-xs text-slate-500">aranıyor…</span>
+                      )}
                       {refSonuc && (
                         <span className="text-xs font-semibold text-emerald-300">{refSonuc}</span>
                       )}
@@ -2405,6 +2416,12 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         aria-label="Satırı kaldır">✕</button>
                     </div>
                   ))}
+                  <button type="button"
+                    onClick={() => setExtraIslemler(prev => [...prev, { id: oid() }])}
+                    className="w-full px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-dashed border-slate-600">
+                    + Aynı ziyarete işlem ekle
+                  </button>
+
                   <input type="hidden" name="extra_count" value={extraIslemler.length} />
                   <div className="grid sm:grid-cols-[130px,120px,140px,1fr] gap-2">
                     <select name="session_total" defaultValue="" className={inputCls} title="Paketse toplam seans sayısı">
