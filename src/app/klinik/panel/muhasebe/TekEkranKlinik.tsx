@@ -2266,7 +2266,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
               {openForm === 'islem' && (
                 <form onSubmit={submitIslem} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
                   {fromApptId && <p className="text-xs text-emerald-300 font-semibold">Randevu işleme alınıyor — kaydedilince randevu tamamlanır.</p>}
-                  <div className="grid sm:grid-cols-[minmax(0,1fr),140px,130px,auto] gap-2">
+                  <div className="grid sm:grid-cols-[minmax(0,1fr),140px,130px,118px] gap-2">
                     <div className="min-w-0">
                       <input name="treatment_name" list="katalog-listesi" placeholder="İşlem adı *" required className={inputCls} />
                       <datalist id="katalog-listesi">
@@ -2283,13 +2283,13 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     <button type="button"
                       onClick={() => setExtraIslemler(prev => [...prev, { id: oid() }])}
                       title="Aynı ziyarete işlem ekle"
-                      className="px-3 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
-                      aria-label="İşlem ekle">+</button>
+                      className="px-3 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap"
+                      aria-label="İşlem ekle">+ İşlem Ekle</button>
                   </div>
 
                   {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
                   {extraIslemler.map((row, i) => (
-                    <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),140px,130px,auto] gap-2">
+                    <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),140px,130px,118px] gap-2">
                       <input name={`extra_name_${i}`} list="katalog-listesi" placeholder={`${i + 2}. işlem adı`} className={inputCls} />
                       <input name={`extra_amount_${i}`} placeholder="Ücret ₺" inputMode="decimal"
                         value={ekTutarlar[row.id] ?? ''}
@@ -2301,8 +2301,8 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       </select>
                       <button type="button"
                         onClick={() => setExtraIslemler(prev => prev.filter(r => r.id !== row.id))}
-                        className="px-3 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400"
-                        aria-label="Satırı kaldır">✕</button>
+                        className="px-3 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-rose-600/30 text-slate-400 whitespace-nowrap"
+                        aria-label="Satırı kaldır">Kaldır</button>
                     </div>
                   ))}
                   {/* ── TOPLAM ve indirimler — tüm işlemler girildikten SONRA ──
