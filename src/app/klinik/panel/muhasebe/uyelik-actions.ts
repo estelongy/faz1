@@ -252,3 +252,55 @@ export async function referansKoduUygula(
   revalidatePath('/klinik/panel/muhasebe')
   return { ok: true, kod: String(aktif.kod), oran }
 }
+
+/**
+ * Kodu tanımlayan referansörün puan bakiyesi. Puan hastanın değil
+ * REFERANSÖRÜN; harcama kodun geldiği hastanın işleminde yapılır.
+ * Süresi geçen puan kullanılabilir bakiyeye girmez.
+ */
+export async function puanBakiyeKod(codeId: string): Promise<
+  { ok: true; referrerId: string; ad: string; tip: 'uye' | 'kurumsal'
+    kullanilabilir: number; suresiGecen: number }
+  | { ok: false; error: string }
+> {
+  const c = await ctx()
+  if (!c) return { ok: false, error: 'Yetkisiz' }
+
+  const { data, error } = await c.supabase.rpc('referral_puan_bakiye_kod', {
+    p_owner: c.ownerId, p_code: codeId,
+  })
+  if (error) return { ok: false, error: error.message }
+
+  const satir = (data ?? [])[0] as Record<string, unknown> | undefined
+  if (!satir?.referrer_id) return { ok: false, error: 'Kod bulunamadı' }
+
+  return {
+    ok: true,
+    referrerId: String(satir.referrer_id),
+    ad: String(satir.referansor_ad ?? '—'),
+    tip: satir.tip === 'kurumsal' ? 'kurumsal' : 'uye',
+    kullanilabilir: Number(satir.kullanilabilir ?? 0),
+    suresiGecen: Number(satir.suresi_gecen ?? 0),
+  }
+}
+
+/**
+ * Puanla ödeme. Üst sınır yok: referansör isterse işlemin TAMAMINI
+ * puanla kapatabilir. Yetersiz bakiye kontrolü DB'de — iki yerde
+ * ayrışmasın diye burada tekrarlanmıyor.
+ */
+export async function puanlaOdeKod(
+  codeId: string, tutar: number, aciklama?: string,
+): Promise<{ ok: true; kalan: number } | { ok: false; error: string }> {
+  const c = await ctx()
+  if (!c) return { ok: false, error: 'Yetkisiz' }
+
+  const { data, error } = await c.supabase.rpc('referral_puan_harca_kod', {
+    p_owner: c.ownerId, p_code: codeId,
+    p_tutar: tutar, p_aciklama: aciklama ?? null,
+  })
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true, kalan: Number(data ?? 0) }
+}

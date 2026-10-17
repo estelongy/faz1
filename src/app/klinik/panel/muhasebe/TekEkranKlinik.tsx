@@ -24,7 +24,7 @@ import SeriKamera from './SeriKamera'
 import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
 import type { ReferansKod } from './referans-tipler'
 import { HOSGELDIN_ORAN } from '@/lib/uyelik'
-import { uyelikKodGonder, uyelikOnayla, referansKoduBul, referansKoduOnayla, hosgeldinKullanildi, referansGeriAl } from './uyelik-actions'
+import { uyelikKodGonder, uyelikOnayla, referansKoduBul, referansKoduOnayla, hosgeldinKullanildi, referansGeriAl, puanBakiyeKod, puanlaOdeKod } from './uyelik-actions'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
 import {
@@ -116,6 +116,9 @@ interface Props {
 
 const TRY = (n: number) =>
   new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(n)
+
+/** Puan TL değil — ₺ işareti kullanılmaz ki para bakiyesiyle karışmasın. */
+const PUAN = (n: number) => Math.round(n).toLocaleString('tr-TR')
 
 const todayIso = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' })
 
@@ -771,6 +774,12 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     codeId: string; kod: string; oran: number
     musteri: string | null; teklif: string; ayricalik: string
   } | null>(null)
+  // Kodu TANIMLAYAN referansörün puan bakiyesi. Puan hastanın değil;
+  // kod bulunduğunda yüklenir, kod yoksa null kalır ve kutu görünmez.
+  const [refPuan, setRefPuan] = useState<
+    { ad: string; tip: 'uye' | 'kurumsal'; kullanilabilir: number } | null>(null)
+  const [puanGiris, setPuanGiris] = useState('')
+  const [puanKullanilan, setPuanKullanilan] = useState(0)
   // Ek işlem tutarları — indirim ZİYARET TOPLAMINA uygulanır.
   const [ekTutarlar, setEkTutarlar] = useState<Record<string, string>>({})
   /** Ziyaret toplamı: ana işlem + ek işlemler. İndirim buna uygulanır. */
@@ -858,6 +867,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     setEkTutarlar({})
     setIndirimUygulandi(false)
     setRefBulunan(null); setRefKodArama(''); setRefSonuc(null)
+    setPuanGiris(''); setRefPuan(null); setPuanKullanilan(0)
 
     run(() => addQuickEntry(fd))
   }
@@ -2381,7 +2391,14 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                           if (v.trim().length >= 4) {
                             startTransition(async () => {
                               const r = await referansKoduBul(v)
-                              if (r.ok) setRefBulunan(r)
+                              if (!r.ok) return
+                              setRefBulunan(r)
+                              // Kodu tanımlayan referansörün puanı — varsa
+                              // bu işlemde kullanılabilir.
+                              const b = await puanBakiyeKod(r.codeId)
+                              setRefPuan(b.ok && b.kullanilabilir > 0
+                                ? { ad: b.ad, tip: b.tip, kullanilabilir: b.kullanilabilir }
+                                : null)
                             })
                           }
                         }}
@@ -2466,6 +2483,58 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                       </div>
                     )
                   })()}
+
+                  {/* Puanla ödeme — yalnızca kodu tanımlayan referansörün
+                      puanı varsa görünür. Üst sınır yok: tamamı puanla
+                      kapatılabilir (%100). Normal hastada bu kutu yok. */}
+                  {refPuan && !puanKullanilan && (() => {
+                    const kalanBorc = Math.max(ziyaretToplam - puanKullanilan, 0)
+                    const azami = Math.min(refPuan.kullanilabilir, kalanBorc)
+                    const girilen = Number(puanGiris.replace(',', '.')) || 0
+                    const gecersiz = girilen <= 0 || girilen > azami
+                    return (
+                      <div className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded-lg bg-violet-500/10 border border-violet-500/30">
+                        <span className="text-xs font-bold text-violet-200">
+                          {refPuan.ad} · {PUAN(refPuan.kullanilabilir)} puan
+                        </span>
+                        <span className="text-[11px] text-slate-500">
+                          {refPuan.tip === 'kurumsal' ? 'kurumsal' : 'üye'} referansör
+                        </span>
+                        <input value={puanGiris} inputMode="decimal"
+                          onChange={e => setPuanGiris(e.target.value)}
+                          placeholder={`Puan (max ${Math.round(azami)})`}
+                          className="w-32 px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs tabular-nums text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500" />
+                        <button type="button" disabled={pending || azami <= 0}
+                          onClick={() => setPuanGiris(String(Math.round(azami)))}
+                          className="px-2 py-1 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-violet-200 disabled:opacity-40">
+                          Tümü
+                        </button>
+                        <button type="button" disabled={pending || gecersiz || !refBulunan}
+                          onClick={() => {
+                            if (!refBulunan) return
+                            startTransition(async () => {
+                              const r = await puanlaOdeKod(refBulunan.codeId, girilen,
+                                `${refBulunan.kod} · ziyaret ${TRY(ziyaretToplam)}`)
+                              if (!r.ok) { setError(r.error); return }
+                              setPuanKullanilan(girilen)
+                              setPuanGiris('')
+                              setRefPuan(p => p ? { ...p, kullanilabilir: r.kalan } : null)
+                            })
+                          }}
+                          className="px-2.5 py-1 rounded-lg text-xs font-bold bg-violet-500 hover:bg-violet-400 text-white disabled:opacity-40">
+                          {pending ? '…' : 'Puanla öde'}
+                        </button>
+                      </div>
+                    )
+                  })()}
+
+                  {puanKullanilan > 0 && (
+                    <p className="text-xs px-2.5 py-2 rounded-lg bg-violet-500/15 text-violet-200 font-semibold">
+                      {PUAN(puanKullanilan)} puan kullanıldı · kalan borç{' '}
+                      <b>{TRY(Math.max(ziyaretToplam - puanKullanilan, 0))}</b>
+                      {ziyaretToplam - puanKullanilan <= 0 && ' — işlem tamamen puanla karşılandı'}
+                    </p>
+                  )}
 
                   <input type="hidden" name="extra_count" value={extraIslemler.length} />
                   {/* Son satır: Alınan · Ödeme · Not · Tarih · Kaydet */}
