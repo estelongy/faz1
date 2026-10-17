@@ -131,3 +131,41 @@ export async function isaretleReferansZiyaret(
     p_indirim: Number.isFinite(indirim) ? indirim : null,
   })
 }
+
+// ── Kurumsal referansör daveti ───────────────────────────────────────
+/**
+ * Kurumsal referansör daveti oluşturur. Kurum HASTA DEĞİL — patient_id
+ * boş kalır, kurum kendi alanlarında tutulur. Kurum kabul edene kadar
+ * aktif değildir, kod üretemez.
+ */
+export async function kurumDavetOlustur(formData: FormData): Promise<Result> {
+  const ad = ((formData.get('kurum_ad') as string) ?? '').trim()
+  if (ad.length < 2) return { ok: false, error: 'Kurum adı en az 2 karakter olmalı.' }
+
+  const havuz = Number(String(formData.get('havuz_oran') ?? '35').replace(',', '.'))
+  if (!Number.isFinite(havuz) || havuz <= 0 || havuz > 60) {
+    return { ok: false, error: 'Havuz oranı 0-60 arasında olmalı.' }
+  }
+
+  return rpc('referral_kurum_davet', {
+    p_ad: ad,
+    p_tel: ((formData.get('kurum_tel') as string) ?? '').trim() || null,
+    p_yetkili: ((formData.get('kurum_yetkili') as string) ?? '').trim() || null,
+    p_havuz: havuz,
+  })
+}
+
+/** Kurum davetini yeniden gönderilebilir hale getirmek için token döner. */
+export async function kurumDavetToken(referrerId: string): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const { data, error } = await ctx.supabase
+    .from('referral_referrer')
+    .select('davet_token, davet_durum, kurum_ad')
+    .eq('id', referrerId).eq('owner_id', ctx.clinicOwnerId)
+    .maybeSingle()
+  if (error) return { ok: false, error: error.message }
+  if (!data?.davet_token) return { ok: false, error: 'Davet bulunamadı.' }
+  return { ok: true, data }
+}

@@ -38,7 +38,7 @@ export default async function ReferansPage() {
       .eq('owner_id', clinicOwner)
       .order('created_at', { ascending: false }),
     supabase.from('referral_referrer')
-      .select('id, patient_id, kod_harf, kod_rakam, aktif')
+      .select('id, patient_id, kod_harf, kod_rakam, aktif, tip, havuz_oran, davet_durum, kurum_ad, kurum_yetkili, davet_token')
       .eq('owner_id', clinicOwner),
     supabase.from('referral_code')
       .select('id, kod, durum, son_kullanma, created_at, referral_link!inner(referrer_id, kilitli_ad, kilitli_tel, offer_id), referral_visit(geldi)')
@@ -80,6 +80,12 @@ export default async function ReferansPage() {
           referansorler={(refRes.data ?? []).map(r => ({
             id: r.id, patient_id: r.patient_id,
             onek: `${r.kod_harf}${r.kod_rakam}`, aktif: r.aktif,
+            tip: r.tip === 'kurumsal' ? 'kurumsal' : 'uye',
+            havuz_oran: r.havuz_oran === null ? null : Number(r.havuz_oran),
+            davet_durum: r.davet_durum ?? 'aktif',
+            kurum_ad: r.kurum_ad ?? null,
+            kurum_yetkili: r.kurum_yetkili ?? null,
+            davet_token: r.davet_token ?? null,
           })) as ReferansorRow[]}
           kodlar={kodlar}
           patients={patients}

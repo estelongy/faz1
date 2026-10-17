@@ -51,10 +51,19 @@ export interface ReferansTeklif {
 
 export interface ReferansorRow {
   id: string
-  patient_id: string
+  /** Kurumsal referansörde boş: kurum hasta kaydı değildir. */
+  patient_id: string | null
   /** GA3 — baş harfler + ayırıcı rakam */
   onek: string
   aktif: boolean
+  tip: 'uye' | 'kurumsal'
+  /** Yalnızca kurumsalda dolu — anlaşılan toplam iskonto havuzu. */
+  havuz_oran: number | null
+  /** Kurum kabul edene kadar 'davet'; kabul/ret sonrası aktif/red. */
+  davet_durum: 'davet' | 'aktif' | 'red'
+  kurum_ad: string | null
+  kurum_yetkili: string | null
+  davet_token: string | null
 }
 
 export interface ReferansKod {

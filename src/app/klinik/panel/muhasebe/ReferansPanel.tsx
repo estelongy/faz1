@@ -6,6 +6,7 @@ import { kisaKod, KAMPANYA_TURLERI, turBilgi, type KampanyaTur, type ReferansAya
 import {
   saveReferansAyar, addReferansTeklif, toggleReferansTeklif,
   addReferansor, toggleReferansor, uretReferansLink, isaretleReferansZiyaret,
+  kurumDavetOlustur,
 } from './referans-actions'
 
 const inputCls = 'w-full px-2.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500'
@@ -38,6 +39,8 @@ export default function ReferansPanel({
   const [arama, setArama] = useState('')
   const [sekme, setSekme] = useState<'kodlar' | 'referansorler' | 'teklifler' | 'ayar'>('kodlar')
   const [yeniRefArama, setYeniRefArama] = useState('')
+  // Oluşturulan kurum davet linki — pano çalışmazsa ekranda görünür kalır.
+  const [davetLink, setDavetLink] = useState<string | null>(null)
   const [yeniTur, setYeniTur] = useState<KampanyaTur>('tanisma')
   // Kod başına girilen hesap tutarı — indirim bundan hesaplanır.
   const [tutarlar, setTutarlar] = useState<Record<string, string>>({})
@@ -46,7 +49,8 @@ export default function ReferansPanel({
 
   const hastaBul = useMemo(() => {
     const m = new Map(patients.map(p => [p.id, p]))
-    return (id: string) => m.get(id)
+    // Kurumsal referansörde patient_id boş olabilir.
+    return (id: string | null) => (id ? m.get(id) : undefined)
   }, [patients])
 
   const teklifAdi = useMemo(() => {
@@ -85,7 +89,7 @@ export default function ReferansPanel({
   }, [kodlar, arama])
 
   const mevcutRefIds = useMemo(
-    () => new Set(referansorler.map(r => r.patient_id)), [referansorler])
+    () => new Set(referansorler.map(r => r.patient_id).filter(Boolean)), [referansorler])
   const adaylar = useMemo(() => {
     const q = yeniRefArama.trim().toLocaleLowerCase('tr')
     if (q.length < 2) return []
@@ -231,6 +235,53 @@ export default function ReferansPanel({
             ))}
           </div>
 
+          {/* Kurumsal davet — kurum hasta kaydı değil, oran anlaşmayla.
+              Kurum kabul edene kadar pasif kalır, kod üretemez. */}
+          <form className="bg-slate-900/60 border border-amber-500/30 rounded-xl p-3 space-y-2"
+            onSubmit={e => {
+              e.preventDefault()
+              const form = e.currentTarget
+              const fd = new FormData(form)
+              run(async () => {
+                const res = await kurumDavetOlustur(fd)
+                if (res.ok) {
+                  const row = Array.isArray(res.data) ? res.data[0] as { token?: string } : null
+                  if (row?.token) {
+                    setDavetLink(`${window.location.origin}/kurum-davet/${row.token}`)
+                    try { await navigator.clipboard.writeText(`${window.location.origin}/kurum-davet/${row.token}`) }
+                    catch { /* pano yoksa sessiz geç — link ekranda duruyor */ }
+                  }
+                  form.reset()
+                }
+                return res
+              })
+            }}>
+            <p className="text-xs font-bold text-amber-300">Kurumsal referans daveti</p>
+            <div className="grid sm:grid-cols-[minmax(0,1fr),110px] gap-2">
+              <input name="kurum_ad" required placeholder="Kurum adı (güzellik merkezi vb.)"
+                className={inputCls} />
+              <input name="havuz_oran" inputMode="decimal" defaultValue="35"
+                placeholder="Havuz %" title="Kuruma ayrılan toplam iskonto payı"
+                className={inputCls} />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-2">
+              <input name="kurum_yetkili" placeholder="Yetkili kişi (varsa)" className={inputCls} />
+              <input name="kurum_tel" placeholder="Telefon (varsa)" className={inputCls} />
+            </div>
+            <button type="submit" disabled={pending}
+              className="px-3 py-2 rounded-lg text-sm font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 disabled:opacity-50">
+              {pending ? 'Oluşturuluyor…' : 'Davet linki oluştur'}
+            </button>
+            {davetLink && (
+              <div className="text-xs bg-slate-950/60 rounded-lg p-2 space-y-1">
+                <p className="text-emerald-300 font-semibold">
+                  Link panoya kopyalandı — kuruma iletin
+                </p>
+                <p className="font-mono text-slate-400 break-all">{davetLink}</p>
+              </div>
+            )}
+          </form>
+
           {referansorler.map(r => {
             const p = hastaBul(r.patient_id)
             const kendi = kodlar.filter(k => k.referrer_id === r.id)
@@ -239,11 +290,39 @@ export default function ReferansPanel({
               <div key={r.id} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
                 <div className="flex items-start gap-2">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-white line-clamp-2 leading-tight">{p?.name ?? '—'}</p>
+                    <p className="text-sm font-semibold text-white line-clamp-2 leading-tight">
+                      {r.tip === 'kurumsal' ? (r.kurum_ad ?? '—') : (p?.name ?? '—')}
+                    </p>
                     <p className="text-xs text-slate-500 mt-0.5">
                       <span className="font-mono text-violet-300">{r.onek}{isletmeKodu}</span>
+                      {r.tip === 'kurumsal' && (
+                        <span className="ml-2 text-amber-300 font-semibold">
+                          kurumsal %{r.havuz_oran ?? 35}
+                        </span>
+                      )}
                       {' · '}{kendi.length} davet · <span className="text-emerald-400">{gelen} geldi</span>
                     </p>
+                    {r.tip === 'kurumsal' && r.davet_durum === 'davet' && (
+                      <p className="text-xs text-amber-400 mt-1 font-semibold">
+                        ⏳ Kurum onayı bekleniyor — kabul edene kadar kod üretemez
+                        {r.davet_token && (
+                          <button type="button"
+                            onClick={() => {
+                              const l = `${window.location.origin}/kurum-davet/${r.davet_token}`
+                              setDavetLink(l)
+                              navigator.clipboard?.writeText(l).catch(() => {})
+                            }}
+                            className="ml-2 underline text-amber-300 hover:text-amber-200">
+                            linki kopyala
+                          </button>
+                        )}
+                      </p>
+                    )}
+                    {r.tip === 'kurumsal' && r.davet_durum === 'red' && (
+                      <p className="text-xs text-rose-400 mt-1 font-semibold">
+                        ✕ Kurum daveti reddetti
+                      </p>
+                    )}
                   </div>
                   <button disabled={pending}
                     onClick={() => run(() => toggleReferansor(r.id, !r.aktif))}
