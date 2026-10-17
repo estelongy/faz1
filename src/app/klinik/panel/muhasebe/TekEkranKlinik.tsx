@@ -2436,7 +2436,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                           onClick={() => {
                             const oranKat = 1 - oran / 100
                             startTransition(async () => {
-                              const r = await referansKoduOnayla(refBulunan.codeId, ziyaretToplam, indirim)
+                              const r = await referansKoduOnayla(refBulunan.codeId, ziyaretToplam, indirim, selectedId)
                               if (!r.ok) { setError(r.error); return }
                               // Her işlem oransal düşer — toplam indirimi dağıtır.
                               const yeniAna = String(Math.round(

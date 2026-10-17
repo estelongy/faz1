@@ -162,13 +162,14 @@ export async function referansKoduBul(kisaKod: string): Promise<
  */
 export async function referansKoduOnayla(
   codeId: string, hesapTutar: number, indirimTutar: number,
+  patientId?: string | null,
 ): Promise<Sonuc> {
   const c = await ctx()
   if (!c) return { ok: false, error: 'Yetkisiz' }
 
   const { error } = await c.supabase.rpc('referral_isaretle', {
     p_owner: c.ownerId, p_code: codeId, p_geldi: true,
-    p_patient: null, p_treatment: null,
+    p_patient: patientId ?? null, p_treatment: null,
     p_hesap: hesapTutar, p_indirim: indirimTutar,
   })
   if (error) return { ok: false, error: error.message }
@@ -218,7 +219,7 @@ export async function referansGeriAl(codeId: string): Promise<Sonuc> {
  * hakediş ledger'a düşer. Kod arama listesiz — personel kodu yazar.
  */
 export async function referansKoduUygula(
-  kisaKod: string, hesapTutar?: number,
+  kisaKod: string, hesapTutar?: number, patientId?: string | null,
 ): Promise<{ ok: true; kod: string; oran: number } | { ok: false; error: string }> {
   const c = await ctx()
   if (!c) return { ok: false, error: 'Yetkisiz' }
@@ -243,7 +244,7 @@ export async function referansKoduUygula(
 
   const { error: hata } = await c.supabase.rpc('referral_isaretle', {
     p_owner: c.ownerId, p_code: aktif.code_id, p_geldi: true,
-    p_patient: null, p_treatment: null,
+    p_patient: patientId ?? null, p_treatment: null,
     p_hesap: hesapTutar ?? null, p_indirim: indirim,
   })
   if (hata) return { ok: false, error: hata.message }

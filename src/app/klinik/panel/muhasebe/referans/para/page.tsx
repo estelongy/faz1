@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, clinicOwnerIdFor } from '@/lib/muhasebe-owner'
 import MuhasebeNav from '../../MuhasebeNav'
 import ReferansSayfaNav from '../ReferansSayfaNav'
-import ParaPanel, { type ReferansorBakiye, type LedgerSatir } from './ParaPanel'
+import ParaPanel, { puanSatiri, type ReferansorBakiye, type LedgerSatir } from './ParaPanel'
 
 export const metadata: Metadata = {
   title: 'Referans Para | Klinik Yönetim',
@@ -28,7 +28,7 @@ export default async function ReferansParaPage() {
     supabase.from('referral_settings')
       .select('isletme_kodu').eq('owner_id', clinicOwner).maybeSingle(),
     supabase.from('referral_referrer')
-      .select('id, kod_harf, kod_rakam, aktif, internal_patient(name, phone)')
+      .select('id, kod_harf, kod_rakam, aktif, tip, internal_patient(name, phone)')
       .eq('owner_id', clinicOwner),
     supabase.from('referral_ledger')
       .select('id, referrer_id, tur, tutar, aciklama, created_at')
@@ -44,18 +44,32 @@ export default async function ReferansParaPage() {
     created_at: l.created_at,
   })) as LedgerSatir[]
 
+  // Nakit karşılığı DB'de hesaplanır: işlem puanı − (hasta indirimi × düşme oranı).
+  // Bonus puanları nakde dönmediği için bu hesap ledger'dan türetilemez.
+  const nakitler = new Map<string, number>(
+    await Promise.all((refRes.data ?? []).map(async (r: Record<string, unknown>) => {
+      const { data } = await supabase.rpc('referral_nakit_karsiligi', { p_referrer: r.id })
+      return [String(r.id), Number(data ?? 0)] as [string, number]
+    })),
+  )
+
   const referansorler = (refRes.data ?? []).map((r: Record<string, unknown>) => {
     const p = (Array.isArray(r.internal_patient) ? r.internal_patient[0] : r.internal_patient) as { name?: string; phone?: string } | null
     const kendi = ledger.filter(l => l.referrer_id === r.id)
+    const para = kendi.filter(l => !puanSatiri(l.tur))
+    const puanlar = kendi.filter(l => puanSatiri(l.tur))
     return {
       id: String(r.id),
       ad: p?.name ?? '—',
       tel: p?.phone ?? null,
       onek: `${r.kod_harf}${r.kod_rakam}${isletme}`,
       aktif: Boolean(r.aktif),
-      hakedis: kendi.filter(l => l.tur === 'hakedis').reduce((s, l) => s + l.tutar, 0),
-      odenen: -kendi.filter(l => l.tur === 'odeme').reduce((s, l) => s + l.tutar, 0),
-      bakiye: kendi.reduce((s, l) => s + l.tutar, 0),
+      tip: (r.tip === 'kurumsal' ? 'kurumsal' : 'uye') as 'uye' | 'kurumsal',
+      hakedis: para.filter(l => l.tur === 'hakedis').reduce((s, l) => s + l.tutar, 0),
+      odenen: -para.filter(l => l.tur === 'odeme').reduce((s, l) => s + l.tutar, 0),
+      bakiye: para.reduce((s, l) => s + l.tutar, 0),
+      puan: puanlar.reduce((s, l) => s + l.tutar, 0),
+      nakitKarsiligi: nakitler.get(String(r.id)) ?? 0,
     }
   }) as ReferansorBakiye[]
 
