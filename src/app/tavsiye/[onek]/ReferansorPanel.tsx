@@ -7,9 +7,24 @@ import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
 export interface PanelVerisi {
   onek: string
   ad: string
+  tip: 'uye' | 'kurumsal'
   aktif: boolean
   referrer_id: string
+  /** Para defteri — puan satırları HARİÇ. */
   bakiye: number
+  /** İşlem puanı bakiyesi; TL değil, ayrı birim. */
+  puan: number
+  puan_suresi_gecen: number
+  puan_omru_gun: number | null
+  /** Nakde dönerse eline geçecek tutar (hasta indiriminin yarısı düşülmüş). */
+  nakit_karsiligi: number
+  /** Birikmiş referans cirosu — kademe bundan belirlenir. */
+  ciro: number
+  /** Toplam iskonto havuzu % — müşteri indirimi + kendi puanı. */
+  havuz: number
+  musteri_min: number
+  musteri_max: number
+  puan_oran: number
   teklifler: {
     id: string; baslik: string; ayricalik: string; odul: number
     tur: string; gecerli_zaman: string | null
@@ -17,6 +32,7 @@ export interface PanelVerisi {
   davetler: {
     kod: string; durum: string; musteri: string | null; teklif: string
     geldi: boolean | null; tarih: string; son: string
+    tutar: number | null; indirim: number | null; puan: number | null
   }[]
   /** Doğrulama bekleyenler — referansör kodu sorup girecek. */
   bekleyen_link: {
@@ -28,6 +44,8 @@ export interface PanelVerisi {
 }
 
 const TRY = (n: number) => '₺' + Math.round(n).toLocaleString('tr-TR')
+/** Puan TL değil — ₺ işareti kullanılmaz ki para ile karışmasın. */
+const PUAN = (n: number) => Math.round(n).toLocaleString('tr-TR')
 
 const inputCls = 'w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500'
 
@@ -40,8 +58,11 @@ function maskeTel(tel: string | null): string {
 
 export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   const [pending, startTransition] = useTransition()
+  const [sekme, setSekme] = useState<'kod' | 'puan' | 'referans' | 'davet'>('kod')
   const [hata, setHata] = useState<string | null>(null)
   const [altinKod, setAltinKod] = useState<{ kod: string; kisa: string } | null>(null)
+  // Referansör adayı başvuru linki — pano çalışmazsa ekranda kalır.
+  const [basvuruLink, setBasvuruLink] = useState<string | null>(null)
 
   // Kampanya başına ad/telefon girişi
   const [form, setForm] = useState<Record<string, { ad: string; tel: string }>>({})
@@ -96,7 +117,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
         {[
           ['Gelen', String(gelen), 'text-emerald-300'],
           ['Bekleyen', String(bekleyen), 'text-amber-300'],
-          ['Kazanç', TRY(veri.bakiye), 'text-violet-300'],
+          ['Puan', PUAN(veri.puan), 'text-violet-300'],
         ].map(([etiket, deger, renk]) => (
           <div key={etiket} className="bg-slate-900 border border-slate-800 rounded-xl px-2 py-2.5 text-center">
             <p className={`text-lg font-black tabular-nums ${renk}`}>{deger}</p>
@@ -129,7 +150,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
       )}
 
       {/* ── Doğrulama bekleyenler — ÖNCE, çünkü iş burada ── */}
-      {veri.bekleyen_link.length > 0 && (
+      {sekme === 'kod' && veri.bekleyen_link.length > 0 && (
         <section className="space-y-2">
           <h2 className="text-sm font-black text-white">Onay bekleyenler</h2>
           <p className="text-[11px] text-slate-500 -mt-1">
@@ -167,6 +188,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
       )}
 
       {/* ── Kampanyalar — yeni davet ── */}
+      {sekme === 'kod' && (
       <section className="space-y-2">
         <h2 className="text-sm font-black text-white">Tavsiye edebileceklerim</h2>
         {veri.teklifler.length === 0 ? (
@@ -206,10 +228,12 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
           )
         })}
       </section>
+      )}
 
       {/* ── Geçmiş ── */}
+      {sekme === 'referans' && (
       <section className="space-y-2">
-        <h2 className="text-sm font-black text-white">Tavsiyelerim</h2>
+        <h2 className="text-sm font-black text-white">Referanslarım</h2>
         {veri.davetler.length === 0 ? (
           <p className="text-sm text-slate-500">Henüz altın kod üretmediniz.</p>
         ) : veri.davetler.map(d => (
@@ -231,13 +255,159 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                   : 'Bekliyor'}
               </span>
             </div>
+
+            {/* Geldiyse para tarafı: ne ödedi, ne indirim gitti, ne kazandım */}
+            {d.geldi === true && d.tutar !== null && (
+              <div className="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+                <span className="text-slate-400">
+                  İşlem <b className="text-slate-200 tabular-nums">{TRY(d.tutar)}</b>
+                  {d.indirim ? (
+                    <span className="text-slate-500"> · indirim {TRY(d.indirim)}</span>
+                  ) : null}
+                </span>
+                {d.puan ? (
+                  <span className="font-bold text-violet-300 tabular-nums">
+                    +{PUAN(d.puan)} puan
+                  </span>
+                ) : null}
+              </div>
+            )}
           </div>
         ))}
       </section>
+      )}
+
+      {/* ── PUAN ── */}
+      {sekme === 'puan' && (
+        <section className="space-y-3">
+          <div className="bg-violet-500/10 ring-1 ring-violet-500/30 rounded-2xl p-5 text-center">
+            <p className="text-4xl font-black text-violet-300 tabular-nums">
+              {PUAN(veri.puan)}
+            </p>
+            <p className="text-xs text-slate-400 font-semibold mt-0.5">kullanılabilir işlem puanı</p>
+            <p className="text-[11px] text-slate-500 mt-2">
+              1 puan = 1 ₺ · kliniğin işlemlerinde geçerli
+            </p>
+          </div>
+
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-2">
+            <p className="text-xs font-bold text-slate-300">Nasıl kazanıyorum?</p>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              Gönderdiğiniz her işlemde size <b className="text-violet-300">%{veri.havuz}</b> pay
+              ayrılır. Bunun en az <b className="text-white">%{veri.musteri_min}</b>ini
+              müşterinize indirim olarak verirsiniz, en çok %{veri.musteri_max} verebilirsiniz.
+              Kalanı puan olarak size geçer.
+            </p>
+            <p className="text-[11px] text-slate-500">
+              Müşterinize daha fazla indirim verirseniz puanınız azalır — oranı siz seçersiniz.
+            </p>
+          </div>
+
+          {veri.nakit_karsiligi > 0 && (
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3">
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs font-bold text-slate-300">Nakde dönerse</span>
+                <span className="text-lg font-black text-emerald-300 tabular-nums">
+                  {TRY(veri.nakit_karsiligi)}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Nakit tercih ederseniz müşterilerinize verdiğiniz indirimin yarısı düşülür.
+                İşlem puanı olarak kullanmak her zaman daha avantajlıdır.
+              </p>
+            </div>
+          )}
+
+          {veri.puan_omru_gun && (
+            <p className="text-[11px] text-slate-500 text-center">
+              Puanlar kazanıldığı tarihten {Math.round(veri.puan_omru_gun / 30)} ay geçerlidir.
+              {veri.puan_suresi_gecen > 0 && (
+                <span className="block text-amber-400/80 mt-1">
+                  {PUAN(veri.puan_suresi_gecen)} puanın süresi dolmuş.
+                </span>
+              )}
+            </p>
+          )}
+
+          {veri.ciro > 0 && (
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3">
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs font-bold text-slate-300">Toplam referans cironuz</span>
+                <span className="text-sm font-black text-white tabular-nums">{TRY(veri.ciro)}</span>
+              </div>
+              {veri.tip === 'uye' && (
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Ciro arttıkça payınız yükselir — şu an %{veri.havuz}.
+                </p>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ── DAVET — referansör adayı başvuru linki ── */}
+      {sekme === 'davet' && (
+        <section className="space-y-3">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+            <p className="text-sm font-bold text-white">Tanıdığınızı referansör yapın</p>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              Başvuru linkini paylaşın. Başvuran kişi bilgilerini girer,
+              klinik onayladıktan sonra o da referansör olur.
+            </p>
+            <button type="button"
+              onClick={() => {
+                const link = `${window.location.origin}/referansor-basvuru?ref=${veri.onek}`
+                navigator.clipboard?.writeText(link).catch(() => {})
+                setBasvuruLink(link)
+              }}
+              className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white">
+              Başvuru linkini kopyala
+            </button>
+            {basvuruLink && (
+              <div className="bg-slate-950/60 rounded-lg p-2 space-y-1">
+                <p className="text-[11px] text-emerald-300 font-semibold">Link kopyalandı</p>
+                <p className="font-mono text-[11px] text-slate-400 break-all">{basvuruLink}</p>
+                <a href={`https://wa.me/?text=${encodeURIComponent(`Merhaba, buradan referansör başvurusu yapabilirsin: ${basvuruLink}`)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="block text-center mt-1 px-3 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white">
+                  WhatsApp&rsquo;tan gönder
+                </a>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <p className="text-[11px] text-slate-600 text-center pt-2">
         Bu sayfa size özeldir. Bağlantıyı paylaşmayın.
       </p>
+
+      {/* ── MOBİL ALT NAV — başparmak menzilinde 4 sekme ── */}
+      <div className="h-20" aria-hidden />
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/98 backdrop-blur border-t border-slate-700"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className="mx-auto max-w-md grid grid-cols-4">
+          {([
+            { v: 'kod' as const, icon: '💳', label: 'Kod', badge: bekleyen },
+            { v: 'puan' as const, icon: '⭐', label: 'Puan', badge: 0 },
+            { v: 'referans' as const, icon: '👥', label: 'Referanslarım', badge: 0 },
+            { v: 'davet' as const, icon: '🤝', label: 'Davet', badge: 0 },
+          ]).map(t => (
+            <button key={t.v}
+              onClick={() => { setSekme(t.v); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+              className={`relative flex flex-col items-center gap-0.5 py-2.5 transition-colors ${
+                sekme === t.v ? 'text-violet-300' : 'text-slate-400'}`}>
+              <span className="text-lg leading-none">{t.icon}</span>
+              <span className="text-[10px] font-bold">{t.label}</span>
+              {t.badge > 0 && (
+                <span className="absolute top-1.5 right-1/2 translate-x-4 min-w-[16px] h-4 px-1 rounded-full text-[9px] font-black flex items-center justify-center bg-amber-500/40 text-amber-100">
+                  {t.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </nav>
     </div>
   )
 }

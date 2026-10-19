@@ -25,7 +25,7 @@ export default async function ReferansPage() {
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
   const clinicOwner = clinicOwnerIdFor(user.id) ?? user.id
 
-  const [patientsRes, setRes, offerRes, refRes, codeRes] = await Promise.all([
+  const [patientsRes, setRes, offerRes, refRes, codeRes, basvuruRes] = await Promise.all([
     supabase.from('internal_patient')
       .select('id, name, patient_code, phone')
       .eq('owner_id', clinicOwner)
@@ -45,6 +45,11 @@ export default async function ReferansPage() {
       .eq('owner_id', clinicOwner)
       .order('created_at', { ascending: false })
       .limit(300),
+    supabase.from('referral_basvuru')
+      .select('id, ad, tel, not_metni, durum, created_at, davet_eden')
+      .eq('owner_id', clinicOwner)
+      .eq('durum', 'bekliyor')
+      .order('created_at', { ascending: false }),
   ])
 
   // PatientRow'un tamamı burada gerekmiyor; panel yalnızca id/ad/kod kullanıyor.
@@ -89,6 +94,12 @@ export default async function ReferansPage() {
           })) as ReferansorRow[]}
           kodlar={kodlar}
           patients={patients}
+          basvurular={(basvuruRes.data ?? []).map(b => ({
+            id: String(b.id), ad: String(b.ad), tel: String(b.tel),
+            not_metni: b.not_metni ?? null,
+            created_at: String(b.created_at),
+            davet_eden: b.davet_eden ?? null,
+          }))}
         />
       </div>
     </div>

@@ -6,7 +6,7 @@ import { kisaKod, KAMPANYA_TURLERI, turBilgi, type KampanyaTur, type ReferansAya
 import {
   saveReferansAyar, addReferansTeklif, toggleReferansTeklif,
   addReferansor, toggleReferansor, uretReferansLink, isaretleReferansZiyaret,
-  kurumDavetOlustur,
+  kurumDavetOlustur, basvuruOnayla, basvuruReddet,
 } from './referans-actions'
 
 const inputCls = 'w-full px-2.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500'
@@ -25,19 +25,31 @@ function maskeTel(tel: string | null): string {
   return `${d.slice(0, 4)} *** ** ${d.slice(-2)}`
 }
 
+export interface BasvuruRow {
+  id: string
+  ad: string
+  tel: string
+  not_metni: string | null
+  created_at: string
+  davet_eden: string | null
+}
+
 export default function ReferansPanel({
-  ayar, teklifler, referansorler, kodlar, patients,
+  ayar, teklifler, referansorler, kodlar, patients, basvurular = [],
 }: {
   ayar: ReferansAyar | null
   teklifler: ReferansTeklif[]
   referansorler: ReferansorRow[]
   kodlar: ReferansKod[]
   patients: PatientRow[]
+  /** Onay bekleyen referansör başvuruları. */
+  basvurular?: BasvuruRow[]
 }) {
   const [pending, startTransition] = useTransition()
   const [mesaj, setMesaj] = useState<{ tip: 'ok' | 'hata'; metin: string } | null>(null)
   const [arama, setArama] = useState('')
-  const [sekme, setSekme] = useState<'kodlar' | 'referansorler' | 'teklifler' | 'ayar'>('kodlar')
+  const [sekme, setSekme] = useState<
+    'kodlar' | 'referansorler' | 'basvurular' | 'teklifler' | 'ayar'>('kodlar')
   const [yeniRefArama, setYeniRefArama] = useState('')
   // Oluşturulan kurum davet linki — pano çalışmazsa ekranda görünür kalır.
   const [davetLink, setDavetLink] = useState<string | null>(null)
@@ -111,6 +123,7 @@ export default function ReferansPanel({
         {([
           ['kodlar', `Kodlar${bekleyen.length ? ` · ${bekleyen.length} bekliyor` : ''}`],
           ['referansorler', `Referansörler · ${referansorler.length}`],
+          ['basvurular', `Başvurular${basvurular.length ? ` · ${basvurular.length}` : ''}`],
           ['teklifler', `Kampanyalar · ${teklifler.filter(t => t.aktif).length}`],
           ['ayar', 'Ayarlar'],
         ] as const).map(([k, etiket]) => (
@@ -355,6 +368,46 @@ export default function ReferansPanel({
                     ))}
                   </div>
                 )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* ══ BAŞVURULAR ══ */}
+      {sekme === 'basvurular' && (
+        <div className="space-y-2">
+          {basvurular.length === 0 ? (
+            <p className="text-sm text-slate-500 py-6 text-center">
+              Onay bekleyen başvuru yok.
+            </p>
+          ) : basvurular.map(b => {
+            const eden = referansorler.find(r => r.id === b.davet_eden)
+            const edenAd = eden
+              ? (eden.tip === 'kurumsal' ? eden.kurum_ad : hastaBul(eden.patient_id)?.name)
+              : null
+            return (
+              <div key={b.id} className="bg-slate-900/60 border border-amber-500/30 rounded-xl p-3">
+                <p className="text-sm font-semibold text-white">{b.ad}</p>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  <span className="font-mono">{b.tel}</span>
+                  {edenAd && <span className="ml-2">· {edenAd} davet etti</span>}
+                </p>
+                {b.not_metni && (
+                  <p className="text-xs text-slate-400 mt-1.5 italic">&ldquo;{b.not_metni}&rdquo;</p>
+                )}
+                <div className="flex gap-2 mt-2.5">
+                  <button type="button" disabled={pending}
+                    onClick={() => run(() => basvuruOnayla(b.id))}
+                    className="flex-1 px-3 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50">
+                    {pending ? '…' : 'Onayla — referansör yap'}
+                  </button>
+                  <button type="button" disabled={pending}
+                    onClick={() => run(() => basvuruReddet(b.id))}
+                    className="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-400 disabled:opacity-50">
+                    Reddet
+                  </button>
+                </div>
               </div>
             )
           })}

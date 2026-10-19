@@ -8,6 +8,9 @@ import ReferansorPanel, { type PanelVerisi } from './ReferansorPanel'
 export const metadata: Metadata = {
   title: 'Tavsiye Panelim',
   robots: { index: false, follow: false },
+  // Telefona kurulabilir: "ana ekrana ekle" → ayrı ikon, tarayıcı çubuğu yok.
+  // start_url "." olduğu için kurulan kısayol referansörün KENDİ önekini açar.
+  manifest: '/tavsiye-manifest.json',
 }
 
 /**

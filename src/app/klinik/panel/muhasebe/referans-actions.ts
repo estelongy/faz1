@@ -169,3 +169,13 @@ export async function kurumDavetToken(referrerId: string): Promise<Result> {
   if (!data?.davet_token) return { ok: false, error: 'Davet bulunamadı.' }
   return { ok: true, data }
 }
+
+// ── Referansör başvuruları ───────────────────────────────────────────
+/** Başvuruyu onaylar: hasta kaydı yoksa açar, referansör yapar. */
+export async function basvuruOnayla(basvuruId: string): Promise<Result> {
+  return rpc('referral_basvuru_onayla', { p_basvuru: basvuruId })
+}
+
+export async function basvuruReddet(basvuruId: string): Promise<Result> {
+  return rpc('referral_basvuru_reddet', { p_basvuru: basvuruId })
+}
