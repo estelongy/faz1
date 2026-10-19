@@ -10,7 +10,10 @@ import { createClient } from '@/lib/supabase/server'
 import { isMuhasebeOwner, clinicOwnerIdFor } from '@/lib/muhasebe-owner'
 import MuhasebeNav from '../../MuhasebeNav'
 import ReferansSayfaNav from '../ReferansSayfaNav'
-import ParaPanel, { puanSatiri, type ReferansorBakiye, type LedgerSatir } from './ParaPanel'
+import ParaPanel, { type ReferansorBakiye, type LedgerSatir } from './ParaPanel'
+// Yardımcı paylaşılan tip dosyasından gelir: 'use client' modülünden
+// sunucuya fonksiyon import etmek production'da çalışmıyor.
+import { puanSatiri } from '../../referans-tipler'
 
 export const metadata: Metadata = {
   title: 'Referans Para | Klinik Yönetim',

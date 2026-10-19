@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react'
 import { odemeYaz } from './actions'
+import { LEDGER_TUR_ETIKET, type LedgerTur } from '../../referans-tipler'
 
 export interface ReferansorBakiye {
   id: string
@@ -22,27 +23,12 @@ export interface ReferansorBakiye {
 export interface LedgerSatir {
   id: string
   referrer_id: string
-  tur: 'hakedis' | 'odeme' | 'duzeltme'
-    | 'puan_hakedis' | 'puan_bonus' | 'puan_harcama' | 'puan_iptal'
+  tur: LedgerTur
   tutar: number
   aciklama: string | null
   created_at: string
 }
 
-/** Puan satırları TL bakiyesine karışmamalı; para ve puan iki ayrı defter. */
-export const PUAN_TURLERI = ['puan_hakedis', 'puan_bonus', 'puan_harcama', 'puan_iptal'] as const
-export const puanSatiri = (t: LedgerSatir['tur']) =>
-  (PUAN_TURLERI as readonly string[]).includes(t)
-
-const TUR_ETIKET: Record<LedgerSatir['tur'], string> = {
-  hakedis: 'Hakediş',
-  odeme: 'Ödeme',
-  duzeltme: 'Düzeltme',
-  puan_hakedis: 'İşlem puanı',
-  puan_bonus: 'Kayıt bonusu',
-  puan_harcama: 'Puan harcama',
-  puan_iptal: 'Puan iptali',
-}
 
 const TRY = (n: number) => '₺' + Math.round(n).toLocaleString('tr-TR')
 const PUAN = (n: number) => Math.round(n).toLocaleString('tr-TR') + ' p'
@@ -166,7 +152,7 @@ export default function ParaPanel({
                   <div key={l.id} className="flex items-baseline gap-2 text-xs">
                     <span className="text-slate-600 tabular-nums shrink-0">{tarih(l.created_at)}</span>
                     <span className="text-slate-400 min-w-0 flex-1 line-clamp-1">
-                      {TUR_ETIKET[l.tur]}
+                      {LEDGER_TUR_ETIKET[l.tur]}
                       {l.aciklama ? ` · ${l.aciklama}` : ''}
                     </span>
                     <span className={`font-bold tabular-nums shrink-0 ${
@@ -192,7 +178,7 @@ export default function ParaPanel({
                 <span className="text-slate-300 min-w-0 flex-1 line-clamp-1">
                   {adBul(l.referrer_id)}
                   <span className="text-slate-500">
-                    {' · '}{TUR_ETIKET[l.tur]}
+                    {' · '}{LEDGER_TUR_ETIKET[l.tur]}
                     {l.aciklama ? ` · ${l.aciklama}` : ''}
                   </span>
                 </span>

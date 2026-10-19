@@ -83,3 +83,31 @@ export interface ReferansKod {
 
 /** Müşterinin söylediği kısım — kodun tire sonrası. */
 export const kisaKod = (kod: string) => kod.split('-')[1] ?? kod
+
+/**
+ * Ledger satır türleri. Puan ve para AYRI defterlerdir: puan satırları
+ * TL bakiyesine toplanmaz.
+ *
+ * Bu yardımcı client component'te DEĞİL burada durur — 'use client'
+ * modülünden sunucuya fonksiyon export etmek production build'inde
+ * "TypeError: p is not a function" veriyordu.
+ */
+export type LedgerTur =
+  | 'hakedis' | 'odeme' | 'duzeltme'
+  | 'puan_hakedis' | 'puan_bonus' | 'puan_harcama' | 'puan_iptal'
+
+export const PUAN_TURLERI: readonly LedgerTur[] =
+  ['puan_hakedis', 'puan_bonus', 'puan_harcama', 'puan_iptal']
+
+export const puanSatiri = (t: LedgerTur) =>
+  (PUAN_TURLERI as readonly string[]).includes(t)
+
+export const LEDGER_TUR_ETIKET: Record<LedgerTur, string> = {
+  hakedis: 'Hakediş',
+  odeme: 'Ödeme',
+  duzeltme: 'Düzeltme',
+  puan_hakedis: 'İşlem puanı',
+  puan_bonus: 'Kayıt bonusu',
+  puan_harcama: 'Puan harcama',
+  puan_iptal: 'Puan iptali',
+}
