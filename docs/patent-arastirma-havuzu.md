@@ -171,10 +171,24 @@ tüm öğeler eşittir.
 bölümleridir). Burada her evren **kendi başına** işler; evrenler arası
 kıyas yoktur.
 
-**Açık kalan tek soru:** Bir öğe **iki evrene birden** ait olabilir mi?
-(Örn. AVM evreni + kadınlar evreni.) Olabiliyorsa o öğenin toplam değer
-alma ihtimali artar. Bu bir kusur mu, özellik mi — **öğeler katmanında
-konuşulacak.**
+**✅ Son soru da kapandı:** Bir öğe iki evrene birden ait olabilir mi?
+
+> *"bir adam hem camiye hem avm ye girer mi. evet girer. hayatın olağan
+> akışı bu zaten"*
+
+**Evet, girebilir ve bu bir kusur değildir.** CE2'nin doğal sonucudur: aynı
+insan her evrende **farklı bir öğedir.** Cami evreninde bir öğe, AVM
+evreninde başka bir öğe; aralarında bağ yoktur — mekanizma zaten bağ
+kuramaz, kimlik tutmaz.
+
+**Endişe neden yersizdi:** Eşitlik iddiası **evren içi**dir, evrenler arası
+değil. Cami evreninde herkes eşit, AVM evreninde herkes eşit. Birinin
+ikisine birden girmesi hiçbirinin iç eşitliğini bozmaz.
+
+**Üstelik engellemeye çalışmak** tam da kaçınılan şeye götürürdü: kimlik
+tutmak, kimin nereye girdiğini izlemek.
+
+**İlke:** Evrenler birbirini bilmez, ortak sayaç yoktur.
 
 ### CE1b. Evren tanımı bir ŞABLONDUR
 
