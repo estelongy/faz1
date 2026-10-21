@@ -449,6 +449,45 @@ Kurucuya *"28.358 kişiden 5'ini nasıl seçersin"* diye soruldu:
 olmadığını** gösteriyor. Biri 5.000, biri 6.200 olabilir. Kesit katmanında
 değerlendirilecek.
 
+#### ✅ BAŞVURU BAŞLIĞI — kurucu kararı (21 Ekim 2026)
+
+> # Akışkan Evrende Bağımsız Değer Konumlandırma Yöntemi
+
+**Başlık bir ad değil, yöntem ifadesidir.** Kurucunun notu:
+*"başlık ad olmaktan ziyade yöntem ifadesi"* — TÜRKPATENT ve EPO zaten
+başlığın buluşun teknik konusunu belirtmesini ister, marka olmasını değil.
+
+**Dört parça, dördü de iş görüyor:**
+
+| Parça | Taşıdığı |
+|---|---|
+| **Akışkan evren** | Koşul — §52-54'teki evren tanımı |
+| **Bağımsız** | Unsurlar (aşağıda) |
+| **Değer** | Çıktı — içeriği serbest |
+| **Konumlandırma** | Mekanizma — değer yere konur, kişiye değil |
+
+**"Bağımsız" tek kelimeyle üç unsuru birden taşır:**
+
+| Okunuş | Unsur |
+|---|---|
+| Öğenin özelliklerinden bağımsız | Kimliksizlik + bağımsızlık |
+| Hiçbir tarafın etkisinden bağımsız | Mercisizlik |
+| Önceki öğelerden bağımsız | Durumsuzluk |
+
+Elenen alternatif: *"Kimlik Kullanmadan..."* — dar kalıyordu, yalnızca bir
+unsuru taşıyordu.
+
+#### Adın nerede kullanılacağı
+
+| Yer | Kullanım | Gerekçe |
+|---|---|---|
+| **Başlık** | ✅ Bu ifade | Teknik, dar değil |
+| **İstem** | ❌ **Ad geçmez** | İncelemeci *"bu nedir"* diye sorar, tanım istemin parçası olur ve **daraltır.** İstem unsur unsur yazılır |
+| **Tarifname** | ✅ Bir kez tanımla, sonra kullan | *"Buluş, bu tarifnamede 'akışkan evrende bağımsız değer konumlandırma' olarak anılacaktır"* |
+
+**Ticari not:** Ad yatırımcıya anlatırken de işe yarar, ancak **istemi
+bağlamamalıdır.** Marka adı (Jestopia vb.) başlıkta kullanılmaz.
+
 ### CE6. YÖNTEM KARŞILAŞTIRMASI — stadyum metaforuyla
 
 Her yöntem aynı stadyuma konup *"5 kişiyi nasıl seçerdi"* diye soruldu.
