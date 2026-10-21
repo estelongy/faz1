@@ -382,6 +382,98 @@ Eylemin kendisi filtredir.
 Ortak koşul: **öğeler teker teker gelir, geri alınmaz, sayılabilir.**
 Bu denetimde kapsanmayan bir akış tipi bulunamadı.
 
+### CE5. ⭐ BULUŞUN ADI — "akışkan evrende değer konumlandırma"
+
+**Kurucunun tarifi (21 Ekim 2026):**
+
+> *"buluş akışkan evrende değer konumlandırma. bence bu daha iyi bir tarif"*
+
+**Neden önceki adlandırmalardan iyi:** Eski adaylar (*değer üretme sistemi*,
+*ödül dağıtım sistemi*, *bedelsiz çekiliş*, *öğe işaretleme*) **ne
+üretildiğini** söylüyordu. Bu tarif **nasıl üretildiğini** söylüyor.
+
+| Parça | Taşıdığı |
+|---|---|
+| **Akışkan evren** | §52-54'te tanımlanan evren — büyüklüğü bilinmeyen fakat tahmin edilebilen, öğe eklenmeye devam eden |
+| **Değer** | İçeriği serbest (çay, simit, botoks, indirim) — temel istemdeki *"fayda, hak veya sonuç değeri"* |
+| **Konumlandırma** | ⭐ Mekanizmanın özü: değer **bir yere** konur, bir **kişiye** değil |
+
+#### Kaynak metafor — kurucunun cümlesi
+
+> *"mekanizma stadyum boşken koltuğu seçiyor. kim oturursa artık."*
+
+Bu tek cümle bütün unsurları taşıyor:
+
+| Cümlede | Unsur |
+|---|---|
+| Stadyum **boşken** | Öğeler henüz yok — evren tanımı |
+| **Koltuğu** seçiyor | Kişiyi değil konumu — kimliksizlik |
+| **Kim oturursa** | Özelliğe bakılmıyor — bağımsızlık |
+| **Artık** | Karar kesin, geri dönüş yok |
+| Seçim önce, oturma sonra | Hiçbir taraf etkileyemez — mercisizlik |
+
+**Neden güçlü:** Seçim ile seçilen arasında **bağ yoktur.** Koltuk
+seçildiğinde ortada kimse yoktur; kimse kendini seçtiremez, kimse
+kayıramaz — seçilecek bir *"kim"* yoktur.
+
+Piyangoda bilet alınır, numara olur, sonra çekiliş yapılır: **sen varsın,
+numaran var.** Burada **numara var, sen yoksun** — sonra geliyorsun.
+
+#### Ters çevirme
+
+| Klasik yaklaşım | Bu buluş |
+|---|---|
+| Kim var? → içinden seç | **Nerede?** → gelen o olur |
+| Liste gerekir | Sayaç yeter |
+| Sonradan seçilir | **Önceden işaretlenir** |
+
+Kurucunun erken ifadesi *"genişleyen evrende öğe işaretleme"* buydu —
+ancak işaretlenen **öğe değil, yerdir.**
+
+#### Tribün metaforu — kesit yapısının sezgisel karşılığı
+
+Kurucuya *"28.358 kişiden 5'ini nasıl seçersin"* diye soruldu:
+
+> *"tirübünü göz kararı 5'e bölerim. her bölmeden keyfi olarak gözüme ilk
+> çarpanı seçerdim. bölmenin ortası olur, sağ altı olur."*
+
+| Metafor | Mekanizma |
+|---|---|
+| Tribünü **5'e bölmek** | Evreni kesitlere bölmek |
+| **Göz kararı** bölmek | Tahminle kesit boyutu (28.000 ÷ 5) |
+| Her bölmeden **bir** kişi | Kesit başına k |
+| **Gözüne ilk çarpan** | Kesit içinde rastgele konum |
+| Ortası, sağ altı — fark etmez | Konum sabit değil, her kesitte yeniden |
+
+**⚠️ B6'ya etkisi:** *"Göz kararı"* ifadesi kesitlerin **eşit olmak zorunda
+olmadığını** gösteriyor. Biri 5.000, biri 6.200 olabilir. Kesit katmanında
+değerlendirilecek.
+
+### CE6. YÖNTEM KARŞILAŞTIRMASI — stadyum metaforuyla
+
+Her yöntem aynı stadyuma konup *"5 kişiyi nasıl seçerdi"* diye soruldu.
+
+| | Liste gerekir | Kimlik gerekir | Akış durur | Karar kesin | Sayı belirli |
+|---|---|---|---|---|---|
+| **Piyango** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Kumar makinesi** | ❌ | ❌ | ❌ | ✅ | **❌** |
+| **Çekiliş / kura** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Sadakat programı** | ❌ | **✅** | ❌ | ✅ | ❌ |
+| **Reservoir sampling** | ❌ | ❌ | **✅** | **❌** | ✅ |
+| **BU BULUŞ** | ❌ | ❌ | ❌ | ✅ | ✅ |
+
+**Son satır tektir:** beş sütunun hepsinde istenen değer.
+
+#### Tek cümlelik ayrımlar
+
+| Yöntem | Ayrım |
+|---|---|
+| **Piyango** | Önce insanlar var, sonra seçim yapılır. Burada önce seçim yapılır, sonra insanlar gelir |
+| **Kumar makinesi** | 5 kişi seçemezsin — olasılık ayarlarsın, 0 da çıkar 50 de (Bernoulli'nin aynı sorunu, bkz. A1) |
+| **Çekiliş** | Fisher-Yates tam burada çalışır, ama **listeyi ister**. Liste yoksa yöntem yok |
+| **Sadakat** | Rastgelelik yok, kural işler; sayaç kime ait olduğu için **kimlik zorunlu** (okunan beş ticari patent burada, bkz. A2) |
+| **Reservoir** | 3.117. kişiye *"kazandın"* diyemezsin — belki 20.000. kişi gelince çıkarılacak |
+
 ---
 
 ## D. HAVUZ KULLANIM KURALI
