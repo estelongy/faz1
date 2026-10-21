@@ -123,6 +123,41 @@ amacı için sorun değil; dava için zayıf.
 
 ---
 
+## C-EK. ÖĞELER KATMANINA DEVREDEN SORULAR
+
+Evren katmanında ortaya çıktı, **kritiği öğeler katmanında yapılacak.**
+Burada hüküm verilmedi.
+
+### CE1. Evren içi evrenler
+
+Kurucunun tespiti: tek bir akıştan **birden fazla evren** tanımlanabilir.
+AVM girişi bir evren; onun içinden tanımlanan daha dar kümeler de ayrı
+evrenler olabilir. Her birinin kendi Etahmini'si, kendi kesit dizisi, kendi
+k'sı olur.
+
+Evren katmanı açısından kayda geçen: **evren yeniden tanımlanabilir bir
+çerçevedir.** Evrenler paralel işleyebilir; birbirini bilmezler, ortak sayaç
+yoktur (durumsuzlukla tutarlı).
+
+**Öğeler katmanında çözülecek sorular:**
+
+1. Evren kapısı öğenin bir özelliğine göre tanımlanırsa, bu temel istemdeki
+   *"öğenin kendisine has özelliklerinden bağımsız"* unsuruyla çelişir mi?
+   - Özellik **seçim anında** kullanılırsa → unsur ihlal edilir
+   - Özellik **evrenin kapısında** kullanılıp içeride seçim kör kalırsa →
+     ihlal yok (bağımsızlık *evren içi* bir iddiadır)
+   - **Hangi okuma geçerli, karara bağlanmadı**
+
+2. Bu kurgu §51.2'deki stratified sampling çürütmesini etkiler mi?
+   Orada *"katman yardımcı değişkenden kurulur, bizde yardımcı değişken
+   yok"* denmişti.
+
+3. Bir öğe **iki evrene birden** ait olabilir mi? Olabiliyorsa toplam
+   olasılığı artar; *"her öğe eşit"* iddiası evrenler arası kıyasta
+   zayıflar mı?
+
+---
+
 ## D. HAVUZ KULLANIM KURALI
 
 1. **Her yeni bulgu buraya yazılır**, ana dosyaya değil
