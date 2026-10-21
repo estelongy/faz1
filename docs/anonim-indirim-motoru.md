@@ -6650,3 +6650,110 @@ algorithm"* geçiyor — istemde değil ama **yayım olduğu için yenilik açı
 sayılır.** Tarifnamede bu patente atıf yapılıp fark açıklanmalı.
 
 **4. Eşihtimallik istemde nerede duracak** — §52.11'den devreden karar.
+
+---
+
+## 54. EVRENİN MATEMATİKSEL GÖSTERİMİ — tarifname metni
+
+**Tarih:** 21 Ekim 2026
+**Durum:** ✅ Kurucu onayladı, tarifnameye bu hâliyle girecek
+
+### 54.1 GÖSTERİM
+
+**E1 ⊆ … ⊆ Ea1 ⊆ … ⊆ Ea2 ⊆ … ⊆ Ea3 ⊆ … ⊆ Etahmini ⊆ …**
+
+### 54.2 TARİFNAME METNİ (onaylı)
+
+> Buluşun evreni, açık uçlu artan kümeler dizisi biçiminde gösterilir:
+>
+> **E1 ⊆ … ⊆ Ea1 ⊆ … ⊆ Ea2 ⊆ … ⊆ Ea3 ⊆ … ⊆ Etahmini ⊆ …**
+>
+> Ei, i'ninci öğenin eklenmesinden sonraki evreni gösterir. Kapsama ilişkisi
+> (⊆) öğelerin evrenden çıkmadığını, evrenin yalnızca büyüdüğünü ifade eder.
+>
+> **Ea1, Ea2, Ea3 … ardışık kesitlerin kapandığı terimlerdir.** Bir kesit
+> dolduğunda kapanır ve yenisi açılır. Kesitlerin büyüklükleri eşit olabilir
+> veya birbirinden farklı belirlenebilir; yöntem her iki durumda da işler.
+> Kesitler arasındaki geçiş süresi akış yoğunluğuna bağlıdır: yoğun akışta
+> kesitler hızla dolar, seyrek akışta yavaş.
+>
+> **Etahmini**, evrenin tahmin edilen büyüklüğüne karşılık gelen terimdir.
+> Tahmin, kesit büyüklüğünün belirlenmesine hizmet eder. Ancak dizi bu
+> terimde sonlanmaz: tahmin bir sınır değil, bir öngörüdür. Akış tahmini
+> aşabilir (daha çok kesit açılır, daha çok değer üretilir) veya tahmine
+> ulaşmadan kesilebilir (daha az değer üretilir). Her iki durumda da yöntem
+> değişmeden işler ve kesit içi eşit olasılık korunur.
+>
+> Dizinin sonlanıp sonlanmayacağı hakkında varsayım yapılmaz.
+>
+> Buna karşılık örnekleme literatüründeki yöntemler çalışabilmek için sonlu
+> bir popülasyon varsayar — *"Consider a finite population U = {1, 2, …, N}"*
+> — ve N'nin varlığına dayanır. Bu buluşta N'nin yerini tahmin edilen
+> büyüklük alır; ancak tahmin bağlayıcı değildir, yalnızca kesit büyüklüğünü
+> belirler. Mekanizma, gerçekleşen büyüklük tahminden farklı olsa dahi aynı
+> şekilde çalışmaya devam eder.
+
+### 54.3 GÖSTERİMİN HER PARÇASI NEYİ TAŞIYOR
+
+| Parça | Taşıdığı iddia | Hangi itirazı kapatır |
+|---|---|---|
+| **⊆** (kapsama) | Öğe çıkmaz, evren yalnızca büyür | *Open population* modellerinden ayırır — orada üyeler ayrılabilir |
+| **E1, E2, …** | Öğeler zamanla doğar, önceden mevcut değil | *"finite population U={1..N}"* varsayımından ayırır |
+| **Ea1, Ea2, Ea3** | Kesitler akışa aittir, evrene değil | IDS'ten ayırır: onda pencere olasılık kütlesiyle tanımlı |
+| **Kesitler eşit veya farklı** | Esneklik; tek bir bölme kuralına bağlı değil | *"sabit bloklama rutin tasarım tercihi"* itirazını zayıflatır |
+| **Etahmini** | Tahmin mekanizmanın girdisidir | *"N bilinmiyorsa nasıl çalışıyor"* sorusunu cevaplar |
+| **Etahmini'den sonra "…"** | Tahmin **sınır değil** | Sonluluk varsayımına dönüşü engeller |
+| **Açık uç** | Sonlanma hakkında varsayım yok | Hem *"sonsuzluk ispatı"* hem *"yarım kesit"* itirazını doğurmaz |
+
+### 54.4 NEDEN BU YAZIM — ELENEN ALTERNATİFLER
+
+Gösterim birkaç turda oturdu. Elenenler ve gerekçeleri:
+
+| Yazım | Neden elendi |
+|---|---|
+| **… ⊆ En = E** (raporun yazımı) | Sonlu son terim varsayıyor → *"o hâlde Fisher-Yates uygulanabilir"* itirazı doğar |
+| **… ⊆ Ex** | x'in var olduğunu ima eder; *"x bilinmez"* diye ayrıca açıklama gerekir |
+| **E1 ⊆ E2 ⊆ E3 ⊆ …** (tahminsiz) | Temiz ama eksik: tahminin mekanizmadaki rolü görünmez, *"N bilinmiyorsa kesit nereden"* sorusu havada kalır |
+| **Et** (zaman indisi) | Zaman yazımı eşzamanlılık avantajı getirir ama **tahmin** kavramını taşımaz; kurucu tahmini terimi istedi |
+| **E_tahmini** (alt tire ile) | Alt tire gereksiz; düz yazım yeterli |
+
+**Seçilen:** Tahmin dizinin **içinde** duruyor (mekanizma onu kullanıyor), dizi
+ondan **sonra da devam ediyor** (tahmin bağlayıcı değil). Bu, kurucunun
+*"büyüklüğü tahmin edilebilen ancak bilinmeyen"* tanımının birebir
+matematiksel karşılığıdır:
+
+- **Tahmin edilebilen** → Etahmini dizide var
+- **Ancak bilinmeyen** → dizi ondan sonra da sürüyor
+
+### 54.5 N İLE TAHMİN ARASINDAKİ FARK — en güçlü nokta
+
+| | N (literatür) | Tahmin (bu buluş) |
+|---|---|---|
+| Bağlayıcı mı | ✅ Yöntem ona **dayanır** | ❌ Yalnızca kesit büyüklüğünü belirler |
+| Yanlışsa ne olur | Yöntem çalışmaz veya yanlış sonuç verir | **Yöntem çalışmaya devam eder** |
+| Gerekli mi | ✅ Olmadan yöntem kurulmaz | ❌ Olmasa da mekanizma işler |
+
+**Testlerle kanıtlı** (§52.6):
+
+| Senaryo | Tahmin | Gerçekleşen | Sonuç |
+|---|---|---|---|
+| Stadyum, tahmin tuttu | 15.300 | 15.300 | 150 değer |
+| Stadyum, yağmur | 15.300 | 13.000 | 127 değer, **bozulma yok** |
+| Stadyum, derbi | 15.300 | **16.800** | 164 değer, **bozulma yok** |
+
+Derbi satırı kritik: akış **tahmini aştı**, mekanizma daha çok kesit açtı.
+Gösterimdeki *"Etahmini ⊆ …"* kısmı tam bunu ifade eder.
+
+Bu, "indirgeme gerektirmez" argümanının (§53) matematiksel yazımıdır.
+
+### 54.6 İSTEME ETKİSİ — YOK
+
+**Bu gösterim tarifnameye girer, isteme girmez.** Gerekçe:
+
+- İstemde matematiksel gösterim kullanmak **daraltır** (rakip farklı notasyon
+  kullanıp kaçabilir)
+- İstemde evren, §52.10'daki düz ifadeyle durur:
+  *"büyüklüğü tahmin edilebilen ancak bilinmeyen bir evrende"*
+- Gösterim, o ifadenin **açıklaması** olarak tarifnamede yer alır
+
+İstem metni değişmedi.
