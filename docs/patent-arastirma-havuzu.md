@@ -555,6 +555,132 @@ biri çıkarılır, yenisi konur. Maç bitene kadar böyle sürer.
 
 ---
 
+## CK. KESİT KATMANI
+
+### CK1. KESİT YAPISI — karara bağlandı
+
+**Mekanizma:**
+
+| | |
+|---|---|
+| Kesit sayısı | Etahmini ÷ k |
+| Kesit boyutu | Etahmini ÷ k |
+| Yeni kesit ne zaman açılır | **Önceki dolduğunda** |
+| Konumlar ne zaman belirlenir | **Kesit açıldığı anda** |
+| Tahmin aşılırsa | Yeni kesit açılır, mekanizma değişmez |
+
+**Kurucunun ifadesi:**
+
+> *"tahmini bir sayı var kabaca kesite bölüyoruz. kaç kesit olacağını
+> Et ve k belirliyor"*
+
+> *"yeni kesit önceki dolduğunda açılıyor"*
+
+**Son nokta mercisizlik açısından önemli:** Konumlar kesit **açıldığı anda**
+belirlenir, önceden değil. Böylece bir sonraki kesitin konumları hiçbir
+zaman *"önceden bilinebilir"* durumda olmaz.
+
+### CK2. YARIM KESİT — adaletsizlik yok
+
+**Kurucunun argümanı (önceki savunmadan daha güçlü):**
+
+> *"düşün 5. kesitimiz 250 ile 400 arasında. 4 kesit, yani 600 öğe oluşmuş
+> ve yeni kesit açılmış. yöntem 270 ile 390'ı belirledi. 270'e kadar
+> girenler aynı ihtimalle öğe oldular"*
+
+**Önceki savunma (§51.8):** *"olasılık ≠ gerçekleşen frekans"* — istatistiksel
+ayrım.
+
+**Yeni savunma (daha sağlam):** **Kesit açıldığı anda konumlar
+belirlenmiştir.** O kesite giren 270. kişi de, 350. kişi de, 390. kişi de
+**aynı belirsizlikle** girdi. Hiçbiri *"benim şansım yoktu"* diyemez —
+hepsi kesit kurulduğunda eşit konumdaydı.
+
+Akışın 390'da kesilmesi, 391'den sonra kimsenin **gelmemesi** demektir.
+Gelmeyen kişiye haksızlık yapılamaz.
+
+**Not:** Örnekte k=2 (270 ve 390). Akış 390'da kesilirse ikisi de
+gerçekleşir; 350'de kesilirse biri gerçekleşir. Her iki durumda da kesite
+giren herkes aynı iki konuma karşı eşit durumdaydı.
+
+### CK3. ⭐ KESİTSEL BAKIŞIN LİTERATÜRLE İLİŞKİSİ
+
+**Özet hüküm:** **Yapı örtüşüyor, kuruluş ayrışıyor.**
+
+#### Örtüşen — bölme fikri yeni değil
+
+Akışı parçalara ayırıp her parçadan seçmek bilinen bir fikirdir:
+
+| Alan | Adı | Nasıl |
+|---|---|---|
+| İstatistik | Systematic sampling (Madow 1949) | Rastgele başlangıç + her k'ıncı öğe |
+| Klinik araştırma | Permuted block randomization | Blok içi tedavi dengeleme |
+| Ağ | Periyodik örnekleme | Her n'inci paketi al |
+
+**Bunu saklamanın anlamı yok** — incelemeci zaten bulur. Tarifnamede açıkça
+kabul edilip fark anlatılmalı.
+
+#### Ayrışan — dört nokta
+
+**1. Bölme neye göre yapılıyor**
+
+| | Bölme ölçüsü |
+|---|---|
+| IDS 2021 | **Olasılık kütlesi** — pencere π'lar toplamı 1 olunca kapanır |
+| Permuted block | **Tedavi dengesi** — her blokta eşit sayıda A ve B |
+| Systematic | Sabit aralık k = N/n → **N bilinmeli** |
+| **Bu buluş** | **Öğe sayısı** — N bilinmeden |
+
+**2. Bölme ne zaman yapılıyor**
+
+Hepsinde **önceden**: popülasyon bilinir, bloklar kurulur, sonra uygulanır.
+
+Bu buluşta **akarken**: bir kesit dolunca bir sonraki açılır. N'yi bilmeden
+bölmeyi mümkün kılan budur.
+
+**3. Blok içinde ne yapılıyor**
+
+| | Blok içi |
+|---|---|
+| Systematic | **Deterministik** — ilk seçimden sonra hepsi belli |
+| Permuted block | Sıralama karışır, **hepsi** tedavi alır |
+| IDS | Pencere başına **tam 1** |
+| **Bu buluş** | **k serbest**, her kesitte yeniden rastgele |
+
+**4. Amaç**
+
+Hepsi **ölçme veya dengeleme** için böler. Bu buluş **tahsis** için böler.
+
+#### Tek cümleyle
+
+> Bölme fikri yeni değildir. Yeni olan: **N bilinmeden, akarken, öğe
+> sayısına göre bölmek ve her bölmede yeniden rastgeleleştirmek.**
+
+#### ⚠️ Dürüst risk ve cevabı
+
+**İtiraz:** *"Systematic sampling'de de bölme var; siz sadece N yerine
+tahmin koymuşsunuz — rutin değişiklik."*
+
+**Cevap:** Systematic sampling ilk seçimden sonra **deterministik** hale
+gelir. OSOD 2021'in kendi ifadesi:
+
+> *"once the first units are examined, this method quickly becomes
+> deterministic, making it predictable, which can be problematic."*
+
+Bu buluşta **her kesit yeniden randomize edilir.** Fark *"tahmin kullandık"*
+değil, **"her kesitte yeniden rastgeleleştiriyoruz."** Bu fark
+öngörülemezlik koşulunda somutlaşır ve Busnel & Tillé 2020 bunu **güvenlik
+problemi** olarak tanımlar (bkz. A1).
+
+### CK4. AÇIK KALAN KÜÇÜK SORULAR
+
+| # | Soru | Durum |
+|---|---|---|
+| **CK4a** | **B6 çelişkisi:** Temel istem *"sabit sayıda öğeden oluşan kesitler"* diyor; tarifname (§54.2) ve tribün metaforu (*"göz kararı"*) eşit olmak zorunda olmadığını söylüyor. **Hangisi?** Ön görüş: *"sabit"* çıkarılmalı — IDS'ten ayrım boyutun sabitliğinde değil, **neyle ölçüldüğünde** (öğe sayısı vs olasılık kütlesi) | ⚠️ Karara bağlanmadı |
+| **CK4b** | k>1 iken kesit içinde iki konum **aynı** olabilir mi? Kodda `Set` kullanıldığı için hayır; **istemde yazılı değil** | ⚠️ Karara bağlanmadı |
+
+---
+
 ## D. HAVUZ KULLANIM KURALI
 
 1. **Her yeni bulgu buraya yazılır**, ana dosyaya değil
