@@ -672,6 +672,80 @@ değil, **"her kesitte yeniden rastgeleleştiriyoruz."** Bu fark
 öngörülemezlik koşulunda somutlaşır ve Busnel & Tillé 2020 bunu **güvenlik
 problemi** olarak tanımlar (bkz. A1).
 
+### CK5. ⚠️ "ÜSTÜNLÜK" İDDİALARI — hangisi savunulur
+
+Soru: *"eşihtimallilik, güvenlik ve adalet boyutu diğer kuramlardan farklı
+ve üstün diyebilir miyiz?"*
+
+**Üçü aynı güçte değildir.** İkisinde *"üstün"* denebilir, birinde
+denemez. CE3'teki kuralın (çürütülemez iddia kur) kesit katmanındaki
+uygulamasıdır.
+
+#### 1. Eşihtimallik — ❌ "üstün" DEĞİL, "farklı koşulda"
+
+Fisher-Yates **kusursuz** eşihtimallik verir. Bu buluşunki ondan *daha
+eşit* değildir.
+
+Fark şuradadır: Fisher-Yates **listeyi ister**, bu buluş istemez. Yani
+aynı sonuç **daha zor koşulda** elde edilir.
+
+| ⛔ Yazılmaz | ✅ Yazılır |
+|---|---|
+| "Daha eşit şans veriyoruz" | "N bilinmeden, akarken eşihtimallik sağlanıyor" |
+
+**Neden:** *"Daha eşit"* iddiası kurucunun kendi zar tespitine takılır —
+eşitlik çıktıdan kanıtlanamaz (bkz. B5). Üstünlük değil, **farklı
+problemdir.**
+
+#### 2. Güvenlik — ✅ "ÜSTÜN" DENEBİLİR
+
+Burada dayanak sağlamdır, çünkü **aynı eksende ölçülüyor:**
+
+| | Öngörülebilirlik |
+|---|---|
+| Madow 1949 systematic | İlk seçimden sonra **tamamen belli** |
+| Permuted block randomization | Blok sonunda kalanlar **tahmin edilebilir** (klinik araştırmada bilinen zafiyet) |
+| **Bu buluş** | Her kesitte **yeniden randomize** |
+
+**Kritik:** Öngörülebilirliği *"saldırı yüzeyi"* sayan ölçüt bizim
+iddiamız değil, **literatürün kendi ölçütüdür** — Busnel & Tillé 2020
+(bkz. A1). Kendi ölçütleriyle ölçüldüğünde bu buluş daha iyidir.
+
+#### 3. Adalet — ⚠️ KELİME DEĞİŞTİRİLMELİ
+
+*"Adalet"* iki anlama gelir ve ikisi farklı sonuç verir:
+
+| Anlam | Durum |
+|---|---|
+| **(a) Eşit şans** | Yukarıdaki 1. madde — *"üstün"* denemez |
+| **(b) Kapsayıcılık** | ✅ Gerçekten üstün: piyango **bilet alanı** kapsar, sadakat **üye olanı**, bu buluş **evrene gireni.** Kapı yoktur |
+
+**(b) savunulabilir ama adı *"adalet"* olmamalı** — **bedelsizlik** ve
+**kapsayıcılık** denmelidir. *"Daha adil"* denirse tanım tartışması açılır
+ve piyango da kendi evreninde adildir (bkz. CE3).
+
+#### Özet tablo
+
+| | Üstün mü | Patent metnindeki doğru ifade |
+|---|---|---|
+| Eşihtimallik | ❌ | *N bilinmeden, akarken sağlanıyor* |
+| **Güvenlik** | ✅ | *Her kesitte yeniden randomize; literatürün kendi ölçütüyle üstün* |
+| Adalet | ⚠️ | *Bedelsizlik ve kapsayıcılık* ("adalet" yerine) |
+
+#### Bölme fikrinin bilinmesi zayıflık mı?
+
+**Hayır.** Ayrım bölmede değil, **bölmenin nasıl kurulduğundadır** (CK3).
+
+**Tarifname stratejisi:** Bilinirliği açıkça kabul etmek daha güçlüdür:
+
+> *"Akışın parçalara ayrılması bilinen bir tekniktir. Buluş, bölmenin
+> toplam büyüklük bilinmeden ve akış sürerken kurulmasında, ve her
+> bölmede seçimin yeniden rastgeleleştirilmesindedir."*
+
+Saklanmaya çalışılırsa incelemeci zaten bulur ve başvurunun güvenilirliği
+düşer. Bu, kurucunun erken koyduğu kuralla da tutarlıdır: *"çürüttüğümüzü
+tarifnamede 'bunun aksine' diyerek yazalım."*
+
 ### CK4. AÇIK KALAN KÜÇÜK SORULAR
 
 | # | Soru | Durum |
