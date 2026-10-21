@@ -6232,7 +6232,7 @@ Kurucunun erken cümleleri bunu zaten söylüyordu:
 
 **TEK TANIM:**
 
-> **Büyüklüğü tahmin edilebilen ancak bilinmeyen bir evren.**
+> **Büyüklüğü bilinmeyen fakat tahmin edilebilen bir evren.**
 > Sonluluğu hakkında varsayım yapılmaz.
 
 **ÖNEMLİ DÜZELTME — bu bölümün ilk sürümü hatalıydı.** İlk yazımda evren
@@ -6289,7 +6289,7 @@ Bunlar **iki ayrı evren tipi değil**, aynı tanımın iki görünümüdür.
 | **Sadakat programı** | Sonlu, **kimlikli** | ✅ Üye sayısı belli | Kayıtla girer | **Üyelik + kimlik** | Eşik dolunca (kurallı) | Sadakat ödülü |
 | **Örnekleme (Tillé, IDS)** | Sonlu — *"finite population"* | ⚠️ Bilinmez ama **vardır** | **Zaten mevcut**, sıralı sunuluyor | — | Akış sırasında | **Tahmin** (Horvitz-Thompson) |
 | **Reservoir (Vitter)** | Sonlu, kapanacak | ⚠️ Bilinmez, akış bitince belli | Zaten mevcut | — | **Akış bitince kesinleşir** | Tahmin |
-| **BU BULUŞ** | **Varsayım yok** — sonluluk sorulmaz | ❌ Tahmin edilir, **bilinemez** | **Gelecekte doğuyor** | **Bedelsiz, kayıtsız** | **Eklenme anında kesin** | **Tahsis** |
+| **BU BULUŞ** | **Varsayım yok** — sonluluk sorulmaz | ❌ **Bilinmez**, tahmin edilir | **Gelecekte doğuyor** | **Bedelsiz, kayıtsız** | **Eklenme anında kesin** | **Tahsis** |
 
 ### 52.5 ÜÇ AYRIM
 
@@ -6454,7 +6454,7 @@ değil. Bu ayrım yapılmazsa cümle kendi testlerimizle çelişir.)*
 
 **YENİ HÂLİ:**
 
-> Öğe eklenmeye devam eden, **büyüklüğü tahmin edilebilen ancak bilinmeyen**
+> Öğe eklenmeye devam eden, **büyüklüğü bilinmeyen fakat tahmin edilebilen**
 > bir evrende; **sabit sayıda öğeden oluşan kesitler halinde**, bir öğenin
 > evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine
 > has özelliklerinden bağımsız bir şekilde, **her kesitte** sayısına karar
@@ -6464,7 +6464,7 @@ değil. Bu ayrım yapılmazsa cümle kendi testlerimizle çelişir.)*
 
 | Değişiklik | Gerekçe |
 |---|---|
-| "oluşacak ve büyüklüğüne karar verilebilen" → **"büyüklüğü tahmin edilebilen ancak bilinmeyen"** | Fisher-Yates (kesin N ister) ve OSOD (N gerekli) elenir; Reservoir'dan ayrışır. "Ancak bilinmeyen" sona gelerek vurgu bilinmezlikte kalır |
+| "oluşacak ve büyüklüğüne karar verilebilen" → **"büyüklüğü bilinmeyen fakat tahmin edilebilen"** | Fisher-Yates (kesin N ister) ve OSOD (N gerekli) elenir; Reservoir'dan ayrışır. "Bilinmeyen" önce gelerek asıl durumu kurar; tahmin onun üzerine gelen kısıtlı imkândır |
 | **"sabit sayıda öğeden oluşan kesitler halinde"** eklendi | IDS'ten en net ayrım: onda pencere **olasılık kütlesiyle** tanımlı, öğe bölünebiliyor; bizde sabit öğe sayısı, bölünme yok |
 | "sayısına" → **"her kesitte sayısına"** | Sonsuz evren / sınırlı sayı çelişkisi çözülür: sınır kesite ait, evrene değil |
 
@@ -6626,7 +6626,7 @@ Bu, §52.7'deki kuralın tekrarıdır: iddiayı çürütülemez biçimde kur.
 
 | Parça | Yeri |
 |---|---|
-| Evren tanımı (tahmin edilebilen ancak bilinmeyen) | **İstemin önkoşulu** |
+| Evren tanımı (bilinmeyen fakat tahmin edilebilen) | **İstemin önkoşulu** |
 | Artan kümeler gösterimi E₁ ⊆ E₂ ⊆ … | Tarifname — teknik problem |
 | Karşılaştırma tablosu (§52.4) | Tarifname — teknik problem |
 | İndirgeme argümanı | Tarifname — teknik problem |
@@ -6719,7 +6719,7 @@ Gösterim birkaç turda oturdu. Elenenler ve gerekçeleri:
 
 **Seçilen:** Tahmin dizinin **içinde** duruyor (mekanizma onu kullanıyor), dizi
 ondan **sonra da devam ediyor** (tahmin bağlayıcı değil). Bu, kurucunun
-*"büyüklüğü tahmin edilebilen ancak bilinmeyen"* tanımının birebir
+*"büyüklüğü bilinmeyen fakat tahmin edilebilen"* tanımının birebir
 matematiksel karşılığıdır:
 
 - **Tahmin edilebilen** → Etahmini dizide var
@@ -6753,7 +6753,7 @@ Bu, "indirgeme gerektirmez" argümanının (§53) matematiksel yazımıdır.
 - İstemde matematiksel gösterim kullanmak **daraltır** (rakip farklı notasyon
   kullanıp kaçabilir)
 - İstemde evren, §52.10'daki düz ifadeyle durur:
-  *"büyüklüğü tahmin edilebilen ancak bilinmeyen bir evrende"*
+  *"büyüklüğü bilinmeyen fakat tahmin edilebilen bir evrende"*
 - Gösterim, o ifadenin **açıklaması** olarak tarifnamede yer alır
 
 İstem metni değişmedi.
