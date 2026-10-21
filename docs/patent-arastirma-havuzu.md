@@ -231,6 +231,111 @@ verir). Doğru iddia: *"öğe, mekanizma açısından kimliksizdir."*
 
 **Öğeler katmanında işlenecek.**
 
+### CE3. PİYANGODAN ÜSTÜNLÜK — hangisi savunulur, hangisi savunulmaz
+
+Kurucu dört üstünlük saydı: *"daha rastlantısal, daha adil, daha mercisiz,
+daha kimliksiz."* **İkisi yapısal, ikisi tartışmalı.** Patent metnine
+yalnızca savunulabilir olanlar girmeli.
+
+#### ✅ YAPISAL ÜSTÜNLÜKLER (tartışmaya kapalı)
+
+| Üstünlük | Gerekçe |
+|---|---|
+| **Kimliksizlik** | Piyango bilet numarası tutmak **zorundadır** — kazananı bulmak ve ödemeyi yapmak için. Bu buluşta zorunluluk yok: kazanan anında belli olur, ödeme o anda yapılır |
+| **Mercisizlik** | Piyangoda **her zaman bir merci vardır** (idare, noter, çekiliş komisyonu) ve **olmak zorundadır**, çünkü güven oradan gelir. Bu buluşta mekanizmanın kendisi merci |
+| **Bedelsizlik** | Piyangoda katılım kapısı paradır. Burada kapı yoktur — zaten yapılan işlem sırasında dahil olunur. Hem ticari hem hukuki fark (bedel yoksa şans oyunu mevzuatına girmez, bkz. `surpriz-odul-pos.md` §5b) |
+| **Akışı kesmemek** | Piyango **durup çekiliş yapmak zorundadır**. Bu buluş akışı kesmez. Teknik üstünlük, kanıtlanabilir |
+
+#### ⚠️ TARTIŞMALI — patent metnine KONMAMALI
+
+**"Daha rastlantısal"** — Piyangonun topları fiziksel, gözle görünür,
+bağımsız denetçili. Donanım entropisi matematiksel olarak daha iyi olabilir
+ama *"daha rastlantısal"* demek savunulamaz. Kurucunun kendi tespiti burada
+bize karşı çalışır:
+
+> *"%100'e yakın rastgelelik varsa bunun doğrulanması mümkün değil ki.
+> aynı koşullarda 4 zar atsan bile aynı gelme ihtimali %100 değildir."*
+
+**Doğru ifade:** *farklı bir rastgelelik modeli* — piyangoda kazanan numara
+bellidir, kimin aldığı belirsizdir; burada kazanan konum bellidir, kimin
+geleceği belirsizdir.
+
+**"Daha adil"** — Adalet tanıma bağlıdır:
+
+| | Piyango | Bu buluş |
+|---|---|---|
+| Bilet alan / evrene giren | Herkes eşit | Herkes eşit |
+| Almayan / girmeyen | Şans sıfır | Şans sıfır |
+
+İkisi de **kendi evreninde** eşittir. Fark adalette değil, **evrenin kimi
+kapsadığındadır** (bedelsizlik maddesine bağlanır).
+
+### CE4. KAPSAM DENETİMİ — iki soru soruldu, ikisi de kapandı
+
+Evren tanımının hayatın olağan akışında kapsamadığı bir şey var mı diye
+soruldu. İki aday boşluk çıktı; **ikisi de tanımın içinde çözülüyormuş.**
+
+#### Soru 1: Eşzamanlı giriş
+
+*"Stadyuma 8 turnikeden aynı anda insan giriyor; mekanizma kaçıncı öğe
+olduğunu nasıl biliyor?"*
+
+**Kurucunun cevabı:**
+
+> *"sen evreni b turnikesinden giriş yapanlar diye de kurabilirsin.
+> a b c d... turnikelerinden giriş yapanlar diye de. zor değil bu.
+> sonuçta sen evrene öğe biriktiriyorsun. (...) evrene çoklu giriş olmaz
+> hocam, bu yönteme ters ve saçma. aynı numaralı bilet basılıyor mu ki aynı
+> iki öğe oluşsun evrende."*
+
+**İki ayrı şey karıştırılmıştı:**
+
+| | Kim belirler |
+|---|---|
+| **Evren tanımı** (hangi turnikeler dahil) | Kurgulayan — dışsal tanım |
+| **Öğe sayımı** (her giriş ayrı öğe) | Tanım gereği — iki öğe aynı olamaz |
+
+**Sonuç:** Evrene çoklu giriş **tanım gereği yoktur.** Öğe tekil bir olaydır;
+iki olay aynı olamaz. Sıralama bir uygulama detayıdır (hangi istek önce
+ulaştıysa), mekanizmanın problemi değildir.
+
+Kurucunun erken ilkesiyle tutarlı: *"yaşamayarak, yaşatmayarak çözüyorum."*
+Eşzamanlı tahsis problemi **doğmaz.**
+
+#### Soru 2: Geri alınan öğe (iptal, iade)
+
+*"Satış iptal edilirse öğe evrenden çıkar mı? Çıkarsa ⊆ bozulur."*
+
+**Kurucunun cevabı:**
+
+> *"değer öğe olması ile ilgili, öğe olabiliyorsa değer alma ihtimali
+> bakidir. kimse bunun için sonsuz deneme yapamaz. yolcuların 'aaaa olmadı
+> bir daha ineyim' demesi saçma değil mi?"*
+
+**Doğru çerçeve:** Soru *"öğe çıkar mı"* değil. Öğe olmak **değer alma
+ihtimalini doğurur** ve bu ihtimal geri alınamaz. İşlem iptal edilse bile
+öğe evrende kalır — ⊆ bozulmaz.
+
+**Suistimal sorusunun cevabı pratiktir:** Öğe olmak **bedelli**dir — para
+değil ama gerçek bir eylem (otobüsten inmek, alışveriş yapmak, turnikeden
+geçmek). Sonsuz deneme için sonsuz eylem gerekir.
+
+Bu, bedelsizliğin diğer yüzüdür: **katılım parasızdır ama bedava değildir.**
+Eylemin kendisi filtredir.
+
+#### Kapsanan akış tipleri
+
+| Akış tipi | Örnek |
+|---|---|
+| İnsan akışı | AVM, stat, otobüs, cemaat |
+| İşlem akışı | POS, sepet, ödeme |
+| Olay akışı | Lamba yakma, turnike, tıklama |
+| Nesne akışı | Üretim bandı, paket |
+| Dijital akış | Site girişi, uygulama açılışı |
+
+Ortak koşul: **öğeler teker teker gelir, geri alınmaz, sayılabilir.**
+Bu denetimde kapsanmayan bir akış tipi bulunamadı.
+
 ---
 
 ## D. HAVUZ KULLANIM KURALI
