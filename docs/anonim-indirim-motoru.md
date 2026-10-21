@@ -6172,3 +6172,297 @@ bulunamaması normaldir.
 
 **Dosyada tutulan tam metinler:** scratchpad/ids/ klasöründe `ids2021.pdf`,
 `seq2021.pdf`, `busnel2020.pdf` ve çıkarılmış `.txt` dosyaları.
+
+---
+
+## 52. EVREN — buluşun kilit noktası
+
+**Tarih:** 21 Ekim 2026
+**Kaynak:** Kurucunun tespiti — *"evren olayı bizim kilit noktamız olabilir"*
+
+### 52.1 GEÇ FARK EDİLEN ŞEY
+
+§51'e kadar savunma hep **mekanizma** üzerinden kuruldu: kesit, eşihtimallik,
+k serbestliği, cross-border yokluğu. Hepsi doğru ama hepsi *"onların yöntemi
+şöyle, bizimki böyle"* seviyesinde — bir incelemeci bunlara **varyasyon**
+diyebilir.
+
+Asıl ayrım bir seviye yukarıda: **girdide.** Aynı problemi çözmüyoruz.
+
+Kurucunun tespiti:
+
+> *"bak bu evren meselesini doğru netleştirirsek buluşumuz netleşir ve
+> ayrışır. evren olayı bizim kilit noktamız olabilir."*
+
+> *"gerçek hayat bir formüle indirgenemez mesele bu. otobüse kaç kişi bindiği
+> her seferinde değişiyor, avm ye kaç kişi gireceği her gün değişiyor. her
+> günü ve her olayı tek bir evren formülü ile tanımlayamazsın."*
+
+**Bu bölüm o tespitin gerekçelendirilmesidir.**
+
+### 52.2 LİTERATÜRÜN EVRENİ — kendi tanımından
+
+Örnekleme teorisi evreni **matematiksel bir nesne** olarak tanımlar.
+IDS makalesinin (arXiv:2111.09309) 2. bölümünün ilk cümlesi:
+
+> *"Consider a finite population U = {1, 2, . . . , N}."*
+
+Bu tanımın içerdiği varsayımlar:
+
+| Varsayım | Sonucu |
+|---|---|
+| **Sonlu** (finite) | Evren kapanır |
+| **N vardır** | Bilinmese de mevcuttur |
+| **Numaralandırılabilir** | Öğeler zaten orada |
+| Akış = sıralı sunum | Veri diskte duruyor, tek tek okunuyor |
+
+**Kritik nokta:** Literatürde akış, *var olan bir evrenin sıralı sunumudur.*
+Reservoir sampling *"N bilinmiyor"* der — ama bu **bilgi eksikliğidir**, N
+yine de vardır ve akış bitince ortaya çıkar.
+
+### 52.3 BİZİM EVRENİMİZ
+
+Kurucunun erken cümleleri bunu zaten söylüyordu:
+
+> *"adı yok, karşılığı yok demek istiyorum, zaten henüz kurulmadı"*
+
+> *"son kişi hiçbir zaman olmayacak ki"*
+
+> *"değer için tek şey var: evrenin bir öğesi olmak"*
+
+**İki evren tanımlanır:**
+
+| | **Evren 1 — sonlu** | **Evren 2 — sonsuz** |
+|---|---|---|
+| Tanım | Büyüklüğü tahmin edilebilen ancak bilinmeyen, sonlanacak | Büyüklüğü tahmin edilebilen ancak bilinmeyen, sonlanmayan |
+| Örnek | Konser, stadyum, kampanya günü | POS işlem akışı, AVM girişi |
+| Kapanış | Var, ama büyüklüğü önceden bilinmez | Yok |
+| Son kesit | Yarım kalabilir | Hiç kapanmaz |
+
+**Neden ikisi de gerekli:** §51.8'deki "yarım kesit" itirazı yalnızca
+Evren 1'de anlam taşır. Evren 2'de itiraz **doğmaz bile** — kurucunun
+*"son kişi hiçbir zaman olmayacak"* cevabı Evren 2'yi tarif ediyordu.
+İkisini ayırmak itirazı da ikiye böler.
+
+### 52.4 KARŞILAŞTIRMA TABLOSU — tüm rakipler
+
+| | Sonluluk | N biliniyor mu | Öğeler ne zaman var | Katılım kapısı | Seçim anı | Amaç |
+|---|---|---|---|---|---|---|
+| **Piyango** | Sonlu, kapalı | ✅ Satılan bilet kesin | Çekilişten **önce** mevcut | **Bedelli** | Akış bitince, tek an | Bedel karşılığı dağıtım |
+| **Çekiliş / kura** | Sonlu, kapalı | ✅ Katılımcı listesi kesin | Önce mevcut | Kayıt | Liste kapandıktan sonra | Liste içinden seçim |
+| **Kumar / slot** | **Evren yok** | — | Her oyun bağımsız | Bedelli | Her oyunda ayrı | Oyun başına sonuç |
+| **Sadakat programı** | Sonlu, **kimlikli** | ✅ Üye sayısı belli | Kayıtla girer | **Üyelik + kimlik** | Eşik dolunca (kurallı) | Sadakat ödülü |
+| **Örnekleme (Tillé, IDS)** | Sonlu — *"finite population"* | ⚠️ Bilinmez ama **vardır** | **Zaten mevcut**, sıralı sunuluyor | — | Akış sırasında | **Tahmin** (Horvitz-Thompson) |
+| **Reservoir (Vitter)** | Sonlu, kapanacak | ⚠️ Bilinmez, akış bitince belli | Zaten mevcut | — | **Akış bitince kesinleşir** | Tahmin |
+| **BİZİM 1 (sonlu)** | Sonlu, **büyüklüğü bilinmez** | ❌ Tahmin edilir, bilinemez | **Gelecekte doğuyor** | **Bedelsiz, kayıtsız** | **Eklenme anında kesin** | **Tahsis** |
+| **BİZİM 2 (sonsuz)** | **Sonlanmıyor** | ❌ Kavram olarak yok | Gelecekte doğuyor | Bedelsiz, kayıtsız | Eklenme anında kesin | **Tahsis** |
+
+### 52.5 ÜÇ AYRIM
+
+**(1) Öğeler ne zaman var olur — en keskin fark**
+
+Piyangoda biletler çekilişten önce basılmış, örneklemede veri diskte duruyor.
+Bizde öğe **henüz yok**: yarın kasaya gelecek kişi şu an evrenin parçası değil.
+
+**(2) Bilinmezliğin türü**
+
+| | Tür | Anlamı |
+|---|---|---|
+| Reservoir, IDS | **Epistemik** | N var, biz bilmiyoruz |
+| Bizim | **Ontolojik** | N henüz oluşmadı |
+
+Reservoir *"akış bitince doğru cevabı veririm"* der — **bitişi varsayar.**
+Evren 2'de bitiş yok, Evren 1'de bitiş belirsiz.
+
+**(3) Katılım kapısı**
+
+| | Kapı |
+|---|---|
+| Piyango | Bilet satın alma |
+| Çekiliş | Kayıt |
+| Sadakat | Üyelik + kimlik |
+| Kumar | Bahis |
+| **Bizim** | **Yok — sadece öğe olmak** |
+
+### 52.6 "BİLİNMEYEN N" DEĞİL, "DEĞİŞKEN N"
+
+Bu ayrım §52'nin en keskin bulgusudur.
+
+| | Ne demek | Kim ele almış |
+|---|---|---|
+| **Bilinmeyen N** | Tek bir N vardır, bilinmez; akış bitince ortaya çıkar | Reservoir, IDS |
+| **Değişken N** | Her gerçekleşmede **başka bir N**; tek bir sayı yoktur | **Bulunamadı** |
+
+Reservoir *"N bilinmiyor"* varsayımıyla çalışır ama **tek bir N'ye yakınsar.**
+Kurucunun durumunda her otobüs, her gün ayrı bir N — ve mekanizma hepsinde
+aynı kalır.
+
+**Çözüm neden işliyor:** Kesit **evrene değil akışa** aittir.
+
+- N değişse de kesit büyüklüğü sabit kalır
+- Kesit sayısı N'ye göre kendiliğinden ayarlanır
+- Üretilen değer sayısı N ile orantılı çıkar
+
+**Testlerle doğrulanmıştı:**
+
+| Test | Gerçekleşen | Sonuç |
+|---|---|---|
+| AVM (§bkz. avm.py) | Hafta sonu 2x yoğunluk | Değer **otomatik 2x** — mekanizma takvimi bilmiyor |
+| Stadyum, yağmur | 15.300 yerine 13.000 | 127 değer, bozulma yok |
+| Stadyum, derbi | 16.800 | 164 değer, bozulma yok |
+
+Değişken N bir sapma değil, **sistemin doğal girdisidir.**
+
+Bu, kurucunun erken formüle ettiği *"problemi doğurmayan mimari"* fikrinin
+somut hâlidir: değişken N çözülmüyor — **sorun olmaktan çıkarılıyor.**
+
+### 52.7 DİKKAT — ÇÜRÜTÜLEBİLİR İDDİALARDAN KAÇINMA
+
+Bu bölümün iddiaları **dikkatle** kurulmalıdır. İki ifade arasındaki fark
+patentin ayakta kalmasını belirler:
+
+| ⛔ ZAYIF (çürütülür) | ✅ GÜÇLÜ (kanıtlı) |
+|---|---|
+| "Bizim evren matematiksel değil" | "Bizim evren literatürün popülasyon tanımına uymuyor" |
+| "Gerçek hayat formüle indirgenemez" | "Mevcut yöntemler çalışmak için N'yi sabitlemek zorunda; buluş sabitleme gerektirmez" |
+| "Bu durum modellenemez" | "Bu durum için seçim problemi çözülmemiş" |
+
+**Gerekçe:** Bir matematikçi *"her otobüsün N'si rastgele değişkendir,
+dağılımı vardır, stokastik süreç olarak modellenir"* diyebilir ve haklı olur
+(Gemini'nin martingale hesabı bunu zaten yaptı — §51.8). "Modellenemez"
+iddiası tek cümleyle çürür.
+
+**Ama "indirgeme gerektirmez" iddiası çürütülemez**, çünkü kanıtı elimizde:
+Fisher-Yates N ister, OSOD Denklem (1)'de N kullanır, piyango listeyi kapatır.
+**Hepsi sabitlemek zorundadır.**
+
+**Ayrıca:** "Tahmin edilebilen ancak bilinmeyen" **en zayıf varsayımdır.**
+Daha az varsayımla iş gören yöntem daha çok duruma uyar. Literatür daha güçlü
+varsayım yapar (N var, sonlu, kapanacak) — bu yüzden daha dardır.
+Patent açısından: **az varsayım = geniş kapsam.**
+
+### 52.8 BU AYRIM DÖRT TARTIŞMANIN KÖKÜNÜ AÇIKLIYOR
+
+Günlerce dönülen tartışmaların çoğu aynı yanlış anlamadan doğmuştu:
+
+| Tartışma | Kök sebep |
+|---|---|
+| "Yarım kesitte eşitlik bozulur" (§51.8) | Karşı taraf **kapalı küme** varsayıyordu |
+| "N bilinmeden k tutturulamaz" | Aynı — sonlu popülasyon varsayımı |
+| "Son kişi…" — kurucunun itirazı | Kapanış yok |
+| "Stratified sampling'dir" (§51.2) | Katman **mevcut** öğelere uygulanır varsayımı |
+
+Dördü de tek bir şeyden: **onlar var olan bir kümeyi bölüyor, bu buluş
+oluşmamış bir akışa yapı kuruyor.**
+
+### 52.9 TARİFNAMEYE YAZILACAK METİN
+
+**Açılış paragrafı:**
+
+> Bu buluş, oluşmaya devam eden ve henüz tamamlanmamış bir akışta; akışı
+> durdurmadan, öğelerin kendilerine has özelliklerinden ve eklenme
+> sıralarından bağımsız olarak, geriye dönük düzeltme yapmaksızın değer
+> tahsis eder.
+
+*(Not: "akıştan etkilenmeden" ifadesi kullanılmaz — mekanizma öğe sayar,
+kesit kapanınca yenisini açar; AVM testinde yoğunluk değeri iki katına
+çıkarmıştır. Etkilenmeyen şey **hangi öğenin seçileceğidir**, akışın kendisi
+değil. Bu ayrım yapılmazsa cümle kendi testlerimizle çelişir.)*
+
+**Karşıtlık paragrafı:**
+
+> Buna karşılık, örnekleme literatüründeki yöntemler var olan ve sonlu kabul
+> edilen bir popülasyon (U = {1, 2, ..., N}) üzerinde çalışır; amaçları o
+> popülasyon hakkında çıkarım yapmaktır. Piyango ve çekiliş yöntemleri
+> katılımcı listesinin kapanmasını bekler. Sadakat programları katılım için
+> kimlik ve üyelik şartı arar. Bu buluşun evreni ne kapanır, ne önceden
+> mevcuttur, ne de katılım için kimlik gerektirir.
+
+**İndirgeme paragrafı:**
+
+> Mevcut yöntemler, değişken ve önceden bilinmeyen bir akışa uygulanabilmek
+> için önce onu sabit büyüklüklü bir popülasyona indirgemek zorundadır. Bu
+> buluş böyle bir indirgeme gerektirmez; akışın büyüklüğü her gerçekleşmede
+> farklı olsa dahi yöntem değişmeden işler.
+
+**Değişkenlik paragrafı:**
+
+> Yöntem, akış büyüklüğünün her gerçekleşmede farklı olmasını bir sapma olarak
+> değil, normal işleyiş olarak ele alır. Kesit büyüklüğü akışa ait olduğundan,
+> evren büyüklüğündeki değişkenlik mekanizmayı etkilemez; yalnızca üretilen
+> değer sayısı eklenen öğe sayısıyla orantılı olarak değişir.
+
+**Tahmin paragrafı:**
+
+> Kesit büyüklüğü, evrenin öngörülen büyüklüğü ile hedeflenen değer sayısının
+> oranından türetilebilir. Ancak yöntem bu öngörüye bağlı değildir: öngörü
+> gerçekleşmese dahi mekanizma işlemeye devam eder, yalnızca üretilen değer
+> sayısı eklenen öğe sayısıyla orantılı olarak değişir.
+
+### 52.10 TEMEL İSTEM — EVREN İFADESİ GÜNCELLENDİ
+
+**Önceki hâli (§34 v3):**
+
+> Birden fazla öğeden **oluşacak ve büyüklüğüne karar verilebilen** bir
+> evrende; bir öğenin evrene eklenmesi ile tetiklenen ancak öğenin
+> eklenmesine ve/veya kendisine has özelliklerinden bağımsız bir şekilde,
+> **sayısına karar verilebilen** öğeler için özel bir fayda, hak veya sonuç
+> değeri üreten yöntem.
+
+**Tespit edilen üç kusur:**
+
+1. **"Büyüklüğüne karar verilebilen"** ters yönde çalışıyordu: büyüklük
+   belirlenebiliyorsa N biliniyor demektir — bu bizim gücümüzü yok ediyordu.
+2. **Evren büyüklüğü ile kesit büyüklüğü tek cümlede karışıyordu.** Biri
+   bilinmez (evren), diğeri belirlenir (kesit).
+3. **"Sayısına karar verilebilen"** küresel okunuyordu: sonsuz evrende
+   sınırlı sayı mantıksal gerilim yaratıyordu.
+
+**YENİ HÂLİ:**
+
+> Öğe eklenmeye devam eden, **büyüklüğü tahmin edilebilen ancak bilinmeyen**
+> bir evrende; **sabit sayıda öğeden oluşan kesitler halinde**, bir öğenin
+> evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine
+> has özelliklerinden bağımsız bir şekilde, **her kesitte** sayısına karar
+> verilebilen öğeler için özel bir fayda, hak veya sonuç değeri üreten yöntem.
+
+**Değişikliklerin gerekçesi:**
+
+| Değişiklik | Gerekçe |
+|---|---|
+| "oluşacak ve büyüklüğüne karar verilebilen" → **"büyüklüğü tahmin edilebilen ancak bilinmeyen"** | Fisher-Yates (kesin N ister) ve OSOD (N gerekli) elenir; Reservoir'dan ayrışır. "Ancak bilinmeyen" sona gelerek vurgu bilinmezlikte kalır |
+| **"sabit sayıda öğeden oluşan kesitler halinde"** eklendi | IDS'ten en net ayrım: onda pencere **olasılık kütlesiyle** tanımlı, öğe bölünebiliyor; bizde sabit öğe sayısı, bölünme yok |
+| "sayısına" → **"her kesitte sayısına"** | Sonsuz evren / sınırlı sayı çelişkisi çözülür: sınır kesite ait, evrene değil |
+
+**Kesit neden istemde kalmalı (çıkarılmamalı):**
+
+Kesit, IDS'ten ayrıldığımız yerdir. İstemden çıkarılırsa kapsam genişler ama
+incelemeci *"bu zaten IDS"* der. Kesit daraltma değil, **patentlenebilirliğin
+dayanağıdır.** Ancak **soyut** yazılır:
+
+| ⛔ Somut (zayıf) | ✅ Soyut (güçlü) |
+|---|---|
+| "100 öğelik kesitler" | "sabit sayıda öğeden oluşan kesitler" |
+| "kesit = evren / hedef" | "büyüklüğü belirlenebilen kesitler" |
+| "Fisher-Yates ile" | "kesit içinde rastgele konum belirlenerek" |
+
+### 52.11 AÇIK KALAN SORU
+
+**Eşihtimallik istemde nerede duracak?** §51.9'da ifadesi kesinleşmişti
+(*"her öğenin, eklenme sırasından bağımsız olarak eşit olasılığa sahip
+olması"*) ama temel isteme eklenirse cümle uzuyor.
+
+İki seçenek: temele eklemek veya ayrı bağımlı istem yapmak. **Karar
+verilmedi.**
+
+### 52.12 BU BÖLÜMÜN NET KAZANIMI
+
+| Konu | Durum |
+|---|---|
+| Evrenin literatürden farkı | ✅ **Kanıtlı** — IDS'in kendi tanımından |
+| İki evren (sonlu/sonsuz) | ✅ Tanımlandı; yarım kesit itirazını ikiye böler |
+| "Değişken N" ayrımı | ✅ **En keskin bulgu** — literatürde ele alınmamış |
+| İndirgeme argümanı | ✅ Çürütülemez biçimde kuruldu |
+| Temel istem evren ifadesi | ✅ Güncellendi, üç kusur giderildi |
+| Eşihtimallik yerleşimi | ⚠️ **Karar bekliyor** |
+| Vekil taraması | ⛔ Hâlâ yapılmadı |
