@@ -865,6 +865,61 @@ tekrar söz konusu değildir.
 
 ---
 
+## NÜANS — tarifname ne kadar açık olmalı
+
+*Bu bir kural değil, karar verirken gözde tutulacak bir denge.*
+
+**Kurucunun uyarısı (21 Ekim 2026):**
+
+> *"ben günlerdir anlatmaya çalışıyorum sadece. bir zahmet dolanacak olan
+> da günlerce araştırsın. biz bu kadar karpuz kabuğu saçmayalım etrafa"*
+
+**Gerçek:** Tarifname **yayımlanır** (18 ay). İçindeki her sınır, sınırın
+dışını işaret eder:
+
+| Yazarsak | Okuyan ne anlar |
+|---|---|
+| *"Kesit büyüklüğü akış sırasında değiştirilmez"* | Değiştirirsem dışındayım |
+| *"Öğe evrenden çıkmaz"* | Çıkan öğeli varyant serbest |
+| *"Tahmin bağlayıcı değildir"* | Bağlayıcı yaparsam farklı yöntem |
+
+Günlerce düşünülen şey, okuyana yirmi dakikada verilir.
+
+**Karşı zorunluluk:** Tarifname **yeterince açık olmak zorundadır** —
+EPC m.83 / SMK m.92. Uzman kişi okuyup uygulayabilmeli; yetersiz açıklama
+red sebebidir. Yani *"az yazalım"* bir sınıra kadar mümkündür.
+
+**Denge nerede:**
+
+| Tarifnameye girer | İç dosyada kalır |
+|---|---|
+| Mekanizmanın nasıl çalıştığı | Hangi alternatifleri **neden** elediğimiz |
+| İstemdeki her kelimenin karşılığı | Rakiplerin zayıf noktalarının dökümü |
+| Bir çalışan örnek | Elimizdeki **tüm** senaryolar |
+| Teknik problem | Düşünce sürecinin tamamı |
+
+**Damıtma, kopyalama değil:** `anonim-indirim-motoru.md` (~6.760 satır) ve bu
+havuz iç çalışmadır. Tarifname bunlardan **damıtılır.** Örnek: CE6'daki beş
+yöntemlik ayrıntılı karşılaştırma tarifnamede bir paragrafa inebilir —
+*"bilinen yöntemler listeye, kimliğe veya akışın durmasına dayanır"* — detay
+burada kalır.
+
+**Tek istisna — kurucunun erken kuralı:**
+
+> *"çürüttüğümüzü tarifnamede 'bunun aksine' diyerek yazalım, kapıları
+> başkasına kapatmış oluruz"*
+
+Bu yalnızca **bizim deneyip elediğimiz varyantlar** için geçerlidir; onları
+yazmak başkasının patentlemesini zorlaştırır. **Rakip analizi yazmak farklı
+şeydir** — o yalnızca yol gösterir.
+
+**Dikkat edilecek ikinci nokta:** Tarifnamedeki her fikir, isteme
+girmediyse **kamuya açılır.** Kimse onu patentleyemez ama herkes
+kullanabilir. Yazarken sorulacak soru: *bu fikir hangi istemde korunuyor?*
+Korunmuyorsa bilinçli mi bırakıyoruz?
+
+---
+
 ## D. HAVUZ KULLANIM KURALI
 
 1. **Her yeni bulgu buraya yazılır**, ana dosyaya değil
