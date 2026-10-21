@@ -6455,17 +6455,17 @@ değil. Bu ayrım yapılmazsa cümle kendi testlerimizle çelişir.)*
 **YENİ HÂLİ:**
 
 > Öğe eklenmeye devam eden, **büyüklüğü bilinmeyen fakat tahmin edilebilen**
-> bir evrende; **sabit sayıda öğeden oluşan kesitler halinde**, bir öğenin
-> evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine
-> has özelliklerinden bağımsız bir şekilde, **her kesitte** sayısına karar
-> verilebilen öğeler için özel bir fayda, hak veya sonuç değeri üreten yöntem.
+> bir evrende; **kesitler halinde**, bir öğenin evrene eklenmesi ile
+> tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden
+> bağımsız bir şekilde, **her kesitte** sayısına karar verilebilen öğeler
+> için özel bir fayda, hak veya sonuç değeri üreten yöntem.
 
 **Değişikliklerin gerekçesi:**
 
 | Değişiklik | Gerekçe |
 |---|---|
 | "oluşacak ve büyüklüğüne karar verilebilen" → **"büyüklüğü bilinmeyen fakat tahmin edilebilen"** | Fisher-Yates (kesin N ister) ve OSOD (N gerekli) elenir; Reservoir'dan ayrışır. "Bilinmeyen" önce gelerek asıl durumu kurar; tahmin onun üzerine gelen kısıtlı imkândır |
-| **"sabit sayıda öğeden oluşan kesitler halinde"** eklendi | IDS'ten en net ayrım: onda pencere **olasılık kütlesiyle** tanımlı, öğe bölünebiliyor; bizde sabit öğe sayısı, bölünme yok |
+| **"kesitler halinde"** eklendi | IDS'ten en net ayrım: onda pencere **olasılık kütlesiyle** tanımlı, öğe bölünebiliyor; bizde kesit **öğelerden** oluşuyor, bölünme yok. *"Sabit"* kelimesi 21 Ekim'de çıkarıldı (bkz. havuz CK4): ayrım sabitlikten değil, **neyle ölçüldüğünden** geliyor; sabitlik kuralı tarifnameye taşındı |
 | "sayısına" → **"her kesitte sayısına"** | Sonsuz evren / sınırlı sayı çelişkisi çözülür: sınır kesite ait, evrene değil |
 
 **Kesit neden istemde kalmalı (çıkarılmamalı):**
@@ -6671,9 +6671,17 @@ sayılır.** Tarifnamede bu patente atıf yapılıp fark açıklanmalı.
 > Ei, i'ninci öğenin eklenmesinden sonraki evreni gösterir. Kapsama ilişkisi
 > (⊆) öğelerin evrenden çıkmadığını, evrenin yalnızca büyüdüğünü ifade eder.
 >
-> **Ea1, Ea2, Ea3 … ardışık kesitlerin kapandığı terimlerdir.** Bir kesit
-> dolduğunda kapanır ve yenisi açılır. Kesitlerin büyüklükleri eşit olabilir
-> veya birbirinden farklı belirlenebilir; yöntem her iki durumda da işler.
+> **Ea1, Ea2, Ea3 … ardışık kesitlerin kapandığı terimlerdir.** Kesit,
+> evrenin öğe sayısına göre belirlenmiş ardışık bölümüdür. Bir kesit
+> dolduğunda kapanır ve yenisi açılır; kazanan konumlar kesit **açıldığı
+> anda** belirlenir.
+>
+> **Kesit büyüklüğü evren kurulurken bir kez belirlenir ve akış sırasında
+> değiştirilmez.** Akış sürerken değiştirilmesi, değiştiren tarafa sonuç
+> üzerinde etki imkânı verir ve yöntemin mercisizlik niteliğini bozar;
+> ayrıca aynı evren içinde farklı olasılıklar doğurarak kesit içi eşit
+> olasılığı zedeler.
+>
 > Kesitler arasındaki geçiş süresi akış yoğunluğuna bağlıdır: yoğun akışta
 > kesitler hızla dolar, seyrek akışta yavaş.
 >
@@ -6700,7 +6708,7 @@ sayılır.** Tarifnamede bu patente atıf yapılıp fark açıklanmalı.
 | **⊆** (kapsama) | Öğe çıkmaz, evren yalnızca büyür | *Open population* modellerinden ayırır — orada üyeler ayrılabilir |
 | **E1, E2, …** | Öğeler zamanla doğar, önceden mevcut değil | *"finite population U={1..N}"* varsayımından ayırır |
 | **Ea1, Ea2, Ea3** | Kesitler akışa aittir, evrene değil | IDS'ten ayırır: onda pencere olasılık kütlesiyle tanımlı |
-| **Kesitler eşit veya farklı** | Esneklik; tek bir bölme kuralına bağlı değil | *"sabit bloklama rutin tasarım tercihi"* itirazını zayıflatır |
+| **Kesit öğelerden oluşur** | Bölme ölçüsü öğe sayısıdır | IDS'ten ayırır: onda pencere olasılık kütlesi, öğe bölünebilir |
 | **Etahmini** | Tahmin mekanizmanın girdisidir | *"N bilinmiyorsa nasıl çalışıyor"* sorusunu cevaplar |
 | **Etahmini'den sonra "…"** | Tahmin **sınır değil** | Sonluluk varsayımına dönüşü engeller |
 | **Açık uç** | Sonlanma hakkında varsayım yok | Hem *"sonsuzluk ispatı"* hem *"yarım kesit"* itirazını doğurmaz |

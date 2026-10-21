@@ -785,12 +785,83 @@ Saklanmaya çalışılırsa incelemeci zaten bulur ve başvurunun güvenilirliğ
 düşer. Bu, kurucunun erken koyduğu kuralla da tutarlıdır: *"çürüttüğümüzü
 tarifnamede 'bunun aksine' diyerek yazalım."*
 
-### CK4. AÇIK KALAN KÜÇÜK SORULAR
+### CK4. ✅ B6 ÇELİŞKİSİ ÇÖZÜLDÜ — "kesitler halinde"
 
-| # | Soru | Durum |
-|---|---|---|
-| **CK4a** | **B6 çelişkisi:** Temel istem *"sabit sayıda öğeden oluşan kesitler"* diyor; tarifname (§54.2) ve tribün metaforu (*"göz kararı"*) eşit olmak zorunda olmadığını söylüyor. **Hangisi?** Ön görüş: *"sabit"* çıkarılmalı — IDS'ten ayrım boyutun sabitliğinde değil, **neyle ölçüldüğünde** (öğe sayısı vs olasılık kütlesi) | ⚠️ Karara bağlanmadı |
-| **CK4b** | k>1 iken kesit içinde iki konum **aynı** olabilir mi? Kodda `Set` kullanıldığı için hayır; **istemde yazılı değil** | ⚠️ Karara bağlanmadı |
+**Karar (21 Ekim 2026):** İstemde **"kesitler halinde"**; sabitlik kuralı
+**tarifnameye** yazılır.
+
+#### Tartışılan üç seçenek
+
+| Seçenek | Değerlendirme |
+|---|---|
+| *"sabit sayıda öğeden oluşan kesitler"* | Dar. Manipülasyonu istemde kapatır ama kapsam kaybettirir |
+| *"sabit veya değişken"* | ⛔ **Elendi** — iki seçeneği de saymak hiçbir kısıt koymaz, *"kesitler"* ile aynı kapıya çıkar ve belirsizlik işareti olarak okunur |
+| **"kesitler halinde"** | ✅ **Seçildi** — geniş kapsam, IDS'ten ayrım korunuyor |
+
+#### Neden "sabit" çıkarıldı
+
+**IDS'ten ayrım *"sabit"* kelimesinden gelmiyor.** Orada pencere **olasılık
+kütlesiyle** tanımlıdır ve öğe bölünebilir (cross-border unit). Bu buluşta
+kesit **öğelerden** oluşur, bölünme yoktur. Bu fark *"kesitler"* dendiğinde
+de durur.
+
+#### Manipülasyon riski — istemde değil, tarifnamede kapatılır
+
+**Kurucunun tespiti:**
+
+> *"kesitler değişken olursa sistem manipülasyona açık hale gelir. 20
+> kişilik bir kesit tanımlarsan bu avantaj sağlar. kötüye kullanımı
+> engellemek için..."*
+
+**Risk gerçek:** Kesit büyüklüğünü akış sırasında değiştiren taraf sonucu
+etkiler → **mercisizlik delinir.** Ayrıca aynı evrende iki farklı olasılık
+doğar (20'lik kesitte k/20, 500'lükte k/500) → **eşihtimallik zayıflar.**
+
+**Ama çözümü istemde kısıt koymak değil, tarifnamede uygulama kuralı
+yazmaktır:**
+
+> Kesit büyüklüğü evren kurulurken bir kez belirlenir ve akış sırasında
+> değiştirilmez. Akış sürerken değiştirilmesi, değiştiren tarafa sonuç
+> üzerinde etki imkânı verir ve yöntemin mercisizlik niteliğini bozar.
+> Ayrıca aynı evren içinde farklı olasılıklar doğurarak kesit içi eşit
+> olasılığı zedeler.
+
+**Tribün metaforu çelişmiyor:** *"Göz kararı"* ifadesi **tahminin
+kabalığını** anlatıyordu (28.000 der, 28.358 gelir), kesitlerin birbirinden
+farklı olmasını değil.
+
+#### ⚠️ Tarifnamede yapılacak düzeltme
+
+§54.2'deki şu cümle **silinecek:**
+
+> ~~"Kesitlerin büyüklükleri eşit olabilir veya birbirinden farklı
+> belirlenebilir; yöntem her iki durumda da işler."~~
+
+Yerine yukarıdaki sabitlik kuralı yazılacak.
+
+#### Kesit tanımı tarifnamede netleşmeli
+
+*"Kesitler"* sade kaldığı için incelemeci *"kesit nedir"* diye sorabilir.
+Tarifnamede tanımlanacak:
+
+> Kesit, evrenin öğe sayısına göre belirlenmiş ardışık bölümüdür.
+
+### CK4b. ✅ k>1'de aynı konum — soru düştü
+
+**Kurucunun cevabı:**
+
+> *"saçma ya. aynı öğeyi neden iki defa değerleyelim, başka bir evrende
+> zaten olabiliyor."*
+
+Kesit içinde aynı konumun iki kez seçilmesi **anlamsızdır** — aynı öğeye iki
+kez değer üretmek demektir. Kodda `Set` kullanımıyla zaten engellenmiştir.
+
+**Çoklu değer alma meselesi evrenler arası bir konudur** ve orada serbesttir
+(bkz. CE1: *"bir adam hem camiye hem AVM'ye girer"*). Aynı evren içinde
+tekrar söz konusu değildir.
+
+**İstemde ayrıca yazılmasına gerek yok** — *"sayısına karar verilebilen
+öğeler"* ifadesi zaten farklı öğeleri ima eder.
 
 ---
 
