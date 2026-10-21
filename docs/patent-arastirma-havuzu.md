@@ -156,6 +156,81 @@ yoktur (durumsuzlukla tutarlı).
    olasılığı artar; *"her öğe eşit"* iddiası evrenler arası kıyasta
    zayıflar mı?
 
+### CE1b. Evren tanımı bir ŞABLONDUR
+
+**Kurucunun tespiti:**
+
+> *"bu cumadaki cemaat ile, gelecek haftadaki cemaat aynı değil ki.
+> öğeler de, tahmini değer de"*
+
+*"Cuma namazı cemaati"* tek bir evren değildir; her cuma o şablondan **yeni
+bir evren doğar.** Şablon sabit, gerçekleşme değişken:
+
+| | Bu cuma | Gelecek cuma |
+|---|---|---|
+| Öğeler | Gelen 800 kişi | Başka kişiler |
+| Etahmini | 800 | 850 (hava, tatil, mevsim) |
+| Kesit dizisi | Kendi Ea1, Ea2… | **Yeniden başlar** |
+| Birikim | — | **Sıfırdan** |
+
+Aynı mekân, aynı saat, aynı tanım — **ama aynı evren değil.**
+
+**Durumsuzlukla bağı:** Geçen gerçekleşmenin kesit sayacı yenisine
+taşınmaz. Mekanizma *"geçen hafta kaç kişiydi"* diye bakmaz; bakarsa
+durumsuzluk bozulur. Her evren temiz sayfadır.
+
+**Tarifnameye yazılabilir:** *"Evren tanımı bir şablondur; her gerçekleşme
+ayrı bir evren üretir ve önceki gerçekleşmelerden bağımsızdır."*
+
+**Karara bağlanmadı:** Bu açıkça yazılacak mı, yoksa *"öğe eklenmeye devam
+eden"* ifadesi yeterli mi?
+
+### CE2. ⭐ KİMLİKSİZLİĞİN KAYNAĞI — öğe tanımı
+
+**Kurucunun tespiti (21 Ekim 2026):**
+
+> *"aynı insan her seferinde, yada her evrende farklı bir öğedir.
+> kimliksizliğin sırrı burada"*
+
+**Neden kritik:** Kimliksizlik şimdiye kadar bir **kısıt** olarak
+kurulmuştu — *"sistem kimlik saklamaz"*, yani bir tercih. Bu tespit onu
+**tanıma** çeviriyor: saklanacak kimlik zaten yoktur.
+
+| | Kuruluş | Niteliği |
+|---|---|---|
+| Eski | "Kimlik saklamıyoruz" | Politika / tercih |
+| **Yeni** | **"Öğe tanımı gereği kimliksizdir"** | **Ontoloji / yapı** |
+
+**Üç kazanç:**
+
+**1. Mahremiyet literatüründen tam ayrılma.** PoPETs 2021, uCentive,
+anonymous credentials — hepsi kimliği **gizler** (kör imza, sıfır bilgi
+kanıtı), çünkü gizlenecek bir kimlik vardır. Bu buluşta gizlenecek bir şey
+yoktur; kriptografiye gerek olmamasının sebebi budur.
+
+**2. İspat yükü kalkar.** *"Kimlik saklamıyoruz"* iddiası dışarıdan
+doğrulanamaz (bkz. B5 detectability). Ancak *"öğe tanımı gereği
+kimliksizdir"* **yapısal** bir ifadedir; mekanizmanın kurulumundan okunur,
+çıktıdan ispat gerektirmez.
+
+**3. Tekrar eden katılım sorunu doğmaz.** Sadakat programları *"aynı kişi
+iki kez kazanmasın"* diye kimlik tutar. Burada böyle bir kural gerekmez
+çünkü *"aynı kişi"* kavramı yoktur. Kurucunun erken cümlesi aynı noktaya
+çıkıyordu:
+
+> *"adam 5 dk sonra yeniden alışveriş yaptı, aynı kartı okuttu, bu sonuca
+> etki ediyor mu? hayırrrrrr"*
+
+O zaman **bağımsızlık** unsuru diye kurulmuştu; aslında kimliksizliğin
+sonucuymuş.
+
+**⚠️ SINIR — abartılmamalı:** Bu, **mekanizma içindeki** kimliksizliktir.
+Dışarıda kimlik olabilir (klinik hastayı tanır, fatura keser, randevu
+verir). Doğru iddia: *"öğe, mekanizma açısından kimliksizdir."*
+*"Hiçbir yerde kimlik yok"* denirse gerçek dışı olur ve çürütülür.
+
+**Öğeler katmanında işlenecek.**
+
 ---
 
 ## D. HAVUZ KULLANIM KURALI
