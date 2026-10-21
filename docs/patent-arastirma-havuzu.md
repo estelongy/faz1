@@ -474,6 +474,85 @@ Her yöntem aynı stadyuma konup *"5 kişiyi nasıl seçerdi"* diye soruldu.
 | **Sadakat** | Rastgelelik yok, kural işler; sayaç kime ait olduğu için **kimlik zorunlu** (okunan beş ticari patent burada, bkz. A2) |
 | **Reservoir** | 3.117. kişiye *"kazandın"* diyemezsin — belki 20.000. kişi gelince çıkarılacak |
 
+#### Ayrıntılı ayrımlar — tarifnameye hazır
+
+**PİYANGO**
+
+Stadyuma girerken herkese bilet satılır: 28.358 bilet, hepsi numaralı,
+kimin aldığı kayıtlı. Maç bittikten sonra bir numara çekilir, sahibi
+aranır, bulunur, ödeme yapılır.
+
+| | Piyango | Bu buluş |
+|---|---|---|
+| Seçim anı | Akış **bittikten sonra** | Akış **başlamadan önce** |
+| Seçilen şey | Numara → **sahibi var** | Konum → **sahibi yok** |
+| Katılım | **Bilet satın alınır** | Yalnızca öğe olmak |
+| Kayıt | Numara–kişi eşleşmesi **zorunlu** | Hiçbir kayıt yok |
+| Merci | Çekilişi yapan **bir taraf var** | Yok |
+| Akış | **Durur**, çekiliş yapılır | Durmaz |
+
+**KUMAR MAKİNESİ**
+
+Stadyumda evren yoktur. Her kişi turnikeye gelir, kolu çeker, kendi
+sonucunu alır. 28.358 kişi = 28.358 bağımsız oyun.
+
+| | Kumar makinesi | Bu buluş |
+|---|---|---|
+| Evren | **Yok** — her oyun ayrı | Var, öğeler birikir |
+| Toplam kazanan | **Belirsiz** — 0 da olur 500 de | Kesit başına belirli |
+| Olasılık | Her oyunda sabit p | Kesit içinde k/M |
+| Kaynak | **Sınırsız** (teorik) | Kesite bağlı sınırlı |
+| Bedel | **Her oyunda ödenir** | Yok |
+
+**Kritik:** Kumar makinesinde *"5 kişi seçeceğim"* diyemezsin. Olasılığı
+ayarlarsın, *"ortalama 5 çıkar"* dersin — ama 0 da çıkabilir, 50 de.
+Bu, Bernoulli örneklemesinin aynı sorunudur (bkz. A1 beş koşul tablosu).
+
+**ÇEKİLİŞ / KURA**
+
+Stadyum dolar, kapılar kapanır, liste hazırlanır: 28.358 isim yazılır,
+karıştırılır, 5'i okunur.
+
+| | Çekiliş | Bu buluş |
+|---|---|---|
+| Liste | **Zorunlu** | Yok |
+| N | **Bilinmeli** | Bilinmez |
+| Zaman | Liste kapandıktan sonra | Akış sırasında |
+| Kimlik | **Zorunlu** — kimi çağıracaksın? | Yok |
+
+**Not:** Fisher-Yates tam burada çalışır — ancak **listeyi ister.**
+Liste yoksa yöntem de yoktur.
+
+**SADAKAT PROGRAMI**
+
+Stadyuma giren herkese kart verilir. 10 maça gelen ödül alır. Kart
+okutulur, sayaç artar.
+
+| | Sadakat | Bu buluş |
+|---|---|---|
+| Rastgelelik | **Yok** — kural işler | Var |
+| Kimlik | **Zorunlu** — sayaç kime ait? | Yok |
+| Durum | Geçmiş **saklanır** | Saklanmaz |
+| Kazanan | Eşiği dolduran | Konuma denk gelen |
+
+**Not:** Okunan beş ticari patentin tamamı bu sınıftadır (A2). Hepsi bir
+tanımlayıcı saklar, çünkü **saymak zorundadırlar.**
+
+**RESERVOIR SAMPLING (Vitter 1985)**
+
+Stadyuma giren ilk 5 kişi cebe konur. 6. kişi gelince zar atılır; belki
+biri çıkarılır, yenisi konur. Maç bitene kadar böyle sürer.
+
+| | Reservoir | Bu buluş |
+|---|---|---|
+| Karar | **Geçici** — sonradan değişir | Kesin |
+| Bitiş | **Beklenir** | Beklenmez |
+| Bellekte tutulan | Seçilen **öğeler** | Yalnızca konum |
+| Kazanan ne zaman belli | Akış bitince | **O an** |
+
+**En yakın akademik komşu ama temel fark:** Reservoir'da 3.117. kişiye
+*"kazandın"* denemez — 20.000. kişi geldiğinde havuzdan çıkarılabilir.
+
 ---
 
 ## D. HAVUZ KULLANIM KURALI
