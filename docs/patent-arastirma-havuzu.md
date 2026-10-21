@@ -296,11 +296,23 @@ olduğunu nasıl biliyor?"*
 | **Öğe sayımı** (her giriş ayrı öğe) | Tanım gereği — iki öğe aynı olamaz |
 
 **Sonuç:** Evrene çoklu giriş **tanım gereği yoktur.** Öğe tekil bir olaydır;
-iki olay aynı olamaz. Sıralama bir uygulama detayıdır (hangi istek önce
-ulaştıysa), mekanizmanın problemi değildir.
+iki olay aynı olamaz.
+
+> *"eş zamanlı giriş teknik olarak mümkün değil ki. evren kapısı çalınır
+> içeri girer, olay biter."*
 
 Kurucunun erken ilkesiyle tutarlı: *"yaşamayarak, yaşatmayarak çözüyorum."*
 Eşzamanlı tahsis problemi **doğmaz.**
+
+**Kalan tek mesele ölçektir, mantık değil:**
+
+> *"200m işlemin aynı anda gerçekleşmesi durumunda teker teker alma olayı
+> sistemi yavaşlatabilir. bu çok küçük bir ihtimal. soruna dönüşürse
+> çözülür. basit bir mesele."*
+
+Çok yüksek eşzamanlı yükte sıralama bir **mühendislik** sorunu olabilir
+(kuyruk, parçalama, paralel evrenler). Bu **patentin konusu değildir**,
+uygulamanındır. Mekanizmanın mantığı etkilenmez.
 
 #### Soru 2: Geri alınan öğe (iptal, iade)
 
