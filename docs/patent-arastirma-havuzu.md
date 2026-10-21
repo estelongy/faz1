@@ -80,6 +80,16 @@ G06Q (ticari yöntemler) tarandı; birleşim orada bulunamadı — normal.
 
 **Bu tarama vekilin işi.** Bizim yaptığımız taramalar onun yerini tutmaz.
 
+**⚠️ Kapsam notu (21 Ekim):** Bu tarama **mekanizma** için gereklidir,
+**evren tanımı** için değil. Kurucunun hatırlatması:
+
+> *"derdimiz literatürde olmayan evren tanımı değil ki, yöntemin
+> uygulandığı evreni net belirlemek. evren patenti almıyoruz dert etme"*
+
+Evren tanımının **yeni olması gerekmez**; **belirli** olması gerekir — ki
+istem belirli olsun. Bkz. ana dosya §53.4: *"evren buluş değildir; buluş,
+bu evren için indirgeme gerektirmeyen bir mekanizmadır."*
+
 ### B4. ⚠️ "Beş koşul" tablosu benim kurgum
 
 §51.10'daki tablo (N meçhul / O(1) bellek / sıra-bağımsız eşitlik / girişte
@@ -139,22 +149,32 @@ Evren katmanı açısından kayda geçen: **evren yeniden tanımlanabilir bir
 çerçevedir.** Evrenler paralel işleyebilir; birbirini bilmezler, ortak sayaç
 yoktur (durumsuzlukla tutarlı).
 
-**Öğeler katmanında çözülecek sorular:**
+**✅ ÇÖZÜLDÜ (21 Ekim) — kurucunun açıklaması:**
 
-1. Evren kapısı öğenin bir özelliğine göre tanımlanırsa, bu temel istemdeki
-   *"öğenin kendisine has özelliklerinden bağımsız"* unsuruyla çelişir mi?
-   - Özellik **seçim anında** kullanılırsa → unsur ihlal edilir
-   - Özellik **evrenin kapısında** kullanılıp içeride seçim kör kalırsa →
-     ihlal yok (bağımsızlık *evren içi* bir iddiadır)
-   - **Hangi okuma geçerli, karara bağlanmadı**
+> *"öğenin özelliğinden kastımız, bir öğenin diğer öğeden imtiyazsız
+> olması. kadınlardan oluşan bir evrende 'kadın' özelliği ayırt edici bir
+> özellik mi?"*
 
-2. Bu kurgu §51.2'deki stratified sampling çürütmesini etkiler mi?
-   Orada *"katman yardımcı değişkenden kurulur, bizde yardımcı değişken
-   yok"* denmişti.
+**Yanlış okuma:** *"hiçbir özellik kullanılmaz"* — bu okumayla "kadınlar
+evreni" kurmak unsurla çelişirdi.
 
-3. Bir öğe **iki evrene birden** ait olabilir mi? Olabiliyorsa toplam
-   olasılığı artar; *"her öğe eşit"* iddiası evrenler arası kıyasta
-   zayıflar mı?
+**Doğru okuma:** **evren içinde imtiyaz yoktur.** Kadınlar evreninde "kadın
+olmak" ayırt edici değildir, çünkü **herkes kadındır.** Bir özelliğin ayırt
+edici olabilmesi için bazı öğelerde olup bazılarında olmaması gerekir.
+
+**Unsurun anlamı:** *Aynı evrendeki iki öğe arasında, birini diğerine üstün
+kılacak bir özellik kullanılmaz.* Evrenin kapısı ne olursa olsun, içeride
+tüm öğeler eşittir.
+
+**§51.2 stratified sampling çürütmesi korunuyor:** Orada katmanlar
+**birbiriyle kıyaslanır** (varyans düşürmek için ortak popülasyonun
+bölümleridir). Burada her evren **kendi başına** işler; evrenler arası
+kıyas yoktur.
+
+**Açık kalan tek soru:** Bir öğe **iki evrene birden** ait olabilir mi?
+(Örn. AVM evreni + kadınlar evreni.) Olabiliyorsa o öğenin toplam değer
+alma ihtimali artar. Bu bir kusur mu, özellik mi — **öğeler katmanında
+konuşulacak.**
 
 ### CE1b. Evren tanımı bir ŞABLONDUR
 
