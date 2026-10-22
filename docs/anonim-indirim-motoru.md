@@ -6457,8 +6457,38 @@ değil. Bu ayrım yapılmazsa cümle kendi testlerimizle çelişir.)*
 > Öğe eklenmeye devam eden, **büyüklüğü bilinmeyen fakat tahmin edilebilen**
 > bir evrende; **kesitler halinde**, bir öğenin evrene eklenmesi ile
 > tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden
-> bağımsız bir şekilde, **her kesitte** sayısına karar verilebilen öğeler
-> için özel bir fayda, hak veya sonuç değeri üreten yöntem.
+> bağımsız bir şekilde, **her kesitte sayısına karar verilebilen konumlar
+> için** değer üreten yöntem.
+
+**21 Ekim değişikliği — "öğeler" yerine "konumlar":**
+
+Önceki hâl *"sayısına karar verilebilen **öğeler** için … değer üreten"*
+diyordu; yani öğe merkezdeydi. Yeni hâlde **konum merkezdedir.**
+
+| | Ne diyor |
+|---|---|
+| Eski | Öğeler seçilir, onlara değer üretilir |
+| **Yeni** | **Konumlar belirlenir**, değer oraya üretilir; öğe sonra gelir |
+
+Bu, kurucunun ilkesinin birebir karşılığıdır:
+
+> *"mekanizma stadyum boşken koltuğu seçiyor. kim oturursa artık."*
+
+Değer koltuğa üretilir; oturan sonradan gelir. Mekanizmanın özü budur ve
+önceki ifade bunu taşımıyordu — *"değer üreten"* sonucu anlatıyor ama
+**nasıl** üretildiğini söylemiyordu.
+
+**Elenen ara ifadeler:**
+
+| Aday | Neden elendi |
+|---|---|
+| *"…öğeler için değer konumlandıran yöntem"* | Konumlandırma eylem olarak vurgulanıyor ama kararın neye ait olduğu belirsiz |
+| *"…konumlanmasına karar verilebilen öğeler için değer üreten"* | İki okunuşa açık: öğelerin konumlanması mı, hangi öğelerin konumlanacağı mı |
+| **"…sayısına karar verilebilen konumlar için değer üreten"** | ✅ **Seçildi** — karar konumun sayısına ait, belirsizlik yok |
+
+**Not:** *"Özel bir fayda, hak veya sonuç"* nitelemesi de düştü. Değerin
+içeriği zaten serbesttir ve tarifnamede açıklanır; istemde saymak gereksiz
+uzunluk yaratıyordu.
 
 **Değişikliklerin gerekçesi:**
 
