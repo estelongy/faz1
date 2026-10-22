@@ -127,7 +127,7 @@ amacı için sorun değil; dava için zayıf.
 
 | # | Konu | Durum |
 |---|---|---|
-| C1 | **Eşihtimallik istemde nerede duracak** — temele mi, ayrı bağımlı isteme mi? İfadesi hazır (§51.9) | §52.11'den devrediyor |
+| C1 | ~~Eşihtimallik istemde nerede duracak~~ | ✅ **DÜŞTÜ (21 Ekim)** — zaten istemde. Kurucunun tespiti: *"öğenin eklenmesi özelliğidir sıra, zaten yazılı."* Temel istemdeki *"öğenin **eklenmesine** ve/veya kendisine has özelliklerinden bağımsız"* ifadesindeki **"eklenmesine"** sırayı kapsar; kaçıncı sırada eklendiği eklenmenin bir özelliğidir. Ayrıca *"eklenme sırasına"* yazmak tekrar olurdu |
 | C2 | **Kesit sabit/değişken** (bkz. B6) | Kesit katmanında |
 | C3 | US7784682B2'nin tarifnameye atıfla işlenmesi | Yazılmadı |
 
