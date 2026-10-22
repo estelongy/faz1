@@ -6455,10 +6455,27 @@ değil. Bu ayrım yapılmazsa cümle kendi testlerimizle çelişir.)*
 **YENİ HÂLİ:**
 
 > Öğe eklenmeye devam eden, **büyüklüğü bilinmeyen fakat tahmin edilebilen**
-> bir evrende; **kesitler halinde**, bir öğenin evrene eklenmesi ile
-> tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden
-> bağımsız bir şekilde, **her kesitte sayısına karar verilebilen öğeler
-> için** değer üreten yöntem.
+> bir evrende; bir öğenin evrene eklenmesi ile tetiklenen ancak öğenin
+> eklenmesine ve/veya kendisine has özelliklerinden bağımsız bir şekilde,
+> **her kesitte sayısına karar verilebilen öğeler için** değer üreten
+> yöntem.
+
+**21 Ekim — "kesitler halinde" çıkarıldı (tekrardı):**
+
+Kurucunun tespiti:
+
+> *"kesit kavramı istemde zaten. kesitler halinde gereksizdi"*
+
+*"Her kesitte"* ifadesi kesiti zaten taşıyor; *"kesitler halinde"* aynı
+şeyi ikinci kez söylüyordu. İki kelime eksildi, **kesit kavramı istemde
+duruyor.**
+
+**Not — kesit neden istemden tamamen çıkarılmadı:** Kesitsiz bir istem
+Bernoulli örneklemesini de kapsar (her öğeye sabit olasılıkla zar atmak);
+o da bilinmeyen evrende çalışır, özelliğe bakmaz, öğe eklenmesiyle
+tetiklenir. Kesit, prior art'tan ayrışmayı sağlayan yapısal unsurdur
+(bkz. havuz CK3). Ancak **ayrıntısı tarifnamededir** — büyüklük hesabı,
+kapanma anı, sabitlik kuralı, kesit içi randomizasyon istemde yoktur.
 
 **21 Ekim — "konum" denendi ve GERİ ALINDI:**
 
