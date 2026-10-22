@@ -6454,28 +6454,50 @@ değil. Bu ayrım yapılmazsa cümle kendi testlerimizle çelişir.)*
 
 **YENİ HÂLİ:**
 
-> Öğe eklenmeye devam eden, **büyüklüğü bilinmeyen fakat tahmin edilebilen**
-> bir evrende; bir öğenin evrene eklenmesi ile tetiklenen ancak öğenin
-> eklenmesine ve/veya kendisine has özelliklerinden bağımsız bir şekilde,
-> **her kesitte sayısına karar verilebilen öğeler için** değer üreten
-> yöntem.
+> **Büyüklüğü bilinmeyen fakat tahmin edilebilen akışkan bir evrende**;
+> öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya
+> kendisine has özelliklerinden bağımsız bir şekilde, **sayısına karar
+> verilebilen öğeler için** değer üreten yöntem.
 
-**21 Ekim — "kesitler halinde" çıkarıldı (tekrardı):**
+**21 Ekim — üç sadeleştirme:**
 
-Kurucunun tespiti:
+**1. "Akışkan" eklendi, "öğe eklenmeye devam eden" çıktı.** Tek kelime aynı
+anlamı taşıyor ve başlıkla uyumlu. **Literatürde karşılığı yok** —
+taranan terimler: *stream* (akışı anlatır ama N'nin varlığını varsayar),
+*open population* (üye ayrılabilir, kimlik gerekir), *artan kümeler dizisi*
+(sonlu bitiş varsayar), *grow-only set / G-Set* (CRDT alanından; öğe
+çıkmaz ama amaç veri senkronizasyonu, seçim yok). Bu nedenle tarifnamede
+tanımlanacak:
 
-> *"kesit kavramı istemde zaten. kesitler halinde gereksizdi"*
+> Bu tarifnamede *"akışkan evren"*, öğe eklenmeye devam eden ve kapanması
+> varsayılmayan evreni ifade eder.
 
-*"Her kesitte"* ifadesi kesiti zaten taşıyor; *"kesitler halinde"* aynı
-şeyi ikinci kez söylüyordu. İki kelime eksildi, **kesit kavramı istemde
-duruyor.**
+*Genişleyen / büyüyen* elendi: ikisi de nicel artışı anlatır, akışın
+**sürme** niteliğini taşımaz; ayrıca *"expanding universe"* fizik
+çağrışımı yapar.
 
-**Not — kesit neden istemden tamamen çıkarılmadı:** Kesitsiz bir istem
-Bernoulli örneklemesini de kapsar (her öğeye sabit olasılıkla zar atmak);
-o da bilinmeyen evrende çalışır, özelliğe bakmaz, öğe eklenmesiyle
-tetiklenir. Kesit, prior art'tan ayrışmayı sağlayan yapısal unsurdur
-(bkz. havuz CK3). Ancak **ayrıntısı tarifnamededir** — büyüklük hesabı,
-kapanma anı, sabitlik kuralı, kesit içi randomizasyon istemde yoktur.
+**2. "Bir öğenin" → "öğenin".** *"Öğenin evrene eklenmesi"* zaten tekil bir
+olayı anlatıyor, *"bir"* vurgusu gereksizdi.
+
+**3. "Her kesitte" çıkarıldı.** Kurucunun tespiti:
+
+> *"bir evrende … sayısına karar verilebilen diyoruz zaten. kesit bir
+> teknik"*
+
+*"Bir evrende … sayısına karar verilebilen"* zaten tam cümledir. Kesit, o
+kararın **nasıl uygulandığıdır** — teknik detay, tarifnameye aittir.
+
+Ayrıca *"her kesitte sayısına karar verilebilen öğeler"* ifadesi iki
+sorunluydu: (a) sayının kesite mi toplama mı ait olduğu belirsizdi,
+(b) *"her kesit için"* denince kesit bir **alt evren** gibi okunuyordu.
+
+**⚠️ Kesit istemden çıktı — kayıt:** Kesit, prior art'tan ayrışmayı
+sağlayan yapısal unsurdu (bkz. havuz CK3). İstemde olmaması, kesitsiz
+yöntemlerin de kapsama girmesi demektir — Bernoulli örneklemesi (her öğeye
+sabit olasılıkla zar atmak) bu ifadeyle kapsanabilir. Buna karşılık
+*"sayısına karar verilebilen"* ifadesi Bernoulli'yi dışlar: orada toplam
+seçilen sayı sabit tutulamaz (bkz. CE6). **Kesit ve tüm ayrıntısı
+tarifnamededir.**
 
 **21 Ekim — "konum" denendi ve GERİ ALINDI:**
 
