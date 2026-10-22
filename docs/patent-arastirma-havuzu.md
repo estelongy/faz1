@@ -920,6 +920,131 @@ Korunmuyorsa bilinçli mi bırakıyoruz?
 
 ---
 
+## İS. İSTEM YAPISI — bağımsız/bağımlı kurgu
+
+**Hedef (kurucu kararı):** 5-6 bağımsız, toplam 13-14 istem.
+
+### İS1. ⚠️ İSTEM 2'DE RASTGELELİK — somut boşluk tespit edildi
+
+**Tarih:** 22 Ekim 2026
+
+**Boşluk:** Ana istem şu an **deterministik** yöntemleri de kapsıyor.
+
+> *"Her 100. müşteriye indirim"* — kesitsiz, deterministik, ama:
+> - Bilinmeyen evrende çalışır ✅
+> - Öğe eklenmesiyle tetiklenir ✅
+> - Özelliğe bakmaz ✅
+> - **Sayısına karar verilebilir** ✅ (her 100'de 1)
+
+Dört unsuru da karşılıyor → **ana istemin içine giriyor.**
+
+**Neden ciddi:** Bu tam olarak **US7784682B2** (JPMorgan Chase, aktif)
+tarifnamesinde geçen ifadedir: *"each nth customer, such as every 100
+customers."* Yani 2006'dan beri yayımlanmış.
+
+Bizi ondan ayıran **rastgelelik**tir — ancak ana istemde rastgelelik
+kelimesi **yok.**
+
+**Karar:** İstem 2'ye rastgelelik eklenecek.
+
+**Bağlantılı eksikler** (aynı hamlede kapanabilir, bkz. aşağıdaki tablo):
+
+| Eksik | Neden önemli |
+|---|---|
+| **Rastgelelik** | Deterministik *"her n'inci"* yöntemini dışlar |
+| **Öngörülemezlik** | Madow 1949'u eler (ilk seçimden sonra deterministik hale gelir) |
+| **Girişte kesin karar** | Reservoir'ı eler (karar sonradan değişebilir) |
+
+Üçü de **kesit açılışında belirleme** ifadesiyle birlikte gelebilir:
+
+> *"…her kesitte değer üretilecek öğelerin, kesit açıldığında ve o kesite
+> özgü olarak rastgele belirlendiği…"*
+
+- *"Rastgele"* → deterministik yöntemleri dışlar
+- *"Kesit açıldığında"* → girişte kesin karar
+- *"O kesite özgü olarak"* → her kesitte yeniden randomize = öngörülemezlik
+
+### İS2. DEĞERLERİN İSTEMDEKİ DURUMU
+
+Yedi değerli farkın (bkz. kümülatif sıralama) ana istemdeki karşılığı:
+
+| # | Değer | Ana istemde | Nerede / neden yok |
+|---|---|---|---|
+| 1 | **Evren farkı** | ✅ Var | *"büyüklüğü bilinmeyen fakat tahmin edilebilen akışkan"* |
+| 2 | Tahsis vs ölçme | ⚠️ Zayıf | *"değer üreten"* ima ediyor ama ölçmeyi dışlamıyor |
+| 3 | **Kimliksizlik** | ✅ Var | *"kendisine has özelliklerinden bağımsız"* |
+| 4 | Değişken N | ⚠️ Dolaylı | *"tahmin edilebilen"* ima ediyor |
+| 5 | Beş koşul birlikteliği | ⚠️ Kısmen | N meçhul ✅, sıra-bağımsız ✅ · O(1) bellek ❌, girişte kesin karar ❌, öngörülemezlik ❌ |
+| 6 | **Öngörülemezlik** | ❌ **Yok** | İstem 2'de kapanacak |
+| 7 | Bedelsizlik | ❌ Yok | Ticari değer, patent unsuru değil — sorun değil |
+
+**Kritik gözlem:** Kesit istemden çıkınca **5 numaradaki üç koşul birden**
+düştü. Kesit tek bir unsur değildi; girişte kesin kararı, öngörülemezliği
+ve O(1) belleği birlikte taşıyordu.
+
+**Not:** O(1) bellek istemde **olmamalı** — sonuca yönelik istem hatası
+olur. Tarifnamede teknik etki olarak kalır.
+
+### İS3. UYGULAMA ALANLARI — istemde YOK, tarifnamede sınırlayıcı olmayan liste
+
+**Kurucunun tespiti:**
+
+> *"alanlar çok geniş, hayatın normal akışında sayılabilen her şeyde
+> olabilir. sokaktan geçen adam sayısından tut filanca yoldaki direk
+> sayısına kadar. düğün salonundan fotoğrafçıya, otopark girişinden
+> metrobüs binişine kadar. sonsuz evren oluşturulabilir"*
+
+**Karar: uygulama alanı istemi yazılmayacak.**
+
+| | Gerekçe |
+|---|---|
+| Ana istem | Zaten her ortamı kapsıyor |
+| Alan istemi | Yalnızca daraltır, hiçbir şey eklemez |
+| Liste yazmak | Her liste sınır işareti verir — *"listede olmayan alanlar?"* |
+| Bağımsız istem bütçesi | 5-6 taneyle sınırlı; esas ayrımlara ayrılmalı |
+
+*"Bir ortamda"* gibi bir ifade de eklenmeyecek: her yöntem bir ortamda
+uygulanır, hiçbir şey katmaz; istemde işe yaramayan her kelime
+incelemeciye soru alanı açar.
+
+**Tarifnameye yazılacak (ilke + örnek):**
+
+> Yöntem, öğelerin teker teker oluştuğu ve sayılabildiği her ortamda
+> uygulanabilir. Ortamın niteliği, öğenin türü ve değerin içeriği yöntemin
+> işleyişini etkilemez.
+>
+> Örnek olarak: ödeme ve bankacılık işlemleri, müşteri ilişkileri yönetim
+> sistemleri, biletli veya biletsiz geçiş noktaları, otopark girişleri,
+> toplu taşıma binişleri, etkinlik ve salon girişleri, perakende kasa
+> işlemleri, çevrimiçi işlem akışları, üretim hattı sayım noktaları
+> sayılabilir. **Bu sayım sınırlayıcı değildir.**
+
+Son cümle standart patent dilidir ve listeyi örnek hâline getirir.
+
+### İS4. SİSTEM İSTEMİ — uygulama alanı yerine doğru yol
+
+Uygulama alanını isteme koymanın gerekçesi m.82 (matematiksel yöntem)
+itirazına karşı somutluk kazanmaktı. **Doğru araç sistem istemidir:**
+
+| | Uygulama alanı istemi | Sistem istemi |
+|---|---|---|
+| Örnek | *"POS'ta uygulanan yöntem"* | *"Şu birimlerden oluşan sistem"* |
+| Korur | Yalnızca o alanı | **Her alanda o yapıyı** |
+| m.82 cevabı | Zayıf | **Güçlü** |
+| İhlal tespiti | Zor | **Kolay** — birimler görünür |
+
+**Taslak:**
+
+> Büyüklüğü bilinmeyen fakat tahmin edilebilen akışkan bir evrende değer
+> üreten sistem olup; öğe eklenmesini algılayan bir birim, kesit sayacı
+> tutan bir birim, kesit başında konum belirleyen bir rastgelelik birimi ve
+> belirlenen konuma denk gelen öğeye değer bağlayan bir birim içermesiyle
+> karakterize edilir.
+
+**Henüz karara bağlanmadı** — bağımsız istem bütçesinde yeri konuşulacak.
+
+---
+
 ## D. HAVUZ KULLANIM KURALI
 
 1. **Her yeni bulgu buraya yazılır**, ana dosyaya değil
