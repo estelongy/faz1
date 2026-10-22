@@ -6457,38 +6457,58 @@ değil. Bu ayrım yapılmazsa cümle kendi testlerimizle çelişir.)*
 > Öğe eklenmeye devam eden, **büyüklüğü bilinmeyen fakat tahmin edilebilen**
 > bir evrende; **kesitler halinde**, bir öğenin evrene eklenmesi ile
 > tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden
-> bağımsız bir şekilde, **her kesitte sayısına karar verilebilen konumlar
+> bağımsız bir şekilde, **her kesitte sayısına karar verilebilen öğeler
 > için** değer üreten yöntem.
 
-**21 Ekim değişikliği — "öğeler" yerine "konumlar":**
+**21 Ekim — "konum" denendi ve GERİ ALINDI:**
 
-Önceki hâl *"sayısına karar verilebilen **öğeler** için … değer üreten"*
-diyordu; yani öğe merkezdeydi. Yeni hâlde **konum merkezdedir.**
+Bir ara temel isteme *"konumlar için değer üreten"* yazıldı; gerekçe
+kurucunun ilkesiydi: *"mekanizma stadyum boşken koltuğu seçiyor, kim
+oturursa artık."*
 
-| | Ne diyor |
+**Kurucu geri aldırdı:**
+
+> *"ilk hali çok berraktı, konum bizim metaforumuz bence. istemi
+> bulanıklaştırdı. yani konumlandırma isteme bişi katıyor mu? yani daha
+> özel kılıyor mu"*
+
+**Neden katkısı yok:**
+
+| Soru | Cevap |
 |---|---|
-| Eski | Öğeler seçilir, onlara değer üretilir |
-| **Yeni** | **Konumlar belirlenir**, değer oraya üretilir; öğe sonra gelir |
+| Rakip *"ben konum kullanmıyorum"* diyebilir mi? | ❌ Diyemez — sınırlı sayıda seçim yapan herkes bir biçimde işaretler |
+| *"Konum"* prior art'tan ayırıyor mu? | ❌ Hayır — ayrım **evren + kesit + bağımsızlık** unsurlarında |
+| Tarifnamede anlatılabilir mi? | ✅ Zaten orada |
 
-Bu, kurucunun ilkesinin birebir karşılığıdır:
+*"Sayısına karar verilebilen öğeler için değer üreten"* ifadesi zaten
+**sınırlı sayıda seçim** yapıldığını söylüyor. Konum ifadesi bunu tekrar
+ediyor, yeni koruma eklemiyor.
 
-> *"mekanizma stadyum boşken koltuğu seçiyor. kim oturursa artık."*
+**Metafor ile istem farkı — kalıcı ders:**
 
-Değer koltuğa üretilir; oturan sonradan gelir. Mekanizmanın özü budur ve
-önceki ifade bunu taşımıyordu — *"değer üreten"* sonucu anlatıyor ama
-**nasıl** üretildiğini söylemiyordu.
+*"Stadyum boşken koltuk seçilir"* **anlatmak** için mükemmeldir: tarifname,
+başlık, yatırımcı sunumu. Ancak istem metni anlatmaz, **sınır çizer.**
+Metafor isteme girince hem anlaşılırlık düşer hem koruma artmaz.
 
-**Elenen ara ifadeler:**
+**Elenen ara ifadeler (kayıt için):**
 
 | Aday | Neden elendi |
 |---|---|
-| *"…öğeler için değer konumlandıran yöntem"* | Konumlandırma eylem olarak vurgulanıyor ama kararın neye ait olduğu belirsiz |
-| *"…konumlanmasına karar verilebilen öğeler için değer üreten"* | İki okunuşa açık: öğelerin konumlanması mı, hangi öğelerin konumlanacağı mı |
-| **"…sayısına karar verilebilen konumlar için değer üreten"** | ✅ **Seçildi** — karar konumun sayısına ait, belirsizlik yok |
+| *"…öğeler için değer konumlandıran yöntem"* | Kararın neye ait olduğu belirsiz |
+| *"…konumlanmasına karar verilebilen öğeler için"* | İki okunuşa açık |
+| *"…sayısına karar verilebilen konumlar için"* | Berraklık kaybı, koruma kazancı yok |
+| *"bazı konumlar için"* | **Belirsiz** — SMK m.92 belirlilik itirazı doğar |
 
-**Not:** *"Özel bir fayda, hak veya sonuç"* nitelemesi de düştü. Değerin
-içeriği zaten serbesttir ve tarifnamede açıklanır; istemde saymak gereksiz
-uzunluk yaratıyordu.
+**Korunan değişiklik — "değer" sadeleşti:**
+
+*"Özel bir fayda, hak veya sonuç değeri"* → **"değer"**
+
+Kurucunun gerekçesi:
+
+> *"değer tanımlanır tarifnamede. saydıkların zaten bir değerdir"*
+
+Üçlü sayım daraltıyordu (biri *"ben hak vermiyorum, bilgi veriyorum"*
+diyebilirdi). Tek kelime hepsini kapsar; içeriği tarifnamede tanımlanır.
 
 **Değişikliklerin gerekçesi:**
 
