@@ -6979,8 +6979,21 @@ güçlenir.
 **24 Ekim.** Temel isteme eşihtimallik unsuru eklendi.
 
 > **Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
-> edilebilen herhangi bir akışkan evrende; BELİRLENEBİLEN SAYIDA ÖĞE İÇİN,
-> EŞİT İHTİMALLE değer üreten yöntem.**
+> edilebilen herhangi bir akışkan evrende; BELİRLENEBİLEN SAYIDAKİ ÖĞELERE,
+> EKLENEN TÜM ÖĞELER İÇİN EŞİT İHTİMALLE değer üreten yöntem.**
+
+**Neden bu hâl:** İhtimalin **kime ait** olduğunu açıkça söylüyor. Önceki
+hâlde (*"belirlenebilen sayıda öğe için, eşit ihtimalle"*) eşitliğin kimler
+arasında olduğu belirsizdi.
+
+İki grup ayrışmış durumda:
+
+| | Kim |
+|---|---|
+| **Değer alanlar** | Belirlenebilen sayıdaki öğeler |
+| **İhtimali eşit olanlar** | **Eklenen tüm öğeler** |
+
+10'luk bir kesitte 1 öğe değer alır, ancak 10'unun da ihtimali eşittir.
 
 **Kurucunun tespiti — buluş = EVREN + EŞİHTİMAL:**
 
@@ -7036,6 +7049,7 @@ konum zaten belirlenmiştir.
 | *"EKLENEN HER ÖĞENİN EŞİT İHTİMALLE DEĞER ALACAĞI ŞEKİLDE"* | Hâlâ ağır. Kurucunun tespiti: *"meramımız kaç tane abe… sayı, eş ihtimal ve değer üretme. bu kadar yaaa. üç meramı anlatamıyor muyuz güzel bir şekilde"* |
 | *"belirlenebilen sayıdaki öğelere eşit ihtimalle değer üreten"* | İyi ama nicelik ve eşihtimallik **tek ifade gibi** okunuyordu; virgül ikisini ayırıyor |
 | *"belirlenen sayıda"* | *"Belirlenen"* yalnızca *"bir sayı var"* der; **"belirlenebilen"** yöntemin **yeteneğini** söyler — istenirse 5, istenirse 50 |
+| *"belirlenebilen sayıda öğe için, eşit ihtimalle değer üreten"* | Yalın ama **eşitliğin kimler arasında olduğu belirsiz.** Nihai hâlde *"eklenen tüm öğeler için"* eklenerek bu kapatıldı |
 | *"…EŞİT OLDUĞU, sayısına karar verilebilen öğeler için…"* | Eşihtimalliği **öğelerin niteliği** olarak koyuyordu. Nihai hâlde ifade sona alındı ve *"…EŞİT OLACAĞI ŞEKİLDE değer üreten"* yapıldı: böylece eşihtimallik **yöntemin nasıl çalıştığına** bağlanır — durum değil, **mekanizma iddiası** olur. m.82 savunması için daha güçlü |
 
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
