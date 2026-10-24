@@ -6974,6 +6974,63 @@ güçlenir.
 | *"hayatın olağan akışı"* | Anlaşılır ama edebi; *"olağan yaşam"* daha yalın |
 | *"rutin gerçekleşen günlük olaylarla"* | *"Günlük"* zaman birimi gibi, *"rutin"* düzenlilik ima ediyor — akış düzensiz olabilir |
 
+### 55.1a ⭐ TEMEL İSTEM GÜNCELLENDİ — EŞİHTİMALLİK EKLENDİ
+
+**24 Ekim.** Temel isteme eşihtimallik unsuru eklendi.
+
+> **Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; EKLENEN HER ÖĞENİN EŞİT DEĞER
+> ALMA İHTİMALİNE SAHİP OLDUĞU, sayısına karar verilebilen öğeler için
+> değer üreten yöntem.**
+
+**Kurucunun tespiti — buluş = EVREN + EŞİHTİMAL:**
+
+> *"bizim çözdüğümüz şey, ilk eklenen ile son eklenen öğenin aynı şansa
+> sahip olması. yani kesit tamamlanmasa bile eklenme sırasında eş ihtimal
+> ile ekleniyor. (…) 42'nin değer alması, 49'un, 50'nin eklenmesinden zaten
+> bağımsız değil mi"*
+
+> *"bu zaten başlı başına bir buluş"*
+
+> *"evren kadar kıymetli, dolayısıyla temel istemde bunu yazarsak temel
+> istemimiz en sağlam şekilde onaylanır"*
+
+#### Keşfin özü
+
+**Bir öğenin değer alma ihtimali, ne kendisinden öncekilere ne de
+sonrakilere bağlıdır.**
+
+10'luk bir kesitte k=1 ise her öğenin değer alma olasılığı 1/10'dur.
+41-50 kesitinde de aynıdır. 42. öğe eklendiğinde şansı bellidir; 49. ve
+50. öğe hiç gelmese bile 42'nin şansı değişmez — çünkü kesit açıldığında
+konum zaten belirlenmiştir.
+
+#### Neyi eliyor
+
+| Yöntem | Neden dışarıda |
+|---|---|
+| **Reservoir sampling** | Karar **geçicidir** — 42. öğe seçilse bile 20.000. öğe gelince havuzdan atılabilir. Değer alma ihtimali sonraki öğelere bağlıdır |
+| **Fisher-Yates** | Liste gerekir; akış sürerken uygulanamaz |
+| **Bernoulli** | Eşit ihtimal verir ama **sayı tutturulamaz** (nicelik unsuru bunu zaten eliyordu) |
+| **Sistematik örnekleme** | İlk seçimden sonra sonraki konumlar belli olur |
+
+#### Neden temele konuldu
+
+| | Gerekçe |
+|---|---|
+| **m.82 savunması** | Temel istem artık bir **mekanizma iddiası** taşıyor (koşul + teknik etki), yalnızca koşul değil |
+| **Ayırt edicilik** | Evren kadar kıymetli; ikisi birlikte temeli çok sağlam yapıyor |
+| **Kabul edilebilirlik** | Genişlikten bir miktar feragat edilerek onay şansı artırıldı — reddedilen istem hiçbir şey korumaz |
+
+#### Elenen ifadeler
+
+| Aday | Neden elendi |
+|---|---|
+| *"eşihtimalle eklenen"* | Öğenin **girişinin** rastgele olduğunu söyler. Oysa öğe evrene kesin olarak girer; rastgele olan **değer alıp almamasıdır** (bkz. §51.9) |
+| *"eş değer alma ihtimali"* | *"Eş değer"* ayrı yazılınca *"eşit değer"* gibi okunur; **"eşit"** daha net |
+| *"belirlenen öğeler için, eklenen her öğe için…"* | *"İçin"* iki kez geçiyor, cümle bölünüyor; ayrıca **"sayısına karar verilebilen"** düşüyordu → nicelik kaybı |
+| *"her öğenin diğer öğelerden bağımsız olarak değerlendiği"* | Doğru ama dolaylı; eşit ihtimal ifadesi bunu zaten kapsar |
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
