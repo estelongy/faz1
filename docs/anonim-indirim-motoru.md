@@ -7141,16 +7141,14 @@ Kurucunun kurgusu:
 |---|---|
 | İstem 3 | bağımsızlık + anında/geri alınamaz |
 | İstem 4 | bağımsızlık + mercisizlik |
-| **Birleşim** | **bağımsızlık + anında/geri alınamaz + mercisizlik** |
+| **İstem 5** | **bağımsızlık + anında/geri alınamaz + mercisizlik** |
 
-Birleşim en dar istem olacağı için **kabul şansı en yüksek olandır.**
+İstem 5 en dar istem olduğu için **kabul şansı en yüksek olandır.**
 İstem 3 ve 4 reddedilse bile ayakta kalabilir.
 
 **Not:** Patentte istemler toplanmaz — her istem kendi unsurlarını kendi
-metninde taşır. Bu ilişki **mantıksaldır**, yazım kuralı değildir;
-birleşim istemi tam metin olarak yazılacaktır.
-
-**Aşağıdaki metin, birleşim isteminin hazır taslağıdır:**
+metninde taşır. Bu ilişki **mantıksaldır**, yazım kuralı değildir; istem 5
+tam metin olarak yazılmıştır.
 
 #### Neyi eliyor
 
