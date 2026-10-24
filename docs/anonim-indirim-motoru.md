@@ -6980,8 +6980,8 @@ güçlenir.
 
 > **Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
 > edilebilen herhangi bir akışkan evrende; sayısına karar verilebilen öğeler
-> İÇİN, EKLENEN HER ÖĞENİN DEĞER ALMA İHTİMALİNİN EŞİT OLACAĞI ŞEKİLDE
-> değer üreten yöntem.**
+> İÇİN, EKLENEN HER ÖĞENİN EŞİT İHTİMALLE DEĞER ALACAĞI ŞEKİLDE değer
+> üreten yöntem.**
 
 **Kurucunun tespiti — buluş = EVREN + EŞİHTİMAL:**
 
@@ -7032,6 +7032,8 @@ konum zaten belirlenmiştir.
 | *"her öğenin diğer öğelerden bağımsız olarak değerlendiği"* | Doğru ama dolaylı; eşit ihtimal ifadesi bunu zaten kapsar |
 | *"aynı şansa sahip olduğu"* | **"Şans"** günlük dildir ve iki anlam taşır (olasılık + talih) → SMK m.92 belirlilik itirazı riski. *"İhtimal"* matematikseldir, sayıyla ifade edilir ve simülasyonla **ölçülmüştür** (300K turda poz 1: 2.873 / poz 102: 3.018). Tarifnamede *"şans"* anlatımı kolaylaştırmak için kullanılabilir |
 | *"eşit değer alma ihtimaline sahip olduğu"* | Dolaylı yapı; *"değer alma ihtimalinin eşit olduğu"* daha doğrudan |
+| *"eşihtimallilikle değer alabileceği"* | *"Eşihtimallilik"* Türkçede yerleşik değil; *"eşit ihtimalle"* standart. *"Alabileceği"* yeterlilik kipidir (*"alması mümkün"*), oysa mekanizma iddiası kesindir → *"alacağı"* |
+| *"DEĞER ALMA İHTİMALİNİN EŞİT OLACAĞI ŞEKİLDE"* | Doğru ama uzun; **"EŞİT İHTİMALLE DEĞER ALACAĞI ŞEKİLDE"** aynı şeyi daha kısa söyler |
 | *"…EŞİT OLDUĞU, sayısına karar verilebilen öğeler için…"* | Eşihtimalliği **öğelerin niteliği** olarak koyuyordu. Nihai hâlde ifade sona alındı ve *"…EŞİT OLACAĞI ŞEKİLDE değer üreten"* yapıldı: böylece eşihtimallik **yöntemin nasıl çalıştığına** bağlanır — durum değil, **mekanizma iddiası** olur. m.82 savunması için daha güçlü |
 
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
