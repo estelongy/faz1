@@ -7054,6 +7054,48 @@ konum zaten belirlenmiştir.
 | *"belirlenebilen sayıda öğe için, eşit ihtimalle değer üreten"* | Yalın ama **eşitliğin kimler arasında olduğu belirsiz.** Nihai hâlde *"eklenen tüm öğeler için"* eklenerek bu kapatıldı |
 | *"…EŞİT OLDUĞU, sayısına karar verilebilen öğeler için…"* | Eşihtimalliği **öğelerin niteliği** olarak koyuyordu. Nihai hâlde ifade sona alındı ve *"…EŞİT OLACAĞI ŞEKİLDE değer üreten"* yapıldı: böylece eşihtimallik **yöntemin nasıl çalıştığına** bağlanır — durum değil, **mekanizma iddiası** olur. m.82 savunması için daha güçlü |
 
+### 55.1d İSTEM 3 — ANINDA VE GERİ ALINAMAZ BELİRLEME ✅
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
+> kendisine has özelliklerinden bağımsız olarak, **ÖĞENİN EVRENE
+> EKLENMESİYLE, ANINDA VE GERİ ALINAMAZ BİÇİMDE** ve eklenen tüm öğeler
+> için eşit ihtimalle, belirlenen sayıdaki öğeler için değer üreten yöntem.
+
+**Eklenen unsur:** Kararın **eklenme anında kesinleşmesi** ve
+**değiştirilememesi.**
+
+#### Üç kelime, üç iş
+
+| Kelime | Taşıdığı |
+|---|---|
+| **eklenmesiyle** | Tetiklenme — mekanizma öğe eklendiğinde çalışır |
+| **anında** | Karar o an verilir, sonraya bırakılmaz |
+| **geri alınamaz** | Verilen karar değiştirilemez |
+
+#### Neyi eliyor
+
+| Yöntem | Neden dışarıda |
+|---|---|
+| **Reservoir sampling** | Karar **geçicidir** — seçilen öğe sonraki öğeler geldikçe havuzdan atılabilir. Kazanan ancak akış bitince kesinleşir |
+| **Düzeltmeli yöntemler** | Sonradan revizyon yapan her yaklaşım |
+| **Toplu değerlendirme** | Akışı biriktirip sonunda karar veren yöntemler |
+
+#### Kurucunun keşfiyle bağı
+
+> *"bizim çözdüğümüz şey, ilk eklenen ile son eklenen öğenin aynı şansa
+> sahip olması. (…) 42'nin değer alması, 49'un, 50'nin eklenmesinden zaten
+> bağımsız değil mi"*
+
+Temel istemdeki **eşihtimallik** bu keşfin *sonucunu* söylüyordu (şanslar
+eşit). Bu istem *mekanizmasını* söylüyor: karar eklenme anında verilir ve
+bir daha dokunulmaz — bu yüzden sonraki öğeler onu etkileyemez.
+
+#### "Eklenme sırasında" neden kullanılmadı
+
+*"Sırasında"* hem **zaman** (o esnada) hem **sıra** (kaçıncı olduğu)
+anlamına gelebilir. **"Anında"** tek anlamlıdır.
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
