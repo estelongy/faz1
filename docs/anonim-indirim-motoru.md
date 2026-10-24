@@ -7238,6 +7238,30 @@ kesit içi randomizasyon tekniği **tarifnamededir.** İstemde yalnızca
 *"ardışık kesitlere ayrıldığı"* ve *"kesit açıldığında rastgele
 belirlendiği"* durur — en soyut hâli.
 
+### 55.1h İSTEM 7 — İKİ KOLUN BİRLEŞİMİ ✅
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **ÖĞENİN EKLENMESİNE VE/VEYA
+> KENDİSİNE HAS ÖZELLİKLERİNDEN BAĞIMSIZ OLARAK VE HİÇBİR TARAFIN ETKİSİ
+> OLMAKSIZIN**, evrenin ardışık kesitlere ayrıldığı ve her kesitte değer
+> üretilecek öğelerin kesit açıldığında rastgele belirlendiği, belirlenen
+> sayıdaki öğelere, eklenen tüm öğeler için eşit ihtimalle değer üreten
+> yöntem.
+
+**İki kolu birleştiriyor:**
+
+| Kol | Katkısı |
+|---|---|
+| **A — sonuç ekseni** (istem 2, 4) | Bağımsızlık + mercisizlik |
+| **B — mekanizma ekseni** (istem 6) | Kesit + kesit açılışında rastgele belirleme |
+
+**En kapsamlı istem.** Hem **nasıl** yapıldığını (kesit, rastgelelik) hem
+**hangi niteliklere** sahip olduğunu (bağımsız, mercisiz, eşit ihtimalli,
+belirlenen sayıda) söylüyor.
+
+En dar istem olduğu için **kabul şansı en yüksek olandır;** diğer altısı
+reddedilse bile ayakta kalabilir.
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
