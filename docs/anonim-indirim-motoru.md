@@ -7103,7 +7103,7 @@ eşihtimalliğin **ayrı bir unsur** olduğunu daha net gösterir.
 *"Sırasında"* hem **zaman** (o esnada) hem **sıra** (kaçıncı olduğu)
 anlamına gelebilir. **"Anında"** tek anlamlıdır.
 
-### 55.1e İSTEM 5 — MERCİSİZLİK (yatay dal) ✅
+### 55.1e İSTEM 4 — MERCİSİZLİK (yatay dal) ✅
 
 > Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
 > edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
@@ -7116,12 +7116,12 @@ anlamına gelebilir. **"Anında"** tek anlamlıdır.
 | | Unsurlar |
 |---|---|
 | İstem 3 | bağımsızlık + **anında/geri alınamaz** |
-| İstem 5 | bağımsızlık + **mercisizlik** |
+| İstem 4 | bağımsızlık + **mercisizlik** |
 
-İstem 5, *"anında ve geri alınamaz"* kısıtını taşımadığı için istem 3'ten
+İstem 4, *"anında ve geri alınamaz"* kısıtını taşımadığı için istem 3'ten
 **daha geniştir**; biri reddedilse diğeri etkilenmez.
 
-### 55.1f İSTEM 6 — İKİ DALIN BİRLEŞİMİ ✅
+### 55.1f İKİ DALIN BİRLEŞİMİ — ileride yazılacak ⏸
 
 > Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
 > edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
@@ -7130,24 +7130,27 @@ anlamına gelebilir. **"Anında"** tek anlamlıdır.
 > ayrıca eklenen tüm öğeler için eşit ihtimalle, belirlenen sayıdaki öğeler
 > için değer üreten yöntem.
 
-**İstem 3 + istem 5'in birleşimi.** Kurucunun kurgusu:
+**Durum: BEKLEMEDE.** Kurucunun kararı — mercisizlik istem 4 olarak
+yazıldı, iki dalın birleşimi **sonraya bırakıldı.**
+
+Kurucunun kurgusu:
 
 > *"a+b+c=4 ve a+b+d=5 ise a+b+c+d'yi niye 6 olarak yazmayayım"*
 
 | | Unsurlar |
 |---|---|
 | İstem 3 | bağımsızlık + anında/geri alınamaz |
-| İstem 5 | bağımsızlık + mercisizlik |
-| **İstem 6** | **bağımsızlık + anında/geri alınamaz + mercisizlik** |
+| İstem 4 | bağımsızlık + mercisizlik |
+| **Birleşim** | **bağımsızlık + anında/geri alınamaz + mercisizlik** |
 
-En dar istem, dolayısıyla **kabul şansı en yüksek olan.** İstem 3 ve 5
-reddedilse bile ayakta kalabilir.
+Birleşim en dar istem olacağı için **kabul şansı en yüksek olandır.**
+İstem 3 ve 4 reddedilse bile ayakta kalabilir.
 
 **Not:** Patentte istemler toplanmaz — her istem kendi unsurlarını kendi
-metninde taşır. Bu ilişki **mantıksaldır**, yazım kuralı değil; istem 6 tam
-metin olarak yazılır.
+metninde taşır. Bu ilişki **mantıksaldır**, yazım kuralı değildir;
+birleşim istemi tam metin olarak yazılacaktır.
 
-**Eklenen unsur:** MERCİSİZLİK — §24.1 sözlüğündeki sabit ifadesiyle.
+**Aşağıdaki metin, birleşim isteminin hazır taslağıdır:**
 
 #### Neyi eliyor
 
