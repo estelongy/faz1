@@ -7058,12 +7058,30 @@ bandı, cemaat, araç geçişi — hepsi.
 | Bernoulli | **Sayı kararlaştırılamaz** — *"sayısına karar verilebilen"* onu eler |
 | Sadakat programı | Kimlik ve geçmiş gerekir; bu evrende kurulamaz |
 
-#### ⚠️ Temel istemde kapanmayan açık
+#### Deterministik yöntemler — evren tanımı zaten eliyor
 
-**Deterministik yöntemler içeride kalıyor.** *"Her 100. müşteriye indirim"*
-dört unsuru da karşılar — ve bu tam olarak **US7784682B2** (JPMorgan,
-aktif) tarifnamesindeki ifadedir: *"each nth customer, such as every 100
-customers."*
+**Önceki değerlendirme yanlıştı.** *"Her 100. müşteriye indirim"*
+(US7784682B2 tarifnamesindeki *"each nth customer, such as every 100
+customers"*) temel istemin açığı sanılmıştı.
 
-Bunu eleyen unsur **mercisizlik**tir ve istem **d**'de bulunur. Temel
-istemin bunu kapatması beklenmez — merdivenin üst basamağıdır.
+**Kurucunun düzeltmesi:**
+
+> *"bizim evrenimiz orijinal diye. her yüz müşteri ile nasıl aynıyız"*
+
+**Deterministik bir kural bu evrende kurulamaz.** Gerekçe:
+
+| | Deterministik "her n'inci" | Bu evren |
+|---|---|---|
+| Sayaç neye bağlı | Bir kayda/kimliğe | **Hiçbir şeye** |
+| Akış | Durup sayılabilir | **Durmuyor** |
+| N | Bilinmesi gerekir | Bilinmiyor |
+
+US7784682B2 ATM'de çalışır: kart okunur, kimlik vardır, sayaç kişiye
+bağlanır. Bu evrende kimlik yoktur, akış kapanmaz — o kurgu burada
+işlemez.
+
+Aynı gerekçe sadakat programları için de geçerlidir (yukarıdaki tabloda
+zaten yazılı): kimlik ve geçmiş gerektirirler, bu evrende kurulamazlar.
+
+**Sonuç:** Mercisizlik unsuru (istem **d**) korumayı **güçlendirir**, ancak
+temel istemde bir açığı kapatmak için gerekli değildir.
