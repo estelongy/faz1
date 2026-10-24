@@ -6863,8 +6863,8 @@ Bu, "indirgeme gerektirmez" argümanının (§53) matematiksel yazımıdır.
 
 ### 55.1 TEMEL İSTEM — SABİT
 
-> **Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında
-> oluşan herhangi bir akışkan evrende; sayısına karar verilebilen öğeler
+> **Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat
+> tahmin edilebilen herhangi bir akışkan evrende; sayısına karar verilebilen öğeler
 > için değer üreten yöntem.**
 
 **Kurucunun çerçevesi:**
@@ -6930,6 +6930,38 @@ akışlarını kastetmiştiniz"* denirse yorum tartışmasında işe yarar.
 Öğe olayın kendisi değildir; AVM'ye giriş bir olaydır, o olay sırasında bir
 öğe oluşur.
 
+#### "Oluşabilen" — kapsam kipi, olasılık değil
+
+**24 Ekim düzeltmesi.** Evren ifadesi *"oluşan"* iken *"oluşabilen"*
+yapıldı ve sıra değişti (*"olağan yaşam"* başa alındı).
+
+**İlk itiraz yanlıştı:** *"Oluşabilen"*, olasılık kipi sayılıp
+*"evren oluşmayabilirmiş gibi okunur"* diye eleştirilmişti.
+
+**Kurucunun düzeltmesi:**
+
+> *"oluşmasa yöntem çalışmaz. oluşabilen her evrende çalışır anlamında."*
+
+*"Oluşabilen"* belirsizlik değil **kapsam** bildirir: *oluşması mümkün olan
+her evrende.* Mevcut evrenlerle sınırlı kalmaz; henüz kurulmamış, hatta
+henüz düşünülmemiş evrenleri de kapsar. Bu, *"herhangi bir"* eklemesiyle
+aynı mantıktır — kapıyı açık tutmak.
+
+Evren hiç oluşmazsa ortada iş yoktur; *"oluşmazsa ne olur"* sorusu
+anlamsızdır.
+
+**"Oluşabilecek" neden alınmadı:** Kurucunun tespiti — *"oluşabilecek de,
+oluşabilendir"*. İkisi aynı kapsamı söyler, biri fazladan kelime.
+
+**"Oluşturulabilen" neden alınmadı:** Edilgen yapı, evreni **birinin
+kurduğunu** ima eder. Gerçeğe yakındır (evren tanımı dışsal bir karardır)
+ancak istemde kurucuyu görünür kılar ve mercisizlik iddiasıyla gereksiz bir
+tartışma doğurur. Evrenin nasıl tanımlandığı tarifnamede anlatılır.
+
+**Sıra değişikliği:** *"Olağan yaşam"* başa alındı. Böylece evrenin gerçek
+dünyaya ait olduğu ilk okunan şey olur — m.82 (teknik karakter) savunması
+güçlenir.
+
 #### Elenen evren ifadeleri — kayıt
 
 | Aday | Neden elendi |
@@ -6959,7 +6991,7 @@ etkilenmemelidir.
 
 | Kod | Unsur | İstem ifadesi |
 |---|---|---|
-| **E** | Evren | büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende |
+| **E** | Evren | olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin edilebilen herhangi bir akışkan evrende |
 | **n** | Nicelik | sayısına karar verilebilen |
 | **b** | Bağımsızlık | öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak belirlenen |
 | **m** | Mercisizlik | hiçbir tarafın etkisi olmaksızın |
@@ -6976,10 +7008,10 @@ yoktur, öğe tanımı gereği kimliksizdir (bkz. havuz CE2).
 
 | # | Unsurlar | İstem metni |
 |---|---|---|
-| **a** | E + n | Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende; sayısına karar verilebilen öğeler için değer üreten yöntem. |
-| **b** | E + b | Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak belirlenen öğeler için değer üreten yöntem. |
-| **c** | E + b + n | Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak belirlenen ve sayısına karar verilebilen öğeler için değer üreten yöntem. |
-| **d** | E + b + m + n | Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak ve hiçbir tarafın etkisi olmaksızın belirlenen ve sayısına karar verilebilen öğeler için değer üreten yöntem. |
+| **a** | E + n | Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin edilebilen herhangi bir akışkan evrende; sayısına karar verilebilen öğeler için değer üreten yöntem. |
+| **b** | E + b | Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin edilebilen herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak belirlenen öğeler için değer üreten yöntem. |
+| **c** | E + b + n | Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin edilebilen herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak belirlenen ve sayısına karar verilebilen öğeler için değer üreten yöntem. |
+| **d** | E + b + m + n | Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin edilebilen herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak ve hiçbir tarafın etkisi olmaksızın belirlenen ve sayısına karar verilebilen öğeler için değer üreten yöntem. |
 
 #### Yazım kuralı — §24.1'den
 
