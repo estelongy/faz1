@@ -7262,6 +7262,47 @@ belirlenen sayıda) söylüyor.
 En dar istem olduğu için **kabul şansı en yüksek olandır;** diğer altısı
 reddedilse bile ayakta kalabilir.
 
+### 55.1i İSTEM 8 — EVREN İÇİNDE EVREN ✅
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **AYNI OLAY AKIŞINDAN BİRDEN
+> FAZLA EVREN TANIMLANABİLDİĞİ VE HER EVRENİN KENDİ İÇİNDE BAĞIMSIZ OLARAK
+> İŞLETİLDİĞİ**, belirlenen sayıdaki öğelere, eklenen tüm öğeler için eşit
+> ihtimalle değer üreten yöntem.
+
+**Kurucunun tespiti:**
+
+> *"bizim buluşumuz, evrenlerin içinde evrenler oluşturulabilmesine izin
+> veriyor. yani kadınlara ayrı erkeklere ayrı bir değer üretimi
+> yapılabilir."*
+
+#### Neden kıymetli
+
+Tek bir olay akışından **paralel evrenler** kurulabilir; her biri kendi
+sayacı, kendi kesitleri ve kendi k değeriyle işler. AVM girişi bir evren,
+onun içinden tanımlanan daha dar kümeler ayrı evrenlerdir.
+
+Ve bu **kimlik tutmadan** yapılır: ayrım evrenin **kapısındadır**,
+mekanizmanın içinde değil. Sistem *"bu kadın mı"* diye sormaz — hangi
+evrene yazıldığını bilir, neden yazıldığını bilmez (bkz. havuz CE1).
+
+#### İki yazım kararı
+
+**1. Özellik adı istemde geçmez.** *"Kadınlar"*, *"19-25 yaş"* gibi
+ölçütler isteme yazılmaz — yazılırsa bağımsızlık unsuruyla çelişir
+görünür. *"Birden fazla evren tanımlanabildiği"* yeterlidir; ölçütler
+tarifnamede örneklenir.
+
+**2. "Bağımsız olarak işletildiği" kritik.** Evrenler birbirini bilmez,
+ortak sayaç yoktur. Bir öğe iki evrene birden girebilir — bu bir kusur
+değil, hayatın olağan akışıdır (*"bir adam hem camiye hem AVM'ye girer"*).
+Eşitlik iddiası **evren içi**dir, evrenler arası değil.
+
+#### Bağlantılı kayıt
+
+Bu özellik havuzda **CE1** olarak kayıtlıydı ancak hiçbir isteme
+yansımamıştı. İstem 8 ile korumaya alınmış oldu.
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
