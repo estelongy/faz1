@@ -7103,6 +7103,47 @@ eşihtimalliğin **ayrı bir unsur** olduğunu daha net gösterir.
 *"Sırasında"* hem **zaman** (o esnada) hem **sıra** (kaçıncı olduğu)
 anlamına gelebilir. **"Anında"** tek anlamlıdır.
 
+### 55.1e İSTEM 4 — MERCİSİZLİK ✅
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
+> kendisine has özelliklerinden bağımsız olarak, **HİÇBİR TARAFIN ETKİSİ
+> OLMAKSIZIN**, öğenin evrene eklenmesiyle, anında ve geri alınamaz biçimde
+> ayrıca eklenen tüm öğeler için eşit ihtimalle, belirlenen sayıdaki öğeler
+> için değer üreten yöntem.
+
+**Eklenen unsur:** MERCİSİZLİK — §24.1 sözlüğündeki sabit ifadesiyle.
+
+#### Neyi eliyor
+
+| Dışarıda kalan | Gerekçe |
+|---|---|
+| **Piyango, çekiliş, kura** | Çekilişi yapan **bir taraf vardır ve olmak zorundadır** — güven oradan gelir (noter, komisyon, idare) |
+| **Müdahale edilebilir sistemler** | İşleten tarafın sonucu yönlendirebildiği her yöntem |
+| **Deterministik "her n'inci"** | Sayacı kuran taraf sonucu belirlemiş olur |
+| **Ayarlanabilir seçim** | Busnel & Tillé 2020'deki *"spreading parameter"* gibi, bir tarafın ayar yaptığı yöntemler |
+
+#### Neden en kıymetli unsur
+
+Kurucunun sıralaması (24 Ekim): *"en kıymetli silahımız — mercisizlik."*
+
+Piyangoda merci **olmak zorundadır**; bu buluşta mekanizmanın kendisi
+mercidir. *"Stadyum boşken koltuk seçilir"* metaforu bunun somut hâlidir:
+karar verilirken ortada kimse yoktur ki etkilesin.
+
+#### Yerleşim
+
+*"Hiçbir tarafın etkisi olmaksızın"* ifadesi **bağımsızlıktan sonra,
+belirleme biçiminden önce** konumlandırıldı. Böylece:
+
+| Sıra | Unsur |
+|---|---|
+| 1 | Öğeden bağımsız (kim olduğu etkilemez) |
+| 2 | **Hiçbir taraftan etkilenmez** (dışarıdan müdahale edilemez) |
+| 3 | Anında ve geri alınamaz (zamanlama ve kesinlik) |
+| 4 | Eşit ihtimal (sonuç) |
+| 5 | Belirlenen sayı (nicelik) |
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
