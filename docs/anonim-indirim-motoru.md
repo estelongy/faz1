@@ -6979,7 +6979,7 @@ güçlenir.
 **24 Ekim.** Temel isteme eşihtimallik unsuru eklendi.
 
 > **Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
-> edilebilen herhangi bir akışkan evrende; BELİRLENEBİLEN SAYIDAKİ ÖĞELERE,
+> edilebilen herhangi bir akışkan evrende; BELİRLENEN SAYIDAKİ ÖĞELERE,
 > EKLENEN TÜM ÖĞELER İÇİN EŞİT İHTİMALLE değer üreten yöntem.**
 
 **Neden bu hâl:** İhtimalin **kime ait** olduğunu açıkça söylüyor. Önceki
@@ -7048,7 +7048,9 @@ konum zaten belirlenmiştir.
 | *"DEĞER ALMA İHTİMALİNİN EŞİT OLACAĞI ŞEKİLDE"* | Doğru ama uzun |
 | *"EKLENEN HER ÖĞENİN EŞİT İHTİMALLE DEĞER ALACAĞI ŞEKİLDE"* | Hâlâ ağır. Kurucunun tespiti: *"meramımız kaç tane abe… sayı, eş ihtimal ve değer üretme. bu kadar yaaa. üç meramı anlatamıyor muyuz güzel bir şekilde"* |
 | *"belirlenebilen sayıdaki öğelere eşit ihtimalle değer üreten"* | İyi ama nicelik ve eşihtimallik **tek ifade gibi** okunuyordu; virgül ikisini ayırıyor |
-| *"belirlenen sayıda"* | *"Belirlenen"* yalnızca *"bir sayı var"* der; **"belirlenebilen"** yöntemin **yeteneğini** söyler — istenirse 5, istenirse 50 |
+| *"belirlenebilen sayıda"* | İmkân bildiriyordu (*"sayı belirlenebilir"*). Kurucunun düzeltmesi: *"belirlenen sayıdaki öğeye bence daha iyi, zira sayı önceden belirlenmiş oluyor, çalışma ona göre yapılıyor."* Mekanizma o imkânı **zaten kullanmış** durumdadır — kesit, belirlenen sayıya göre kurulur. **"Belirlenen"** olguyu söyler |
+| *"bazı öğelere"* | ⛔ **Nicelik kontrolü kaybolur** — kaç tane olduğu belirsiz kalır, sayı tutturamayan yöntemler (Bernoulli) kapsama girer |
+| *"belirli sayıdaki"* | Sabit bir sayı ima eder; hangi sayı, değişebilir mi — belirsiz |
 | *"belirlenebilen sayıda öğe için, eşit ihtimalle değer üreten"* | Yalın ama **eşitliğin kimler arasında olduğu belirsiz.** Nihai hâlde *"eklenen tüm öğeler için"* eklenerek bu kapatıldı |
 | *"…EŞİT OLDUĞU, sayısına karar verilebilen öğeler için…"* | Eşihtimalliği **öğelerin niteliği** olarak koyuyordu. Nihai hâlde ifade sona alındı ve *"…EŞİT OLACAĞI ŞEKİLDE değer üreten"* yapıldı: böylece eşihtimallik **yöntemin nasıl çalıştığına** bağlanır — durum değil, **mekanizma iddiası** olur. m.82 savunması için daha güçlü |
 
