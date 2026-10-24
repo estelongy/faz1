@@ -7080,8 +7080,12 @@ indirgenmiş olur.
 > Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
 > edilebilen herhangi bir akışkan evrende; **ÖĞENİN EVRENE EKLENMESİ İLE
 > TETİKLENEN ANCAK ÖĞENİN EKLENMESİNE VE/VEYA KENDİSİNE HAS
-> ÖZELLİKLERİNDEN BAĞIMSIZ OLARAK BELİRLENEN VE** sayısına karar
-> verilebilen öğeler için değer üreten yöntem.
+> ÖZELLİKLERİNDEN BAĞIMSIZ OLARAK** ve eklenen tüm öğeler için eşit
+> ihtimalle, belirlenen sayıdaki öğeler için değer üreten yöntem.
+
+**Unsur sırası:** Önce **nasıl belirlendiği** (bağımsızlık + eşit ihtimal),
+sonra **kaç tane** (belirlenen sayı). Önceki düzende *"belirlenen sayıdaki
+öğelere"* ortada kalıyor, eşihtimallik sonra geliyordu.
 
 **Eklenen unsur:** BAĞIMSIZLIK — kimliksizlik ve eşihtimallik bu ifadenin
 içindedir (bkz. 55.2 unsur kodları).
