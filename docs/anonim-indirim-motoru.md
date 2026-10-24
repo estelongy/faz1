@@ -7177,20 +7177,27 @@ belirleme biçiminden önce** konumlandırıldı. Böylece:
 | 4 | Eşit ihtimal (sonuç) |
 | 5 | Belirlenen sayı (nicelik) |
 
-### 55.1g İSTEM 6 ve 7 — KESİT KOLU (mekanizma ekseni) ✅
+### 55.1g İSTEM 6 — KESİT KOLU (mekanizma ekseni) ✅
 
 **Yeni kol.** İstem 2-5 hep **sonuç** tarif ediyordu (eşit ihtimal,
 belirlenen sayı, geri alınamaz karar). Bu kol **nasıl** yapıldığını
 söylüyor.
 
-#### İSTEM 6 — temel + kesit
+#### ⛔ İPTAL EDİLEN ARA İSTEM — temel + kesit (tek başına)
 
-> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
-> edilebilen herhangi bir akışkan evrende; **EVRENİN ARDIŞIK KESİTLERE
-> AYRILDIĞI VE HER KESİTTE** belirlenen sayıdaki öğelere, eklenen tüm
-> öğeler için eşit ihtimalle değer üreten yöntem.
+Önce iki kademeli yazılmıştı; ilk kademe **iptal edildi:**
 
-#### İSTEM 7 — temel + kesit + kesit içi rastgele belirleme
+> ~~…EVRENİN ARDIŞIK KESİTLERE AYRILDIĞI VE HER KESİTTE belirlenen
+> sayıdaki öğelere…~~
+
+**Gerekçe:** Bu ifade **Madow 1949 sistematik örneklemesini birebir
+karşılıyor** — akışı böl, her bölümden seç. 77 yıllık teknik. Eşihtimallik
+de Madow'da var. Tek başına reddedilmesi beklenirdi.
+
+Bir bağımsız istem bütçesi boşa harcanmamış oldu; asıl koruma aşağıdaki
+istemdedir.
+
+#### İSTEM 6 — temel + kesit + kesit içi rastgele belirleme
 
 > Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
 > edilebilen herhangi bir akışkan evrende; **EVRENİN ARDIŞIK KESİTLERE
@@ -7213,14 +7220,10 @@ yapılır.
 örnekleme, permuted block randomization, ağ paketi periyodik örnekleme —
 bkz. havuz CK3). **Bölme tek başına yenilik değildir.**
 
-Kesit kolu ancak üstüne bir şey eklendiğinde değer kazanır:
+Kesit kolu ancak üstüne bir şey eklendiğinde değer kazanır — bu yüzden ara
+istem iptal edildi ve doğrudan rastgelelik eklenmiş hâli yazıldı.
 
-| | İşlevi |
-|---|---|
-| **İstem 6** | Basamak — kesit kavramını kurar |
-| **İstem 7** | **Asıl koruyan** — rastgelelik + kesit açılışında belirleme |
-
-İstem 7'deki *"kesit açıldığında rastgele belirlendiği"* ifadesi iki şeyi
+İstem 6'daki *"kesit açıldığında rastgele belirlendiği"* ifadesi iki şeyi
 birden taşır:
 
 | Parça | Eliyor |
