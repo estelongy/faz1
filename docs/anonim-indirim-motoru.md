@@ -6854,3 +6854,184 @@ Bu, "indirgeme gerektirmez" argümanının (§53) matematiksel yazımıdır.
 - Gösterim, o ifadenin **açıklaması** olarak tarifnamede yer alır
 
 İstem metni değişmedi.
+
+---
+
+## 55. İSTEM SETİ — bağımsız istemler (22-24 Ekim)
+
+**Durum:** ✅ Temel istem sabitlendi. Set üzerinde çalışma sürüyor.
+
+### 55.1 TEMEL İSTEM — SABİT
+
+> **Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında
+> oluşan herhangi bir akışkan evrende; sayısına karar verilebilen öğeler
+> için değer üreten yöntem.**
+
+**Kurucunun çerçevesi:**
+
+> *"biz bu temel istem üzerine kuracaz her şeyi. alınabilirliği en geniş ve
+> amaca dönük istem yani = kabul edilebilir en geniş temel."*
+
+#### Unsurlar
+
+| Parça | Unsur | Ne söylüyor |
+|---|---|---|
+| büyüklüğü bilinmeyen fakat tahmin edilebilen | **EVREN** | N meçhul; tahmin var ama bağlayıcı değil |
+| olağan yaşam olaylarında oluşan | **GERÇEK DÜNYA** | Kurgulanmamış akış |
+| herhangi bir akışkan | **AKIŞKANLIK** | Kapanmıyor, her tür evren |
+| sayısına karar verilebilen | **NİCELİK** | Kaç değer üretileceği kararlaştırılabilir |
+
+#### "Olağan yaşam olaylarında" — neden eklendi
+
+**Kurucunun tespiti (24 Ekim):**
+
+> *"biz bunu bir matematik problemi gibi çözmeye çalıştık ya. aslında
+> patentlemek istediğimiz bu değil bence. biz hayatın olağan akışında değer
+> üretecek bir yöntem bulduk. (…) evrenimizi hayatın olağan akışı ile daha
+> özelleştirmiş oluruz"*
+
+**Gerekçe:** Saf matematiksel yöntem SMK m.82 / EPC 52(2) ile dışlanır.
+Evren soyut bir küme olarak bırakılırsa bu itiraz gelebilir. *"Olağan yaşam
+olayları"* evreni gerçek dünyaya bağlar; **teknik karakter buradan gelir.**
+
+**Kapsam kaybı yok:** Dışarıda kalan tek şey kurgulanmış/yapay akışlardır
+(piyango çekilişi gibi) — zaten hedef değiller.
+
+#### "Herhangi bir" — bilinçli ekleme
+
+**Kurucunun gerekçesi:**
+
+> *"ben 'herhangi bir'i tüm olayları kapsasın diye ekledim. yani aklımıza
+> gelmeyen bir şey olursa, yada ne bileyim yarın robotlar için biri başka
+> bir istemde bulunmasın diye"*
+
+**Not:** Patent dilinde *"bir evrende"* zaten her türlü evreni kapsar;
+sınırlama ancak açıkça yazılırsa olur. Yani *"herhangi bir"* koruma
+eklemiyor — ancak **niyeti belgeliyor.** İleride *"siz yalnızca insan
+akışlarını kastetmiştiniz"* denirse yorum tartışmasında işe yarar.
+
+**Tarifnameye yazılacak (robot/cihaz kapsamı için):**
+
+> Olay, canlı veya cansız bir varlığın, bir aracın, bir cihazın veya bir
+> sistemin gerçekleştirdiği herhangi bir eylem olabilir.
+
+#### "Olaylarında" vs "olaylarıyla" — kritik ayrım
+
+**Kurucunun düzeltmesi:**
+
+> *"olaylarında oluşan, olaylar ile oluşmuyor evren. yani öğeler
+> olaylarında var, öğe olay değil"*
+
+| İfade | Ne der |
+|---|---|
+| *"olaylarıyla oluşan"* | ⛔ Olay = öğe |
+| **"olaylarında oluşan"** | ✅ Öğe, olayın **içinde** doğar |
+
+Öğe olayın kendisi değildir; AVM'ye giriş bir olaydır, o olay sırasında bir
+öğe oluşur.
+
+#### Elenen evren ifadeleri — kayıt
+
+| Aday | Neden elendi |
+|---|---|
+| *"olağan yaşam akışıyla oluşan … evrende"* | *"Akışkan"* sıfatı düştü → evrenin **niteliği** kayboldu. Akışla oluşup sonra **kapanan** evrenleri de kapsıyordu |
+| *"olağan yaşam akışıyla oluşan … akışkan evrende"* | *"Akış"* kökü iki kez geçiyor — tekrar |
+| *"olaylarıyla oluşan"* | Olay ile öğeyi eşitliyor (yukarıdaki ayrım) |
+| *"toplumsal yaşamda"* | **Daraltıyor** — üretim bandı, araç geçişi, cihaz akışı gibi insan dışı akışları dışlar |
+| *"oluşabilecek"* | Olasılık kipi — evren oluşmayabilirmiş gibi okunur |
+| *"hayatın olağan akışı"* | Anlaşılır ama edebi; *"olağan yaşam"* daha yalın |
+| *"rutin gerçekleşen günlük olaylarla"* | *"Günlük"* zaman birimi gibi, *"rutin"* düzenlilik ima ediyor — akış düzensiz olabilir |
+
+### 55.2 BAĞIMSIZ İSTEM SETİ — çalışma hâli
+
+**Hedef:** 5-6 bağımsız, toplam 13-14 istem.
+
+**Neden hepsi bağımsız:** Kurucunun tespiti —
+
+> *"ben E+a, E+b, E+c, E+a+b şeklinde istem yazacaksam neden bağımlı olsun
+> ki. E+a ile E+c aynı şey değil ki"*
+
+Bağımlı istem yalnızca **dikey** ilişkide olur (E+a → E+a+b). Yatay dallar
+(E+a ↔ E+c) birbirinin alt kümesi değildir; biri reddedilince diğeri
+etkilenmemelidir.
+
+#### Unsur kodları
+
+| Kod | Unsur | İstem ifadesi |
+|---|---|---|
+| **E** | Evren | büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende |
+| **n** | Nicelik | sayısına karar verilebilen |
+| **b** | Bağımsızlık | öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak belirlenen |
+| **m** | Mercisizlik | hiçbir tarafın etkisi olmaksızın |
+
+**Kimliksizlik ayrı unsur DEĞİL.** Kurucunun tespiti:
+
+> *"kimlik içermeyen ne ya. zaten kendisine has özellik değil mi kimlik"*
+
+Kimlik öğenin bir özelliğidir; **b** unsuru onu zaten kapsar. Ayrıca
+*"tanımlayıcı saklanmaksızın"* gibi bir ifade yanlıştır — saklanacak kimlik
+yoktur, öğe tanımı gereği kimliksizdir (bkz. havuz CE2).
+
+#### Set
+
+| # | Unsurlar | İstem metni |
+|---|---|---|
+| **a** | E + n | Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende; sayısına karar verilebilen öğeler için değer üreten yöntem. |
+| **b** | E + b | Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak belirlenen öğeler için değer üreten yöntem. |
+| **c** | E + b + n | Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak belirlenen ve sayısına karar verilebilen öğeler için değer üreten yöntem. |
+| **d** | E + b + m + n | Büyüklüğü bilinmeyen fakat tahmin edilebilen, olağan yaşam olaylarında oluşan herhangi bir akışkan evrende; öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak ve hiçbir tarafın etkisi olmaksızın belirlenen ve sayısına karar verilebilen öğeler için değer üreten yöntem. |
+
+#### Yazım kuralı — §24.1'den
+
+Unsurlar arasında **"ve"** kullanılır, virgül değil:
+
+> *"virgül ikinci ifadeyi birinciyi niteliyormuş gibi okutur; 've' ikisini
+> ayrı unsur olarak işaretler, her unsur ayrı sayılacağı için bu kritik"*
+
+Bu yüzden c ve d'de *"belirlenen **ve** sayısına karar verilebilen"* yazılır.
+
+#### Dördü de aynı buluşu tarif ediyor — neden dört tane
+
+**Kurucunun sorusu:** *"d istemi ile a istemi buluş açısından aynı. biri
+kısaca yazılmış biri uzunca. bu biraz saçma değil mi"*
+
+**Cevap:** İstem buluşu anlatmaz, **sınır çizer.** Dördü aynı mekanizmanın
+farklı genişlikte sigortalarıdır:
+
+| | Kapsadığı | Risk |
+|---|---|---|
+| **a** | En çok | Reddedilme ihtimali en yüksek |
+| **d** | En az | Kabul ihtimali en yüksek |
+
+İnceleme sırasında a reddedilirse b, c, d incelenmeye devam eder. Yalnızca
+a yazılsaydı reddedilince elde hiçbir şey kalmaz, öncelik tarihi
+kaybedilirdi.
+
+### 55.3 TEMEL İSTEMİN KAPSAM DENETİMİ
+
+#### İçeride
+
+AVM girişi, POS işlem akışı, stadyum/konser, web sitesi ziyaretleri, üretim
+bandı, cemaat, araç geçişi — hepsi.
+
+#### Dışarıda
+
+| Yöntem | Neden |
+|---|---|
+| Piyango, çekiliş | Liste kapanır, N bilinir |
+| Fisher-Yates | N bilinmeli |
+| Reservoir sampling | Akışın bitmesi gerekir |
+| Kumar makinesi | Evren yok, her oyun bağımsız |
+| OSOD 2021 | N gerekli (Denklem 1) |
+| Bernoulli | **Sayı kararlaştırılamaz** — *"sayısına karar verilebilen"* onu eler |
+| Sadakat programı | Kimlik ve geçmiş gerekir; bu evrende kurulamaz |
+
+#### ⚠️ Temel istemde kapanmayan açık
+
+**Deterministik yöntemler içeride kalıyor.** *"Her 100. müşteriye indirim"*
+dört unsuru da karşılar — ve bu tam olarak **US7784682B2** (JPMorgan,
+aktif) tarifnamesindeki ifadedir: *"each nth customer, such as every 100
+customers."*
+
+Bunu eleyen unsur **mercisizlik**tir ve istem **d**'de bulunur. Temel
+istemin bunu kapatması beklenmez — merdivenin üst basamağıdır.
