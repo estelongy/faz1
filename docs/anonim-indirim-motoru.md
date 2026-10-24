@@ -7121,17 +7121,14 @@ anlamına gelebilir. **"Anında"** tek anlamlıdır.
 İstem 4, *"anında ve geri alınamaz"* kısıtını taşımadığı için istem 3'ten
 **daha geniştir**; biri reddedilse diğeri etkilenmez.
 
-### 55.1f İKİ DALIN BİRLEŞİMİ — ileride yazılacak ⏸
+### 55.1f İSTEM 5 — İKİ DALIN BİRLEŞİMİ ✅
 
 > Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
 > edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
 > kendisine has özelliklerinden bağımsız olarak, **HİÇBİR TARAFIN ETKİSİ
-> OLMAKSIZIN**, öğenin evrene eklenmesiyle, anında ve geri alınamaz biçimde
-> ayrıca eklenen tüm öğeler için eşit ihtimalle, belirlenen sayıdaki öğeler
-> için değer üreten yöntem.
-
-**Durum: BEKLEMEDE.** Kurucunun kararı — mercisizlik istem 4 olarak
-yazıldı, iki dalın birleşimi **sonraya bırakıldı.**
+> OLMAKSIZIN**, öğenin evrene eklenmesiyle, **ANINDA VE GERİ ALINAMAZ
+> BİÇİMDE** ayrıca eklenen tüm öğeler için eşit ihtimalle, belirlenen
+> sayıdaki öğeler için değer üreten yöntem.
 
 Kurucunun kurgusu:
 
