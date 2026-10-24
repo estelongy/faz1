@@ -7103,7 +7103,25 @@ eşihtimalliğin **ayrı bir unsur** olduğunu daha net gösterir.
 *"Sırasında"* hem **zaman** (o esnada) hem **sıra** (kaçıncı olduğu)
 anlamına gelebilir. **"Anında"** tek anlamlıdır.
 
-### 55.1e İSTEM 4 — MERCİSİZLİK ✅
+### 55.1e İSTEM 5 — MERCİSİZLİK (yatay dal) ✅
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
+> kendisine has özelliklerinden bağımsız olarak, **HİÇBİR TARAFIN ETKİSİ
+> OLMAKSIZIN** ve eklenen tüm öğeler için eşit ihtimalle, belirlenen
+> sayıdaki öğeler için değer üreten yöntem.
+
+**İstem 3 ile kardeş dal.** İkisi de istem 2'den türer, farklı yöne gider:
+
+| | Unsurlar |
+|---|---|
+| İstem 3 | bağımsızlık + **anında/geri alınamaz** |
+| İstem 5 | bağımsızlık + **mercisizlik** |
+
+İstem 5, *"anında ve geri alınamaz"* kısıtını taşımadığı için istem 3'ten
+**daha geniştir**; biri reddedilse diğeri etkilenmez.
+
+### 55.1f İSTEM 6 — İKİ DALIN BİRLEŞİMİ ✅
 
 > Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
 > edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
@@ -7111,6 +7129,23 @@ anlamına gelebilir. **"Anında"** tek anlamlıdır.
 > OLMAKSIZIN**, öğenin evrene eklenmesiyle, anında ve geri alınamaz biçimde
 > ayrıca eklenen tüm öğeler için eşit ihtimalle, belirlenen sayıdaki öğeler
 > için değer üreten yöntem.
+
+**İstem 3 + istem 5'in birleşimi.** Kurucunun kurgusu:
+
+> *"a+b+c=4 ve a+b+d=5 ise a+b+c+d'yi niye 6 olarak yazmayayım"*
+
+| | Unsurlar |
+|---|---|
+| İstem 3 | bağımsızlık + anında/geri alınamaz |
+| İstem 5 | bağımsızlık + mercisizlik |
+| **İstem 6** | **bağımsızlık + anında/geri alınamaz + mercisizlik** |
+
+En dar istem, dolayısıyla **kabul şansı en yüksek olan.** İstem 3 ve 5
+reddedilse bile ayakta kalabilir.
+
+**Not:** Patentte istemler toplanmaz — her istem kendi unsurlarını kendi
+metninde taşır. Bu ilişki **mantıksaldır**, yazım kuralı değil; istem 6 tam
+metin olarak yazılır.
 
 **Eklenen unsur:** MERCİSİZLİK — §24.1 sözlüğündeki sabit ifadesiyle.
 
