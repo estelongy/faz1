@@ -6974,6 +6974,50 @@ güçlenir.
 | *"hayatın olağan akışı"* | Anlaşılır ama edebi; *"olağan yaşam"* daha yalın |
 | *"rutin gerçekleşen günlük olaylarla"* | *"Günlük"* zaman birimi gibi, *"rutin"* düzenlilik ima ediyor — akış düzensiz olabilir |
 
+### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
+
+**Kurucunun kararı (24 Ekim):**
+
+> *"bundan sonra şöyle ilerleyeceğiz. temel istemimiz hiç bozulmayacak. biz
+> bu noktalı yeri dolduracağız. vurgulu, büyük harfle yaz. bundan sonraki
+> tartışmalarımızı da sadece eklenen kısım için yürütelim."*
+
+**KALIP:**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **[…]** sayısına karar
+> verilebilen öğeler için değer üreten yöntem.
+
+Her yeni bağımsız istem, yalnızca **[…]** yerine gelen ifadeyle ayrışır.
+Kalıbın başı ve sonu değişmez.
+
+**Gerekçe:** Buluşun sınırı (evren + nicelik) sabitlendi; eklenen her unsur
+yalnızca bu sınır içindeki mekanizmayı daraltır. Tartışma yüzeyi tek yere
+indirgenmiş olur.
+
+### 55.1c İSTEM 2 — BAĞIMSIZLIK EKLENDİ ✅
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **ÖĞENİN EVRENE EKLENMESİ İLE
+> TETİKLENEN ANCAK ÖĞENİN EKLENMESİNE VE/VEYA KENDİSİNE HAS
+> ÖZELLİKLERİNDEN BAĞIMSIZ OLARAK BELİRLENEN VE** sayısına karar
+> verilebilen öğeler için değer üreten yöntem.
+
+**Eklenen unsur:** BAĞIMSIZLIK — kimliksizlik ve eşihtimallik bu ifadenin
+içindedir (bkz. 55.2 unsur kodları).
+
+**Neyi eliyor:**
+
+| Dışarıda kalan | Gerekçe |
+|---|---|
+| Kimliğe bakan sistemler | *"kendisine has özelliklerinden bağımsız"* |
+| Sıraya göre seçenler | *"eklenmesine bağımsız"* |
+| Tutara/harcamaya göre ödül verenler | Özellik kullanıyor |
+| Profil/segment bazlı kampanyalar | Aynı |
+
+**Darlık:** Az. Bu evrende kimliğe bakan sistem zaten kurulamıyordu
+(bkz. 55.3); istem bunu **açıkça** söylemiş oluyor.
+
 ### 55.2 BAĞIMSIZ İSTEM SETİ — çalışma hâli
 
 **Hedef:** 5-6 bağımsız, toplam 13-14 istem.
