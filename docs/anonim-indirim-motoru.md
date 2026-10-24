@@ -6979,8 +6979,8 @@ güçlenir.
 **24 Ekim.** Temel isteme eşihtimallik unsuru eklendi.
 
 > **Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
-> edilebilen herhangi bir akışkan evrende; EKLENEN HER ÖĞENİN EŞİT DEĞER
-> ALMA İHTİMALİNE SAHİP OLDUĞU, sayısına karar verilebilen öğeler için
+> edilebilen herhangi bir akışkan evrende; EKLENEN HER ÖĞENİN DEĞER ALMA
+> İHTİMALİNİN EŞİT OLDUĞU, sayısına karar verilebilen öğeler için
 > değer üreten yöntem.**
 
 **Kurucunun tespiti — buluş = EVREN + EŞİHTİMAL:**
@@ -7030,6 +7030,8 @@ konum zaten belirlenmiştir.
 | *"eş değer alma ihtimali"* | *"Eş değer"* ayrı yazılınca *"eşit değer"* gibi okunur; **"eşit"** daha net |
 | *"belirlenen öğeler için, eklenen her öğe için…"* | *"İçin"* iki kez geçiyor, cümle bölünüyor; ayrıca **"sayısına karar verilebilen"** düşüyordu → nicelik kaybı |
 | *"her öğenin diğer öğelerden bağımsız olarak değerlendiği"* | Doğru ama dolaylı; eşit ihtimal ifadesi bunu zaten kapsar |
+| *"aynı şansa sahip olduğu"* | **"Şans"** günlük dildir ve iki anlam taşır (olasılık + talih) → SMK m.92 belirlilik itirazı riski. *"İhtimal"* matematikseldir, sayıyla ifade edilir ve simülasyonla **ölçülmüştür** (300K turda poz 1: 2.873 / poz 102: 3.018). Tarifnamede *"şans"* anlatımı kolaylaştırmak için kullanılabilir |
+| *"eşit değer alma ihtimaline sahip olduğu"* | Dolaylı yapı; **"değer alma ihtimalinin eşit olduğu"** daha doğrudan |
 
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
