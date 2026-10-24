@@ -6979,9 +6979,8 @@ güçlenir.
 **24 Ekim.** Temel isteme eşihtimallik unsuru eklendi.
 
 > **Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
-> edilebilen herhangi bir akışkan evrende; sayısına karar verilebilen öğeler
-> İÇİN, EKLENEN HER ÖĞENİN EŞİT İHTİMALLE DEĞER ALACAĞI ŞEKİLDE değer
-> üreten yöntem.**
+> edilebilen herhangi bir akışkan evrende; BELİRLENEBİLEN SAYIDA ÖĞE İÇİN,
+> EŞİT İHTİMALLE değer üreten yöntem.**
 
 **Kurucunun tespiti — buluş = EVREN + EŞİHTİMAL:**
 
@@ -7033,7 +7032,10 @@ konum zaten belirlenmiştir.
 | *"aynı şansa sahip olduğu"* | **"Şans"** günlük dildir ve iki anlam taşır (olasılık + talih) → SMK m.92 belirlilik itirazı riski. *"İhtimal"* matematikseldir, sayıyla ifade edilir ve simülasyonla **ölçülmüştür** (300K turda poz 1: 2.873 / poz 102: 3.018). Tarifnamede *"şans"* anlatımı kolaylaştırmak için kullanılabilir |
 | *"eşit değer alma ihtimaline sahip olduğu"* | Dolaylı yapı; *"değer alma ihtimalinin eşit olduğu"* daha doğrudan |
 | *"eşihtimallilikle değer alabileceği"* | *"Eşihtimallilik"* Türkçede yerleşik değil; *"eşit ihtimalle"* standart. *"Alabileceği"* yeterlilik kipidir (*"alması mümkün"*), oysa mekanizma iddiası kesindir → *"alacağı"* |
-| *"DEĞER ALMA İHTİMALİNİN EŞİT OLACAĞI ŞEKİLDE"* | Doğru ama uzun; **"EŞİT İHTİMALLE DEĞER ALACAĞI ŞEKİLDE"** aynı şeyi daha kısa söyler |
+| *"DEĞER ALMA İHTİMALİNİN EŞİT OLACAĞI ŞEKİLDE"* | Doğru ama uzun |
+| *"EKLENEN HER ÖĞENİN EŞİT İHTİMALLE DEĞER ALACAĞI ŞEKİLDE"* | Hâlâ ağır. Kurucunun tespiti: *"meramımız kaç tane abe… sayı, eş ihtimal ve değer üretme. bu kadar yaaa. üç meramı anlatamıyor muyuz güzel bir şekilde"* |
+| *"belirlenebilen sayıdaki öğelere eşit ihtimalle değer üreten"* | İyi ama nicelik ve eşihtimallik **tek ifade gibi** okunuyordu; virgül ikisini ayırıyor |
+| *"belirlenen sayıda"* | *"Belirlenen"* yalnızca *"bir sayı var"* der; **"belirlenebilen"** yöntemin **yeteneğini** söyler — istenirse 5, istenirse 50 |
 | *"…EŞİT OLDUĞU, sayısına karar verilebilen öğeler için…"* | Eşihtimalliği **öğelerin niteliği** olarak koyuyordu. Nihai hâlde ifade sona alındı ve *"…EŞİT OLACAĞI ŞEKİLDE değer üreten"* yapıldı: böylece eşihtimallik **yöntemin nasıl çalıştığına** bağlanır — durum değil, **mekanizma iddiası** olur. m.82 savunması için daha güçlü |
 
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
