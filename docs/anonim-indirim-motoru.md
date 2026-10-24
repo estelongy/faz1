@@ -7059,8 +7059,9 @@ konum zaten belirlenmiştir.
 > Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
 > edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
 > kendisine has özelliklerinden bağımsız olarak, **ÖĞENİN EVRENE
-> EKLENMESİYLE, ANINDA VE GERİ ALINAMAZ BİÇİMDE** ve eklenen tüm öğeler
-> için eşit ihtimalle, belirlenen sayıdaki öğeler için değer üreten yöntem.
+> EKLENMESİYLE, ANINDA VE GERİ ALINAMAZ BİÇİMDE** ayrıca eklenen tüm
+> öğeler için eşit ihtimalle, belirlenen sayıdaki öğeler için değer üreten
+> yöntem.
 
 **Eklenen unsur:** Kararın **eklenme anında kesinleşmesi** ve
 **değiştirilememesi.**
@@ -7090,6 +7091,12 @@ konum zaten belirlenmiştir.
 Temel istemdeki **eşihtimallik** bu keşfin *sonucunu* söylüyordu (şanslar
 eşit). Bu istem *mekanizmasını* söylüyor: karar eklenme anında verilir ve
 bir daha dokunulmaz — bu yüzden sonraki öğeler onu etkileyemez.
+
+#### "Ayrıca" neden kullanıldı
+
+Önceki hâlde *"…biçimde **ve** eklenen tüm öğeler için…"* yazıyordu; iki
+*"ve"* yan yana geliyordu. **"Ayrıca"** hem bu tekrarı kırar hem
+eşihtimalliğin **ayrı bir unsur** olduğunu daha net gösterir.
 
 #### "Eklenme sırasında" neden kullanılmadı
 
