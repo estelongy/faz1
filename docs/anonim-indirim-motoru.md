@@ -7177,6 +7177,64 @@ belirleme biçiminden önce** konumlandırıldı. Böylece:
 | 4 | Eşit ihtimal (sonuç) |
 | 5 | Belirlenen sayı (nicelik) |
 
+### 55.1g İSTEM 6 ve 7 — KESİT KOLU (mekanizma ekseni) ✅
+
+**Yeni kol.** İstem 2-5 hep **sonuç** tarif ediyordu (eşit ihtimal,
+belirlenen sayı, geri alınamaz karar). Bu kol **nasıl** yapıldığını
+söylüyor.
+
+#### İSTEM 6 — temel + kesit
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **EVRENİN ARDIŞIK KESİTLERE
+> AYRILDIĞI VE HER KESİTTE** belirlenen sayıdaki öğelere, eklenen tüm
+> öğeler için eşit ihtimalle değer üreten yöntem.
+
+#### İSTEM 7 — temel + kesit + kesit içi rastgele belirleme
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **EVRENİN ARDIŞIK KESİTLERE
+> AYRILDIĞI VE HER KESİTTE DEĞER ÜRETİLECEK ÖĞELERİN KESİT AÇILDIĞINDA
+> RASTGELE BELİRLENDİĞİ**, belirlenen sayıdaki öğelere, eklenen tüm öğeler
+> için eşit ihtimalle değer üreten yöntem.
+
+#### Neden bu kol gerekli
+
+Beş istem de sonuç tarif ettiği için bir incelemeci şunu diyebilir:
+*"Bu bir sonuç tarifidir, teknik çözüm değil — nasıl yapıldığını
+söylemiyorsunuz."* Bu, m.82 itirazının bir biçimidir.
+
+Kesit kolu somut bir **teknik adım** sunar: evren bölünür, her bölümde iş
+yapılır.
+
+#### ⚠️ Kesit tek başına zayıf — bu yüzden iki istem
+
+*"Evreni kesitlere ayırmak"* bilinen bir fikirdir (Madow 1949 sistematik
+örnekleme, permuted block randomization, ağ paketi periyodik örnekleme —
+bkz. havuz CK3). **Bölme tek başına yenilik değildir.**
+
+Kesit kolu ancak üstüne bir şey eklendiğinde değer kazanır:
+
+| | İşlevi |
+|---|---|
+| **İstem 6** | Basamak — kesit kavramını kurar |
+| **İstem 7** | **Asıl koruyan** — rastgelelik + kesit açılışında belirleme |
+
+İstem 7'deki *"kesit açıldığında rastgele belirlendiği"* ifadesi iki şeyi
+birden taşır:
+
+| Parça | Eliyor |
+|---|---|
+| **rastgele** | Deterministik *"her n'inci"* yöntemleri |
+| **kesit açıldığında** | Sistematik örneklemeyi (orada ilk seçimden sonra sonraki konumlar belli olur) ve reservoir'ı (orada karar sonradan verilir) |
+
+#### Kesit ayrıntısı neden istemde yok
+
+Kesit büyüklüğünün hesabı (Etahmini ÷ k), kapanma anı, sabitlik kuralı ve
+kesit içi randomizasyon tekniği **tarifnamededir.** İstemde yalnızca
+*"ardışık kesitlere ayrıldığı"* ve *"kesit açıldığında rastgele
+belirlendiği"* durur — en soyut hâli.
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
