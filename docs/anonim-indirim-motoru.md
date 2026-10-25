@@ -7303,6 +7303,112 @@ Eşitlik iddiası **evren içi**dir, evrenler arası değil.
 Bu özellik havuzda **CE1** olarak kayıtlıydı ancak hiçbir isteme
 yansımamıştı. İstem 8 ile korumaya alınmış oldu.
 
+### 55.1j ⭐ KOL A YENİDEN DİZİLDİ — E+a ve E+m eklendi (25 Ekim)
+
+**Kurucunun sorusu:**
+
+> *"bana şunun hesabını veya gerekçesini söyle. neden 1+anında veya
+> 1+mercisizliği istem olarak önermedin"*
+
+**Gerekçe yoktu.** Bağımsızlık ilk eklenen unsur olduğu için gövde
+yapılmış, sonraki her istem onun **üstüne** kurulmuştu. Bu, kurucunun
+kendi kuralının ihlaliydi:
+
+> *"ben E+a, E+b, E+c, E+a+b şeklinde istem yazacaksam neden bağımlı
+> olsun ki. E+a ile E+c aynı şey değil ki"*
+
+**Somut zarar:** Bağımsızlık ifadesi bir prior art karşısında düşerse,
+onu taşıyan **tüm istemler birlikte** düşer. Ayakta yalnızca temel istem
+kalır — en geniş, yani en kırılgan olan. E+a ve E+m ayrı yazıldığında bu
+kayıp oluşmaz.
+
+#### Kol A — son hâl (7 istem)
+
+Numaralar daralma sırasına göre yeniden dizildi: tek unsurlular önce,
+birleşimler sonra.
+
+**İSTEM 1 — temel**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; belirlenen sayıdaki öğelere,
+> eklenen tüm öğeler için eşit ihtimalle değer üreten yöntem.
+
+**İSTEM 2 — E + anında/geri alınamaz** *(yeni)*
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **ÖĞENİN EVRENE EKLENMESİYLE,
+> ANINDA VE GERİ ALINAMAZ BİÇİMDE** belirlenen sayıdaki öğelere, eklenen
+> tüm öğeler için eşit ihtimalle değer üreten yöntem.
+
+**İSTEM 3 — E + mercisizlik** *(yeni)*
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **HİÇBİR TARAFIN ETKİSİ
+> OLMAKSIZIN** belirlenen sayıdaki öğelere, eklenen tüm öğeler için eşit
+> ihtimalle değer üreten yöntem.
+
+**İSTEM 4 — E + bağımsızlık** *(eski istem 2)*
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **ÖĞENİN EVRENE EKLENMESİ İLE
+> TETİKLENEN ANCAK ÖĞENİN EKLENMESİNE VE/VEYA KENDİSİNE HAS
+> ÖZELLİKLERİNDEN BAĞIMSIZ OLARAK** ve eklenen tüm öğeler için eşit
+> ihtimalle, belirlenen sayıdaki öğeler için değer üreten yöntem.
+
+**İSTEM 5 — E + bağımsızlık + anında** *(eski istem 3)*
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
+> kendisine has özelliklerinden bağımsız olarak, **ÖĞENİN EVRENE
+> EKLENMESİYLE, ANINDA VE GERİ ALINAMAZ BİÇİMDE** ayrıca eklenen tüm
+> öğeler için eşit ihtimalle, belirlenen sayıdaki öğeler için değer üreten
+> yöntem.
+
+**İSTEM 6 — E + bağımsızlık + mercisizlik** *(eski istem 4)*
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
+> kendisine has özelliklerinden bağımsız olarak, **HİÇBİR TARAFIN ETKİSİ
+> OLMAKSIZIN** ve eklenen tüm öğeler için eşit ihtimalle, belirlenen
+> sayıdaki öğeler için değer üreten yöntem.
+
+**İSTEM 7 — üçü birden** *(eski istem 5)*
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
+> kendisine has özelliklerinden bağımsız olarak, **HİÇBİR TARAFIN ETKİSİ
+> OLMAKSIZIN**, öğenin evrene eklenmesiyle, **ANINDA VE GERİ ALINAMAZ
+> BİÇİMDE** ayrıca eklenen tüm öğeler için eşit ihtimalle, belirlenen
+> sayıdaki öğeler için değer üreten yöntem.
+
+#### Unsur tablosu — kol A
+
+| # | Evren | Nicelik | Eşihtimal | Bağımsızlık | Anında/geri alınamaz | Mercisizlik |
+|---|---|---|---|---|---|---|
+| **1** | ✅ | ✅ | ✅ | — | — | — |
+| **2** | ✅ | ✅ | ✅ | — | ✅ | — |
+| **3** | ✅ | ✅ | ✅ | — | — | ✅ |
+| **4** | ✅ | ✅ | ✅ | ✅ | — | — |
+| **5** | ✅ | ✅ | ✅ | ✅ | ✅ | — |
+| **6** | ✅ | ✅ | ✅ | ✅ | — | ✅ |
+| **7** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+Üç tek unsurlu (2, 3, 4) birbirine borçlu değil; üçünden biri düşse
+kalanlar ayakta kalır. 5, 6, 7 ikili ve üçlü birleşimlerdir.
+
+#### Numara karşılıkları — eski kayıtlar için
+
+| Eski | Yeni |
+|---|---|
+| İstem 2 (bağımsızlık) | **İstem 4** |
+| İstem 3 (anında, bağımsızlıkla) | **İstem 5** |
+| İstem 4 (mercisizlik, bağımsızlıkla) | **İstem 6** |
+| İstem 5 (üçü birden) | **İstem 7** |
+
+Kol B (kesit) ve kol C (evren içinde evren) istemleri bu dizilimden
+sonra numaralanacak; önceki §55.1g-i kayıtlarındaki 6, 7, 8 numaraları
+geçersizdir.
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
