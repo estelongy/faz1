@@ -7409,6 +7409,90 @@ Kol B (kesit) ve kol C (evren içinde evren) istemleri bu dizilimden
 sonra numaralanacak; önceki §55.1g-i kayıtlarındaki 6, 7, 8 numaraları
 geçersizdir.
 
+### 55.1k ⭐ ÖNGÖRÜLEMEMEZLİK İSTEME GİRDİ (25 Ekim)
+
+**Kurucunun itirazı:**
+
+> *"sen şunu zannediyorsun sanki. biz isteme yazmadık diye
+> öngörülememezlik buluşun bir bileşeni değil mi sanıyorsun"*
+
+Öngörülememezlik kurucunun saydığı üç kıymetliden biriydi (*"kesit,
+eşihtimallilik ve öngörülememezlik"*) ancak hiçbir isteme girmemişti.
+Gerekçe *"bağımsızlık + mercisizlik zaten kapsıyor"* diye bırakılmıştı —
+**bu gerekçe eksikti.**
+
+#### Üç unsur üç ayrı iş yapıyor
+
+| Unsur | Ne söyler |
+|---|---|
+| Bağımsızlık | Seçim öğenin **özelliğine** bakmaz |
+| Mercisizlik | Seçime **taraf** karışmaz |
+| **Öngörülememezlik** | **Dışarıdan izleyen sırayı tahmin edemez** |
+
+**Kanıt örneği:** *"Her 100. müşteriye değer üretilir"* — bağımsızdır
+(özelliğe bakmaz), mercisizdir (kimse karışmaz), ancak **tamamen
+öngörülebilirdir.** İlk iki unsur bunu elemiyor.
+
+Bu, en somut prior art'a dokunan noktadır: **US7784682B2** (JPMorgan
+Chase) tarifnamesindeki *"each nth customer, such as every 100
+customers"* ifadesi tam buraya düşer. Busnel & Tillé 2020'de de kayıtlı:
+öngörülebilirlik = saldırı yüzeyi.
+
+#### İfade seçimi — neden sonuç değil sebep yazıldı
+
+**Risk:** Yalnızca *"öngörülemez biçimde"* yazılsa incelemeci *"kime
+göre, nasıl ölçülür"* diye sorar (SMK m.92 belirlilik). Ölçülemeyen bir
+sıfat olur.
+
+**Çözüm:** Öngörülememezlik **sebebiyle birlikte** yazıldı. Rastgelelik
+somut ve denetlenebilir bir teknik özelliktir; öngörülemezlik onun doğal
+sonucudur. Tek başına sonuç yazılsa savunulacak mekanizma kalmazdı.
+
+| Aday | Değerlendirme |
+|---|---|
+| *"hangi öğelerin değer alacağı önceden belirlenebilir olmaksızın"* | Elendi — yalnızca bir yokluğu söylüyor, dayanağı yok |
+| **"değer üretilecek öğelerin rastgele belirlendiği ve hangi öğelerin değer alacağının önceden belirlenebilir olmadığı"** | ✅ Sebep + sonuç birlikte |
+
+**Not:** *"Rastgele belirlendiği"* ifadesi kol B'nin kesit isteminde de
+geçer; orada **kesit açılışında**, burada **genel.** Çakışma değil,
+genişlik farkıdır.
+
+#### İSTEM 5 — E + öngörülememezlik *(yeni)*
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **DEĞER ÜRETİLECEK ÖĞELERİN
+> RASTGELE BELİRLENDİĞİ VE HANGİ ÖĞELERİN DEĞER ALACAĞININ ÖNCEDEN
+> BELİRLENEBİLİR OLMADIĞI**, belirlenen sayıdaki öğelere, eklenen tüm
+> öğeler için eşit ihtimalle değer üreten yöntem.
+
+#### Kol A — unsur tablosu (8 istem)
+
+| # | Evren | Nicelik | Eşihtimal | Bağımsızlık | Anında | Mercisizlik | Öngörülememezlik |
+|---|---|---|---|---|---|---|---|
+| **1** | ✅ | ✅ | ✅ | — | — | — | — |
+| **2** | ✅ | ✅ | ✅ | — | ✅ | — | — |
+| **3** | ✅ | ✅ | ✅ | — | — | ✅ | — |
+| **4** | ✅ | ✅ | ✅ | ✅ | — | — | — |
+| **5** | ✅ | ✅ | ✅ | — | — | — | ✅ |
+| **6** | ✅ | ✅ | ✅ | ✅ | ✅ | — | — |
+| **7** | ✅ | ✅ | ✅ | ✅ | — | ✅ | — |
+| **8** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
+
+İstemler 2, 3, 4 ve 5 tek unsurludur; dördü birbirine borçlu değildir,
+biri düşse kalanlar ayakta kalır. 6, 7 ve 8 birleşimlerdir.
+
+**Açık kalan:** Öngörülememezliğin birleşimlerde (6, 7, 8) yer alıp
+almayacağı kararlaştırılmadı. Dördüncü unsur olarak eklenirse birleşim
+sayısı artar.
+
+#### Numara karşılıkları — §55.1j'ye göre
+
+| §55.1j | Son hâl |
+|---|---|
+| İstem 5 (bağımsızlık+anında) | **İstem 6** |
+| İstem 6 (bağımsızlık+mercisizlik) | **İstem 7** |
+| İstem 7 (üçü birden) | **İstem 8** |
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
