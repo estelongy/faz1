@@ -7493,6 +7493,126 @@ sayısı artar.
 | İstem 6 (bağımsızlık+mercisizlik) | **İstem 7** |
 | İstem 7 (üçü birden) | **İstem 8** |
 
+### 55.1L ⭐⭐ İSTEM SETİ SON HÂL — 7 BAĞIMSIZ İSTEM (25 Ekim)
+
+**Kurucunun iki kararı:**
+
+> *"birleşimlerin sonu gelmez ki"*
+
+> *"bence bu kadar istem gereksiz. kesiti de eklesene tek başına"*
+
+**İki yapısal karar alındı:**
+
+**1. Kol ayrımı kaldırıldı.** A / B / C kolları diye bölmenin pratik
+faydası yoktu; tüm istemler temelin üstüne **tek unsur** ekleyen kardeş
+dallardır. Kesit de diğer unsurlar gibi tek unsurlu bir istem olarak
+girdi.
+
+**2. Ara birleşimler silindi.** Beş unsurun tüm birleşimleri 31 istem
+eder; ücret ve inceleme yükü anlamsız şişer. İnceleme sırasında geniş
+istemler düşerse **en dar olanı** ayakta kalır, ara basamaklar bir iş
+yapmaz. Gerekirse vekil raporuna göre **bağımlı istem** olarak eklenir —
+bağımsız yazmak gerekmez.
+
+#### SET — 7 bağımsız istem
+
+**İSTEM 1 — temel**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; belirlenen sayıdaki öğelere,
+> eklenen tüm öğeler için eşit ihtimalle değer üreten yöntem.
+
+**İSTEM 2 — anında ve geri alınamaz**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **ÖĞENİN EVRENE EKLENMESİYLE,
+> ANINDA VE GERİ ALINAMAZ BİÇİMDE** belirlenen sayıdaki öğelere, eklenen
+> tüm öğeler için eşit ihtimalle değer üreten yöntem.
+
+**İSTEM 3 — mercisizlik**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **HİÇBİR TARAFIN ETKİSİ
+> OLMAKSIZIN** belirlenen sayıdaki öğelere, eklenen tüm öğeler için eşit
+> ihtimalle değer üreten yöntem.
+
+**İSTEM 4 — bağımsızlık**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **ÖĞENİN EVRENE EKLENMESİ İLE
+> TETİKLENEN ANCAK ÖĞENİN EKLENMESİNE VE/VEYA KENDİSİNE HAS
+> ÖZELLİKLERİNDEN BAĞIMSIZ OLARAK** belirlenen sayıdaki öğelere, eklenen
+> tüm öğeler için eşit ihtimalle değer üreten yöntem.
+
+**İSTEM 5 — öngörülememezlik**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **DEĞER ÜRETİLECEK ÖĞELERİN
+> RASTGELE BELİRLENDİĞİ VE HANGİ ÖĞELERİN DEĞER ALACAĞININ ÖNCEDEN
+> BELİRLENEBİLİR OLMADIĞI**, belirlenen sayıdaki öğelere, eklenen tüm
+> öğeler için eşit ihtimalle değer üreten yöntem.
+
+**İSTEM 6 — kesit**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; **EVRENİN ARDIŞIK KESİTLERE
+> AYRILDIĞI VE DEĞER ÜRETİLECEK ÖĞE SAYISININ HER KESİT İÇİN
+> BELİRLENDİĞİ**, belirlenen sayıdaki öğelere, eklenen tüm öğeler için
+> eşit ihtimalle değer üreten yöntem.
+
+**İSTEM 7 — beşi birden (en dar)**
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; öğenin eklenmesine ve/veya
+> kendisine has özelliklerinden bağımsız olarak, hiçbir tarafın etkisi
+> olmaksızın, öğenin evrene eklenmesiyle anında ve geri alınamaz biçimde,
+> evrenin ardışık kesitlere ayrıldığı ve değer üretilecek öğelerin
+> rastgele belirlendiği ve hangi öğelerin değer alacağının önceden
+> belirlenebilir olmadığı, belirlenen sayıdaki öğelere, eklenen tüm
+> öğeler için eşit ihtimalle değer üreten yöntem.
+
+#### UNSUR TABLOSU
+
+| # | Evren | Nicelik | Eşihtimal | Anında | Mercisizlik | Bağımsızlık | Öngörülememezlik | Kesit |
+|---|---|---|---|---|---|---|---|---|
+| **1** | ✅ | ✅ | ✅ | — | — | — | — | — |
+| **2** | ✅ | ✅ | ✅ | ✅ | — | — | — | — |
+| **3** | ✅ | ✅ | ✅ | — | ✅ | — | — | — |
+| **4** | ✅ | ✅ | ✅ | — | — | ✅ | — | — |
+| **5** | ✅ | ✅ | ✅ | — | — | — | ✅ | — |
+| **6** | ✅ | ✅ | ✅ | — | — | — | — | ✅ |
+| **7** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+İstemler 2-6 tek unsurludur ve birbirine borçlu değildir: biri prior art
+karşısında düşse kalanlar ayakta kalır. İstem 7 en dar olduğu için kabul
+şansı en yüksek olandır.
+
+#### KESİT İSTEMİNİN YAZIMI — elenen alternatif
+
+| Aday | Değerlendirme |
+|---|---|
+| *"…ardışık kesitlere ayrıldığı ve her kesitte değer üretilecek öğelerin kesit açıldığında rastgele belirlendiği"* | Elendi — rastgelelik artık istem 5'te var, burada **tekrar** olur |
+| **"…ardışık kesitlere ayrıldığı ve değer üretilecek öğe sayısının her kesit için belirlendiği"** | ✅ Saf kesitleme unsuru; daha geniş durur |
+
+#### İPTAL EDİLEN İSTEMLER
+
+| İstem | Neden iptal |
+|---|---|
+| Evren içinde evren (eski 8) | **İhlal tespitine hiçbir şey eklemiyor.** Kol A/B istemleri tek evrenle de paralel evrenlerle de çalışan sistemi yakalar; her evren ayrı ayrı tarife uyar. Daha dar olduğu için fazlasını yakalamaz. Özellik gerçek ve kıymetlidir ancak yeri **tarifnamedir** — mekanizmanın uygulama genişliğini gösterir, ihlal sınırı çizmez |
+| İkili/üçlü birleşimler | Ara basamak bir iş yapmıyor; en dar istem (7) o işi görüyor |
+
+**Tarifnameye geçecek not (evren içinde evren):**
+
+> Aynı olay akışından birden fazla evren tanımlanabilir ve her evren kendi
+> içinde bağımsız olarak işletilebilir. Bir öğenin birden fazla evrene
+> eklenmesi yöntemin işleyişini etkilemez.
+
+#### SONRAKİ İŞ
+
+Bağımlı istemler. Adaylar: kesit büyüklüğünün tahminden türetilmesi,
+rastgelelik kaynağı/entropi, uygulama ortamları. Bağımsız istem seti
+kapandı.
+
 ### 55.1b ⭐ SABİT KALIP — bundan sonraki çalışma yöntemi
 
 **Kurucunun kararı (24 Ekim):**
