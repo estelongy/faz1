@@ -8734,3 +8734,203 @@ Oturumda denenen ve kurucunun elediği yazımlar:
 **Bu bölüm sabitlenmemiştir.** §57'deki eşihtimal ifadesi ve §56'daki
 iki aşama ayrımı sabittir; buradaki kök ve temel yapısı tartışması
 açıktır.
+
+---
+
+## 59. ⭐ TARİFNAME — TERİMLER SÖZLÜĞÜ ve PASAJ METAFORU (28 Ekim)
+
+### 59.1 PASAJ METAFORU — kurucunun çerçevesi
+
+> *"her yöntemi, tekniği, bilimi bir pasajdaki ofisler gibi düşün. ben ve
+> sen bir müşteriyiz ve pasaja girdik. kimse tek benim derdimize çare
+> bulmadı. işin kötü tarafı ofislerin birbirinden haberleri bile yok.
+> canımız sıkıldı ve üst kat terasa çıktık. tüm ofisleri görüyor ve
+> izliyoruz. sonra düşündük ki ulan pasajın ismi bile yok. bu kadar ofis
+> ne bok yemeye toplanmış ki?"*
+
+#### Terastan görünen üç şey
+
+**1. Her ofis bir iş yapıyor ve iyi yapıyor — ama kendi müşterisi için.**
+
+| Ofis | Müşterisi | Müşterinin talebi |
+|---|---|---|
+| Fisher-Yates, SRS | İstatistikçi | *"Bana temsili bir örnek ver"* |
+| Piyango | Devlet / işletmeci | *"Gelir getiren bir oyun kur"* |
+| Reservoir | Mühendis | *"Akan veriden hafızaya sığacak örnek al"* |
+| Sadakat programı | Pazarlamacı | *"Çok harcayanı bana bağla"* |
+| Klinik randomizasyon | Araştırmacı | *"Karşılaştırılabilir gruplar kur"* |
+| NCR Voyix | Perakendeci | *"Müşteriye sürpriz ödül ver"* |
+| Online algoritmalar | Operasyon | *"Kaynağı en verimli dağıt"* |
+
+**Kurucunun derdi bunların hiçbiri değildi:** *"Kapıdan giren, o an,
+kendisinden sonra kimse gelmese bile, eşit şansla belirlenmiş olsun."*
+Bu derdi kimse sormadı, çünkü **kimsenin müşterisi bunu sormadı.**
+
+**2. Pasajın adı yok çünkü ofisler aynı sokağa açılmıyor.** Her biri
+kendi müşterisinin kapısından giriliyor. Kimse yukarı çıkıp *"biz
+hepimiz aslında aynı şeyi yapıyoruz"* dememiş.
+
+**3. ⭐ Ofisler birbirinden habersiz olduğu için hiçbiri ötekinin
+eksiğini kapatmıyor.** İstatistikçi reservoir'ın *"sonda karar veriyor"*
+eksiğini bilmiyor — onun müşterisi için eksik değil. Perakendeci
+Fisher-Yates'in *"kimlik gerektiriyor"* eksiğini bilmiyor — zaten kimlik
+tutuyor.
+
+**Eksikler ancak bu buluşun derdinden bakınca eksik görünüyor.**
+Yukarıdan bakan biri olmadan o eksikler hiç görünmedi.
+
+#### Tarifnameye yazılacak hâli
+
+Metafor patent metnine girmez; teknik karşılığı girer:
+
+> Öğe belirleme, birbirinden bağımsız literatürlerde ayrı ayrı ele
+> alınmıştır. Her yöntem kendi uygulama alanının gereklerine göre
+> geliştirilmiş, diğer alanların kısıtlarını gözetmemiştir. Bu nedenle
+> bir yöntemin çözdüğü sorun başka bir alanda kısıt olarak kalmıştır.
+
+Bu cümle **tarifnamenin "tekniğin bilinen durumu" bölümünün açılışı**
+olur.
+
+#### Pasajın adı
+
+> *"pasaja ad koyalım. öğe belirleme pasajı iyi değil mi?"*
+
+**Pasajın adı: ÖĞE BELİRLEME** (§56.1'de alan adı olarak sabitlendi).
+
+Elenen adaylar:
+
+| Aday | Neden elendi |
+|---|---|
+| Öğe Ayırma | *"Ayırma"* fiziksel ayrılma çağrışımı yapıyor |
+| Alt Küme Seçimi | Literatür terimi; yeni çatı gibi durmuyor, mevcut bir alana yaslanıyor |
+
+*"Belirleme"*nin geniş olması bu durumda **avantajdır** — pasajda çok
+farklı iş yapan ofisler var, daha dar bir ad bazılarını dışarıda
+bırakır.
+
+### 59.2 ⭐⭐ "ÖĞE" NEDEN BU KELİME — ofislerin ortak kelimesi yok
+
+**Kurucunun sorusu:** *"ofislerin hepsi öğe mi diyor"*
+
+**Hayır. Hiçbiri "öğe" demiyor.** Her ofisin kendi kelimesi var:
+
+| Ofis | Kullandığı kelime |
+|---|---|
+| Örnekleme teorisi | **birim** (unit), popülasyon |
+| Piyango | **bilet**, katılımcı |
+| Reservoir | **kayıt** (record), akış elemanı |
+| Sadakat | **müşteri**, üye |
+| Klinik randomizasyon | **hasta**, denek (subject) |
+| NCR Voyix | **işlem** (transaction) |
+| Çevrimiçi algoritmalar | **gelen** (arrival), talep |
+
+Yedi ofis, yedi kelime. **Bu, pasajın adsız olmasının sebeplerinden
+biridir:** aynı şeyi konuşuyorlar ama ortak kelimeleri yok. Biri
+*"birim"* diyor, biri *"hasta"* diyor, ikisi birbirini duymuyor.
+
+**"Öğe" terastan bakan kişinin kelimesidir** — kurucunun koyduğu.
+
+| Neden doğru seçim | |
+|---|---|
+| Hiçbir ofise ait değil | Taraf tutmuyor |
+| Hepsini kapsıyor | Hasta da öğe, işlem de öğe, bilet de öğe |
+| İnsan şartı koşmuyor | Araç, cihaz, kayıt da öğe |
+
+**⭐ Patent açısından kritik avantaj:** Yerleşik bir terim kullanılırsa o
+terimin literatürü başvuruyu **bağlar.** *"Birim"* yazılsa örnekleme
+teorisinin tanımı, *"işlem"* yazılsa ticari sistemlerin tanımı geçerli
+olur. **"Öğe" bağsızdır** — tarifnamede başvuru sahibi tanımlar.
+
+### 59.3 ✅ TARİFNAME TERİMLER SÖZLÜĞÜ
+
+Bu bölüm tarifnamede **"Tanımlar"** başlığı altında yer alacaktır.
+İncelemeci bu tanımlar olmadan *"öğe nedir, evren nedir"* diye sorar
+(m.92 belirlilik).
+
+#### Öğe
+
+> Bu belgede **"öğe"**, topluluğa katılan ve tek tek ayırt edilebilen her
+> bir unsuru ifade eder; kişi, işlem, kayıt, araç, cihaz veya başka
+> herhangi bir varlık olabilir.
+
+**Ek tanım notu (§52'den devreden, birleştirilecek):**
+
+> Aynı varlık, farklı evrenlerde veya aynı evrenin farklı zamanlarında
+> farklı birer öğedir. Öğe, varlığın kendisi değil, varlığın topluluğa
+> katılma olayıdır.
+
+Bu ikinci cümle kurucunun tespitine dayanır:
+
+> *"aynı insan her seferinde, yada her evrende farklı bir öğedir.
+> kimliksizliğin sırrı burda"*
+
+#### Evren (topluluk)
+
+**Üst kat (cins) için — hepsini kapsayan:**
+
+> **Öğelerin tek tek ayırt edilebildiği ve sayılabildiği herhangi bir
+> topluluk.**
+
+| | |
+|---|---|
+| **Kapsar** | Liste, akış, kapalı küme, açık küme — hepsi |
+| **Koşul koymaz** | Sayının bilinip bilinmediğine, akışın olup olmadığına değinmiyor |
+| **Sınır çizer** | Sayılamayan şeyler dışarıda: sürekli büyüklükler (su, zaman, ısı). Orada öğe belirleme diye bir şey yok |
+
+**Alt kat (yöntem) için — bu buluşun evreni:**
+
+> Önceden kesin büyüklüğü bilinmeyen ve öğeleri zaman içerisinde akışa
+> katılan evren.
+
+**İki evren, iki kat:**
+
+| Kat | Evren tanımı | Rolü |
+|---|---|---|
+| **Üst (cins)** | Ayırt edilebilen ve sayılabilen herhangi bir topluluk | Pasajın tamamını görür, alt kat koşulu taşımaz |
+| **Alt (yöntem)** | Büyüklüğü bilinmeyen, akışkan evren | Bu buluşun dükkânı, koşullu |
+
+#### Değer
+
+> **"Değer"**, belirlenen öğeye kurucu tarafından bağlanan sonuçtur.
+> Değerin niteliği yöntemin kapsamı dışındadır.
+
+**Not:** Kurucunun ilk tanımı *"belirlenen öğeye verilecek pozitif
+olgudur"* şeklindeydi. *"Pozitif"* ve *"olgu"* kelimeleri §56.3'te
+elendi — pozitif bir değer yargısı (klinik kontrol kolu pozitif
+değildir), olgu ölçülebilir bir şey söylemiyor.
+
+#### Kurucu
+
+> **"Kurucu"**, evreni, kesit büyüklüğünü ve belirlenecek öğe sayısını
+> sistem kurulurken tanımlayan taraftır. Kurucunun tanımladığı
+> parametreler sistem işlemeye başladıktan sonra değiştirilemez;
+> değiştirilmesi hâlinde yeni bir evren kurulmuş olur ve önceki evrenle
+> bağ kalmaz.
+
+Bu tanım §56.6'daki yedinci itirazın cevabını taşır.
+
+#### Kesit
+
+> **"Kesit"**, evrenin ardışık ve bitişik bölümlerinden her biridir.
+> Kesit, içine belirlenen sayıda öğe katıldığında kapanır ve yeni kesit
+> açılır. Kesitin kapanması değer üretilmesine bağlı değildir.
+
+Son cümle §56.6'daki altıncı itirazın cevabıdır: kesit **sayımla**
+kapanır.
+
+#### Konum
+
+> **"Konum"**, bir kesit içinde kaçıncı sırada katılacak öğenin
+> belirleneceğini gösteren sıra numarasıdır. Konum, öğeler katılmadan
+> önce belirlenir.
+
+⚠️ **Not:** Konumun istemde mi yalnızca tarifnamede mi yer alacağı
+**henüz karara bağlanmadı** (§58.5).
+
+### 59.4 SIRADAKİ İŞ
+
+| | Konu |
+|---|---|
+| 1 | §58.7'deki dört açık karar — kök, konum, dört temel, ikinci katman |
+| 2 | Tarifname "tekniğin bilinen durumu" bölümü — pasaj metaforunun teknik karşılığı + yöntem karşılaştırma tablosu |
+| 3 | Blok randomizasyonu taraması |
