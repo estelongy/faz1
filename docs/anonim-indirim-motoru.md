@@ -8443,3 +8443,294 @@ yoktur.
 > yöntem.
 
 Set yeniden yazılacak — §56.10'daki birinci iş kalemi.
+
+---
+
+## 58. ⭐⭐ KÖK ARAYIŞI — SAYAÇ-KONUM VE YENİ CİNS (28 Ekim)
+
+**Durum:** ⚠️ **AÇIK UÇLU — SABİTLENMEDİ.** Kurucunun kendi beyanı:
+
+> *"yaz ama benim kafam hala netleşmedi, içimdeki hissi ve fikri tam
+> yansıtamadım"*
+
+Bu bölüm bir arayışın kaydıdır, varılan sonucun değil. Aşağıdaki
+taslaklar **onaylanmış istem değildir.** Konuşma yeniden açıldığında bu
+bölüm okunur, **başa sarılmaz.**
+
+### 58.1 İKİ EVREN TESTİ — "sınıfta olanlar" / "sınıfa girenler"
+
+Kurucu, son çalışmaların iki somut evrende nasıl işlediğini sordu.
+
+#### İlk cevabım ve kurucunun düzeltmesi
+
+İlk kurguda *"sınıfta olanlar"* evrenini **akışsız** saydım — herkes
+hazır oturuyor, liste var. Bu kurguda izo-odds'un üstünlüğü yoktu;
+sıra yapay olarak kurulmak zorunda kalıyor, mekanizma Fisher-Yates'e
+indirgeniyordu.
+
+**Kurucunun düzeltmesi:**
+
+> *"gerizekalı, sen n bilinen evreni akışkan düşünmedin ki. o da akışkan
+> ama"*
+
+**Doğrudur.** O sınıf da dolarak oluştu. N bilinir ama **akış vardır.**
+
+#### Düzeltilmiş karşılaştırma — N BİLİNEN AKIŞ
+
+30 kişilik sınıf, yoklama alınmış, 30'u da gelecek — ama teker teker
+giriyorlar.
+
+| | Fisher-Yates | İzo-odds |
+|---|---|---|
+| Ne seçer | **Kişiyi** — "Ahmet" | **Konumu** — "7. giren" |
+| Kimlik gerekli mi | ✅ Liste olmalı | ❌ Kimse tanınmıyor |
+| Sonuç kimde | Listeyi gören herkeste | **Hiç kimsede** |
+| Kayırma | Mümkün — Ahmet'e haber verilir | Mümkün değil |
+| Ahmet gelmezse | Sorun — yeniden çekim gerekir | Sorun değil — 7. kim olursa |
+
+**⭐ Kilit tespit:** N bilinse bile fark vardır çünkü **Fisher-Yates
+kimlik üzerinden, izo-odds konum üzerinden çalışır.**
+
+Bu, duruşmada kurucunun söylediği şeyin aynısıdır:
+
+> *"mesele şu ama, kimin 17 ve 38 olacağı da belli değil"*
+
+#### N bilinen akışta mevcut yöntemlerin çakıldığı yer
+
+| Yöntem | Çakıldığı koşul |
+|---|---|
+| Fisher-Yates | **Kimlik gerekir**; sonuç baştan bilinir, kayırmaya açık |
+| Reservoir | Eşitlik **sonda**; 7. kişi otururken bilmez, sonra atılabilir |
+| Piyango | Fiş = kimlik; çekiliş akışın bitmesini bekler |
+| "Her 10. giren" | **Öngörülebilir** — kapıda sayan sıraya girer |
+| NCR randomized win | **Kaç kişi** belirleneceği belirsiz |
+| Sadakat mantığı | Kimlik + geçmiş |
+| Blok randomizasyonu | Kimlik + protokol; hasta kola **atanır**, kendisi sıraya girmez |
+
+**Düzeltme kaydı:** İlk cevabımda *"N bilinen evrende izo-odds'un
+söyleyecek sözü yok"* demiştim. **Yanlıştı.** N bilinen akışta da
+üstündür; tek alternatif olan Fisher-Yates kimlik ve önceden bilinirlik
+gerektirir.
+
+### 58.2 ⭐ YENİ CİNS — "KONUMLANDIRMA İLE ÖĞE SEÇİMİ"
+
+**Kurucunun adlandırması:**
+
+> *"o zaman patent açısından alan adımı 'konumlandırma ile öğe belirleme
+> yöntemi'"*
+
+> *"konumlandırma ile öğe seçimi işte"*
+
+**Önemli ayrım — bu ALAN ADI DEĞİL:** Alan (Öğe Belirleme Yöntemleri)
+tüm yöntemleri kapsayan çatıdır; Fisher-Yates, piyango, sadakat,
+reservoir hiçbiri konum üzerinden çalışmaz. *"Konumlandırma ile"*
+eklenirse alan bu buluşa daralır, çatı olmaktan çıkar.
+
+**Doğru yer: alan içinde YENİ BİR CİNS.**
+
+| Katman | Ad |
+|---|---|
+| **Alan** | Öğe Belirleme Yöntemleri *(§56.1)* |
+| **Yeni cins** | **Konumlandırma ile Öğe Seçimi** |
+| **Bu buluş** | İzo-odds |
+
+#### ⭐ CİNS AYRIMI — buluş basamağının en güçlü hâli
+
+| Cins | Nasıl belirler | Yöntemler |
+|---|---|---|
+| **Kimlik üzerinden** | Öğeyi seçer | Fisher-Yates, piyango, sadakat, reservoir, blok randomizasyonu, NCR, IDS |
+| **Konum üzerinden** | **Yeri seçer, öğe sonra gelir** | **İzo-odds — tek** |
+
+**Tarifnameye yazılacak hâli:**
+
+> Mevcut öğe belirleme yöntemlerinin tamamı, öğeyi kendi kimliği veya
+> özelliği üzerinden belirler. Bu buluş öğeyi konum üzerinden belirler;
+> konum öğe mevcut olmadan önce belirlenir ve o konuma hangi öğenin denk
+> geleceği belirleme anında bilinemez.
+
+Bu bir **cins ayrımıdır** ve buluş basamağı savunmasının en güçlü
+biçimidir: *"aşikâr değil, çünkü alanın tamamı diğer cinste çalışıyor."*
+
+### 58.3 ⭐⭐ KÖK — SAYAÇ-KONUM
+
+**Soru:** *"8+ yöntemi devreden çıkaran ne"*
+
+**Cevap:** Kararın **sonuca bakmadan** verilmesi. O sekiz yöntem bekler,
+biriktirir, sonra karar verir — Fisher-Yates listeyi, reservoir akışın
+bitmesini, piyango satışın kapanmasını, IDS pencerenin dolmasını.
+İzo-odds kararı **önce** verir, veri gelmeden.
+
+İki kilit bunu iki ayrı dilden söyler:
+
+| Kilit | Ne der | Neden eler |
+|---|---|---|
+| **Anındalık** | Karar öğe geldiği anda | Beklemek yasak |
+| **Eşihtimal** | Sonraki eklemeler ihtimali değiştirmez | Biriktirmek yasak |
+
+Reservoir'da ikisi birden çiğnenir: 42. öğenin durumu 500. öğe geldiğinde
+değişir.
+
+**Özü:** Mevcut yöntemler karar için **bilgiye** ihtiyaç duyar — kaç öğe
+var, hangileri geldi. İzo-odds karar için hiçbir bilgiye ihtiyaç duymaz;
+yalnızca **sayaca.**
+
+#### Kurucunun sıçraması
+
+> *"o zaman sayaç bizim temelimiz"*
+
+> *"sayaç-konum bizim kökümüz gibi duruyor"*
+
+**⚠️ Sayaç tek başına temel OLAMAZ:** Sayaç tutmak bilinen tekniktir.
+*"Her 100. müşteri"* de sayaçla çalışır, NCR sequential win de. Savcı
+*"sayaç tutup eşiğe ulaşınca işlem tetiklemek bilinen tekniktir"* der.
+
+**Fark sayaçta değil, eşiğin NEREDEN GELDİĞİNDE:**
+
+| | Sayaç + ne | Sonuç |
+|---|---|---|
+| "Her 100." | Sabit eşik | Öngörülebilir |
+| NCR sequential | Sabit eşik | Aynı |
+| **İzo-odds** | **Önceden rastgele belirlenmiş konum** | Öngörülemez, eşit |
+
+#### ⭐ KÖK-SONUÇ İLİŞKİSİ
+
+| | |
+|---|---|
+| **KÖK** | Konum önce belirlenir, sayaç ona ulaşınca öğe belirlenir |
+| **Sonuç 1** | **Anındalık** — sayaç ulaştığı anda karar verilmiş olur |
+| **Sonuç 2** | **Eşihtimal** — her öğe o konuma denk gelme şansını eşit taşır |
+
+İki kilit bu mekanizmanın **kaçınılmaz sonuçlarıdır.** Kök doğru
+işliyorsa ikisi otomatik gelir.
+
+**Patent açısından kritik:** m.82'de **sonuç değil mekanizma**
+savunulur. İstem *"eşit olsun"* demez, *"şunu şöyle yap"* der; eşitlik
+ondan doğar. Bu, soyutluk itirazına en güçlü cevaptır.
+
+#### Kök istem taslağı — ONAYLANMADI
+
+> Öğe belirleme yöntemi olup; belirlenecek sıra numarasının, öğeler
+> eklenmeden önce rastgele belirlenmesi ve eklenen öğelerin sırasını
+> sayan sayaç bu numaraya ulaştığında o sıradaki öğenin belirlenmesi ile
+> karakterize edilir.
+
+**Üç adım:** rastgele numara → sayım → denk gelen belirlenir.
+Evren yok, kesit yok, nicelik yok, eşihtimal iddiası yok — hepsi bundan
+doğar.
+
+#### Basitlik meselesi
+
+**Kurucunun tespiti:** *"basit değil mi böyle bakınca"*
+
+| | |
+|---|---|
+| ✅ Lehte | Patentin en güçlü istemleri basit olanlardır. Karmaşık istem çok unsur taşır, her unsur bir kaçış kapısıdır. Üç adımlık istemden kaçmak zordur |
+| ⚠️ Aleyhte | Basitlik **aşikârlık itirazını davet eder**: *"bunu bir yazılımcı bir öğleden sonrada yazar"* |
+
+**Cevap elimizde:** Alan altı bin yıldır öğe belirliyor ve **kimse bunu
+yapmadı.** Fisher-Yates 1938, Madow 1949, reservoir 1985, IDS 2021, NCR
+bugün — hepsi kimlik veya özellik üzerinden belirledi. Konum üzerinden
+belirlemek **akla gelmedi.**
+
+Aşikâr olan yapılmış olur. Yapılmamışsa aşikâr değildir.
+
+Kurucunun metaforu bunu açıklar: *"stadyum boşken koltuğu seçmek"* —
+herkes insana bakıyordu, o koltuğa baktı. Bakış değişimi basittir ama
+kimse bakmamıştır.
+
+### 58.4 TEMEL YAPISI TARTIŞMASI — açık
+
+**Kurucunun kuralı:**
+
+> *"bak dostum. bağımsız istemlerimizi tek temel üzerine kurmayacaz"*
+
+Bu kural daha önce de konulmuş ve bir kez ihlal edilmişti (`63b4197` —
+bağımsızlık gövde yapılıp herkese bağlanmıştı). Aynı hata bu oturumda
+tekrar ediliyordu: her istem *"önceden kesin büyüklüğü bilinmeyen…
+akışa katılan evrende"* kalıbıyla başlıyordu. **O evren ifadesi tek bir
+temeldir** — düşerse hepsi düşer.
+
+#### Konuşulan temeller
+
+| Temel | Elediği yöntem sayısı | Durum |
+|---|---|---|
+| **Anındalık** | 8+ | ✅ Temel |
+| **Eşihtimal** | 8+ | ✅ Temel |
+| **Bağımsızlık** | 2 | ✅ Temel — kimliksizliği taşıdığı için |
+| **Akışkan evren** | 3 | ✅ Temel |
+| Mercisizlik | 1-2 | ❌ Temel değil — *"bunlar kadar elemiyor"* |
+| Kesit | — | ❌ Temel değil — *"kesitsellik temel istem değil sanki"*; mekanizmanın nasıl kurulduğu, yöntemin ne yaptığı değil. Ayrıca Madow ve blok randomizasyonunda var |
+
+**Kurucunun kararı — mercisizlik ve konum için:**
+
+> *"ikisi de temelden sonraki katmanda işimize yarayacak"*
+
+#### İki katmanlı yapı
+
+| Katman | İçerik | Rolü |
+|---|---|---|
+| **Temel** | anındalık · eşihtimal · bağımsızlık · akışkan evren | **Ne yapıldığı** |
+| **İkinci** | kesit · konum · mercisizlik | **Nasıl yapıldığı** |
+
+İkinci katmanın üçü birbirine bağlıdır: **kesit** olmadan konum
+tanımlanamaz (konum neyin içinde?), konum olmadan mercisizlik soyut
+kalır. Üçü birlikte bir **mekanizma istemi** oluşturur ve m.82'yi en iyi
+geçen istem olur.
+
+**Kurucunun sırası:**
+
+> *"önce alanın genişliğinde istemler yapmalıyız, sonra nasıl
+> yapacağımızı katmanda ekleriz"*
+
+### 58.5 KONUM — İSTEMDE Mİ TARİFNAMEDE Mİ (açık)
+
+Kurucu bir ara *"konum tarifnamenin işi sanki"* dedi, sonra kökü
+sayaç-konum olarak kurdu. **Karar netleşmedi.**
+
+Takas kaydı:
+
+| | Konum istemde | Konum tarifnamede |
+|---|---|---|
+| Kapsam | Daralır | Geniş kalır |
+| m.82 | **Güçlenir** — somut işlem sırası | Zayıf — yalnızca sonuç talep edilir |
+| İhlal tespiti | **Kolaylaşır** | Zor — rakibin konum sakladığını göstermek işe yaramaz |
+| Yenilik savunması | İstemden | **Tarifnameden de kurulabilir** |
+
+**Kural:** Yenilik için istem gerekmez, **ihlal için gerekir.** Konum
+tarifnamede dursa yeniliği savunur, korumaz.
+
+**Tarifname yazılırken dikkat:** Konum *"bir uygulama biçimi"* olarak
+anlatılmalı, *"buluş konum belirlemeyi gerektirir"* diye değil. Aksi
+halde incelemeci istem 1'i konumlu okur ve istem daralır.
+
+| ⛔ Yazılmaz | ✅ Yazılır |
+|---|---|
+| "Buluş, konum belirlemeye dayanır" | "Bir uygulama biçiminde, konumlar kesit açıldığında belirlenir" |
+
+### 58.6 ELENEN İSTEM TASLAKLARI — kayıt
+
+Oturumda denenen ve kurucunun elediği yazımlar:
+
+| Taslak | Neden elendi |
+|---|---|
+| *"Öğelerin zaman içerisinde akışa katıldığı herhangi bir evrende…"* | *"Akış dersen evren kısıtlaması olmaz mı"* — akış bir evren niteliği, listeden seçimi dışlar |
+| *"Herhangi bir evrende…"* | Fisher-Yates'i de kapsar, prior art'a çakılır |
+| Her istemin aynı evren kalıbıyla başlaması | Tek temel üzerine kurma — kurucunun kuralına aykırı |
+
+### 58.7 ⚠️ AÇIK KALAN — kurucunun beyanı
+
+> *"benim kafam hala netleşmedi, içimdeki hissi ve fikri tam
+> yansıtamadım"*
+
+**Netleşmemiş noktalar:**
+
+| | Konu |
+|---|---|
+| 1 | Kök istem sayaç-konum üzerine mi kurulacak, yoksa iki kilit (anındalık + eşihtimal) üzerine mi |
+| 2 | Konum istemde mi tarifnamede mi |
+| 3 | Dört temel yapısı sabit mi — anındalık, eşihtimal, bağımsızlık, akışkan evren |
+| 4 | İkinci katman istemleri bağımsız mı bağımlı mı |
+
+**Bu bölüm sabitlenmemiştir.** §57'deki eşihtimal ifadesi ve §56'daki
+iki aşama ayrımı sabittir; buradaki kök ve temel yapısı tartışması
+açıktır.
