@@ -8287,3 +8287,159 @@ geçer. Yeni kalıpla hepsi değişir:
 | 2 | Blok randomizasyonu taraması (yeni komşu, hiç bakılmadı) |
 | 3 | *"Evren sonradan değiştirilemez"*i teknik olarak neyin sağladığı |
 | 4 | Tarifname: alan tanımı, dokuz itirazın cevapları, k>1 yerine koymadan çekim |
+
+---
+
+## 57. ⭐⭐ EŞİHTİMAL YENİDEN YAZILDI — ÇEKİRDEK İKİLİ SABİTLENDİ (28 Ekim)
+
+**Durum:** ✅ Sabitlendi. Bu bölüm §55 ve §56'daki eşihtimal ifadesinin
+yerine geçer.
+
+### 57.1 SORU — hangi unsur en çok ayırıyor
+
+**Kurucunun sorusu:**
+
+> *"şimdi bana şunu söyle, unsurlarımızdan hangisi bizi bilinen
+> yöntemlerden 'en çok' miktarda ayırıyor"*
+
+**Ölçüt:** Her unsurun tek başına kaç bilinen yöntemi eledigi.
+
+| Unsur | Elediği yöntemler | Sayı |
+|---|---|---|
+| **Anında/geri alınamaz** | Piyango, Fisher-Yates, SRS, reservoir, çekiliş, gün sonu hesaplayan tüm sistemler, IDS, Tillé ekolü | **8+** |
+| Eşihtimal *(eski yazım)* | Sadakat, VIP çekiliş, "her 100.", ağırlıklı Bernoulli | 4 |
+| Evren (N bilinmez) | Piyango, Fisher-Yates, blok randomizasyonu | 3 |
+| Nicelik | NCR randomized win, Bernoulli | 2 |
+| Bağımsızlık | Sadakat, segment kampanyaları | 2 |
+| Mercisizlik | Elle müdahaleli sistemler | 1-2 |
+
+**İlk bulgu:** Anındalık en çok eliyordu. Sebebi yapısal — örnekleme
+literatürünün **tamamı** kararı sonda verir: Fisher-Yates listeyi
+karıştırıp sonra alır, reservoir akışın bitmesini bekler, piyango satışı
+kapatır, IDS pencereyi kapatıp hesaplar.
+
+**Ayrıca:** Anındalık, bugünkü duruşmada **teknik üstünlüğe çevrilen tek
+unsurdur** (§56.6, itiraz 1). Ötekiler *"adalet"* sağlar — EPO bunu
+teknik etki saymaz, idari/ticari amaç sayar. Anındalık **güvenlik**
+sağlar; teknik etki olarak savunulabilir.
+
+### 57.2 ⭐ EŞİHTİMALİN ZAYIFLIĞI — TEŞHİS
+
+Eski yazım: *"eklenen tüm öğeler için eşit ihtimalle"*
+
+**Sorun:** *"Eşit ihtimal"* herkesin iddia edebildiği bir ifadedir.
+Piyango da eşittir, reservoir da eşittir, Fisher-Yates de eşittir.
+Kurucunun eşitliği onlardan **farklıdır ancak istem o farkı
+söylemiyordu.**
+
+Fark kurucunun kendi keşfindedir:
+
+> *"ilk eklenen ile son eklenen öğenin aynı şansa sahip olması… 42'nin
+> değer alması, 49'un, 50'nin eklenmesinden zaten bağımsız"*
+
+| | Eşitlik ne zaman geçerli |
+|---|---|
+| Piyango, Fisher-Yates, reservoir, IDS | Akış **bittiğinde** ortaya çıkar |
+| **İzo-odds** | **Akış kapanmadan, her an** |
+
+### 57.3 ELENEN YAZIMLAR
+
+| Aday | Değerlendirme |
+|---|---|
+| *"ilk eklenen ile son eklenen öğenin eşit ihtimalle"* | ⛔ *"İlk/son"* belirsiz — kimin son olduğu bilinmiyor, akış açık |
+| *"akışın sonlanmasına bağlı olmaksızın eşit ihtimalle"* | ⚠️ Kısa ve sempatik ancak **sonraki eklemeler** kaçışını açık bırakır: rakip *"biz sonlanma beklemiyoruz, yalnızca sonraki eklemelere bakıyoruz"* der |
+| **"eklenen her öğenin, diğer öğelerden bağımsız olarak eşit ihtimalle"** | ⛔⛔ **TEHLİKELİ — bkz. 57.4** |
+| **"eklenen her öğenin, diğer öğelerin eklenmesinden bağımsız olarak eşit ihtimalle"** | ✅ **SEÇİLEN** |
+
+### 57.4 ⛔ KRİTİK TUZAK — "ÖĞELERDEN" ile "EKLENMESİNDEN"
+
+**Tek kelime farkı, zıt anlam.** Bu, dosyadaki en ince ayrımlardan
+biridir ve kaybedilmemelidir.
+
+*"Diğer öğelerden bağımsız"* istatistikte **teknik bir terimdir** ve
+kastedilenin tersini söyler:
+
+| | Anlamı | Karşılığı |
+|---|---|---|
+| *"öğelerden bağımsız"* | Her öğenin ihtimali ayrı ayrı hesaplanır, biri diğerini etkilemez | **BERNOULLI** = NCR randomized win |
+| **"öğelerin eklenmesinden bağımsız"** | Başka öğelerin **eklenme olayı** bu öğenin ihtimalini değiştirmez | **İZO-ODDS** |
+
+**Neden ilki yıkıcı:** Bu buluşta öğeler istatistiksel olarak bağımsız
+**değildir** — 50'lik kesitte tam 1 öğe belirlenir, biri belirlendiyse
+öteki belirlenmez. Bu bir **bağımlılıktır** ve **nicelik unsurunu
+sağlayan şey tam budur.**
+
+*"Öğelerden bağımsız"* yazılırsa iki zarar birden:
+
+| | |
+|---|---|
+| İncelemeci okuması | *"Bu Bernoulli, NCR Voyix'te var"* (havuz E5) |
+| İç çelişki | Bağımsızsa kesitte kaç öğe belirleneceği belirsizleşir — nicelik unsuru çöker |
+
+Kurucunun kastettiği şey "bağımsızlık" değil **"etkilenmezlik"**tir.
+
+### 57.5 ✅ SABİT İFADE
+
+> **…eklenen her öğenin, diğer öğelerin eklenmesinden bağımsız olarak
+> eşit ihtimalle…**
+
+**Neden bu:**
+
+| | |
+|---|---|
+| Kurucunun cümlesinin birebir karşılığı | *"49'un, 50'nin **eklenmesinden** bağımsız"* — orada da "eklenmesinden" denmiştir |
+| Ölçülebilir koşul | *"Sonraki eklemeler bu öğenin ihtimalini değiştirmiyor"* — test edilebilir, değer yargısı değil |
+| İki kaçışı birden kapatır | Sonraki eklemeler **ve** sonlanma |
+
+**Sonlanma neden örtük kapsanıyor:** Akışın sonlanması da bir eklenme
+meselesidir — öğe artık gelmiyor demektir. Sonlanma sonrası eklenme
+olmadığına göre ihtimali değiştirecek bir olay da kalmaz. Ayrıca yazmak
+gerekmez.
+
+**Eledikleri (8+):** Reservoir, piyango, Fisher-Yates, SRS, IDS 2021,
+çekiliş, gün sonu hesaplayan tüm sistemler, Tillé ekolü.
+
+Eşihtimal artık **anındalıkla aynı ayırma gücünde.**
+
+### 57.6 ⭐⭐ ÇEKİRDEK İKİLİ — KURUCUNUN KARARI
+
+> *"sabitle. bizim alanı dolduracak ikilimiz anındalık ve eş
+> ihtimallilik"*
+
+| Unsur | Ne tutar | Ne eler |
+|---|---|---|
+| **Anındalık** | Kararın **zamanı** — eklenme anında, geri alınamaz | Bekleyen her yöntem |
+| **Eşihtimallik** | İhtimalin **bağımsızlığı** — sonraki eklemelerden etkilenmez | Eşitliği sonda sağlayan her yöntem |
+
+**İkisi çakışmıyor, farklı şey söylüyorlar.** Biri zaman eksenini, öteki
+olasılık eksenini tutar. Birlikte örnekleme literatürünün tamamını eler.
+
+**Ayrım kaydı — ayırma gücü ile yenilik gücü aynı şey değildir:**
+
+| | Hangi unsur |
+|---|---|
+| En çok **eleyen** | Anındalık *(ve yeni yazımla eşihtimal)* |
+| En **özgün** | **Eşihtimal** — kurucunun keşfi; akış kapanmadan eşitlik, literatürde karşılığı yok |
+
+Anındalık "beklemeyi" eler ancak tek başına yeni değildir — bir sistemin
+anında karar vermesi aşikâr sayılabilir. Eşihtimal ise *bilinmeyen
+evrende, kapanmadan, eşit şans* der; bu birleşim hiçbir kaynakta
+yoktur.
+
+### 57.7 İSTEM SETİNE ETKİSİ
+
+§55 ve §56'daki **tüm** istemlerde eşihtimal ifadesi değişir:
+
+| | |
+|---|---|
+| Eski | …eklenen tüm öğeler için eşit ihtimalle belirleyen yöntem |
+| **Yeni** | …**eklenen her öğenin, diğer öğelerin eklenmesinden bağımsız olarak** eşit ihtimalle belirleyen yöntem |
+
+**Temel istem son hâli:**
+
+> Önceden kesin büyüklüğü bilinmeyen ve öğeleri zaman içerisinde akışa
+> katılan bir evrende; belirlenen sayıdaki öğeyi, eklenen her öğenin,
+> diğer öğelerin eklenmesinden bağımsız olarak eşit ihtimalle belirleyen
+> yöntem.
+
+Set yeniden yazılacak — §56.10'daki birinci iş kalemi.
