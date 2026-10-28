@@ -7772,3 +7772,518 @@ zaten yazılı): kimlik ve geçmiş gerektirirler, bu evrende kurulamazlar.
 
 **Sonuç:** Mercisizlik unsuru (istem **d**) korumayı **güçlendirir**, ancak
 temel istemde bir açığı kapatmak için gerekli değildir.
+
+---
+
+## 56. ⭐⭐ ALAN, AD VE İKİ AŞAMA — buluşun yeniden çerçevelenmesi (27-28 Ekim)
+
+**Durum:** Bu bölüm üç yapısal kararı ve bir savunma duruşmasını kaydeder.
+İstem seti §55'teki hâlinden **farklıdır** — bu bölüm geçerlidir.
+
+### 56.1 ⭐ ALAN ADI — "ÖĞE BELİRLEME"
+
+**Kurucunun tespiti:**
+
+> *"ben diyorum ki bunların hepsine bir isim bulalım"*
+
+> *"fisher de sonuç olarak bir öğe belirlemiş olmuyor mu kardeşim"*
+
+**Kilit nokta:** Yöntemler **amaçlarına** göre ayrı literatürlerde durur
+ama **çıktıları aynıdır.** Amaca göre bakıldığında üçe bölünürler; çıktıya
+göre bakıldığında tek alandır.
+
+| Literatür | Amacı | Çıktısı |
+|---|---|---|
+| Örnekleme teorisi (Fisher-Yates, SRS, reservoir, IDS, Tillé) | Öğrenmek — bütün hakkında tahmin | **Öğe belirlendi** |
+| Kura ve çekiliş (piyango, VIP çekiliş) | Dağıtmak — ödül vermek | **Öğe belirlendi** |
+| Pazarlama (sadakat, NCR sequential/randomized win) | Dağıtmak — müşteri ödülü | **Öğe belirlendi** |
+| Klinik araştırma (hasta randomizasyonu, blok randomizasyonu) | Karşılaştırmak — grup kurmak | **Öğe belirlendi** |
+| Çevrimiçi algoritmalar (online allocation, matching) | Optimize etmek | **Öğe belirlendi** |
+
+**Alan adı: ÖĞE BELİRLEME YÖNTEMLERİ**
+
+Bu ad, araştırma sonucunda **literatürde bulunmadığı doğrulanan** bir
+çatıdır (bkz. havuz E4: akademik tarafta üç ayrı alan, patent tarafında
+dört ayrı sınıf, ticari tarafta yerleşik olmayan terimler).
+
+**Neden "belirleme", "seçme" değil:** *"Seçme"* mevcut bir listeden almayı
+ima eder. Bu evrende liste yoktur, öğe sonradan gelir. Reservoir'da da
+böyledir. *"Belirleme"* daha geniştir.
+
+**Neden "değer konumlandırma" değil:** O ad **değer** şartı koyar ve
+klinik randomizasyonu dışlar — hastaya değer verilmez, kola atanır.
+Örneklemede de değer yoktur, ölçüm vardır.
+
+#### Patent açısından iki yönlü sonuç
+
+| | |
+|---|---|
+| ✅ Lehte | Alanı tanımlayan ilk başvuru olmak; sonra gelen her başvuru bu tarifnameyi görür |
+| ⚠️ Dikkat | **Alanın patenti alınamaz.** Öğe belirleme binlerce yıldır yapılıyor; kamuya mal olmuş bilgidir. Patent alanda **yeni bir yöntemi** korur |
+
+Bu, kurucunun evren için koyduğu kuralın aynısıdır:
+
+> *"derdimiz literatürde olmayan evren tanımı değil ki… evren patenti
+> almıyoruz dert etme"*
+
+Alan adı tarifnamede **çerçeve** olarak kullanılır, **iddia** olarak
+kullanılmaz.
+
+### 56.2 ⭐ YÖNTEMİN ADI — İZO-ODDS
+
+**Kurucunun koyduğu ad:** *izo-odds* — **izo** (eşit) + **odds**
+(ihtimal).
+
+**Tam ad:** **İzo-odds Öğe Belirleme Yöntemi**
+
+| Parça | İşi |
+|---|---|
+| izo-odds | Ayırt edici ad — eşit ihtimal |
+| öğe belirleme | Alan |
+| yöntem | Kategori |
+
+#### "Kuram" ile "yöntem" ayrımı — ZORUNLU
+
+Kurucu önce *"izo-odds kuramı"* dedi. **Patent metninde kuram
+kullanılamaz:** SMK m.82 bilimsel teorileri ve matematiksel yöntemleri
+açıkça koruma dışında bırakır. Tarifnamede *"bu buluş izo-odds kuramına
+dayanır"* yazılırsa incelemeciye *"bu bir teoridir"* denmiş olur.
+
+| Metin | Kullanılacak ad |
+|---|---|
+| **Patent başvurusu** (başlık, tarifname, istemler) | izo-odds **yöntemi** |
+| Akademik makale, yatırımcı sunumu, sektör dili | izo-odds **kuramı** |
+
+İkisi çelişmez: patent yöntemi korur, kuram alanı açar.
+
+#### Başlık kararı
+
+| | Başlık |
+|---|---|
+| Eski | Akışkan Evrende Bağımsız Değer Konumlandırma Yöntemi |
+| **Yeni** | **İzo-odds Öğe Belirleme Yöntemi** |
+
+*"Akışkan"* başlıktan çıktı. Gerekçe kurucunun tespiti: **yöntem tüm
+evrenlerde çalışır.** Başlıkta evren niteliği geçerse *"siz yalnızca
+akışkan evreni kastetmişsiniz"* diye yorum tartışması açılır. Başlık
+kapsam belirlemez ama tartışma açar.
+
+Yazım notu: *iz/odds* yazımı da konuşuldu ancak bölü işareti URL ve
+patent metninde sorun yaratır (yol ayracı, noktalama tartışması).
+**izo-odds** sabitlendi.
+
+### 56.3 ⭐⭐ İKİ AŞAMA — "DEĞER ÜRETEN" ÇIKTI, "BELİRLEYEN" GİRDİ
+
+Bu, istem setinin tamamını etkileyen en büyük değişikliktir.
+
+**Savcı itirazı (m.92 — belirlilik):**
+
+> *"İstem 'değer üreten yöntem' diyor ancak değerin ne olduğu hiçbir yerde
+> tanımlı değil. Bir indirim mi, bir tedavi kolu mu, bir örneklem üyeliği
+> mi, bir bildirim mi? Tanımsız bir unsurla korunan şeyin ne olduğu
+> bilinemez."*
+
+**Kurucunun cevabı — itirazı kökünden kesti:**
+
+> *"öğe belirleyen sistem dememiş miydik"*
+
+> *"ikinci aşamada öğeye değer bağlamadır"*
+
+#### Yapı
+
+| Aşama | Ne olur | Kim yapar | İstemde |
+|---|---|---|---|
+| **1** | Öğe belirlenir | **Yöntem** — eşit ihtimalle, mercisiz, anında | Ana istemler |
+| **2** | Belirlenen öğeye değer bağlanır | **Kurucu** — ne bağlayacağını o seçer | Ayrı bağımsız istem |
+
+**Kurucunun değer tanımı:**
+
+> *"değer kurucu tarafından belirlenen öğeye verilecek pozitif olgudur"*
+
+Bu tanım tarifnameye girer ancak **istemde kullanılmaz** — iki kelimesi
+sorun yaratır:
+
+| Kelime | Sorun |
+|---|---|
+| *"pozitif"* | Değer yargısı. Klinik randomizasyonda kontrol kolu (plasebo) pozitif değil; denetimde seçilmek pozitif değil; örneklemede ne pozitif ne negatif |
+| *"olgu"* | Ölçülebilir bir şey söylemiyor; *"olgu nedir, nasıl tespit edilir"* sorusu açık kalır |
+
+**Tanımın kurtardığı nokta:** Değerin *"kurucu tarafından belirlendiğini"*
+söylüyor — yani değer **sistemin dışındadır.** Yöntem onu bilmez,
+üretmez; yalnızca hangi öğeye bağlanacağını belirler.
+
+#### Üç kazanç
+
+| | |
+|---|---|
+| **m.92 kapandı** | İstemde tanımsız unsur kalmadı. Belirleme ölçülebilir ve kayıtlıdır |
+| **Kapsam genişledi** | Değer bağlanmayan uygulamalar içeri girdi: klinik randomizasyon, örnekleme, denetim seçimi. *"Değer"* onları dışarıda bırakıyordu |
+| **Alan adıyla uyum** | Yöntem alanın adını taşıyor: öğe belirleme |
+
+### 56.4 ⭐ YENİ İSTEM — EVREN KOŞULSUZ MEKANİZMA İSTEMİ
+
+**Kurucunun talebi:**
+
+> *"ben öğe belirlemenin de patentini almak istiyorum"*
+
+> *"açık evrende diğer unsurlarla koruyalım, mercisizlik, kimliksizlik, eş
+> ihtimal"*
+
+> *"eş ihtimallilik ve anındalık evrenden bağımsız çalışır yani"*
+
+**Tespit:** Eşihtimal ve anlık karar unsurları **evren koşuluna bağlı
+değildir.** İkisi de N bilinse de bilinmese de çalışır. Dolayısıyla
+istem 1'deki *"büyüklüğü bilinmeyen"* koşulu **mekanizmanın gereği
+değil, m.82 için eklenmiş bir sınırdır.**
+
+**Sonuç:** İki ayrı korumaya ihtiyaç var.
+
+| | Ne korur | m.82 | Kapsam |
+|---|---|---|---|
+| Evren koşullu istemler | Bilinmeyen evrende yöntem | Geçmesi kolay | Dar |
+| **Evren koşulsuz istem** | **Her evrende mekanizma** | Riski yüksek | **Geniş** |
+
+#### İstem metni
+
+> **Her türlü evrende**, öğelerin zaman içerisinde akışa katıldığı; öğenin
+> eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak ve
+> hiçbir tarafın etkisi olmaksızın, **öğenin akışa katıldığı anda, anında
+> ve geri alınamaz biçimde**, belirlenen sayıdaki öğeyi, eklenen tüm
+> öğeler için eşit ihtimalle belirleyen yöntem.
+
+**Beş unsur:** akış + bağımsızlık + mercisizlik + anlık/geri alınamaz
+karar + eşihtimal. Evren büyüklüğü hakkında koşul **yok.**
+
+#### Neden "anlık karar" zorunlu bu istemde
+
+**Kurucunun uyarısı:**
+
+> *"kardeşim benim yöntemim anlık sonuç üretiyor. bunu es geçiyorsun."*
+
+Evren koşulu kaldırıldığında piyango ve reservoir içeri girer — ikisinde
+de eşit ihtimal vardır. Onları eleyen tek unsur **kararın anında
+verilmesidir.**
+
+| | Eşit ihtimal | Karar anı |
+|---|---|---|
+| Piyango | ✅ | Satış kapandıktan sonra |
+| Reservoir | ✅ | Akış bittikten sonra |
+| **İzo-odds** | ✅ | **Katılma anında** |
+
+#### Neden "öğelerin zaman içerisinde akışa katıldığı" kalmalı
+
+Bu ifade çıkarılırsa istem bir **listeden** seçim yapmayı da kapsar ve
+Fisher-Yates'e çakılır. Akış koşulu evren **büyüklüğünü**
+sınırlamıyor — yalnızca öğelerin zamanla geldiğini söylüyor.
+
+#### Kimliksizlik ayrı unsur DEĞİL
+
+Kurucu bu istemde kimliksizliği de saydı ancak kendi önceki tespiti
+geçerlidir:
+
+> *"kimlik içermeyen ne ya. zaten kendisine has özellik değil mi kimlik"*
+
+Bağımsızlık unsuru (*"kendisine has özelliklerinden bağımsız"*) kimliği
+kapsar. Ayrı yazılırsa tekrar olur.
+
+#### Riski — açık yazılmıştır
+
+Bu istem sabit evreni de kapsadığı için **systematic sampling (Madow
+1949)** ve **blok randomizasyonu** ile karşı karşıya gelir. Düşme
+ihtimali evren koşullu istemlerden yüksektir. Ancak kabul edilirse alanın
+tamamında mekanizmayı korur.
+
+### 56.5 PİYANGO MESELESİ — evreni akışkan, yöntemi değil
+
+**Kurucunun tespiti:**
+
+> *"piyango da akışkan evren sonuçta. bunu x bileti alanlar diye
+> değiştirebilirsin"*
+
+**Doğrudur.** *"X piyangosundan bilet alanlar"* diye kurulursa evren bu
+buluşun evren tanımına uyar: kaç bilet satılacağı bilinmez, biletler
+zamanla alınır.
+
+**Ancak yöntem akışkan değildir.** Çekiliş anında satış kapanır, N
+öğrenilir, liste oluşur, seçim o listeden yapılır.
+
+| | Piyango | İzo-odds |
+|---|---|---|
+| Akış sırasında | Hiçbir şey belirlenmiyor | Her kesitte belirleniyor |
+| Seçim anı | Akış **bittikten sonra** | Akış sürerken |
+| Öğe sonucunu ne zaman öğrenir | Çekilişte | **Katıldığı anda** |
+| N | Çekiliş için **bilinmek zorunda** | Hiç gerekmiyor |
+
+Piyangonun eksikliği reservoir ile aynıdır: eşit ihtimal var, **ama
+sonda.**
+
+**Patent diline çevirisi:** Evrenin akışkan olması yöntemi akışkan
+yapmaz. Ayrım evrende değil, **karar anındadır.**
+
+### 56.6 ⭐⭐ SAVUNMA DURUŞMASI — dokuz itiraz, dokuz cevap
+
+**Kurucunun verdiği rol:** Soruları ben soracağım, savunmayı o yapacak.
+Aşağıdaki cevaplar kurucunundur.
+
+#### İtiraz 1 — "Pratiklik teknik üstünlük değildir"
+
+**İtiraz:** Gün sonunu beklememek pratik bir kolaylıktır. Değer gün
+sonunda da verilebilir, SMS atılır. Sonuç aynı: eşit ihtimalle k öğe
+belirlenmiş olur. Bildirimin zamanı yöntemi değiştirmez.
+
+**Savunma — zincir hâlinde kuruldu:**
+
+| Soru | Cevap |
+|---|---|
+| Gün sonunu bekleyen sistemde 42. öğe kapıdan çıkarken durumu ne? | *"Belirlenmemiş, gün sonuna kadar hiçbir şey kesin değil"* |
+| Kesin değilse o süre boyunca kim müdahale edebilir? | *"Kimsenin elinde değil, başlat dedikten sonra başlıyor sistem"* |
+| **Karşı hamle:** Liste gün boyu bir yerde durur. O listeye kayıt eklenebilir, çıkarılabilir, sıra değişebilir. Operatör *"n'yi 8.400 değil 8.390 aldım"* der, kimse fark etmez. Hesaplamayı iki kez çalıştırıp istediği sonucu tutar. Sorun sistemin niyeti değil, **yapısı**: karar ile kayıt arasında zaman aralığı varsa o aralık müdahaleye açıktır | — |
+| Sizde o aralık var mı? | ***"Yok, girdiği an karar veriliyor ve kayıtlanıyor"*** |
+
+**⭐ SONUÇ — bu teknik üstünlüktür, pratiklik değildir:** Karar ile kayıt
+arasında zaman aralığı yoksa **müdahale edilecek pencere yoktur.** Bu
+yapısal bir özelliktir, iyi niyet beyanı değildir.
+
+Busnel & Tillé 2020 ile aynı çizgide: öngörülebilirlik ve gecikme =
+saldırı yüzeyi.
+
+#### İtiraz 2 — "Sır saklanıyor, öngörülemez değil"
+
+**İtiraz:** 50'lik kesitte 17 belirlendi, 9. öğedeyiz. O sayı 41 öğe
+boyunca bir yerde bekliyor. Okuyan biri kimin kazanacağını önceden bilir.
+
+**Savunma:** *"Saklanması gerekiyor, yeniden hesaplarsa farklı olur"* —
+**kurucu sınırı kabul etti.**
+
+**⭐ Kurucunun ikinci hamlesi itirazı çökertti:**
+
+> *"mesele şu ama, kimin 17 ve 38 olacağı da belli değil"*
+
+**İki katmanlı bilinmezlik:**
+
+| | Ne belli değil | Kim bilmiyor |
+|---|---|---|
+| **Konum** | Kesit açılırken 17 ve 38 seçildi | Dışarıdan kimse |
+| **Eşleşme** | 17. sıraya kim gelecek | **Sistem de bilmiyor** |
+
+Sistem 17'yi bilir ama 17'nin **kim** olacağını bilemez — o öğe henüz
+gelmemiştir, hatta var olmayabilir. Saklanan bilgi bir **konum**dur, bir
+**kişi** değil. Okuyan kişi bir konum öğrenir; o konuma kimin denk
+geleceğini öğrenmez. Kendisi o sıraya girmeye çalışsa bile sayacın kaçta
+olduğunu bilmesi gerekir.
+
+Bu, *"stadyum boşken koltuğu seçmek"* metaforunun teknik karşılığıdır:
+**seçim öğeye değil, öğenin geleceği yere yapılıyor.**
+
+**Savunulabilir iddia:** *"Öngörülemez"* değil — **"öngörülebilirlik
+penceresi asgari."**
+
+| | Saklanan bilgi | Süresi | Okunursa |
+|---|---|---|---|
+| Gün sonunda hesaplanan | Tüm liste + n | Gün boyu | Her şey manipüle edilir |
+| "Her 100." | Kural | Kalıcı | Zaten herkes bilir |
+| **İzo-odds** | **Bir konum** | **Tek kesit** | **Yalnızca o kesit, ve kimi vuracağı belirsiz** |
+
+#### İtiraz 3 — "Yarım kesit eşitliği bozar"
+
+**İtiraz:** 578 kesit kapandı, 579'uncu 30 öğede kesildi. O 30 öğenin
+ihtimali 1/30 değil 1/50 üzerinden işledi. İstem *"eklenen tüm öğeler
+için eşit ihtimalle"* diyor; bu gerçekleşen durumda yanlış.
+
+**⭐ Kurucunun cevabı:**
+
+> *"kardeşim, tamamlanan öğede ihtimal neyse her bir eklenen için,
+> tamamlanmayan da eklenen için aynı ihtimal var. herkes kesit paydası ile
+> ihtimalleniyor"*
+
+**Savcının hatası:** İhtimali **geriye dönük** ölçüyordu. *"30 öğe kaldı,
+1/30 olmalıydı"* hesabı, öğenin katıldığı andaki ihtimali değil, kesit
+kapandıktan sonra bakılan bir orandır.
+
+İhtimal **karar anında** bellidir ve değişmez — zaten *"anında ve geri
+alınamaz"* unsurunun söylediği budur. Eşitlik öğenin **kendi
+ihtimalinde**, kesitin sonucunda değil.
+
+**Yarım kesit bir istisna değil, aynı kuralın bir örneğidir.**
+
+#### İtiraz 4 — "Madow 1949'un tekrarı"
+
+**İtiraz:** Systematic sampling'de rastgele başlangıç noktası seçilir,
+sonra sabit aralıkla ilerlenir. Siz bunu her bloğa uyguluyorsunuz.
+Bilinen bir yöntemi tekrar uygulamak buluş basamağı yaratmaz.
+
+**Savunma:** *"madow sabit aralıkla gidiyor, ben her kesitte yeniden
+belirliyorum"*
+
+Madow'da birinci seçim bilinirse tüm diğerleri bilinir. İzo-odds'ta her
+kesit bağımsız belirlenir; birini bilmek diğeri hakkında bilgi vermez.
+
+#### İtiraz 5 — "Blok randomizasyonu aynısını yapıyor"
+
+**İtiraz:** Klinik araştırmalarda blok randomizasyonunda her blok içinde
+sıra ayrı ayrı rastgele belirlenir. Bu zaten yapılıyor.
+
+**Savunma:** Klinik araştırmada toplam hasta sayısı **tahmin değil,
+taahhüttür.** Protokolde yazılır, etik kurul onaylar: *"240 hasta, 20'lik
+12 blok."* Araştırma 240'ta durur; 241. hasta alınmaz. Orada N **bilinir
+ve bağlayıcıdır.**
+
+İzo-odds'ta tahmin bağlayıcı değildir; akış tahmini aşarsa mekanizma daha
+çok kesit açar (§52.6 testleri).
+
+**⚠️ Not:** Blok randomizasyonu **henüz taranmadı** — havuza eklendi.
+
+#### İtiraz 6 — "Evren kapalı, o hâlde Fisher-Yates uygulanabilir"
+
+Bu itiraz bir **çelişkiden** doğdu: kurucu bir ara *"belirlenen sayıda
+öğe tamamlandıktan sonra eklenme biter"* dedi. Bu, evren tanımıyla
+çelişiyordu.
+
+**Netleşme:**
+
+| Soru | Cevap |
+|---|---|
+| Kesitte k değer verilince kesit kapanır mı? | *"Kapanmıyor, kesitteki son öğe eklenince yeni kesit açılıyor"* — kesit **sayımla** kapanır |
+| k nedir? | **Kesit başına** değer sayısı |
+| Toplam değer sayısı? | *"belirlenen k sayısına ulaşılacağını veya aşılacağını olağan akışa bırakır"* |
+
+**Örnek:** Tahmin 5000, k=5 → kesit büyüklüğü 1000, her kesitte 5 değer.
+Akış 6000'e çıkarsa 6 kesit açılır, 30 değer verilir. 3000'de kesilirse
+3 kesit, 15 değer. **Mekanizma değişmez.**
+
+**⭐ Sonuç:** Toplam değer sayısı önceden belli değildir — **oran**
+bellidir. Evren kapanmaz, stok tükenmesi diye bir şey yoktur, geç gelen
+öğe de aynı payda ile ihtimal alır.
+
+Bu, havuz E3'teki *"sayı nereye ait"* açığını kapatır: **sayı kesite
+aittir.**
+
+#### İtiraz 7 — "Evren tanımı müdahaleye açık"
+
+**İtiraz:** Evren *"bu cuma gelenler"* diye tanımlanabiliyorsa, işleten
+kişi evreni istediği gibi keser. Yoğun günü ayrı, sakin günü ayrı evren
+yapar. Hangi öğelerin hangi havuzda yarıştığını belirlemiş olur —
+mercisizlik çöker.
+
+**Savunma — iki aşamalı:**
+
+> *"evren sistemi kuran tarafından kurulurken baştan tanımlanır,
+> sonradan değiştirilemez"*
+
+**Karşı hamle:** Akış ortasında değiştirilirse? 300. öğede *"artık yıl
+evreni"* denirse kesit büyüklüğü değişir, o ana kadar gelenler ile sonra
+gelenler farklı paydada olur.
+
+> ***"değiştiğinde evren değişiyor, eskisi ile bir bağ kalmıyor"***
+
+**⭐ Bu cevap itirazı kurulamaz hâle getirdi:** Akış ortasında evren
+değiştirilmesi **müdahale değil, yeni bir evren kurulmasıdır.** Eski
+evren kapanır, yenisi açılır, aralarında bağ yoktur. Eski evrende
+verilen kararlar durur.
+
+Eşitlik iddiası **her evren için kendi içinde** geçerlidir — bir evrenin
+içinde kimse paydayı değiştiremez, çünkü değiştirmek o evreni bitirir.
+
+Bu, *"aynı insan her evrende farklı bir öğedir"* tespitiyle aynı
+mantıktır.
+
+**⚠️ Hâlâ açık:** *"Sonradan değiştirilemez"*in **teknik olarak neyle**
+sağlandığı yazılmadı (değişmez kayıt / log / hash zinciri?). Havuza
+eklendi.
+
+#### İtiraz 8 — "Değer tanımsız" (m.92)
+
+§56.3'te kapandı: yöntem değer üretmez, **öğe belirler.**
+
+#### İtiraz 9 — "Evrenler arası eşitlik yok"
+
+**Kurucunun tespiti:**
+
+> *"bir stada girenlerden 2 kişi ile, bir otobüsten bilet alan 2 kişi eşit
+> ihtimal olmak zorunda değil, eş ihtimalli olmalı"*
+
+Eşitlik **evren içidir.** Stadyumda 28.000 kişi arasında 2, otobüste 40
+kişi arasında 2; ihtimaller farklıdır, her biri kendi evreninde eşittir.
+Evrenler arası karşılaştırma yapılmaz.
+
+### 56.7 ELENEN MEKANİZMA — "her öğede yeniden çalıştırma"
+
+**Kurucunun sorusu:**
+
+> *"şöyle yapsak eş ihtimallilik bozulur mu? 50lik kesitte, random edildi
+> 1 değil. 2. öğe eklendi sistem yeniden çalıştı 2 değil…"*
+
+**Bozulur.** Her öğe geldiğinde 1/50 ile sorulursa:
+
+| Öğe | Değer alma ihtimali |
+|---|---|
+| 1. | 1/50 = %2,00 |
+| 2. | 49/50 × 1/50 = %1,96 |
+| 10. | %1,83 |
+| 50. | %1,27 |
+
+Her öğe bir öncekinin almamış olmasına bağlıdır. **Sonra gelen daha az
+şans alır** — bu, kurucunun çözdüğü problemin geri gelmesidir.
+
+İkinci sorun: kesitte **kaç** öğe değer alacağı belirsizleşir. Hiç kimse
+almayabilir (≈%36), üç kişi alabilir. Nicelik unsuru çöker.
+
+**Bu tam olarak NCR randomized win'dir** (bkz. havuz E5): *"each
+transaction is independent… 1 in N chances of winning."* O yola girmek
+Bernoulli'ye dönmek olur.
+
+**Mevcut mekanizma neden eşit:** Konum kesit açılırken **bir kez**
+belirlenir, 1-50 arası her sayı eşit ihtimalle. Her öğe **tam 1/50**
+ihtimalle o konuma denk gelir — **kaçıncı sırada geldiğinden bağımsız.**
+
+Fark: elenen yolda **sıra önemlidir**, mevcut hâlde değildir.
+
+### 56.8 TEKNİK AYRINTI — k>1 için yerine koymadan çekim
+
+**Kurucunun teyidi:** *"aynı sayı çıkma ihtimali yok"*
+
+k>1 olduğunda konumlar **yerine koymadan** çekilir; aynı konum iki kez
+çıkamaz. Bu zorunludur:
+
+| | Sonuç |
+|---|---|
+| Yerine koymadan (bu buluş) | Kesitte **tam k** öğe belirlenir |
+| Tekrar kabul edilse | Kesitte k'dan **az** öğe belirlenir — nicelik bozulur |
+
+**Tarifnameye yazılmalı.** Yazılmazsa *"k>1 durumunda aynı konum çıkarsa
+ne olur"* sorusu m.92 açığı bırakır.
+
+### 56.9 İSTEM SETİNE ETKİSİ — §55 GÜNCELLENMELİ
+
+§55'teki yedi istemin **tamamında** *"değer üreten yöntem"* ifadesi
+geçer. Yeni kalıpla hepsi değişir:
+
+| | |
+|---|---|
+| Eski | …belirlenen sayıdaki öğelere, eklenen tüm öğeler için eşit ihtimalle **değer üreten** yöntem |
+| **Yeni** | …belirlenen sayıdaki öğeyi, eklenen tüm öğeler için eşit ihtimalle **belirleyen** yöntem |
+
+**Ayrıca iki yeni bağımsız istem eklenir:**
+
+| | İçerik |
+|---|---|
+| **Değer bağlama istemi** | Tüm unsurlar + *"belirlenen öğeye, kurucu tarafından tanımlanan bir değerin bağlandığı"*. Kurucunun kararı: **bağımsız** olacak, bağımlı değil |
+| **Evren koşulsuz mekanizma istemi** | §56.4 |
+
+**Değer bağlama istemi (taslak):**
+
+> Önceden kesin büyüklüğü bilinmeyen ve öğeleri zaman içerisinde akışa
+> katılan bir evrende; belirlenen sayıdaki öğeyi, eklenen tüm öğeler için
+> eşit ihtimalle belirleyen ve **BELİRLENEN ÖĞEYE, KURUCU TARAFINDAN
+> TANIMLANAN BİR DEĞERİN BAĞLANDIĞI** yöntem.
+
+**Set yeniden yazılacak — §55 bu bölümden sonra geçersizdir.**
+
+### 56.10 SIRADAKİ İŞ
+
+| | Konu |
+|---|---|
+| 1 | Tüm istem setinin yeni kalıpla yeniden yazımı |
+| 2 | Blok randomizasyonu taraması (yeni komşu, hiç bakılmadı) |
+| 3 | *"Evren sonradan değiştirilemez"*i teknik olarak neyin sağladığı |
+| 4 | Tarifname: alan tanımı, dokuz itirazın cevapları, k>1 yerine koymadan çekim |
