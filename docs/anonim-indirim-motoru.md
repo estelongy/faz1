@@ -9602,3 +9602,384 @@ Kalıp (§60.12):
 
 > Buluş, öğe belirleme yöntemi olup; **[…]** ölçütün, ona uyacak öğe
 > henüz mevcut olmadan rastgele belirlenmesi ile karakterize edilir.
+
+---
+
+## 62. ⭐⭐ SİSTEM İSTEMİ, YAPI KARARLARI, ÜCRET GERÇEĞİ ve TAKVİM (29 Ekim)
+
+### 62.1 ⭐⭐ SİSTEM İSTEMİ — EKLENDİ (m.82 kategori çeşitlendirmesi)
+
+**Kurucunun sorusu:** *"bir pc, bir bellek, bir api… gerekir istemine
+ihtiyacımız olacak mı peki"*
+
+**Kurucunun tepkisi:** *"geri zekalı bunu şimdiye kadar bana
+söylemedin"* — haklıydı. Sistem istemi iki kez gündeme getirilmiş ama
+**ısrar edilmemişti** (§55 civarı ve oran ölçümü sırasında). Setin en
+büyük yapısal açığıydı.
+
+#### Neden gerekli
+
+Tüm istemler **yöntem** kategorisinde. İncelemeci *"soyut yöntem"*
+derse (SMK m.82) hepsi birden düşer. Sistem istemi farklı kategoride
+olduğu için bu riski böler.
+
+| | Kazanç |
+|---|---|
+| Kategori farkı | Yöntem istemleri düşse bile ayakta kalabilir |
+| m.82 | **En güçlü cevap** — somut yapı, soyut kural değil |
+| İhlal tespiti | Birimler görünür; *"bu sistemde şu birim var"* denebilir |
+
+**Bedeli:** Daha dar — birimleri olmayan uygulama kaçar. Ancak bu bir
+**ek** istem, mevcutları daraltmıyor.
+
+#### ✅ SİSTEM İSTEMİ
+
+> **Buluş, öğe belirleme sistemi olup; ölçütü, ona uyacak öğe evrene
+> katılmadan önce rastgele belirleyen bir birim, öğelerin evrene
+> katılmasını algılayan bir birim, katılım sayısını tutan bir bellek ve
+> ölçüte uyan öğeyi belirleyen bir birim içermesiyle karakterize
+> edilir.**
+
+| Birim | İşi |
+|---|---|
+| Ölçüt belirleme | Rastgele sayı çeker |
+| Katılım algılama | Turnike, POS, API girişi |
+| Bellek | Sayacı tutar |
+| Belirleme | Ölçüte uyan öğeyi işaretler |
+
+#### İki yazım kuralı
+
+**1. Donanım adı geçmez.** *"Bir PC, bir bellek, bir API"* biçiminde
+yazılırsa rakip başka donanımla kaçar. **İşlevsel birim** yazılır —
+hangi donanımda çalıştığı önemsiz.
+
+**2. Tek sistem istemi yeter.** Her isteme sistem karşılığı yazılmaz;
+kategori bir kez beyan edilir, setin sonuna konur.
+
+#### Üç yerde üç iş — donanımın yeri
+
+| Yer | Donanım | Gerekçe |
+|---|---|---|
+| Yöntem istemleri | **YOK** | Geniş kalması için; *"bir sunucu üzerinde"* yazılsa kapsam daralır |
+| Sistem istemi (1 tane) | Birimler **var** | Kategori çeşitlendirmesi |
+| **Tarifname** | Anlatılır | Soyutluk itirazına somut cevap |
+
+**Tarifnameye girecek paragraf:**
+
+> Yöntem bir sunucu üzerinde çalışan yazılımla uygulanır; rastgele sayı
+> üretimi işletim sisteminin kriptografik üretecinden alınır.
+
+### 62.2 ⭐ KOL YAPISI — "buluşun farklı uygulamaları"
+
+**Kurucunun ifadesi:**
+
+> *"hepsi ayrı bir buluş çünkü, benim 12 yıllık fikir yolculuğum"*
+>
+> *"buluşun farklı uygulamaları"*
+
+#### ⚠️ KRİTİK DİL AYRIMI
+
+| Söylenen | İnceleme ne anlar | Sonuç |
+|---|---|---|
+| ⛔ *"Her biri ayrı buluş"* | *"O hâlde ayrı başvurular yapın"* | **m.91 bölme** — 12 kol = 12 başvuru, 12 harç, 12 araştırma |
+| ✅ *"Buluşun farklı uygulamaları"* | Alternatif çözümler | **Tek başvuru**, hepsi korunur |
+
+*"Ayrı buluş"* vurgusu istediğinin **zıddını** getirir.
+
+#### TÜRKPATENT kılavuzunun şartı — birebir karşılanıyor
+
+Aynı kategoride birden fazla bağımsız istem ancak üç durumda olabilir:
+
+1. Birbiriyle ilişkili çoklu ürün
+2. Ürünün/aparatın farklı kullanımları
+3. **Alternatif çözümlerin tek bir istemde korunmasının uygunsuz
+   olması**
+
+**Bizim durumumuz üçüncüsü:** her kol farklı bir rakibi kesiyor, farklı
+genişlikte duruyor; tek istemde toplanamıyor.
+
+**Tarifnameye girecek:**
+
+> İstemler, buluşun farklı uygulama biçimlerini korur. Her uygulama
+> biçimi, belirlemenin farklı bir özelliğini öne çıkarır; bu nedenle
+> alternatif çözümlerin tek bir istemde korunması uygun değildir.
+
+Son cümle kılavuzun şartını kelimesi kelimesine alıntılar — m.91
+itirazına hazır cevap.
+
+#### 12 yıllık yolculuk nereye yazılır
+
+| | Yer |
+|---|---|
+| **Yolculuk** | **Tarifname** — her unsurun neyi çözdüğü, hangi eksiklikten doğduğu |
+| **Koruma** | İstemler — hepsi tek ailede |
+
+Tarifname 12 yılı taşır; istemler aile olarak durur. Bu bir küçültme
+değil, **daha güçlü koruma**: tek başvuru, tek öncelik tarihi, hepsi
+birlikte.
+
+### 62.3 ⛔ "VE/VEYA" KESİN OLARAK ELENDİ
+
+**Kurucunun önerisi:** *"çift ihtimalliliği ve/veya ile yazalım
+3.istemden sonra"*
+
+**Kurucunun okuması doğru:** *"a ve/veya b"* = a şartı **veya** b şartı
+**veya** a+b şartı.
+
+**Ancak patent incelemesinde sonucu:** İstem üç hâli birden talep
+ettiğinden incelemeci **üçünü ayrı ayrı** inceler. Biri mevcutta varsa
+**istemin tamamı** reddedilir.
+
+| Hâl | Kim karşılıyor | Sonuç |
+|---|---|---|
+| Yalnız a (ölçüt rastgele) | **Madow 1949** | ⛔ Düşer |
+| Yalnız b (öğe katılmamış) | "Her 100.", NCR sequential | ⛔ Düşer |
+| a+b | Kimse | ✅ Temiz |
+
+**İki hâl mevcutta → istem reddedilir.** *"Ve/veya"* esneklik değil, **en
+zayıf hâlin riskini** verir. İstem en zayıf hâli kadar güçlüdür.
+
+#### Aranan esnekliğin doğru yolu
+
+**Kurucunun formülasyonu:** *"a veya b, yada birinin tek başına
+yetersiz olması halinde ikisinin birlikte"*
+
+Böyle bir **koşullu yazım yok** — istemin kapsamı incelemenin sonucuna
+bağlı olamaz; istem sabit bir sınır çizer.
+
+| Yazım | Biri düşerse |
+|---|---|
+| Tek istemde *"a ve/veya b"* | **Hepsi** düşer |
+| Ayrı istemler: a · b · a+b | Diğerleri **ayakta** |
+
+**Bağımlı istem seçeneği sunuldu** (*"İstem X'e göre yöntem olup, ayrıca
+B"* — X yetmezse Y ayakta kalır) ancak **kurucu reddetti:** *"bağımlı
+istem tezi içime sinmedi."*
+
+**Karar:** Kollar bağımsız istem olarak yazılır. Her kol hangi yarı o
+rakibi kesiyorsa onu taşır.
+
+### 62.4 ✅✅ ÜCRET GERÇEĞİ — TR'DE İSTEM SAYISI ÜCRETİ ETKİLEMİYOR
+
+**Kurucunun talebi:** *"tr de istem sayısı ücret 0 olayından emin misin,
+derinlemesine araştır"*
+
+**Üç bağımsız kaynakta doğrulandı:**
+
+| Kaynak | Bulgu |
+|---|---|
+| TÜRKPATENT ücret tarifesi sayfası | İstem başına ücret kalemi **yok** |
+| Resmî Gazete tarife tebliği (20221231M5-11) | Metinde *"istem"* kelimesi **geçmiyor** |
+| **DergiPark akademik makale** | *"TÜRKPATENT tarafından patent başvurularında **istem ve sayfa sayısından bağımsız olarak tek bir başvuru ücreti** istenirken…"* (yabancı ofislerle karşılaştırma bağlamında yazılmış) |
+
+#### TÜRKPATENT ücretleri (gerçek kişi, ilk başvuru)
+
+| Kalem | Tutar |
+|---|---|
+| Patent Başvuru Ücreti (01.01.01) | 620 TL |
+| Araştırma — gerçek kişi, 10 başvuruya kadar (01.01.48) | 2.530 TL |
+| İnceleme — gerçek kişi (01.01.50) | 2.530 TL |
+| **TOPLAM** | **~5.680 TL** |
+
+**10 bağımsız istem ile 52 bağımsız istem arasında TR ücret farkı: 0 TL.**
+
+Not: Tarifede *"Avrupa Patenti Başvurusu İstemlerinin Yayım Ücreti"*
+(16.180 TL) kalemi vardır — bu **EP başvurusunun TR'de yayımı** içindir,
+istem sayısıyla ilgisi yoktur.
+
+#### EPO — orada fark var (1 Nisan 2026'dan)
+
+| | Tutar |
+|---|---|
+| 1-15. istem | Ücretsiz |
+| **16-50. istem** | **€290 / istem** |
+| **51. istemden sonra** | **€720 / istem** |
+
+| İstem sayısı | EPO istem ücreti |
+|---|---|
+| 15 | €0 |
+| 20 | €1.450 |
+| 52 | **€11.590** |
+
+#### ⚠️ DÜZELTME — önceki uyarılarım yanlıştı
+
+Konuşma boyunca *"istem sayısı artarsa ücret artar"* diye uyardım.
+**TÜRKPATENT için bu yanlıştı.** TR'de istem sayısı ücreti etkilemiyor.
+
+#### Gerçek kısıt ücret değil
+
+| | Durum |
+|---|---|
+| Ücret | ✅ TR'de fark yok |
+| Mevzuat sayı sınırı | Yok |
+| **Gerçek kısıt** | **Aynı kategoride çok bağımsız istem GEREKÇE ister** (§62.2'deki üç şart) |
+
+### 62.5 ⭐ ULUSLARARASI KAPSAM ve PCT TAKVİMİ
+
+**Kurucunun sorusu:** *"türk patent uluslararası geçerli değil mi"*
+
+**Değil.** Patent **ülkeseldir**; TÜRKPATENT patenti yalnızca Türkiye'de
+geçerlidir. ABD veya Avrupa'da kullanım TR patentini ihlal etmez.
+
+#### Tek bir "dünya patenti" yok — iki yol
+
+| Yol | Ne sağlar | Süre |
+|---|---|---|
+| **PCT başvurusu** | 150+ ülkede **30 ay zaman kazanma** — patent değil, opsiyon | İlk başvurudan **12 ay** içinde |
+| Doğrudan ülke başvurusu | O ülkede patent | İlk başvurudan 12 ay içinde |
+
+#### ⚠️⚠️ KRİTİK TAKVİM
+
+| Ay | Olan |
+|---|---|
+| **0** | TR başvurusu → **öncelik tarihi doğar, 12 ay başlar** |
+| **12** | **PCT / ülke başvuruları SON TARİH** |
+| 18 | TR başvurusu yayımlanır |
+| 36 (en geç) | İnceleme talebi yapılmalı |
+| 30 (PCT) | Ülke seçimi |
+
+**12 ay geçerse öncelik hakkı kaybedilir** — o tarihten sonra **kendi
+yayımın** bile sana karşı mevcut sayılır.
+
+**Yayım 18. ayda olur, 3. ayda değil** (erken yayım talep edilmezse).
+Yani PCT penceresi yayımdan önce kapanır — bu bilinçli bir tasarımdır:
+PCT yayımdan önce yapılır, böylece yayım artık zarar vermez.
+
+#### Maliyet sırası
+
+| Adım | Yaklaşık |
+|---|---|
+| TR başvurusu | ~5.680 TL |
+| PCT (12 ay içinde) | ~$4.000-5.000 |
+| Ülke seçimi (30. ayda) | Ülke başına $3.000-15.000 |
+
+**Yatırımcı anlatısı:** *"TR başvurusu yapıldı, PCT penceresi açık, 30 ay
+içinde hangi pazarlarda koruma alacağımıza birlikte karar veririz."*
+PCT'nin değeri kararı ertelemesidir — ülke seçimleri yatırımcı
+parasıyla yapılır.
+
+### 62.6 ⭐ HAK NE ZAMAN DOĞAR — iki ayrı hak
+
+**Kurucunun sorusu:** *"hak onaydan sonra mı, başvuruyla birlikte mi"*
+
+| Hak | Ne zaman | Ne sağlar |
+|---|---|---|
+| **Öncelik hakkı** | **Başvuruyla** | Tarih senin; başkası sonra başvurursa reddedilir. PCT için 12 ay buradan sayılır |
+| **Yasaklama hakkı** | **Belge verilmesiyle** | İhlal davası açılabilir |
+
+#### Ara dönem — geçici koruma (SMK m.97)
+
+| Dönem | Durum |
+|---|---|
+| 0-18. ay | Başvuru gizli. Tarih senin, dava yok |
+| 18. ay sonrası | Yayımlandı. Kullanan kayda geçer, **tazminat hakkı birikir** |
+| Belge verildi | Dava açılabilir, birikmiş tazminat istenebilir |
+
+#### Belge süresi — düzeltme
+
+Konuşmada *"2-4 yıl"* dedim, **doğrusu 3-5 yıl:**
+
+| Aşama | Süre |
+|---|---|
+| Araştırma raporu | 12-24 ay |
+| Yayım | 18. ay |
+| İnceleme talebi | Başvurudan **3 yıl içinde** |
+| **Toplam tescil** | **3-5 yıl** |
+
+⚠️ Bu rakamlar TÜRKPATENT resmî istatistiği **değil**, patent
+danışmanlık sitelerinden. Resmî veri bulunamadı.
+
+**Faydalı model yolu kapalı:** 1-2 yılda çıkıyor ancak **usuller
+(yöntemler) faydalı model kapsamı dışında** (SMK m.142).
+
+**Yatırımcı için önemli olan belge değil öncelik tarihi:**
+
+| | Ne zaman | Ne denebilir |
+|---|---|---|
+| Başvuru | Hemen | *"Öncelik tarihim şu, PCT penceresi açık"* |
+| Yayım | 18. ay | *"Kimse artık bunu patentleyemez"* |
+| Belge | 3-5 yıl | *"Patentim var"* |
+
+### 62.7 ⚠️⚠️ UYGULAMA KURALI — ÖNCE BAŞVURU, SONRA SAHA
+
+**Kurucunun soruları:** *"bu buluşun avm de veya stadda uygulanması
+durumu için patent gerekiyor mu"* / *"pc, server, kod, uygulama… bunlar
+için patent başvurusu gerekir mi"*
+
+#### Patent kullanma izni değil, YASAKLAMA hakkıdır
+
+| | Ne için |
+|---|---|
+| **Kullanmak** | Patent **gerekmez** — kendi buluşunu serbestçe kullanırsın |
+| **Patent** | Başkasının kullanmasını **engellemek** için |
+
+AVM'de, stadyumda, Estelongy'de — patent beklemeden uygulanabilir.
+İhlal riski de yok: dokuz ofis tarandı, US7784682B2'nin istemi okundu.
+
+#### ⛔⛔ ZAMANLAMA TUZAĞI — hak kaybı doğurur
+
+| Sıra | Sonuç |
+|---|---|
+| Başvuru → sonra uygulama | ✅ Güvenli |
+| **Uygulama → sonra başvuru** | ⛔ **TR ve EPO'da yenilik kaybı.** ABD'de 12 ay grace period var, **Avrupa'da YOK** |
+
+**"Kamuya açık" ne demek:** AVM'de müşterilerin gördüğü, mekanizmanın
+anlaşılabildiği uygulama. İç testler ve gizlilik sözleşmeli pilotlar
+sorun değil.
+
+**Estelongy'de uygulamayı başvuru öncesine almak hak kaybettirir.**
+
+#### Kod, sunucu, marka — ayrı başvuru gerekmez
+
+| Ne | Nasıl korunur | Başvuru |
+|---|---|---|
+| **Yöntem** (mekanizma) | Patent | ✅ Çalışılıyor |
+| Kod (kaynak kod) | **Telif hakkı** | ❌ **Otomatik** — yazdığın anda senin |
+| Arayüz tasarımı | Tasarım tescili | Opsiyonel |
+| Marka (izo-odds) | Marka tescili | Opsiyonel, ayrı başvuru |
+
+**Ters yönde avantaj:** Sunucu ve kodun varlığı m.82 itirazına karşı
+**en güçlü somutluk kanıtı.** Tarifnamede anlatılması gerekir
+(§62.1'deki paragraf).
+
+### 62.8 TARİFNAMEYE EKLENEN — eşdeğer ifadesi
+
+**Kurucunun derdi:** *"bir rakip şark kurnazlığı ile güzelim buluşumuzu
+emcüklemesin"*
+
+**Dürüst kayıt:** Patent **tüm unsurlar kuralı** nedeniyle rakibi
+tamamen engelleyemez; bir unsuru çıkaran ihlal etmemiş olur. Ancak
+rakibin kaçış yolları **mevcuda çıkıyor:**
+
+| Rakip ne yaparsa | Nereye düşer |
+|---|---|
+| Ölçütü sabit yapar | "Her 100." — mevcut, patentlenemez |
+| Liste tutar, eşleşmeyi bilir | Madow — mevcut |
+| İkisini birden yapar | **Senin istemin** |
+
+Yani rakip daha **kötü** bir sistem kurabilir; senin çözümünü
+kullanamaz. Patent bu kadarını sağlar.
+
+#### Asıl savunma: eşdeğer doktrini
+
+Mahkeme ihlali değerlendirirken *"eşdeğer unsur"* doktrinini uygular.
+Tarifname eşdeğerleri sayarsa mahkemenin elinde dayanak olur.
+
+**Ölçüt tanımı güncellendi:**
+
+| | |
+|---|---|
+| Eski | *"Örneğin öğelerin topluluğa katılma sırasına ilişkin bir numara olabilir."* |
+| **Yeni** | *"Öğelerin topluluğa katılma sırasına ilişkin bir numara, bir sayaç değeri, birikimli bir nicelik veya **aynı işlevi gören eşdeğer bir işaret** olabilir."* |
+
+*"Aynı işlevi gören eşdeğer bir işaret"* — bu ifade mahkemeye şunu
+söyler: rakip başka bir işaret kullanıp aynı işi yapıyorsa kapsamdadır.
+
+### 62.9 SIRADAKİ İŞ
+
+| | Konu |
+|---|---|
+| 1 | Kolların yazımı (§61.4 sırası) — her kol hangi yarıyı taşıyacak |
+| 2 | Blok randomizasyonu taraması (hâlâ yapılmadı) |
+| 3 | Vekil bulma — başvuru hazırlığı |
+| 4 | **Uygulamayı başvuru öncesine almama** (§62.7) |
