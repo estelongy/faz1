@@ -9484,3 +9484,121 @@ unsur ilerleyebilir gerekiyorsa"*
 
 Her kol **[…]** yerine gelen unsurla ayrışır. §55.1b'deki sabit kalıp
 kuralı geçerli, yalnızca kalıbın kendisi değişti.
+
+---
+
+## 61. ⭐ ORTAK ZEMİN ve KOL YAPISI (29 Ekim)
+
+### 61.1 ✅ ORTAK BULUŞ FİKRİ — ÖĞE BELİRLEME YÖNTEMLERİ
+
+**Kurucunun tespiti:**
+
+> *"en büyük ortak alan 'öğe belirleme' demedik mi"*
+
+> *"tamam da öğe belirleme yöntemi değil, öğe belirleme yöntemleri oluyor
+> buluş"*
+
+> *"o zaman ortak zeminimiz öğe belirleme yöntemleri"*
+
+**Ortak buluş fikri (single general inventive concept): ÖĞE BELİRLEME
+YÖNTEMLERİ.**
+
+Bu, SMK m.91 / EPC Art. 82 (buluş bütünlüğü) itirazının cevabıdır. Tüm
+bağımsız istemler aynı ailenin üyeleridir; ayrı buluşlar değildir.
+
+#### Tekil / çoğul ayrımı — zorunlu
+
+| Yer | Yazım |
+|---|---|
+| **Başvuru başlığı** | İzo-odds Öğe Belirleme **Yöntemleri** |
+| **Tarifname açılışı** | *"Bu buluş, bir topluluktan öğe belirlenmesine ilişkin **yöntemlerdir**."* |
+| **Her istem** | *"öğe belirleme **yöntemi** olup"* — tekil |
+
+**Mantık:** Ortak buluş fikri bir **aile**, istemler o ailenin
+**üyeleri.** Her üye tekil, aile çoğul. Patent kalıbı her istemin bir
+yöntemi tarif etmesini gerektirir.
+
+Bu ayrım m.91 savunmasını güçlendirir: *"istemler aynı ailenin
+üyeleridir"* ifadesi *"bunlar ayrı buluşlar, ayrı başvuru yapın"*
+itirazının doğrudan cevabıdır.
+
+#### ⚠️ Elenen formülasyonlar — kayıt
+
+Ortak fikir için denenen ve elenen ifadeler:
+
+| Aday | Neden elendi |
+|---|---|
+| *"Belirlemenin öğeden önce kurulması"* | Gereksiz yeni formülasyon — alan adı ortak fikri **zaten taşıyor.** Kurucunun tepkisi: *"offf yine mi başa döndük"* |
+| *"Belirlemenin, öğenin evrene eklenmesinden önce kurulması"* | Aynı sorun; ayrıca istem 1 ile uyumsuzluk tartışması açıyor |
+
+**Ders:** Ortak buluş fikri alan adıdır. Yeni formülasyon aramak başa
+sarmaktır.
+
+### 61.2 AYIRT EDİCİLİK ÖLÇÜMÜ — dokuz ofis üzerinden
+
+Her unsur **tek başına** kaç ofisi dışarıda bırakıyor:
+
+| Unsur | Eler | Dışarıda bırakmadığı |
+|---|---|---|
+| **Kesit + her kesitte yeniden belirleme** | **8** | — (Madow'u da keser) |
+| **Eşihtimal** *(§57 yazımı)* | **7** | NCR randomized, "her 100." |
+| **Anındalık** | 6 | NCR randomized, "her 100.", NCR sequential |
+| **Nicelik** | 4 | Fisher-Yates, piyango, randomizasyon, Madow |
+| **Akışkan evren** | 4 | Reservoir, NCR randomized, "her 100.", NCR sequential |
+| **Bağımsızlık** | 3 | Piyango, "her 100.", NCR randomized, Madow |
+| **Mercisizlik** | 1-2 | Otomatik çalışan hepsi |
+
+**Sıralama:** kesit > eşihtimal > anındalık > nicelik = akışkan evren >
+bağımsızlık > mercisizlik
+
+**Çift rastgelelik: 9** — tek başına pasajın tamamını eler (§60.3).
+Mercisizlik bağımlı istem düzeyinde kalır.
+
+### 61.3 ⭐ KOLLAR ÇİFT RASTGELELİKSİZ YAZILABİLİR Mİ
+
+**Kurucunun sorusu:**
+
+> *"bundan sonraki istemlerimizi, Çİ+a, Çİ+b+c gibi mi kurmalıyız yoksa
+> a+b+f bağımsız bir istem olabilir mi? olursa bu farklı bir
+> yöntem/buluş itirazı yer mi?"*
+
+#### Buluş bütünlüğü (m.91) açısından — İTİRAZ GELMEZ
+
+Kriter *"aynı unsuru paylaşmak"* değil, **ortak buluş fikrini
+paylaşmaktır.** Tüm unsurlar aynı ailenin parçası olduğundan istemler
+serbestçe kurulabilir: a+b, b+c+f, ÇR+a — m.91 itirazı gelmez.
+
+#### Yenilik açısından — GERÇEK KISIT BURADA
+
+Çift rastgeleliksiz kombinasyonlar mevcuda çakılıyor:
+
+| Örnek kombinasyon | Kim karşılıyor |
+|---|---|
+| Anındalık + eşihtimal | **NCR randomized win** — ikisini birden (her işlem anında, 1/N eşit) |
+
+**Tek istisna:** Kesit + her kesitte yeniden belirleme — tek başına 8
+ofisi eler, çift rastgeleliksiz de ayakta kalabilir.
+
+#### Karar
+
+| | Yapı |
+|---|---|
+| Kollar | **ÇR + tek unsur** — §60.12'deki kalıp sabit |
+| Gerekçe | Çift rastgeleliksiz kombinasyonlar ya mevcuda çakılıyor ya ortak fikir bağını zayıflatıyor |
+
+### 61.4 KOL SIRASI — sıradaki iş
+
+| Kol | Unsur | Eler |
+|---|---|---|
+| 3 | Kesit + her kesitte yeniden belirleme | 8 |
+| 4 | Eşihtimal | 7 |
+| 5 | Anındalık | 6 |
+| 6 | Nicelik | 4 |
+| 7 | Akışkan evren | 4 |
+| 8 | Bağımsızlık | 3 |
+| 9 | Değer bağlama (§56.3 — ikinci aşama) | — |
+
+Kalıp (§60.12):
+
+> Buluş, öğe belirleme yöntemi olup; **[…]** ölçütün, ona uyacak öğe
+> henüz mevcut olmadan rastgele belirlenmesi ile karakterize edilir.
