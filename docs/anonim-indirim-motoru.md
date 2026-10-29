@@ -8934,3 +8934,553 @@ kapanır.
 | 1 | §58.7'deki dört açık karar — kök, konum, dört temel, ikinci katman |
 | 2 | Tarifname "tekniğin bilinen durumu" bölümü — pasaj metaforunun teknik karşılığı + yöntem karşılaştırma tablosu |
 | 3 | Blok randomizasyonu taraması |
+
+---
+
+## 60. ⭐⭐⭐ ÇİFT RASTGELELİK, İSTEM 1-2 ve TARİFNAME (29 Ekim)
+
+**Durum:** ✅✅ İstem 1, İstem 2 ve tarifname **sabitlendi.**
+**Bu bölüm §55, §56.4 ve §58'deki temel istem tartışmalarının yerine
+geçer.**
+
+### 60.1 ZEMİN DEĞİŞTİ — evren değil, ALAN
+
+**Kurucunun düzeltmesi:**
+
+> *"hayır yaaaaaaaaaaa. bu daha önceki temelimiz. alan meselesinden önce"*
+
+§55'teki sabit kalıp **evren + nicelik** üzerine kuruluydu. Alan
+tanımlandıktan sonra (§56.1) zemin değişti: temel artık **alan** üzerine
+kurulur.
+
+| | Eski (§55) | Yeni |
+|---|---|---|
+| Sabit zemin | Evren + nicelik | **Alan: öğe belirleme** |
+| Harcanacak unsurlar | konum, anındalık, eşihtimal, bağımsızlık | **evren**, nicelik, konum, anındalık, eşihtimal, bağımsızlık, mercisizlik |
+
+**Evren artık bir unsur** — sabit zeminin parçası değil. Gerekçe §56.4'te
+kurulmuştu: yöntem her evrende çalışır, evren koşulu m.82 için eklenmiş
+bir sınırdı.
+
+Kurucunun yapı kararı:
+
+> *"1 temel, sonra iki unsurlu kollar, sonra güçlü minimum daraltmalar"*
+
+> *"her bağımsız istemde bir unsur harcayacağız"*
+
+### 60.2 ALT KAT YENİDEN — hiçbir ofis evrensel değil
+
+**Kurucunun tespiti:**
+
+> *"hepsi öğe belirliyor ve farklı bir yöntem kullanıyor aynı zamanda da
+> her birisi evrensel bir iş görmüyor"*
+
+| Ofis | Yöntemi | Çalıştığı evren | Başka evrende |
+|---|---|---|---|
+| Fisher-Yates | Karıştırma | Liste, N bilinen | ❌ Akışta kurulamaz |
+| Piyango | Çekiliş | Kapanmış katılım | ❌ Akış sürerken olmaz |
+| Reservoir | Rezervuar değişimi | Akış, N bilinmez | ⚠️ Sonlanma şart |
+| Sadakat | Puan hesabı | Kimlikli üyelik | ❌ Anonim akışta olmaz |
+| Randomizasyon | Blok sırası | Protokollü, N taahhütlü | ❌ Serbest akışta olmaz |
+| NCR randomized | Per-işlem olasılık | **Her akış** | ⚠️ Nicelik tutmaz |
+| "Her 100." | Sabit eşik | **Her akış** | ⚠️ Öngörülebilir |
+
+**⭐ Kilit tespit:** Son ikisi **evrensel ama eksik.** Diğerleri
+**eksiksiz ama evrensel değil.** Pasajda ikisini birden yapan ofis yok.
+
+#### Liste ekseni — ikinci bir ayrım
+
+| Liste gerektirenler | Gerektirmeyenler |
+|---|---|
+| Fisher-Yates (karıştırmak için tüm öğeler elde olmalı) | Reservoir (k öğelik bellek) |
+| Piyango (biletler kayıtlı) | NCR randomized (her işlemde zar) |
+| Sadakat (kimlik + geçmiş) | "Her 100." (sadece sayaç) |
+| Randomizasyon (hasta kayıtları) | **İzo-odds (sadece sayaç)** |
+
+### 60.3 ⭐ TEK UNSURLA EZMEK MÜMKÜN DEĞİL — ölçüm
+
+**Kurucunun sorusu:** *"tek bir unsur ile ezmemiz mümkün mü"*
+
+**Ölçüt: pasajın tamamını geride bırakmak.**
+
+| Unsur | Pasajı geçer mi | Kim karşılıyor |
+|---|---|---|
+| Anındalık | ❌ | NCR randomized de anında karar veriyor |
+| Eşihtimal | ❌ | Fisher-Yates, piyango, reservoir, NCR — hepsi eşit |
+| Nicelik | ❌ | Fisher-Yates, piyango, randomizasyon tam k verir |
+| Bağımsızlık | ❌ | Piyango da kimliğe bakmaz (bilet numarası) |
+| Mercisizlik | ❌ | Çoğu otomatik sistem mercisiz |
+| Konumlandırma | ❌ | "Her 100.", NCR sequential, Madow konum kullanıyor |
+| **Çift rastgelelik** | ✅ | **Hiçbiri** |
+
+**Sebep yapısal:** Pasajda yedi ofis var, her biri farklı bir şeyi iyi
+yapıyor. Tek özellikte yedisini geçmek, yedisinin birden zayıf olduğu bir
+nokta bulmak demek — ofisler tam o noktalarda uzmanlaşmış.
+
+#### Anındalık ölçümü düzeltildi
+
+§57'de anındalığa **8+** eleme atfedilmişti. Konumlandırma masaya
+konduktan sonra yeniden ölçüldü: **6.** NCR randomized win'i elemiyor —
+o da her işlemde anında karar veriyor.
+
+§58.3'te kurulan ilişki geçerli: **anındalık konumlandırmanın sonucu.**
+Sonucu değil mekanizmayı talep etmek m.82'de daha güçlüdür.
+
+### 60.4 ⭐⭐⭐ ÇİFT RASTGELELİK — buluşun özü
+
+**Kurucunun formülasyonu:**
+
+> *"konum rastgele, atama rastgele zaten"*
+
+> *"sistem iki topun, rastgele seçilen iki yuvasına hangi topun
+> yerleşeceğini belirliyor. yani yuvadaki rastgele sıralar bilinse dahi,
+> hangi topların oturacağı belirsiz"*
+
+| | Rastgele olan | Kaynağı |
+|---|---|---|
+| **1** | Ölçüt — 17 çekildi | **Sistem** çekiyor |
+| **2** | Eşleşme — 17'ye kim gelecek | **Akış** getiriyor; sistem bilemez |
+
+**⭐ İkincisinin gücü, sistemin onu ÜRETMEMESİNDE.** Sistem 17'yi bilir
+ama 17'nin kim olacağını bilemez — o öğe henüz gelmemiştir.
+
+#### Pasaj denetimi
+
+| Ofis | Ölçüt rastgele | Eşleşme belirsiz |
+|---|---|---|
+| "Her 100." / NCR sequential | ❌ sabit | ✅ kim gelirse |
+| **Madow 1949** | ✅ bir kez | ❌ **liste var, 17. birim kim belli** |
+| Fisher-Yates | — | ❌ kimliği seçiyor |
+| Piyango | — | ❌ bilet kayıtlı |
+| Reservoir | — | ❌ kaydı tutuyor |
+| Sadakat | — | ❌ kimlik + geçmiş |
+| Randomizasyon | ✅ blok içi | ❌ hasta kayıtlı |
+| NCR randomized | ❌ ölçüt yok | — |
+| **İzo-odds** | ✅ | ✅ |
+
+**İkisi birden hiçbir ofiste yok.**
+
+#### Teknik üstünlüğü
+
+| Katman | Ne engelliyor |
+|---|---|
+| Ölçüt rastgele | Sistemi işleten **sonucu seçemiyor** |
+| Eşleşme belirsiz | Sistemi işleten **kimin alacağını bilemiyor** |
+
+İkisi birlikte: **sonuca hiç kimse müdahale edemiyor, sistem dahil.**
+
+Bu, §56.6'da kurulan *"müdahale penceresi yok"* argümanının daha güçlü
+hâlidir: artık **müdahale edilecek bilgi yok.** Madow'da operatör
+başlangıç noktasını görürse tüm seçilenleri bilir; Fisher-Yates'te
+listeyi gören kazananı bilir. İzo-odds'ta bilinecek bir şey yoktur,
+çünkü eşleşme henüz olmamıştır.
+
+#### ⚠️ Sınır — dürüst kayıt
+
+İkinci rastgelelik mekanizmanın ürettiği bir şey değil, **akışın
+özelliğidir.** İncelemeci sorabilir: *"Bu teknik bir katkı mı, ortamın
+doğal belirsizliği mi?"*
+
+**Cevap:** Bu buluş o belirsizliği **kullanıyor.** Diğer yöntemler onu
+ortadan kaldırmaya çalışır — liste yapar, kimlik tutar, kapanmayı
+bekler. Belirsizliği ortadan kaldırmak yerine mekanizmanın temeli yapmak
+bir tasarım tercihi değil, **tersine çevirmedir.**
+
+### 60.5 ✅✅ İSTEM 1 ve İSTEM 2 — SABİTLENDİ
+
+#### İSTEM 1 (temel — en geniş)
+
+> **Buluş, öğe belirleme yöntemi olup; ölçütün, ona uyacak öğe henüz
+> mevcut olmadan rastgele belirlenmesi ile karakterize edilir.**
+
+**TEK UNSUR. İKİ RASTGELELİK.**
+
+| Parça | İşi |
+|---|---|
+| *"öğe belirleme yöntemi olup"* | **Alan.** Evren koşulu yok, uygulama alanı yok, amaç yok |
+| *"ölçütün"* | Belirlemenin dayanağı — öğe doğrudan seçilmiyor |
+| *"ona uyacak öğe henüz mevcut olmadan"* | **İkinci rastgelelik** (örtük) + olgusal dayanak |
+| *"rastgele belirlenmesi"* | **Birinci rastgelelik** |
+| *"ile karakterize edilir"* | Patent kalıbı |
+
+| | İfade | Kaynağı |
+|---|---|---|
+| **1. rastgelelik** | *"rastgele belirlenmesi"* | **Sistem** çekiyor |
+| **2. rastgelelik** | *"ona uyacak öğe henüz mevcut olmadan"* | **Akış** getiriyor |
+
+İkincisi **örtük ama zorunlu**: öğe mevcut değilse eşleşme de yoktur,
+eşleşme yoksa kime denk geleceği belirsizdir.
+
+#### İSTEM 2 (açık hâl)
+
+> **Buluş, öğe belirleme yöntemi olup; ölçütün rastgele belirlenmesi ve
+> ÖLÇÜT BİLİNSE DAHİ, ona uyacak öğenin ölçüt belirlendiği anda henüz
+> mevcut olmaması ile karakterize edilir.**
+
+İstem 1'de örtük duran ikinci rastgeleliği **açıkça** talep eder.
+
+| | İstem 1 | İstem 2 |
+|---|---|---|
+| Ne der | Ölçüt öğeden önce rastgele belirlenir | **Ölçüt bilinse dahi** eşleşme belirsiz |
+| Kapsam | Ölçütün gizli tutulduğu sistemleri **de** kapsar | Gizlilik gerektirmeyen sistemler |
+| Genişlik | **Daha geniş** | Daha dar |
+
+**İhlalde işi:** Rakip ölçütü açıkça duyursa (*"bu kesitte 17
+kazanacak"* diye ilan etse) istem 2 onu doğrudan yakalar.
+
+#### "Neden iki istem" itirazı — cevabı
+
+**Kurucunun sorusu:** *"iki istem aynı ise ve aynı şekilde tarif
+edilecekse demezler mi neden iki istem diye"*
+
+İncelemeci *"neden iki istem"* diye sormaz; **"ikinci istem farklı bir
+şey mi talep ediyor"** diye sorar. Farklıysa sorun yoktur. Aynı şeyi
+farklı genişlikte talep etmek patentte standarttır (fallback): geniş
+olan reddedilirse dar olan ayakta kalır.
+
+Bu, §55'te kurucunun aynı soruyu sorduğunda verilen cevabın tekrarıdır:
+**istem buluşu anlatmaz, sınır çizer.**
+
+#### ⚠️ Tek tarifname — zorunlu
+
+Bir başvuruda **tek tarifname** vardır; her isteme ayrı tarifname
+yazılmaz. Tarifnamenin tek şartı **her istemi desteklemesidir** (EPC
+Art. 84). İstem 2'deki *"ölçüt bilinse dahi"* ifadesi bu nedenle
+tarifnamede açıklanmak zorundadır (bkz. 60.7).
+
+#### Neden istem 1 tek unsurlu
+
+| | Tek unsurlu (istem 1) | İki unsurlu (istem 2) |
+|---|---|---|
+| Kapsam | **Daha geniş** | Bir unsur harcanmış |
+| Mevcudu eler mi | ✅ Dokuz ofis | ✅ Dokuz ofis |
+
+İkisi de aynı mevcudu eliyor; tek unsurlu daha geniş olduğu için
+**temel** odur. Temel istem en az unsurla yazılır.
+
+#### ⚠️ Kayıt — iki kez yanlış gerekçeyle yön değiştirme
+
+**Birinci:** *"Randevulu sistem kaçar"* diye bir örnek üretip iki
+unsurlu hâli temel olarak savundum. Kurucu itiraz etti (*"bu randevu ne
+alaka ya"*) ve haklıydı: randevulu sistemde sıra belliyse rastgele ölçüt
+kullanılmaz, mekanizma kurulamaz, kaçış da yoktur. Örnek uydurmaydı.
+
+**İkinci:** İstem 2'yi *"her kesit için yeniden belirleme"* üzerine
+kurmayı önerdim. Kurucu reddetti (*"kesit ne alaka, o başka katmandı"*)
+— kesit sonraki katmandır, istem 2'ye girmez.
+
+#### Amaç isteme KONMADI — gerekçe
+
+Kurucunun sorusu: *"adam demez mi 'öğe belirleme' niçin ama?"*
+
+Denenen açılış: *"…değer tanımlanması, işaretlenmesi, konumlandırılması,
+tahsis edilmesi gibi yöntemlere ilişkin olup"*
+
+| Sorun | Neden |
+|---|---|
+| *"gibi"* | Açık uçlu liste — sınır çizmiyor (m.92) |
+| Dört fiili saymak | Patentte sayılanla **sınırlı** okunur; daraltır |
+| *"değer"* | §56.3'te kapatılan m.92 açığını geri açar |
+| *"-ebilen"* | Belirsizlik: unsur zorunlu mu değil mi? İhlalde ne arandığı bilinemez |
+
+**Üç gerekçeyle amaç istemde yok:**
+
+1. **Amaç bir unsur sayılır ve kaçış kapısı olur.** *"Bir sonuç bağlanmak
+   üzere"* yazılırsa rakip *"biz sonuç bağlamıyoruz, istatistik
+   topluyoruz"* diyerek kaçar.
+2. *"Niçin"* sorusunun yeri tarifnamedir — *"Buluşun amacı"* bölümü
+   zorunludur, incelemeci cevabı orada arar.
+3. Yöntem istemleri amaçsız yazılır: *"veri sıkıştırma yöntemi olup…"*
+   der, *"dosyaları küçültmek amacıyla"* demez.
+
+| | Kapsam |
+|---|---|
+| *"sonuç bağlanmak üzere"* | Sonuç bağlayanlar |
+| *"sonuç bağlanabilen"* | Belirsiz |
+| **amaç yok** | **Hepsi — en geniş** |
+
+Tarifnamede *"-ebilir"* kullanılır ve esnekliği o sağlar.
+
+#### Daha geniş bir temel var mı — arandı, yok
+
+| Deneme | Sonuç |
+|---|---|
+| Ölçütü de çıkarmak (*"belirleme rastgele yapılır"*) | ⛔ Fisher-Yates, piyango, reservoir hepsi rastgele — **ayırt ediciliği sıfır** |
+| Olumsuzlamadan kurmak (*"kimliğine bakılmaksızın"*) | ⛔ Piyango da kapsanıyor (bilet numarası kimlik değil); olumsuz istem zayıf |
+| Daha üstten (*"belirlemenin öğeden önce kurulması"*) | ⛔ Rastgelelik çıkınca Madow ve "her 100." içeri giriyor |
+
+**Sebep:** Pasajı kapsamak ile pasajdan ayrılmak zıt yönlerdir. Aranan
+şey *"hepsini kapsayan"* değil, **"hepsinin dışında kalan en geniş
+yer"**. Çift rastgelelik tam o noktadır; bir kelime daha çıkınca bir
+ofis içeri giriyor.
+
+### 60.6 ✅ TARİFNAME — SABİT METİN
+
+**Tek tarifname, iki istemi birden destekler.**
+
+#### Buluşun konusu
+
+> Bu buluş, bir topluluktan öğe belirlenmesine ilişkin bir yöntemdir.
+
+#### Tekniğin bilinen durumu
+
+> Öğe belirleme, birbirinden bağımsız literatürlerde ayrı ayrı ele
+> alınmıştır. Her yöntem kendi uygulama alanının gereklerine göre
+> geliştirilmiş, diğer alanların kısıtlarını gözetmemiştir. Bu nedenle
+> bir yöntemin çözdüğü sorun başka bir alanda kısıt olarak kalmıştır.
+>
+> Mevcut yöntemlerin her biri belirli bir evren tipinde çalışır ve başka
+> evren tiplerinde kurulamaz. Evren tipinden bağımsız çalışan yöntemler
+> ise ya belirlenecek öğe sayısını garanti etmez ya da belirleme sırası
+> önceden bilinebilir.
+>
+> Mevcut yöntemlerin tamamı öğeyi kendi kimliği veya özelliği üzerinden
+> belirler.
+
+#### Buluşun özü
+
+> Bu yöntem, öğenin belirlenmesini öğenin kendisinden önce
+> gerçekleştirir. Belirleme için bir ölçüt kullanılır; ölçüt rastgele
+> belirlenir ve belirlendiği anda topluluğa katılacak öğeler henüz
+> oluşmamıştır. Öğeler topluluğa katıldıkça ölçüte uyan öğe belirlenmiş
+> olur.
+>
+> Yöntem böylece iki ayrı rastgeleliği birlikte çalıştırır. Birincisi
+> ölçütün kendisidir: ölçütün hangi öğeyi işaret edeceği rastgele
+> seçimle saptanır. İkincisi ölçüt ile öğe arasındaki eşleşmedir: ölçüte
+> hangi öğenin uyacağı, öğelerin topluluğa katılma düzeninden doğar.
+>
+> İkinci rastgelelik yöntemin kendi ürettiği bir şey değildir;
+> topluluğun oluşma düzeninden gelir. Yöntem onu kullanır.
+
+#### Tanımlar
+
+> **Öğe:** Topluluğa katılan ve tek tek ayırt edilebilen her bir unsuru
+> ifade eder; kişi, işlem, kayıt, araç, cihaz veya başka herhangi bir
+> varlık olabilir. Aynı varlık, farklı topluluklarda veya aynı
+> topluluğun farklı zamanlarında farklı birer öğedir. Öğe, varlığın
+> kendisi değil, varlığın topluluğa katılma olayıdır.
+>
+> **Ölçüt:** Hangi öğenin belirleneceğini gösteren işarettir. Örneğin
+> öğelerin topluluğa katılma sırasına ilişkin bir numara olabilir.
+> Ölçütün türü sistem kurulurken belirlenir; ölçütün işaret ettiği değer
+> rastgele belirlenir. Ölçütün öğenin kendisine veya kendisine has
+> özelliklerine ilişkin olması gerekmez.
+>
+> **Kurucu:** Ölçütün türünü ve belirlenecek öğe sayısını sistem
+> kurulurken tanımlayan taraftır.
+
+#### Uygulama örneği
+
+> Aynı anda yüz stadyumda maç oynanır. Her stadyumda turnikelerden
+> seyirci girer. Toplam kaç seyirci gireceği bilinmez. Bu topluluk
+> arasından üç öğenin belirlenmesi istenir.
+>
+> Hiçbir turnike açılmadan, sistem üç ölçüt belirler: 847.291, 1.503.668
+> ve 2.410.055. Bu sayılar belirlendiğinde topluluk henüz oluşmamıştır.
+>
+> Turnikeler açılır. Yüz stadyumdaki her geçiş **aynı sayacı** bir
+> artırır; hangi stadyumda veya hangi turnikede olduğu sayaç için
+> önemsizdir, topluluk tek topluluktur.
+>
+> Sayaç 847.291'e ulaştığında o anda geçen seyirci belirlenmiş olur ve
+> bunu geçtiği anda öğrenir. Bu seyirci hangi stadyumda olduğundan
+> bağımsız olarak belirlenmiştir; sistem de hangi stadyumdan geleceğini
+> önceden bilemezdi.
+>
+> Sonraki iki milyon geçiş gerçekleşse de bu belirleme aynı kalır.
+>
+> Akış beklenenden az olursa — örneğin toplam iki milyon geçiş
+> gerçekleşirse — üçüncü ölçüt karşılanmaz ve iki öğe belirlenmiş olur.
+> Akış beklenenden çok olursa üçü de karşılanır. Yöntem her iki durumda
+> da aynı şekilde işler.
+
+#### Mevcut yöntemlerle karşılaştırma
+
+> **Karıştırma yöntemleri (Fisher-Yates, basit rastgele örnekleme):** Bir
+> liste üzerinde çalışır. Yüz stadyumun tamamı boşalır, geçiş listesi
+> birleştirilir, liste karıştırılır ve ilk öğeler belirlenir. Bu
+> yöntemlerde belirleme listenin oluşmasıyla kurulur. Bu buluşta
+> belirleme ölçütün saptanmasıyla kurulur; liste gerektirmez.
+>
+> **Rezervuar örnekleme (Vitter 1985):** Akışta çalışır ve her öğeye eşit
+> şans tanır; akış boyunca bir bellek tutar ve yeni öğe geldikçe
+> bellekteki öğelerden biriyle değiştirilebilir. Bu yöntemde belirleme
+> akışın sonlanmasıyla kurulur. Bu buluşta her öğenin sonucu katıldığı
+> anda kurulur ve sonraki katılımlardan bağımsız olarak aynı kalır.
+>
+> **Sistematik örnekleme (Madow 1949):** Rastgele bir başlangıç noktası
+> seçer ve sabit aralıkla ilerler; topluluk büyüklüğünün bilinmesini
+> gerektirir ve liste üzerinde çalışır. Başlangıç noktası bir kez
+> seçildiğinden, onu bilen taraf sonraki tüm seçilenleri hesaplar. Bu
+> buluşta ölçüt öğeler oluşmadan belirlenir ve ölçütü bilen taraf hangi
+> öğenin belirleneceğini hesaplayamaz.
+>
+> **Çekiliş ve piyango:** Katılım bir noktada kapanır, katılımlar kayda
+> geçer ve belirleme kayıtlar üzerinden yapılır. Bu buluşta belirleme
+> katılım sürerken kurulur ve kayıt gerektirmez.
+>
+> **Sadakat programları:** Öğenin kimliğini ve geçmişini tutar; belirleme
+> harcama tutarına, ziyaret sayısına veya üyelik süresine göre yapılır.
+> Bu buluşta belirleme yalnızca ölçüt üzerinden yürür; öğelerin tamamı
+> ölçüt karşısında aynı konumdadır.
+>
+> **İşlem başına olasılık yöntemleri:** Her katılıma bağımsız bir olasılık
+> tanır ve her katılım için ayrı bir çekim yapar. Bu yöntemde kaç öğenin
+> belirleneceği önceden saptanamaz. Bu buluşta ölçüt sayısı önceden
+> belirlenir.
+>
+> **Sabit sıra yöntemleri:** Bir sayaç kullanır ve sabit bir eşiğe
+> ulaşıldığında belirleme yapar. Eşik sabit olduğundan, sayan taraf hangi
+> öğenin belirleneceğini hesaplar. Bu buluşta ölçüt rastgele belirlenir.
+
+#### Buluşun sağladığı üstünlükler
+
+> **Belirleme öğenin katıldığı anda kurulur.** Her öğe kendi sonucunu
+> katıldığı anda öğrenir ve bu sonuç sonraki katılımlardan bağımsız
+> olarak aynı kalır. Böylece yöntem, topluluğun tamamının oluşmasını
+> gerektiren yöntemlerden ayrılır.
+>
+> **Belirleme topluluk büyüklüğünden bağımsız yürür.** Topluluğun kaç
+> öğeden oluşacağı bilinmese de yöntem işler.
+>
+> **Belirleme öğeyi ayırt etmeden yürür.** Yöntem öğelerin topluluğa
+> katılma sırasını esas alır; öğenin kimliği, geçmişi veya özellikleri
+> belirlemeye girmez. Böylece yöntem, öğeyi kimliği veya özellikleri
+> üzerinden ayırt eden yöntemlerden ayrılır.
+>
+> **Her öğe eşit şans taşır.** Her öğe ölçüte uyma şansını eşit taşır ve
+> bu şans öğenin kaçıncı sırada katıldığından bağımsızdır.
+>
+> **Belirleme sonucuna müdahale edilemez.** Ölçüt öğeler oluşmadan
+> belirlenir; belirlendiği anda ona uyacak öğe henüz mevcut değildir.
+>
+> **Yöntem akışın kaç ayrı noktadan geldiğine bakmaz.** Tek giriş ile yüz
+> giriş arasında işleyiş farkı yoktur; ölçüt topluluğa ilişkindir, akışın
+> geldiği noktaya değil. Dağınık akışların merkezde birleştirilmesi
+> gerekmez.
+
+#### Rastgelelik üretimi
+
+> Rastgele sayı üretimi bilinen yöntemlerle yapılır.
+
+**Kurucunun kuralı:** *"rastgeleliği yeniden keşfetmeye gerek yok ya"* —
+buluş orada değil, onun **nereye uygulandığındadır.** Bilinen bir aracı
+yeni bir yerde kullanmak patentlenebilir; aracı yeniden icat ettiğini
+iddia etmek zarar verir.
+
+#### Belirlemeden sonrası — kapsam dışı
+
+> Belirlenen öğeye bir değer tanımlanabilir, öğe işaretlenebilir, bir
+> konuma yerleştirilebilir veya bir kaynak tahsis edilebilir. Bu
+> uygulamalar yöntemin kapsamı dışındadır.
+
+### 60.7 ✅ İSTEM 2'Yİ DESTEKLEYEN TARİFNAME PARAGRAFI
+
+> Ölçütün bilinmesi yöntemin işleyişini etkilemez. Ölçüt belirlendiği
+> anda ona uyacak öğe henüz oluşmamış olduğundan, ölçütü bilen taraf
+> hangi öğenin belirleneceğini bilemez. Bu nedenle ölçütün gizli
+> tutulması yöntemin bir gereği değildir.
+
+**Son cümle kritik:** Mevcudun hiçbirinde bu özellik yoktur —
+Fisher-Yates'te liste, Madow'da başlangıç noktası gizli tutulmak
+zorundadır.
+
+### 60.8 ⛔ ELENEN İSTEM YAZIMLARI — her biri bir tuzak
+
+| Aday | Neden elendi |
+|---|---|
+| *"…topluluk içindeki **yeri** belirlenmek suretiyle"* | Sabit konumu da kapsıyor → **"her 100." içeride kalıyor.** Kurucunun uyarısı: *"aynı mantık değil. biz sabit konuma vermiyoruz ki"* |
+| *"…**yerinin rastgele** belirlenmesi"* | Madow'u elemiyor — onda da başlangıç rastgele. Ayrıca *"yer"* mecrayı sıraya sınırlıyor |
+| *"**tahsis** ölçütü"* | *"Tahsis"* değer bağlamayı ima ediyor; §56.3'teki iki aşama ayrımını bulandırır |
+| *"**değer** ölçütü"* | ⛔⛔ **Değer isteme geri giriyor** — m.92 açığı yeniden açılır, kapsam daralır (klinik randomizasyon, örnekleme, denetim seçimi düşer), alan adıyla çelişir |
+| *"**belirleme** ölçütü"* | *"Belirle"* iki kez geçiyor; sıfatsız *"ölçüt"* yeterli |
+| *"tahsis/belirleme ölçütü"* | Bölü işareti istemde olmaz — alternatif sunar (m.92) |
+| *"**ve/veya**"* | Üç hâli kapsar (A, B, A+B); en zayıfı istemi düşürür. Ayrıca **yer bir ölçüttür** — mantıksal gereksizlik |
+| *"…**tahmin edilemediği**"* | ⛔ §57'de elenen tuzağa dönüş. Yetenek iddiası: *"kim tahmin edemiyor, nasıl ölçülür"* |
+| *"…**olağan rastgelelikle belirlenmesi**"* | ⛔ Eşleşmeyi **sistem işlemine** çeviriyor. Oysa gücü sistemin onu üretmemesinde. *"Olağan"* ölçülemez |
+| *"ölçütün **ve konumunun**"* | Konum zaten bir ölçüt — gereksizlik; *"ve"* ikisini birden zorunlu kılıyor |
+| *"ölçütle belirlenecek **öğelerin** rastgele belirlenmesi"* | ⛔ **Mekanizmanın tersi** — öğeler rastgele belirlenmiyor, ölçüt belirleniyor |
+
+#### Kapatılan üç kaçış kapısı
+
+*"Yer"* yerine *"ölçüt"* yazılmasının gerekçesi:
+
+| Kapı | Rakip ne der | Ölçüt kapatıyor mu |
+|---|---|---|
+| Aralık | *"Konum değil, 17-19 aralığı"* | ✅ |
+| **Zaman** | *"14:37'de gelen alır"* | ✅ zaman da bir ölçüt |
+| **Özellik eşiği** | *"Rastgele sayı çek, tutarın son iki hanesi ona eşit olanı seç"* | ✅ |
+
+### 60.9 ⛔ ELENEN UYGULAMA ÖRNEKLERİ — kayıt
+
+| Örnek | Neden elendi |
+|---|---|
+| **Mağaza — her 50 müşteriden birine hediye** | ⛔⛔ Ticari promosyon gibi okunuyor, m.82'de *"iş yöntemi"* itirazına gerekçe veriyor. Ayrıca *"her 50'de bir"* ifadesi ölçütün **rastgeleliğini** arka plana atıyor; mekanizma *"her 100."*ün kuzeni gibi görünüyor. Kurucunun tepkisi: *"bula bula en basit en sıradan somutlaştırmayı mı yaptın"* |
+| Tek stadyum | Yetersiz ölçek; **tek sayaç** üstünlüğü görünmüyor |
+| **Zaman noktası ölçütü** | ⛔ **Çalışmıyor.** Kurucunun hesabı: 2 saatte 2,8 milyon geçiş → saniye çözünürlüğünde bir noktaya ~389 kişi düşer (nicelik bozulur); milisaniyede 7,2 milyon nokta olur ve %60'ı boş kalır (ölçüt karşılanmaz). Sebep yapısal: zaman öğelerden bağımsız akar |
+| Bilet numarası hanesi ölçütü | ⛔ Bilet öğenin **özelliğidir** — bağımsızlık unsurunu çiğner |
+| Mekânsal konum (*"17. turnike"*) | ⛔ Öğeye değil kapıya ait |
+| Koşul/eşik (*"tutarı 500'ü aşan ilk işlem"*) | ⛔ Öğenin özelliği |
+
+**Tarifnamede tek örnek yeter** (yüz stadyum) ve ölçüt için tek örnek
+verilir (*"örneğin katılma sırasına ilişkin bir numara"*). *"Örneğin"*
+kelimesi kapsamı açık tutar.
+
+**Kurucunun uyarısı:** *"salak örnekte boğulma"*
+
+### 60.10 ŞEKİL (ÇİZİM) — kurgu notu, henüz yapılmadı
+
+| ⛔ Yanlış | Neden zarar verir |
+|---|---|
+| **Renkli toplar** | Topun rengi belli → kimliğe bakılıyor sanılır, **bağımsızlık unsurunu çökertir** |
+| Toplar önceden dizilmiş | Eşleşme belli → **ikinci rastgelelik görünmez** |
+| Statik kutu resmi | **Sıra görünmez** (kurucunun uyarısı: *"ama bu sırayı es geçer"*) |
+
+| ✅ Doğru kurgu | |
+|---|---|
+| Yuvalar | Soldan sağa numaralı hat, k tanesi işaretli |
+| Toplar | **Hepsi aynı** — ayırt edilemez, numarasız |
+| Zaman | **Üç kare**: (1) ölçüt belirlendi, hat boş — (2) toplar giriyor, sayaç 9'da, 17 hâlâ belirsiz — (3) 17. top geldi, belirlendi |
+
+### 60.11 KOL YAPISI — sıradaki iş
+
+**Kurucunun planı:** *"bağımsız 5-6 kol daha kuracağız… bağımsız
+istemlerin yarısı akışkan evren yarısı sabit evrende olsun"*
+
+Kol adayları (her kol temel + bir unsur):
+
+| Kol | Unsur |
+|---|---|
+| 3 | Eşihtimal (§57'deki sabit ifade) |
+| 4 | Kesit + her kesitte yeniden belirleme — **Madow'u kesen** |
+| 5 | Nicelik — NCR randomized'ı kesen |
+| 6 | Anındalık |
+| 7 | Akışkan evren |
+| 8 | Bağımsızlık (kimliksizlik) |
+| 9 | Değer bağlama (§56.3 — ikinci aşama, **bağımsız**) |
+
+#### ⚠️ Sabit evren kolu uyarısı
+
+**Sabit evrende konum belirlemek Madow 1949'un ta kendisidir:**
+
+| | Madow 1949 | Sabit evren kolu |
+|---|---|---|
+| Konum önce belirlenir | ✅ | ✅ |
+| Rastgele | ✅ başlangıç noktası | ✅ |
+| Eşihtimal | ✅ ispatlı | ✅ |
+| N bilinir | ✅ | ✅ |
+
+Sabit evrende Madow'dan ayıran tek şey **her kesitte yeniden
+belirleme.** Sabit evren kolları bu unsur üzerine kurulmalı.
+
+**Kurucunun cevabı:** *"sabit evren bileşen sayısı, akışkana göre bir
+unsur ilerleyebilir gerekiyorsa"*
+
+### 60.12 İSTEMİN KALIBI — yeni sabit
+
+> **Buluş, öğe belirleme yöntemi olup; […] ölçütün, ona uyacak öğe henüz
+> mevcut olmadan rastgele belirlenmesi ile karakterize edilir.**
+
+Her kol **[…]** yerine gelen unsurla ayrışır. §55.1b'deki sabit kalıp
+kuralı geçerli, yalnızca kalıbın kendisi değişti.
