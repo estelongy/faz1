@@ -10480,3 +10480,308 @@ Yarıların tek başına ölçümü **yalnızca kayıt amaçlı** tutulur; istem
 
 İki yarı birbirini tam tamamlıyor. Tek yarı hiçbir zaman yetmiyor — bu
 yüzden istemlerde Çİ duruyor.
+
+---
+
+## 65. ⭐⭐⭐ İSTEM SETİ SON HÂL — ON BEŞ İSTEM (30 Ekim)
+
+**Durum:** ✅ Tek tek gözden geçirildi. **Bu bölüm §63.2'deki on üç
+istemin yerine geçer.**
+
+Üç değişiklik yapıldı:
+1. **Eşihtimal iki istem oldu** (5 ve 6) — ikisi de temiz, kurucu
+   ikisini de tutmaya karar verdi
+2. **İstem 12 ifadesi düzeltildi** — *"önceden belirli bir kümede"* →
+   *"önceden belirlenmiş bir topluluğun"*
+3. **⭐ PARALEL EVRENLER İSTEMİ GERİ GELDİ** (istem 13) — §56.4'te
+   iptal edilmişti, piyango kurgusu gerekliliğini gösterdi
+
+### 65.1 ON BEŞ İSTEM
+
+#### İSTEM 1 — temel (Çİ örtük)
+
+> Buluş, öğe belirleme yöntemi olup; ölçütün, ona uyacak öğe evrene
+> katılmadan önce rastgele belirlenmesi ile karakterize edilir.
+
+#### İSTEM 2 — ölçüt bilinse dahi (Çİ açık)
+
+> Buluş, öğe belirleme yöntemi olup; ölçütün rastgele belirlenmesi ve
+> **ÖLÇÜT BİLİNSE DAHİ**, ona uyacak öğenin ölçüt belirlendiği anda
+> evrene katılmamış olması ile karakterize edilir.
+
+#### İSTEM 3 — ANINDALIK (1. yarı)
+
+> Buluş, öğe belirleme yöntemi olup; **ÖĞENİN BELİRLENMESİNİN, ÖĞENİN
+> EVRENE KATILDIĞI ANDA VE GERİ ALINAMAZ BİÇİMDE GERÇEKLEŞMESİ** ve
+> ölçütün rastgele belirlenmesi ile karakterize edilir.
+
+#### İSTEM 4 — KESİT + YENİDEN BELİRLEME (2. yarı)
+
+> Buluş, öğe belirleme yöntemi olup; **EVRENİN KESİTLERE AYRILDIĞI VE
+> HER KESİT İÇİN ÖLÇÜTÜN BAĞIMSIZ OLARAK YENİDEN BELİRLENDİĞİ** ve
+> ölçüte uyacak öğenin, ölçüt belirlendiği anda evrene katılmamış
+> olması ile karakterize edilir.
+
+#### İSTEM 5 — EŞİHTİMAL (2. yarı)
+
+> Buluş, öğe belirleme yöntemi olup; **EVRENE KATILAN HER ÖĞENİN, DİĞER
+> ÖĞELERİN KATILMASINDAN BAĞIMSIZ OLARAK ÖLÇÜTE UYMA İHTİMALİNİ EŞİT
+> TAŞIDIĞI** ve ölçüte uyacak öğenin, ölçüt belirlendiği anda evrene
+> katılmamış olması ile karakterize edilir.
+
+#### İSTEM 6 — EŞİHTİMAL (1. yarı) ⭐ YENİ
+
+> Buluş, öğe belirleme yöntemi olup; **EVRENE KATILAN HER ÖĞENİN, DİĞER
+> ÖĞELERİN KATILMASINDAN BAĞIMSIZ OLARAK ÖLÇÜTE UYMA İHTİMALİNİ EŞİT
+> TAŞIDIĞI** ve ölçütün rastgele belirlenmesi ile karakterize edilir.
+
+#### İSTEM 7 — NİCELİK (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **BELİRLENECEK ÖĞE SAYISININ
+> ÖNCEDEN SAPTANDIĞI**, ölçütün rastgele belirlenmesi ve ölçüte uyacak
+> öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+> karakterize edilir.
+
+#### İSTEM 8 — KİMLİKSİZLİK (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **BELİRLEMENİN, ÖĞENİN KİMLİĞİ VE
+> KENDİSİNE HAS ÖZELLİKLERİ KULLANILMAKSIZIN YAPILDIĞI**, ölçütün
+> rastgele belirlenmesi ve ölçüte uyacak öğenin ölçüt belirlendiği anda
+> evrene katılmamış olması ile karakterize edilir.
+
+#### İSTEM 9 — MERCİSİZLİK (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **BELİRLENEN ÖĞENİN HANGİSİ
+> OLACAĞINA HİÇBİR TARAFIN ETKİ EDEMEMESİ**, ölçütün rastgele
+> belirlenmesi ve ölçüte uyacak öğenin ölçüt belirlendiği anda evrene
+> katılmamış olması ile karakterize edilir.
+
+#### İSTEM 10 — DURUMSUZLUK (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **BELİRLEME İÇİN ÖĞELERE İLİŞKİN
+> HİÇBİR KAYIT TUTULMADIĞI**, ölçütün rastgele belirlenmesi ve ölçüte
+> uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+> karakterize edilir.
+
+#### İSTEM 11 — AKIŞKAN EVREN (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **ÖĞELERİN EVRENE ZAMAN İÇERİSİNDE
+> KATILDIĞI VE EVRENİN BÜYÜKLÜĞÜNÜN ÖNCEDEN KESİN BİLİNMEDİĞİ**,
+> ölçütün rastgele belirlenmesi ve ölçüte uyacak öğenin ölçüt
+> belirlendiği anda evrene katılmamış olması ile karakterize edilir.
+
+#### İSTEM 12 — SABİT EVRENİN AKIŞKANA DÖNÜŞTÜRÜLMESİ (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **ÖĞELERİ ÖNCEDEN BELİRLENMİŞ BİR
+> TOPLULUĞUN, ÖĞELERİN EVRENE TEK TEK KATILMASIYLA AKIŞKAN HÂLE
+> GETİRİLDİĞİ**, ölçütün rastgele belirlenmesi ve ölçüte uyacak öğenin
+> ölçüt belirlendiği anda evrene katılmamış olması ile karakterize
+> edilir.
+
+#### İSTEM 13 — PARALEL EVRENLER (Çİ) ⭐ GERİ GELDİ
+
+> Buluş, öğe belirleme yöntemi olup; **AYNI ÖĞE AKIŞINDAN BİRDEN FAZLA
+> EVREN TANIMLANDIĞI, HER EVRENİN KENDİ KESİT BÜYÜKLÜĞÜ VE KENDİ
+> ÖLÇÜTÜYLE BAĞIMSIZ OLARAK İŞLETİLDİĞİ VE BİR ÖĞENİN BİRDEN FAZLA
+> EVRENDE BELİRLENEBİLDİĞİ**, ölçütün rastgele belirlenmesi ve ölçüte
+> uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+> karakterize edilir.
+
+#### İSTEM 14 — DEĞER BAĞLAMA (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; ölçütün rastgele belirlenmesi,
+> ölçüte uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması
+> ve **BELİRLENEN ÖĞEYE, KURUCU TARAFINDAN TANIMLANAN BİR DEĞERİN
+> BAĞLANMASI** ile karakterize edilir.
+
+#### İSTEM 15 — SİSTEM İSTEMİ (Çİ)
+
+> Buluş, öğe belirleme sistemi olup; ölçütü, ona uyacak öğe evrene
+> katılmadan önce rastgele belirleyen bir birim, öğelerin evrene
+> katılmasını algılayan bir birim, katılım sayısını tutan bir bellek ve
+> ölçüte uyan öğeyi belirleyen bir birim içermesiyle karakterize
+> edilir.
+
+### 65.2 ÖZET TABLO
+
+| # | Unsur | Yarı | Not |
+|---|---|---|---|
+| 1 | Çift rastgelelik | Çİ örtük | Temel, en geniş |
+| 2 | Çift rastgelelik | Çİ açık | *"Bilinse dahi"* — fallback |
+| 3 | Anındalık | **1. yarı** | 2. yarı çakışıyordu |
+| 4 | Kesit + yeniden | **2. yarı** | 1. yarı da temiz olurdu |
+| 5 | Eşihtimal | **2. yarı** | |
+| 6 | Eşihtimal | **1. yarı** | ⭐ İkisi de tutuldu |
+| 7 | Nicelik | Çİ | Tek yarı yetmiyor |
+| 8 | Kimliksizlik | Çİ | Tek yarı yetmiyor |
+| 9 | Mercisizlik | Çİ | Tek yarı yetmiyor |
+| 10 | Durumsuzluk | Çİ | Tek yarı yetmiyor |
+| 11 | Akışkan evren | Çİ | Tek yarı yetmiyor |
+| 12 | Sabit→akışkan | Çİ | En değerli yeni kol |
+| 13 | **Paralel evrenler** | Çİ | ⭐ Geri geldi |
+| 14 | Değer bağlama | Çİ | Ticari kullanım |
+| 15 | Sistem | Çİ | Kategori çeşitlendirmesi |
+
+| | Kaç |
+|---|---|
+| Çİ | 11 |
+| 2. yarı | 2 |
+| 1. yarı | 2 |
+| **Toplam** | **15** |
+
+**Ücret:** TR'de fark yok (§62.4); EPO'da **tam 15 sınırında** — istem
+ücreti yok.
+
+### 65.3 ⭐ EŞİHTİMAL İKİ İSTEM OLDU
+
+**Kurucunun sorusu:** *"bu birinci yarı ile yazılacak mı"* →
+*"ikisini de tut"*
+
+| | İstem 5 (2. yarı) | İstem 6 (1. yarı) |
+|---|---|---|
+| Kalan rakibi eleyen | 2. yarı → NCR randomized düşer | 1. yarı → NCR randomized *"ölçüt yok"* diye düşer |
+| Kapsam | Gizli ölçütlü sistemleri **de** kapsar | Sabit ölçütlüleri dışlar |
+
+**Eşihtimal unsuru tek başına 7 ofisi eliyor** — *"katılmasından
+bağımsız"* ifadesi liste tabanlı yöntemlerin tamamını kesiyor (orada
+katılım kavramı yok).
+
+**Ancak tek başına ayakta duramaz:** NCR randomized win eşihtimali
+karşılıyor (her işleme bağımsız 1/N). İkinci unsur zorunlu — hangi yarı
+olduğu fark etmiyor, ikisi de o rakibi eliyor.
+
+### 65.4 ⭐⭐ PARALEL EVRENLER — PİYANGO KURGUSU
+
+**§56.4'te iptal edilmişti**, gerekçe: *"ihlal tespitine hiçbir şey
+eklemiyor; mevcut istemler tek evrenle de paralel evrenlerle de çalışan
+sistemi yakalar."*
+
+**Bu gerekçe yanlıştı.** Kurucunun piyango kurgusu paralel evrenlerin
+mekanizmanın kendisi olduğunu gösterdi.
+
+#### Kurucunun sorusu ve tarifi
+
+> *"bak şimdi şunu düşünmeni istiyorum. biz piyangodan daha üstün ve
+> anında sonuçlanan bir piyango sistemi kurabilir miyiz?"*
+
+> *"piyango şu değil mi? 1 milyonluk evrende, bir kişiye a değeri, 5
+> kişiye b değer, k kişiye c değeri vs vs"*
+
+> *"tamam işte biz aynı evreni değişik k lar ile bir kaç defa kuracaz
+> işte"*
+
+#### Kurgu
+
+| Evren | Kesit | k | Değer |
+|---|---|---|---|
+| E1 | 1.000.000 | 1 | a — büyük ikramiye |
+| E2 | 200.000 | 1 | b — akış boyunca 5 kazanan |
+| E3 | 1.000.000/k | 1 | c |
+
+Bir bilet alındığında sayaç **her evrende birden** ilerliyor. Aynı bilet
+E1'de de E2'de de yarışıyor — ikisini birden kazanabilir.
+
+#### Piyangonun evreni vs bu kurgu
+
+| | Klasik piyango | İzo-odds piyango |
+|---|---|---|
+| Öğeler | **Biletler** — basılmış, numaralı, N belli | Bilet **alma olayları** |
+| Satılmayan bilet | Çekilişe **giriyor**, ikramiye devreder | Kavram yok |
+| Belirleme anı | Çekiliş — satış kapandıktan **sonra** | **Alındığı anda** |
+| Kademeli yapı | Tek çekiliş, ikramiye planı | **Paralel evrenler** |
+| Bir bilet kaç kademe | **Bir** | **Hepsinde yarışır** |
+| Kazanan listesi | Çekilişte oluşur | **Hiç oluşmaz** |
+
+#### Çözülen teknik sorunlar
+
+| Sorun | Paralel evrenlerle çözümü |
+|---|---|
+| **Büyük ikramiye kavramı** | E1'in kesiti büyük → tek kazanan, büyük değer |
+| **İkramiye havuzu** | Her evren kendi oranını tutuyor; satış ne olursa olsun oran sabit |
+| **Anında sonuç** | Bilet alındığı anda her evrende sonucu belli |
+
+**Piyangonun yapamadığı:** Satış kapanmadan ikramiye planı işliyor.
+Klasik piyangoda 600 bin satılırsa büyük ikramiye devreder; burada o
+evrenin kesiti dolmazsa o kademe o turda çıkmaz, **ama alt kademeler
+çıkmış olur ve kimse beklemez.**
+
+#### ⚠️ Hukuki sınır — mekanizma değiştirmiyor
+
+| Sorun | Durum |
+|---|---|
+| **Şans oyunu tekeli** | TR'de devlet tekelinde (Milli Piyango + lisanslı işletmeci). **Özel kişi piyango kuramaz** |
+| Kumar mevzuatı | Bedel karşılığı şansa dayalı ödül = lisans gerektirir |
+
+Paralel evrenler **teknik** sorunları çözüyor, **hukuki** olanları
+çözmüyor — yasak mekanizmaya değil **faaliyete** konmuş.
+
+**Patent açısından sonuç:** Bu alan işletilemese de **patentlenebilir.**
+Asıl değer orada: Milli Piyango veya lisanslı işletmeci anında
+sonuçlanan bir ürün kurmak isterse bu patenti kullanmak zorunda kalır.
+Kurmak değil, **yolu kapatmak** — lisanslama geliri.
+
+#### İstem yazımı — üç parça
+
+| Parça | Neyi koruyor |
+|---|---|
+| *"birden fazla evren tanımlandığı"* | Paralel yapı |
+| *"kendi kesit büyüklüğü ve kendi ölçütüyle bağımsız"* | **Kademeli ödül** — E1 büyük kesit/büyük ikramiye |
+| *"bir öğenin birden fazla evrende belirlenebildiği"* | ⭐ **Kritik** — onsuz rakip *"bizde her öğe tek evrende"* diyerek kaçar |
+
+Üçüncü parça mekanizmanın gerçek farkı: piyangoda bir bilet tek
+kademede kazanır, burada hepsinde yarışır.
+
+**Mevcut denetimi:** Dokuz ofisin hiçbiri paralel evren kurmuyor.
+Piyangoda kademeler aynı çekilişte, tek evren.
+
+### 65.5 İSTEM 12 İFADE DÜZELTMESİ
+
+**Kurucunun düzeltmesi:** *"ÖĞELERİ ÖNCEDEN BELİRLenmiş BİR TOPLULUĞUN"*
+
+| | Eski | Yeni |
+|---|---|---|
+| | *"önceden belirli bir kümede bulunan topluluğun"* | *"önceden belirlenmiş bir topluluğun"* |
+
+| Kazanç | |
+|---|---|
+| *"küme"* çıktı | Matematiksel terim, istemde gereksiz |
+| *"belirli"* → *"belirlenmiş"* | **Fiil** — niteleme değil, eylem |
+| Kapsam | Liste olmak zorunda değil; tanımlanmış herhangi bir topluluk |
+
+#### Piyango bu istemde
+
+**Kurucunun tespiti:** *"piyango da burda"* / *"biletler belli değil mi"*
+
+Doğru — piyangoda bilet havuzu önceden belirlenmiş bir topluluk. Ancak
+ikinci unsur eliyor: **piyango o havuzu akışa çevirmiyor**, çekiliş
+kapanmış havuz üzerinden yapılıyor.
+
+**İstem 12'nin değeri tam burada:** kapalı havuzu bu mekanizmaya açıyor.
+Kurucunun ifadesiyle *"düşünce büyüklüğüne atıf"* — piyangonun kendi
+sahasına alternatif mekanizma sunuyor.
+
+### 65.6 TEK TEK GÖZDEN GEÇİRMEDE VERİLEN KARARLAR
+
+| İstem | Tartışma | Karar |
+|---|---|---|
+| 4 | *"Bağımsız"* tek başına ölçütün elle girilmiş sabit sayı olmasını engellemiyor; *"rastgele"* eklenmeli mi | **Eklenmedi** — ikisi de temizse geniş olan tercih edilir; rastgelelik istem 1-2-3'te korunuyor |
+| 5 | 1. yarıyla da yazılmalı mı | **Yazıldı** — istem 6 oldu |
+| 11 | *"Sabit veya akışkan evren"* denmesi | **Hayır** — ikisi birden tüm olasılıkları kapsar, istem 1'in tekrarı olur. 11 akışkanı, 12 dönüştürmeyi talep ediyor |
+| 13 | Paralel evrenler yalın mı (A) kesit büyüklüğü dahil mi (B) | **İkisi birleştirildi** — kesit büyüklüğü + çok evrende belirlenebilme |
+
+### 65.7 ⚠️ TARİFNAME GÜNCELLENMELİ
+
+On beş istem için destek gerekiyor (EPC Art. 84). §60.6'daki tarifname
+istem 1-2 için yazılmıştı.
+
+**Eklenecek bölümler:**
+
+| İstem | Tarifnamede olması gereken |
+|---|---|
+| 13 paralel evrenler | Aynı akıştan çok evren kurulması, kademeli değer yapısı örneği, bir öğenin çok evrende belirlenebilmesi |
+| 12 dönüştürme | Önceden belirlenmiş topluluğun sisteme tek tek girilmesi |
+| 3, 4, 5, 6, 7, 8, 9, 10, 11 | Her unsurun nasıl çalıştığı |
+
+**Gerekçe yazmak zorunlu değil** — tarifnamenin görevi **desteklemek**,
+gerekçelendirmek değil. *"Bu şu yüzden yeni"* yazmak zararlı olabilir:
+mevcudu kendi elinle tarif etmiş olursun.
