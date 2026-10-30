@@ -10316,3 +10316,167 @@ başvuruyla birlikte talep edilirse rapor daha erken gelir.
 | 3 | Tarifnamenin tüm istemleri desteklemesi (EPC Art. 84) — 13 istem için gözden geçirme |
 | 4 | Vekil bulma |
 | 5 | **Uygulamayı başvuru öncesine almama** (§62.7) |
+
+---
+
+## 64. ⚠️⚠️ DÜZELTME — MADOW ÖLÇÜMLERİ YANLIŞTI (30 Ekim)
+
+**Durum:** ✅ Düzeltme. **Bu bölüm §60.3, §61.2, §63.3 ve §63.6'daki
+Madow satırlarının yerine geçer.**
+
+### 64.1 KURUCUNUN İTİRAZI
+
+> *"kardeşimmmmmmmmmmmmmmm. bizim bununla ne alakamız var. zerre
+> alakamız yok. hangi istemimiz bununla çakışıyor ki"*
+
+> *"evrenimiz akışkan gerizekalı. Çİ rastgeleliğimiz var. üstüne akışkan
+> evren, üstüne eş ihtimal konuşuyoruz sen hala madow diyorsun. madow mu
+> kalıyor ortada"*
+
+> *"madow ne yapıyor. kesit, rastgele bir nokta, sonra tekrar. bunun
+> bizimle ne alakası var."*
+
+**Kurucu haklı.** Madow hiçbir istemle çakışmıyor ve ben onu her unsur
+ölçümünde tekrarlayarak gereğinden büyük gösterdim.
+
+### 64.2 MADOW GERÇEKTE NE YAPIYOR
+
+**W. G. Madow (1949), "On the Theory of Systematic Sampling", Annals of
+Mathematical Statistics** — sistematik örnekleme.
+
+1.000 kişilik **hazır liste**, 10 kişi seçilecek:
+
+| Adım | İşlem |
+|---|---|
+| 1 | Aralık: 1.000 / 10 = 100 |
+| 2 | 1-100 arasından rastgele: **37** |
+| 3 | Seçilenler: 37, 137, 237, … 937 |
+
+**Üç şeye ihtiyacı var:** liste, N (bilinmeli, yoksa aralık
+hesaplanamaz), ve tek çekim.
+
+#### ⭐ "Tekrar" bile yok
+
+Kurucunun tespiti: *"kesit, rastgele bir nokta, sonra tekrar"* — ama
+Madow'da **tekrar yoktur.** Bir kez rastgele nokta seçilir, sonrası
+**toplama işlemidir**: 37, 137, 237. Yeni çekim yapılmaz.
+
+| | Madow | İzo-odds |
+|---|---|---|
+| Çekim sayısı | **Bir** — gerisi aritmetik | **Her kesitte yeni** |
+| Kesitler arası ilişki | 37 → 137 → 237 (sabit aralık) | 17 → 38 → 4 (**ilişkisiz**) |
+| 37. birim kim | **Listede yazıyor, anında belli** | Belirsiz — henüz gelmedi |
+| Evren | **Kapalı liste** | **Akışkan** |
+
+**İki yöntem aynı ortamda çalışmıyor; aynı masada karşılaştırılacak
+şeyler değil.**
+
+### 64.3 ⛔ YANLIŞ ÖLÇÜM — "Madow eşihtimali karşılıyor"
+
+Önceki tablolarda şöyle yazılmıştı:
+
+| Ofis | Eşihtimal |
+|---|---|
+| Madow 1949 | ✅ ispatlı |
+
+**Bu yanlıştı.** Madow genel anlamda eşihtimalli, ancak **bu buluşun
+eşihtimal ifadesini karşılamıyor.**
+
+İstem 5'teki ifade:
+
+> *"Her öğenin, **diğer öğelerin katılmasından bağımsız olarak** ölçüte
+> uyma ihtimalini eşit taşıdığı"*
+
+Madow'da bu kurulamaz:
+
+| | Madow |
+|---|---|
+| Öğeler katılıyor mu | ❌ **Liste hazır** — katılım yok |
+| *"Katılmasından bağımsız"* | ❌ Katılım olmadığı için **anlamsız** |
+| 37. birim kim | **Baştan belli** |
+
+**Sonuç:** Eşihtimal kolu (istem 5) **tek başına** Madow'u eliyor; 2.
+yarıya bile ihtiyaç duymuyor.
+
+### 64.4 ✅ DÜZELTİLMİŞ ÖLÇÜM — Madow hangi istemleri karşılıyor
+
+| İstem | Unsur | Madow karşılıyor mu | Neden |
+|---|---|---|---|
+| 1 | Temel (Çİ örtük) | ❌ | Liste var, eşleşme hazır |
+| 2 | Ölçüt bilinse dahi | ❌ | Aynı |
+| 3 | Anındalık | ❌ | Liste üzerinde, anında karar yok |
+| 4 | Kesit + **yeniden belirleme** | ❌ | Madow'da **tekrar yok**, tek çekim |
+| 5 | **Eşihtimal** | ❌ | **Katılım kavramı yok** (64.3) |
+| 6 | Nicelik | ❌ | 2. yarı yok |
+| 7 | Kimliksizlik | ❌ | 2. yarı yok |
+| 8 | Mercisizlik | ❌ | Liste gören kayırabilir |
+| 9 | Durumsuzluk | ❌ | 2. yarı yok |
+| 10 | **Akışkan evren** | ❌ | **N bilinmeli** |
+| 11 | Sabit→akışkan dönüştürme | ❌ | Liste **üzerinde** çalışıyor, dönüştürmüyor |
+| 12 | Değer bağlama | ❌ | Ölçüm amaçlı, değer bağlamıyor |
+| 13 | Sistem | ❌ | 2. yarı yok |
+
+**On üç istemin HİÇBİRİ Madow'la çakışmıyor.**
+
+Madow üç ayrı unsurda birden düşüyor: akışkan evren, eşihtimal
+(katılım), 2. yarı. Üstüne kesit kolunda dördüncü kez düşüyor (tekrar
+yok).
+
+### 64.5 HATAM NASIL OLUŞTU — kayıt
+
+Madow yalnızca **hipotetik "tek yarı" versiyonlarında** ortaya
+çıkıyordu — yani Çİ'yi bölüp tek yarı bıraktığım kurgularda (4a, 10a,
+12a gibi).
+
+**Ama istemlerde Çİ duruyor.** Yarıları ayrı ayrı test etmek gereksiz
+bir işti; o testlerde Madow sürekli çıktığı için onu her tabloya koydum
+ve bir tehdit gibi gösterdim.
+
+**Kurucunun tepkisi haklıydı:** *"Çİ her şeyi elemedi mi. neden hâlâ
+önüme çıkarıyorsun bu saçmalıkları"*
+
+#### Düzeltilen yerler
+
+| Bölüm | Yanlış | Doğru |
+|---|---|---|
+| §60.3 ayırt edicilik tablosu | Madow 1. yarıyı karşılıyor diye kol sınırlaması | 1. yarı versiyonları hiç gerekmiyor |
+| §61.2 iki yarı tablosu | *"1. yarı mevcutta: Madow, randomizasyon"* | Doğru ama **istemler Çİ taşıdığı için önemsiz** |
+| §63.3 kol gerekçeleri | *"Madow birinciyi karşılıyor"* → Çİ zorunlu | Çİ yazılması doğru, **gerekçe Madow değil** |
+| §63.6 | *"Madow eşihtimali karşılıyor"* | ⛔ **Yanlış** — katılım kavramı yok |
+
+### 64.6 ✅ 1. YARI VERSİYONLARI YAZILMAYACAK
+
+§63 sonrası üç tane 1. yarı versiyonu taslak olarak yazılmıştı (4a kesit,
+10a akışkan evren, 12a değer bağlama).
+
+**Yazılmayacak.** Gerekçe:
+
+| | |
+|---|---|
+| Çİ'li hâlleri zaten var | On üç istemde duruyorlar |
+| İki istem yazmak yeni rakip yakalamıyor | Her iki yönde kaçan rakip mevcuda düşüyor |
+| Kurucunun kararı | *"Çİ her şeyi elemedi mi"* |
+
+**Kurucunun sorusu ve cevabı:**
+
+> *"her iki yarıda da çalışıyorsa ikisini de tutmamız gerekmez mi rakip
+> eleme açısından"*
+
+Hayır — ikisi de temizse tek istem ikisini birden kapsıyor. Patentte
+**fazla yapmak ihlali kaldırmaz**; rakip hem 1. hem 2. yarıyı yapıyorsa
+tek yarılı istemi de ihlal eder. Kaçan rakip ancak unsur eksilterek
+kaçar ve o hâlde mevcuda düşer.
+
+### 64.7 ÇİFT RASTGELELİĞİN YARILARI — doğru kayıt
+
+Yarıların tek başına ölçümü **yalnızca kayıt amaçlı** tutulur; istemler
+Çİ taşıdığı için pratik önemi yoktur.
+
+| | Eler | Kaçırdığı | Kaçırdığını kim eliyor |
+|---|---|---|---|
+| **1. yarı** (ölçüt rastgele) | 7 | Madow, blok randomizasyonu | **2. yarı** — liste var |
+| **2. yarı** (öğe katılmamış) | 7 | "Her 100.", NCR sequential | **1. yarı** — ölçüt sabit |
+| **Çİ** | **9/9** | — | — |
+
+İki yarı birbirini tam tamamlıyor. Tek yarı hiçbir zaman yetmiyor — bu
+yüzden istemlerde Çİ duruyor.
