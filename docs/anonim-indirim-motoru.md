@@ -9983,3 +9983,336 @@ söyler: rakip başka bir işaret kullanıp aynı işi yapıyorsa kapsamdadır.
 | 2 | Blok randomizasyonu taraması (hâlâ yapılmadı) |
 | 3 | Vekil bulma — başvuru hazırlığı |
 | 4 | **Uygulamayı başvuru öncesine almama** (§62.7) |
+
+---
+
+## 63. ⭐⭐⭐ KOLLAR YAZILDI — ON ÜÇ İSTEM (30 Ekim)
+
+**Durum:** ✅ Tüm kollar yazıldı. **Bu bölüm §61.4'teki kol sırasının
+yerine geçer.**
+
+### 63.1 ÇALIŞMA YÖNTEMİ — kurucunun koyduğu düzen
+
+> *"sen 2. yarı+unsur(anındalık mesela) isteminin tam olarak
+> yazacaksın. altına da Çİ ile kapsam ve güç kıyasını yapacaksın. bir
+> sorun varsa da çözümü ile sunacaksın. 1.yarı ile yazılması
+> gerekiyorsa 1.yarı istemlerine bırakıldı diyeceksin"*
+
+Her kol için: **2. yarı ile dene → Çİ ile kıyasla → sorun varsa çözümü
+sun.**
+
+**Çift rastgeleliğin iki yarısı (§61.2):**
+
+| | İfade | Eler | Mevcutta kim var |
+|---|---|---|---|
+| **1. yarı** | Ölçütün rastgele belirlenmesi | 7 | Madow, randomizasyon |
+| **2. yarı** | Ölçüte uyacak öğenin, ölçüt belirlendiği anda evrene katılmamış olması | 7 | "Her 100.", NCR sequential |
+
+### 63.2 ✅ ON ÜÇ İSTEM — TAM METİNLER
+
+#### İSTEM 1 — temel (Çİ örtük)
+
+> Buluş, öğe belirleme yöntemi olup; ölçütün, ona uyacak öğe evrene
+> katılmadan önce rastgele belirlenmesi ile karakterize edilir.
+
+#### İSTEM 2 — ölçüt bilinse dahi (Çİ açık)
+
+> Buluş, öğe belirleme yöntemi olup; ölçütün rastgele belirlenmesi ve
+> **ÖLÇÜT BİLİNSE DAHİ**, ona uyacak öğenin ölçüt belirlendiği anda
+> evrene katılmamış olması ile karakterize edilir.
+
+#### İSTEM 3 — ANINDALIK (1. yarı)
+
+> Buluş, öğe belirleme yöntemi olup; **ÖĞENİN BELİRLENMESİNİN, ÖĞENİN
+> EVRENE KATILDIĞI ANDA VE GERİ ALINAMAZ BİÇİMDE GERÇEKLEŞMESİ** ve
+> ölçütün rastgele belirlenmesi ile karakterize edilir.
+
+#### İSTEM 4 — KESİT + YENİDEN BELİRLEME (2. yarı)
+
+> Buluş, öğe belirleme yöntemi olup; **EVRENİN KESİTLERE AYRILDIĞI VE
+> HER KESİT İÇİN ÖLÇÜTÜN BAĞIMSIZ OLARAK YENİDEN BELİRLENDİĞİ** ve
+> ölçüte uyacak öğenin, ölçüt belirlendiği anda evrene katılmamış
+> olması ile karakterize edilir.
+
+#### İSTEM 5 — EŞİHTİMAL (2. yarı)
+
+> Buluş, öğe belirleme yöntemi olup; **EVRENE KATILAN HER ÖĞENİN,
+> DİĞER ÖĞELERİN KATILMASINDAN BAĞIMSIZ OLARAK ÖLÇÜTE UYMA İHTİMALİNİ
+> EŞİT TAŞIDIĞI** ve ölçüte uyacak öğenin, ölçüt belirlendiği anda
+> evrene katılmamış olması ile karakterize edilir.
+
+#### İSTEM 6 — NİCELİK (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **BELİRLENECEK ÖĞE SAYISININ
+> ÖNCEDEN SAPTANDIĞI**, ölçütün rastgele belirlenmesi ve ölçüte uyacak
+> öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+> karakterize edilir.
+
+#### İSTEM 7 — KİMLİKSİZLİK (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **BELİRLEMENİN, ÖĞENİN KİMLİĞİ VE
+> KENDİSİNE HAS ÖZELLİKLERİ KULLANILMAKSIZIN YAPILDIĞI**, ölçütün
+> rastgele belirlenmesi ve ölçüte uyacak öğenin ölçüt belirlendiği anda
+> evrene katılmamış olması ile karakterize edilir.
+
+#### İSTEM 8 — MERCİSİZLİK (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **BELİRLENEN ÖĞENİN HANGİSİ
+> OLACAĞINA HİÇBİR TARAFIN ETKİ EDEMEMESİ**, ölçütün rastgele
+> belirlenmesi ve ölçüte uyacak öğenin ölçüt belirlendiği anda evrene
+> katılmamış olması ile karakterize edilir.
+
+#### İSTEM 9 — DURUMSUZLUK (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **BELİRLEME İÇİN ÖĞELERE İLİŞKİN
+> HİÇBİR KAYIT TUTULMADIĞI**, ölçütün rastgele belirlenmesi ve ölçüte
+> uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+> karakterize edilir.
+
+#### İSTEM 10 — AKIŞKAN EVREN (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **ÖĞELERİN EVRENE ZAMAN İÇERİSİNDE
+> KATILDIĞI VE EVRENİN BÜYÜKLÜĞÜNÜN ÖNCEDEN KESİN BİLİNMEDİĞİ**,
+> ölçütün rastgele belirlenmesi ve ölçüte uyacak öğenin ölçüt
+> belirlendiği anda evrene katılmamış olması ile karakterize edilir.
+
+#### İSTEM 11 — SABİT EVRENİN AKIŞKANA DÖNÜŞTÜRÜLMESİ (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; **ÖĞELERİ ÖNCEDEN BELİRLİ BİR
+> KÜMEDE BULUNAN TOPLULUĞUN, ÖĞELERİN EVRENE TEK TEK KATILMASIYLA
+> AKIŞKAN HÂLE GETİRİLDİĞİ**, ölçütün rastgele belirlenmesi ve ölçüte
+> uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+> karakterize edilir.
+
+#### İSTEM 12 — DEĞER BAĞLAMA (Çİ)
+
+> Buluş, öğe belirleme yöntemi olup; ölçütün rastgele belirlenmesi,
+> ölçüte uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması
+> ve **BELİRLENEN ÖĞEYE, KURUCU TARAFINDAN TANIMLANAN BİR DEĞERİN
+> BAĞLANMASI** ile karakterize edilir.
+
+#### İSTEM 13 — SİSTEM İSTEMİ (Çİ)
+
+> Buluş, öğe belirleme sistemi olup; ölçütü, ona uyacak öğe evrene
+> katılmadan önce rastgele belirleyen bir birim, öğelerin evrene
+> katılmasını algılayan bir birim, katılım sayısını tutan bir bellek ve
+> ölçüte uyan öğeyi belirleyen bir birim içermesiyle karakterize
+> edilir.
+
+### 63.3 HANGİ KOL HANGİ YARIYI TAŞIYOR — gerekçeler
+
+| # | Unsur | Yarı | Gerekçe |
+|---|---|---|---|
+| 3 | Anındalık | **1. yarı** | 2. yarı ile *"her 100."* ve NCR sequential **çakılıyor** — ikisi de anında karar veriyor ve öğe katılmamış durumda. Rastgelelik onları eliyor |
+| 4 | Kesit + yeniden | **2. yarı** | Temiz. Madow'da yeniden belirleme yok, blok randomizasyonunda öğeler kayıtlı, *"her 100."*de ölçüt sabit |
+| 5 | Eşihtimal | **2. yarı** | Temiz. Eşihtimali karşılayanların hepsi liste/kayıt tutuyor; listesiz çalışanların hiçbiri eşihtimal sağlamıyor |
+| 6 | Nicelik | **Çİ** | Ne 1. ne 2. yarı yetiyor: Madow birinciyi, *"her 100."* ikinciyi karşılıyor |
+| 7 | Kimliksizlik | **Çİ** | Aynı durum: Madow (sıra numarası) birinciyi, *"her 100."* ikinciyi karşılıyor |
+| 8 | Mercisizlik | **Çİ** | *"Her 100."* 2. yarıyı karşılıyor; otomatik çalışan her sistem mercisiz |
+| 9 | Durumsuzluk | **Çİ** | *"Her 100."* kayıt tutmuyor — 2. yarı yetmiyor |
+| 10 | Akışkan evren | **Çİ** | *"Her 100."* ve NCR randomized akışkan evrende çalışıyor |
+| 11 | Sabit→akışkan | **Çİ** | Dönüştürme mevcudun hiçbirinde yok, ama 1. yarı Madow'u elemiyor |
+| 12 | Değer bağlama | **Çİ** | *"Her 100. müşteriye indirim"* hem değer bağlıyor hem 2. yarıyı karşılıyor |
+
+**Kurucunun kuralı:** Her unsur için **tek kol yeter** — hangi yarı o
+rakibi kesiyorsa o.
+
+#### Neden "A + 2. yarı" ikinci istem olarak yazılmadı
+
+**Kurucunun sorusu:** *"a yetiyor anladığım kadarıyla. ayrıca b yi de
+eklememiz gerekiyor mu?"*
+
+**Gerekmiyor.** B (üç unsurlu hâl) A'nın içinde kalıyor, A'dan dar. Dar
+istem yazmanın tek sebebi *"geniş olan reddedilirse dar olan ayakta
+kalsın"* — ama **2. yarı zaten istem 1 ve 2'de duruyor.** B yazmak aynı
+korumayı iki kez almak olur.
+
+#### Rakip fazla unsur kullanırsa — ihlal devam eder
+
+**Kurucunun sorusu:** *"A+2.yarı+anındalık ihlal sayılır mı"*
+
+**Evet.** Patentte **fazla yapmak ihlali ortadan kaldırmaz**; istem bir
+alt sınır çizer, rakip onu aşarsa yine içinde kalır.
+
+| Rakip | İhlal |
+|---|---|
+| 1. yarı + anındalık | ✅ İstem 3 |
+| 1. yarı + anındalık + 2. yarı | ✅ İstem 3 **ve** istem 1, 2 |
+| Çİ + anındalık + kesit + nicelik | ✅ Birden çok istem |
+
+Kaçış ancak **unsur eksilterek** olur ve iki kaçış yolu da mevcuda
+düşüyor:
+
+| Rakip | Nereye düşer |
+|---|---|
+| 1. yarıyı çıkarır (ölçüt sabit) | *"Her 100."* — mevcut |
+| Anındalığı çıkarır (sonda karar) | Reservoir — mevcut |
+
+### 63.4 ⭐ İSTEM 11 — en değerli yeni kol
+
+**Kurucunun yönlendirmesi:** *"hayır yaaaaa. sabit evreni akışkana
+dönüştürerek yaz"*
+
+İlk denemem sabit evreni **koşul** olarak yazmıştı (*"öğelerin önceden
+belirli bir kümeden evrene katıldığı"*) — Madow üç unsuru birden
+karşılıyordu ve kol istem 4'ün içinde kalıyordu, ek koruma yoktu.
+
+Kurucunun düzeltmesiyle sabit evren koşul değil **işlem** oldu:
+dönüştürme.
+
+| Ofis | Kapalı kümeyi akışa çeviriyor |
+|---|---|
+| Madow 1949 | ❌ liste üzerinde çalışıyor |
+| Fisher-Yates | ❌ listeyi karıştırıyor |
+| Randomizasyon | ❌ protokol listesi |
+| **İzo-odds** | ✅ |
+
+**Bu kolun diğerlerinden farkı:**
+
+| | |
+|---|---|
+| **Yeni bir iş tarif ediyor** | Dönüştürme — mevcudun hiçbirinde yok |
+| **Mevcudun sahasına giriyor** | Fisher-Yates'in, Madow'un kendi alanında alternatif |
+| **m.82'de güçlü** | *"Dönüştürme"* somut işlem, soyut kural değil |
+
+Kurucunun bugünkü tespiti burada korumaya dönüştü:
+
+> *"30 kişilik listede sistem şöyle çalışır. listeyi sisteme tek tek ve
+> istediğin sırayla girersen sana Çİ ile yine sonuç verecektir"*
+
+Rakip *"bizim evren kapalı, sizin patent akışkan evren için"* diyerek
+kaçamıyor.
+
+#### ⛔ "Rastgele katılma" elendi
+
+**Kurucunun önerisi:** *"tek tek yerine rastgele katılmasıyla desek"*
+
+**Elendi**, kurucu da kabul etti (*"tek tek kalsın, buna bir elbise
+biçmedik sonuçta"*).
+
+| Sorun | Neden |
+|---|---|
+| **Üçüncü bir rastgelelik** şart koşuyor | Mekanizma katılma sırasının rastgele olmasını gerektirmiyor |
+| Kapsam daralıyor | Alfabetik veya numara sırasıyla girilen liste kaçar |
+| Kaçış kapısı | Rakip *"bizim katılım rastgele değil"* der |
+| İç tutarsızlık | Kurucunun kendi ifadesi: *"istediğin sırayla girersen"* — sıra önemsiz |
+
+*"Tek tek"* mekanizmanın gerçekten ihtiyaç duyduğu şeyi söylüyor: sayaç
+ancak tek tek katılımda ilerler.
+
+### 63.5 ⚠️ YAZILIRKEN DÜZELTİLEN İKİ HATAM
+
+#### 1. Mercisizlik — yersiz m.92 itirazı
+
+Mercisizlik kolunu *"m.92 riski var"* diye reddetmiştim: *"kurucu
+parametreleri belirliyorsa taraf etkisi vardır, çelişkili."*
+
+**Kurucunun düzeltmesi:** *"mercisizlik sistemin merci olmasıyla
+zayıflamıyor ki. sen kurucu tarafını da eliyorsun"*
+
+**Haklıydı.** Kurucu ölçütün **türünü** seçiyor, **hangi öğenin
+belirleneceğini** seçmiyor. Mercisizlik ikinciyi söylüyor — çelişki yok.
+Sistem de merci değil: ölçütü çekiyor ama kime denk geleceğini
+bilemiyor.
+
+İfade *"belirlemenin hiçbir tarafın etkisi olmaksızın gerçekleşmesi"*
+yerine **"belirlenen öğenin hangisi olacağına hiçbir tarafın etki
+edememesi"** olarak yazıldı — kurucunun parametre seçimiyle
+karışmıyor.
+
+Ve bu kolun bir değeri var: *"etki edememek"* **güvenlik** iddiasıdır,
+m.82'de teknik etki olarak savunulabilir.
+
+#### 2. Kimliksizlik — "gereksiz" demem yanlıştı
+
+Kimliksizlik kolunu *"gereksiz, çift rastgelelik onu örtük getiriyor"*
+diye reddetmiştim.
+
+**Kurucunun düzeltmesi:** *"Çİ zaten eliyordu hepsini, kimliksizlik
+eklenince neden daha güçlü olmuyor ki"*
+
+**Haklıydı — "güçlü"nün iki anlamını karıştırdım:**
+
+| | Çİ | Çİ + kimliksizlik |
+|---|---|---|
+| **Kabul şansı** | — | **Daha yüksek** — dar istem kolay geçer |
+| Kapsam | Geniş | Dar |
+| Mevcudu eler | 9 | 9 |
+
+Ben yalnızca kapsam tarafına baktım. **Kabul şansı** tarafını atladım —
+inceleme istem 1'e *"çok geniş"* derse elde hazır daraltılmış basamak
+olması gerekiyor, hem de **somut** bir sınırla (m.82'de de işe yarıyor).
+
+### 63.6 YAZILMAYANLAR — gerekçeli
+
+| Unsur | Neden yazılmadı |
+|---|---|
+| **Öngörülememezlik** | Çİ zaten öngörülemezliği üretiyor — gerçek tekrar |
+| **Ölçütün gizli tutulmaması** | **İstem 2'de zaten var** (*"ölçüt bilinse dahi"*). Ayrı kol gerekmiyor; tarifnamede paragrafı yazılı |
+| **Evren içinde evren** | Uygulama mimarisi, unsur değil — tarifnamede kalıyor (§56.4'te iptal edilmişti) |
+| Sabit evren (koşul olarak) | İstem 4'ün içinde kalıyor, ek koruma yok — istem 11'e dönüştü |
+
+#### "Tüm evrenleri kapsama" kolu neden açılmadı
+
+**Kurucunun isteği:** *"sıradaki, sınırlı,sınırsız evrenler. tüm
+evrenleri kapsayacak şekilde"*
+
+**Patentte kapsam YAZMAYARAK genişler.** İstem 1'de evren hiç geçmiyor
+— zaten her evreni kapsıyor. *"Sınırlı ve sınırsız evrenlerde"* diye
+yazan bir kol hiçbir şey eklemez, istem 1'in tekrarı olur.
+
+| | İstem ne der | Kapsadığı |
+|---|---|---|
+| İstem 1 | Evren geçmiyor | **Hepsi** |
+| *"Sınırlı ve sınırsız"* | Hepsini sayıyor | Hepsi — **değişmez** |
+| **"Büyüklüğü bilinmeksizin"** | Bilinmeyen evren | İstem 10 oldu |
+
+**Ek tespit (kurucudan):** *"liste için bile evren oluşturmaca vardı"* —
+liste de sisteme girilirken büyüklüğü bilinmiyor sayılır, yani *"evren
+büyüklüğü bilinmeksizin"* ifadesi listeyi de kapsıyor. Bu yüzden
+istem 10 ile istem 11 birbirini tamamlıyor.
+
+### 63.7 ⚠️ AÇIK KALAN — blok randomizasyonu
+
+İstem 4 (kesit + yeniden belirleme) blok randomizasyonuna en yakın
+kol. Blok içinde sıra rastgele belirleniyor ve **her blokta yeniden**
+yapılıyor — iki unsuru birden karşılıyor.
+
+Onu eleyen tek şey **2. yarı** (hasta kayıtlı, kim hangi koldan belli)
+ve istem 4 zaten onu taşıyor.
+
+**Ancak blok randomizasyonu literatürü hâlâ taranmadı** (havuz kaydı).
+Hastaları önceden kaydetmeden çalışan bir varyant varsa istem 4'ü
+tehdit eder. **Tarama sonucu tehdit çıkarsa istem 4'e 1. yarı eklenir.**
+
+### 63.8 İSTEM SAYISI — ücret ve EPO
+
+| | Durum |
+|---|---|
+| TR | **13 istem, ücret farkı 0** (§62.4) |
+| EPO | 15 istem sınırının **altında** — istem ücreti yok |
+
+**Kurucunun stratejisi:** *"20-30 bağımsız istem TR, 12 ay içinde de
+2-3 ayrı veya birleşik tek EPO"*
+
+| | Maliyet | Not |
+|---|---|---|
+| **Tek EPO** | 1 başvuru harcı | 15 istem sınırı; istemler aynı ailede, m.91 bölme riski düşük |
+| 2-3 ayrı EPO | 2-3 kat harç | Her biri 15 istem — gerekçesi yok |
+
+**Önerilen: tek EPO.** Ayrı başvurular 2-3 kat maliyet getiriyor ve
+bölme riski olmadığı için gerekçesiz.
+
+⚠️ **Takvim uyarısı:** PCT son tarihi (12. ay) TR araştırma raporundan
+(12-24 ay) **önce** gelebilir. Erken araştırma talebi bunu çözer —
+başvuruyla birlikte talep edilirse rapor daha erken gelir.
+
+### 63.9 SIRADAKİ İŞ
+
+| | Konu |
+|---|---|
+| 1 | Blok randomizasyonu taraması (istem 4'ü etkiler) |
+| 2 | Bağımlı istemler — kurucu *"içime sinmedi"* dedi, yeniden değerlendirilebilir |
+| 3 | Tarifnamenin tüm istemleri desteklemesi (EPC Art. 84) — 13 istem için gözden geçirme |
+| 4 | Vekil bulma |
+| 5 | **Uygulamayı başvuru öncesine almama** (§62.7) |
