@@ -10785,3 +10785,404 @@ istem 1-2 için yazılmıştı.
 **Gerekçe yazmak zorunlu değil** — tarifnamenin görevi **desteklemek**,
 gerekçelendirmek değil. *"Bu şu yüzden yeni"* yazmak zararlı olabilir:
 mevcudu kendi elinle tarif etmiş olursun.
+
+---
+
+## 66. ⭐⭐⭐ İSTEM SETİ SON HÂL — YİRMİ İKİ İSTEM (2 Kasım)
+
+**Durum:** ✅ Kurucu onaylı. **Bu bölüm §63 ve §65'in yerine geçer.**
+51 istemli PDF (`docs/izo-odds-istemler.pdf`) ve §65'in on beş istemi
+artık geçerli değil.
+
+### 66.1 NEDEN DEĞİŞTİ — kurucunun yönlendirmesi
+
+> *"biz yol yapma fikrimizi patentleyelim. yolları değil"*
+
+> *"bence bu kadar istemde bulunmak saçma"*
+
+51 istemde 36 kombinasyon tek tek yazılmıştı. Yol yapımı benzetmesiyle
+çözüldü: katman mantığı patentlenir, asfalt/şose/toprak yol ayrı ayrı
+yazılmaz. 36 kombinasyon istemi **tek kombinasyon istemine** (İstem 21)
+indirildi.
+
+**Buluşun yeni ifadesi — kurucunun cümleleri:**
+
+> *"öğe belirleme, yeni bir anlayışla"*
+
+> *"bir multi fonksiyonel ofisiz biz. diğer ofisler gibi ezbere bir
+> belirlememiz değil dinamik bir belirlemesi var sistemin. yöntemi de
+> unsurları kombine etme"*
+
+> *"istesek bir piyangoyu şans oyununa çeviriyoruz, istesek bir sadakati
+> bir randomizasyona"*
+
+| | Diğer ofisler | İzo-odds |
+|---|---|---|
+| Belirleme | **Sabit** — yöntem neyse o | **Dinamik** — kurguya göre kurulur |
+| Yöntem nedir | Belirleme işleminin kendisi | **Unsurları kombine etme** |
+| Kurucunun rolü | Yok, yöntemi uygular | Bileşimi seçer |
+
+**Anlayış değişikliği:** eski yöntemlerde *evreni tanı, sonra seç*;
+izo-odds'ta **evreni tanımadan belirle** — ölçüt önce kurulur, evren
+sonra dolar.
+
+### 66.2 SETİN YAPISI
+
+| No | Blok | İçerik |
+|---|---|---|
+| 1-2 | **Çİ** | Temel fikir, örtük + açık |
+| 3-11 | **Sigortalar** | Çİ'siz, eşihtimal tabanlı. Çİ reddedilirse ayakta kalır |
+| 12-20 | **Çİ + unsur** | Dokuz unsur, her biri bağımsız |
+| 21 | **Kombinasyon** | En az ikisi birlikte, ortak etkiyle |
+| 22 | **Sistem** | Kategori çeşitlendirmesi (zayıf, bkz. 66.6) |
+
+**Tüm istemler bağımsızdır.** Kurucunun kuralı: *"E+a ile E+c aynı şey
+değil"* — yatay dallar birbirinin alt kümesi olmadığı için bağımlı
+yazılmaz.
+
+### 66.3 İSTEMLER — TAM METİNLER
+
+#### Blok 1: ÇİFT RASTGELELİK (1-2)
+
+**İSTEM 1** — Buluş, öğe belirleme yöntemi olup; ölçütün, ona uyacak öğe
+evrene katılmadan önce rastgele belirlenmesi ile karakterize edilir.
+
+**İSTEM 2** — Buluş, öğe belirleme yöntemi olup; ölçütün rastgele
+belirlenmesi ve ÖLÇÜT BİLİNSE DAHİ, ona uyacak öğenin ölçüt belirlendiği
+anda evrene katılmamış olması ile karakterize edilir.
+
+#### Blok 2: SİGORTALAR (3-11) — Çİ'siz, eşihtimal tabanlı
+
+**İSTEM 3** — Öğelerin evrene zaman içerisinde katıldığı, büyüklüğü
+önceden kesin bilinmeyen fakat tahmin edilebilen bir evrende; belirlenen
+sayıdaki öğelere ve evrene katılan tüm öğeler için eşit ihtimalle değer
+üreten yöntem.
+
+**İSTEM 4** — Öğeleri listelenebilen bir topluluğun mevcut öğelerinin
+yeni bir evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende;
+belirlenen sayıdaki öğelere ve evrene katılan tüm öğeler için eşit
+ihtimalle değer üreten yöntem.
+
+**İSTEM 5** — Öğelerin evrene zaman içerisinde katıldığı, büyüklüğü
+önceden kesin bilinmeyen fakat tahmin edilebilen bir evrende; öğenin
+evrene katılmasıyla anında ve geri alınamaz biçimde belirlenen sayıdaki
+öğelere ve evrene katılan tüm öğeler için eşit ihtimalle değer üreten
+yöntem.
+
+**İSTEM 6** — Öğelerin evrene zaman içerisinde katıldığı, büyüklüğü
+önceden kesin bilinmeyen fakat tahmin edilebilen bir evrende; öğenin
+kimliği ve kendisine has özellikleri kullanılmaksızın belirlenen sayıdaki
+öğelere ve evrene katılan tüm öğeler için eşit ihtimalle değer üreten
+yöntem.
+
+**İSTEM 7** — Öğelerin evrene zaman içerisinde katıldığı, büyüklüğü
+önceden kesin bilinmeyen fakat tahmin edilebilen bir evrende; öğenin
+kimliği ve kendisine has özellikleri kullanılmaksızın, öğenin evrene
+katılmasıyla anında ve geri alınamaz biçimde belirlenen sayıdaki öğelere
+ve evrene katılan tüm öğeler için eşit ihtimalle değer üreten yöntem.
+
+**İSTEM 8** — Öğeleri listelenebilen bir topluluğun mevcut öğelerinin
+yeni bir evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende;
+öğenin kimliği ve kendisine has özellikleri kullanılmaksızın belirlenen
+sayıdaki öğelere ve evrene katılan tüm öğeler için eşit ihtimalle değer
+üreten yöntem.
+
+**İSTEM 9** — Öğeleri listelenebilen bir topluluğun mevcut öğelerinin
+yeni bir evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende;
+öğenin evrene katılmasıyla anında ve geri alınamaz biçimde belirlenen
+sayıdaki öğelere ve evrene katılan tüm öğeler için eşit ihtimalle değer
+üreten yöntem.
+
+**İSTEM 10** — Öğelerin evrene zaman içerisinde katıldığı veya öğeleri
+listelenebilen bir topluluğun mevcut öğelerinin yeni bir evrene eklenmesi
+suretiyle akışkan hâle getirildiği bir evrende; belirlenen sayıdaki
+öğelere ve evrene katılan tüm öğeler için eşit ihtimalle değer üreten
+yöntem.
+
+**İSTEM 11** — Öğeleri listelenebilen bir topluluğun mevcut öğelerinin
+yeni bir evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende;
+belirlenen sayıdaki öğeler için değer üreten yöntem.
+
+#### Blok 3: Çİ + UNSUR (12-20)
+
+**İSTEM 12 — ANINDALIK** — Buluş, öğe belirleme yöntemi olup; ÖĞENİN
+BELİRLENMESİNİN, ÖĞENİN EVRENE KATILDIĞI ANDA VE GERİ ALINAMAZ BİÇİMDE
+GERÇEKLEŞMESİ, ölçütün rastgele belirlenmesi ve ölçüte uyacak öğenin
+ölçüt belirlendiği anda evrene katılmamış olması ile karakterize edilir.
+
+**İSTEM 13 — KESİT + YENİDEN BELİRLEME** — Buluş, öğe belirleme yöntemi
+olup; EVRENİN KESİTLERE AYRILDIĞI VE HER KESİT İÇİN ÖLÇÜTÜN BAĞIMSIZ
+OLARAK YENİDEN BELİRLENDİĞİ, ölçütün rastgele belirlenmesi ve ölçüte
+uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+karakterize edilir.
+
+**İSTEM 14 — EŞİHTİMALLİLİK** — Buluş, öğe belirleme yöntemi olup;
+EVRENE KATILAN HER ÖĞENİN, DİĞER ÖĞELERİN KATILMASINDAN BAĞIMSIZ OLARAK
+ÖLÇÜTE UYMA İHTİMALİNİ EŞİT TAŞIDIĞI, ölçütün rastgele belirlenmesi ve
+ölçüte uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+karakterize edilir.
+
+**İSTEM 15 — NİCELİK** — Buluş, öğe belirleme yöntemi olup; BELİRLENECEK
+ÖĞE SAYISININ ÖNCEDEN SAPTANDIĞI, ölçütün rastgele belirlenmesi ve
+ölçüte uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+karakterize edilir.
+
+**İSTEM 16 — KİMLİKSİZLİK** — Buluş, öğe belirleme yöntemi olup;
+BELİRLEMENİN, ÖĞENİN KİMLİĞİ VE KENDİSİNE HAS ÖZELLİKLERİ
+KULLANILMAKSIZIN YAPILDIĞI, ölçütün rastgele belirlenmesi ve ölçüte
+uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile
+karakterize edilir.
+
+**İSTEM 17 — AKIŞKAN EVREN** — Buluş, öğe belirleme yöntemi olup;
+ÖĞELERİN EVRENE ZAMAN İÇERİSİNDE KATILDIĞI VE EVRENİN BÜYÜKLÜĞÜNÜN
+ÖNCEDEN KESİN BİLİNMEDİĞİ, ölçütün rastgele belirlenmesi ve ölçüte uyacak
+öğenin ölçüt belirlendiği anda evrene katılmamış olması ile karakterize
+edilir.
+
+**İSTEM 18 — SABİT EVRENİN AKIŞKANA DÖNÜŞTÜRÜLMESİ** — Buluş, öğe
+belirleme yöntemi olup; ÖĞELERİ LİSTELENEBİLEN BİR TOPLULUĞUN MEVCUT
+ÖĞELERİNİN YENİ BİR EVRENE EKLENMESİ SURETİYLE AKIŞKAN HÂLE GETİRİLDİĞİ,
+ölçütün rastgele belirlenmesi ve ölçüte uyacak öğenin ölçüt belirlendiği
+anda evrene katılmamış olması ile karakterize edilir.
+
+**İSTEM 19 — PARALEL EVRENLER** — Buluş, öğe belirleme yöntemi olup;
+AYNI ÖĞE AKIŞINDAN BİRDEN FAZLA EVREN TANIMLANDIĞI, HER EVRENİN KENDİ
+KESİT BÜYÜKLÜĞÜ VE KENDİ ÖLÇÜTÜYLE BAĞIMSIZ OLARAK İŞLETİLDİĞİ VE BİR
+ÖĞENİN BİRDEN FAZLA EVRENDE BELİRLENEBİLDİĞİ, ölçütün rastgele
+belirlenmesi ve ölçüte uyacak öğenin ölçüt belirlendiği anda evrene
+katılmamış olması ile karakterize edilir.
+
+**İSTEM 20 — DEĞER BAĞLAMA** — Buluş, öğe belirleme yöntemi olup;
+ölçütün rastgele belirlenmesi, ölçüte uyacak öğenin ölçüt belirlendiği
+anda evrene katılmamış olması ve BELİRLENEN ÖĞEYE, KURUCU TARAFINDAN
+TANIMLANAN BİR DEĞERİN BAĞLANMASI ile karakterize edilir.
+
+#### Blok 4: KOMBİNASYON ve SİSTEM (21-22)
+
+**İSTEM 21 — KOMBİNASYON** — Öğe belirlemeye yönelik yöntem olup; istem
+1'de tanımlanan belirlemenin, istem 12 ilâ 20'de tanımlanan adımlardan ve
+niteliklerden en az ikisi birlikte sağlanacak biçimde gerçekleştirilmesi
+ile karakterize edilir.
+
+**İSTEM 22 — SİSTEM** — Buluş, öğe belirleme sistemi olup; ölçütü, ona
+uyacak öğe evrene katılmadan önce rastgele belirleyen bir birim,
+öğelerin evrene katılmasını algılayan bir birim, katılım sayısını tutan
+bir bellek ve ölçüte uyan öğeyi belirleyen bir birim içermesiyle
+karakterize edilir.
+
+### 66.4 ⭐ İSTEM 21 — KOMBİNASYON İSTEMİ
+
+**Kurucunun kurgusu:**
+
+> *"sonra bir istem daha yazdık, bu 15 istemden birkaçının birlikte
+> çalıştırılması ile karakterizedir desek"*
+
+> *"istem 3, istem 4... istem 15'in iki veya daha fazlasının katılımı ile
+> öğenin belirlenmesi"*
+
+Bu, daha önce üç kez elenen *"biri veya birkaçı"* yapısının düzgün hâli.
+Fark: **"biri" yok, "en az ikisi" var** → en zayıf alternatif riski
+kalkıyor.
+
+**Harici raportörün iki düzeltmesi işlendi:**
+
+| Düzeltme | Gerekçe |
+|---|---|
+| *"birlikte bulunma"* → **"birlikte sağlanma + ortak etki"** | Sadece bir arada olmak değil, birlikte çalışıp sonuç üretmek. m.82 *"soyut liste"* itirazını keser |
+| *"devreye alınma"* → **"sağlanacak biçimde"** | Unsurların bir kısmı **adım** (devreye alınır), bir kısmı **nitelik** (sağlanır) |
+
+**Adım / nitelik ayrımı — kurucunun tespiti:**
+
+> *"her unsur bir yöntem değil ki, bazıları özellik"*
+
+| Adım (yapılan iş) | Nitelik (belirlemenin hâli) |
+|---|---|
+| Kesit + yeniden belirleme | Anındalık |
+| Dönüştürme | Eşihtimallilik |
+| Paralel evrenler | Kimliksizlik |
+| Nicelik | Akışkan evren |
+| Değer bağlama | |
+
+Kimliksizlik *"devreye alınmaz"*, vardır — bu yüzden *"sağlanacak
+biçimde"* ifadesi ikisini birden taşıyor.
+
+**Kapsadığı:** dokuz unsurun 36 ikili, 84 üçlü ve geri kalan tüm
+bileşimleri — 502 kombinasyon, tek cümleyle.
+
+**Açık risk:** EPC Art. 84 / SMK m.92 desteği. İncelemeci *"502 bileşim
+talep ediyorsunuz, tarifnamede kaç tane açıklanmış"* diyebilir. Tarifname
+on-on iki somutlaştırma taşımalı; **başvurudan sonra eklenemez** (m.103).
+
+### 66.5 SİGORTA BLOĞU (3-11) — nasıl seçildi
+
+**Kurucunun kuralı:** *"akışkan evren, eşihtimal, anındalık, kimliksizlik
+ve nicelik — sigortalarımızı bunlar üzerinden kuracağız. en dar isteme
+gerek yok."*
+
+**Hepsi Çİ'siz.** Gerekçe: Çİ'ye bağlı olsalar İstem 1 düştüğünde
+birlikte düşerlerdi. Bağımsız olunca ayrı değerlendirilirler.
+
+**Taban:** akışkan evren + nicelik + eşihtimal. Bu üçlü NCR randomized
+win'i **nicelikle** eliyor (orada her işlemde zar atılıyor, kaç kişi
+kazanacağı belirsiz), liste tabanlı yöntemlerin tamamını **eşihtimalle**
+eliyor (*"katılan tüm öğeler için"* — orada katılım kavramı yok).
+
+| İstem | Üstüne eklenen | Kapattığı kapı |
+|---|---|---|
+| 3 | — (taban) | Çİ'siz en geniş |
+| 4 | Dönüştürme | **Sabit evren sorunu** — Fisher-Yates ve Madow kendi sahasında |
+| 5 | Anındalık | Reservoir (sonda karar), piyango (gün sonu) |
+| 6 | Kimliksizlik | Sadakat programları |
+| 7 | Anındalık + kimliksizlik | 5 ve 6 düşerse |
+| 8 | Dönüştürme + kimliksizlik | Liste üzerinde kimlikli seçim |
+| 9 | Dönüştürme + anındalık | Fisher-Yates'in karıştır-sonra-seç yapısı |
+| 10 | *"veya"* ile iki evren tipi | Rakip hangi evrenle çalışırsa çalışsın |
+| 11 | Dönüştürme, **eşihtimalsiz** | En geniş dönüştürme — kayırma kapısı açık |
+
+**Elenen aday:** kesit sigortası (taban + kesit) — kurucunun kararı:
+*"gerek yok."* Kesit Çİ'li blokta İstem 13 olarak duruyor.
+
+**Elenen aday:** dört unsur + dönüştürme (en dar sigorta) — kurucunun
+itirazı: *"gereksiz dar sanki."* Sigortanın işi hayatta kalmak ama o
+kadar daralırsa koruma değeri kalmıyor.
+
+#### ⭐ Kurucunun iki ifade düzeltmesi
+
+**1. "Ve" kuralı (§24.1'in uygulaması):**
+
+> *"…belirlenen sayıdaki öğelere **ve** evrene katılan tüm öğeler için
+> eşit ihtimalle…"*
+
+Virgül ikinci ifadeyi birinciyi niteliyormuş gibi okutuyor; *"ve"*
+niceliği ve eşihtimali **ayrı unsur** olarak işaretliyor. Her unsur ayrı
+sayılacağı için kritik. Dokuz sigortanın tamamına uygulandı.
+
+**2. Dönüştürme ifadesi yeniden yazıldı:**
+
+| Eski | Yeni (kurucunun) |
+|---|---|
+| *"öğeleri önceden belirlenmiş bir topluluğun, öğelerin evrene tek tek katılmasıyla akışkan hâle getirildiği"* | *"öğeleri **listelenebilen** bir topluluğun **mevcut öğelerinin yeni bir evrene eklenmesi suretiyle** akışkan hâle getirildiği"* |
+
+Üç kazanç:
+
+| | |
+|---|---|
+| **"listelenebilen"** | Liste hâlinde *olması* şart değil, listelenebilir olması yeter — kapsam genişliyor |
+| **"yeni bir evrene eklenmesi"** | Topluluk dönüşmüyor, **yeni evren kuruluyor.** Kurucunun kaydıyla tutarlı: *"değiştiğinde evren değişiyor, eskisi ile bağ kalmıyor."* Rakip *"biz listemizi değiştirmedik"* diyemiyor |
+| **"mevcut öğelerinin"** | Topluluğun o anki hâli alınıyor, sonradan eklenenler değil |
+
+Bu ifade İstem 4, 8, 9, 10, 11 ve 18'de kullanıldı.
+
+### 66.6 ⚠️ İSTEM 22 — SİSTEM İSTEMİ AÇIK DURUYOR
+
+Harici raportörün uyarısı: *"sırf m.82 riskini aşmak için sonradan
+eklemeyin."* §62.1'de *"kategori çeşitlendirmesi"* diye kaydedilmiş; dört
+birim yöntemin adımlarını birim adıyla tekrarlıyor.
+
+**Eşzamanlı katılım sorusu kapandı** — kurucunun cevabı:
+
+> *"öğeler sırayla katılacak. bunun başka yolu ve yöntemi çalışmaz"*
+
+Sıra mekanizmanın kendisinde var; ayrıca çözülecek teknik problem yok.
+Dolayısıyla sistem istemine *kilitleme / atomik artırma / kuyruk* gibi
+bir teknik katkı eklenemez — o soru yanlış sorulmuş.
+
+**Karar bekliyor:** olduğu gibi kalsın mı, çıkarılsın mı. Yöntem istemi
+birisi adımları **uygularsa** ihlal; sistem istemi birisi birimleri
+**kurarsa** ihlal — kullanmasa bile. İkinci kapı değerli, ama istem zayıf.
+
+**Buluşun özü yöntemdir.** Sunucu, bellek, sayaç hepsi mevcut; yeni olan
+bunların hangi sırayla çalıştığı.
+
+### 66.7 ELENEN UNSURLAR — gerekçeleriyle
+
+| Unsur | Neden elendi |
+|---|---|
+| **Mercisizlik** | Çİ'den çıkıyor; rakip de *"bizde taraf etkisi yok"* diyebilir — ayırt edici değil. Tarifnameye |
+| **Durumsuzluk** | Aynı. Kimliksizlik (İstem 16) onu taşıyor |
+| **Öngörülememezlik** | Çİ'nin **sonucu**, unsur değil. İstem 2'de ifadesi var. Kurucunun kararı: *"tek başına unsur olmaya değmez"* |
+| **Kesit büyüklüğünün tahminden türetilmesi** | Kesit + nicelikten çıkıyor. Kurucunun tespiti: *"AVM'ye gireceklerden 5 kişi — mevcut istemlerle oluşmuyor mu bu unsur"* — evet, nicelik + akışkan evren yeterli. Tarifnameye **kullanım tarifi** olarak |
+| **Tekrarlanamazlık** | Kurucunun tespiti: *"rastgele olan zaten tekrarlanamaz"* |
+| **Doğrulanabilirlik (commit-reveal)** | Taahhüt damgası önerildi; kurucu eledi: *"en güzel doğrulama pratik hayattır"* — kurucu ölçütü kaydırırsa oran bozulur, akış sürdükçe sapma birikip görünür olur. Damga hem işlem yükü getirir hem durumsuzluğun saflığını bozar |
+| **Evrenin kurucu tarafından tanımlanması** | §42.7'de *"hiçbir patentte bulunamadı"* diye kayıtlı ama kurucu eledi: *"evren tanımlama hepsinde var — sonlu, sonsuz, akışkan, liste"* |
+
+**Unsur listesi kapalı.** Kurucunun kapanış tespiti:
+
+> *"bence bu kombinasyonlarla oluşturulmayacak bir özellik yoktur"*
+
+**Azaltılamaz da:** dokuz unsurun hiçbiri diğerinden türemiyor. Kesit ile
+nicelik ayrı iki yol — nicelik k'ya ulaşınca sistem duruyor (AVM'de 5
+kişi), kesit ise akış sürdükçe yenisini açıyor.
+
+### 66.8 ⭐⭐ ORTAM BAĞIMSIZLIĞI — İSTEME GİRMEZ
+
+**Kurucunun tespiti:**
+
+> *"ortam bağımsızlığı ticari bir unsur. ve buluşumun asıl amacı. her
+> ortama uyarlanabilir olsun diye bu kadar kafa patlattım"*
+
+> *"bence bu tarifnamenin işi. istemde işaret etme tarzında yapılabilir"*
+
+**İstemde yeri yok** — çünkü istemler ortam adı geçmediği için bunu zaten
+sağlıyor. İstemlerde POS yok, turnike yok, lamba yok; sadece *öğe, evren,
+ölçüt*. İşaret **"evrene katılan öğe"** ifadesinde duruyor.
+
+**"Olağan yaşam olayları" ifadesi çıkarıldı.** Gerekçe: o ifade
+kurgulanmış evrenleri (piyango bileti, klinik protokolü, liste girişi)
+dışlıyordu — biz onları kapsamak istiyoruz.
+
+Kurucunun denediği *"olağan yaşam olayları esnasında oluşan kurgulanmamış
+evrenlerde"* yazımı da elendi:
+
+| Sorun | |
+|---|---|
+| Piyango dışarıda | Bilet almak kurgulanmış bir olay |
+| Klinik randomizasyon dışarıda | Hasta protokole alınıyor |
+| Kapalı havuz dönüştürme dışarıda | Liste tek tek sisteme girilir |
+| Rakibe kaçış kelimesi | *"Bizim evren kurgulanmış, patentiniz olağan akış için"* |
+| m.92 | *"Kurgulanmamış"* nasıl ölçülür — AVM kampanya için kapı sayacı koyduysa kurgulanmış mı oldu |
+
+**Tarifnamede:** yöntemin POS'ta, turnikede, lambada, mobil uygulamada,
+kiosk'ta aynı mekanizmayla çalıştığı gösterilir. §42.8'in kaydı burada
+kullanılır: *"taranan hiçbir patent bir LED lambaya, bir otobüs
+turnikesine ve bir POS'a aynı mekanizmayla uygulanamıyor"* — buluş
+basamağının (SMK m.83) en güçlü dayanağı.
+
+### 66.9 ⛔ MEVCUDDA KAÇIŞ YOLU KALMIYOR
+
+**Kurucunun sorusu:** *"mevcuddu ve bizim unsur kombinasyonlarımızı göz
+önünde bulundurduğunda, öğe belirleyecek farklı bir yol kalıyor mu"*
+
+| Kaçış | Rakip ne yapar | Bedeli |
+|---|---|---|
+| Ölçütü sabitlemek | *"Her 100. müşteri"* | Öngörülebilir, sıraya girilir, sömürülür. **Mevcut** |
+| Evreni kapatmak | Piyango, çekiliş | Beklemek zorunlu. **Mevcut** |
+| Her işlemde zar atmak | NCR randomized win | Nicelik yok, maliyet öngörülemez. **Mevcut (1995)** |
+| Zar + nicelik (Çİ'siz) | — | **Sigorta bloğu (3-11) tutuyor** |
+
+Son satır bu setin eklediği şey: Çİ'siz çalışıp nicelik ekleyen rakip
+eskiden kaçıyordu, artık İstem 3-11'e giriyor.
+
+Üçü de mevcutta olduğu için kaçan rakip **yeni bir şey yapmamış** oluyor
+— patent alamıyor, pazarda taklit edemiyor.
+
+### 66.10 ⚠️ ÜCRET VE AÇIK İŞLER
+
+**Ücret:** TR'de istem sayısı ücreti etkilemiyor (§62.4 — üç kaynakta
+doğrulandı). EPO'da 1-15 ücretsiz, 16-50 arası €290/istem → 22 istem için
+**7 × €290 = €2.030** ek ücret, yalnızca EPO'ya giderken.
+
+**Açık işler:**
+
+| İş | Not |
+|---|---|
+| **Tarifname — on-on iki somutlaştırma** | İstem 21'in desteği buna bağlı. m.103: başvurudan sonra eklenemez. Adaylar: stadyum, AVM, piyango (paralel evrenler), klinik randomizasyon, örnekleme, kapalı havuz dönüştürme, POS, turnike, mobil uygulama, kiosk |
+| **Sistem istemi kararı** | Kalsın mı, çıksın mı (66.6) |
+| **Raportör soruları** | İstem 21 bağımsız mı bağımlı mı sayılır; *"en az ikisi"* m.92'yi karşılar mı; 22 bağımsız istem m.91 bütünlüğünü bozar mı; sigorta bloğu (Çİ'siz) ile Çİ bloğu arasında bütünlük kurulur mu |
+| **Blok randomizasyonu taraması** | İstem 13'ü etkileyebilir |
+| **CPC taraması** | Vekil işi. Bilinen dört sınıf: G06Q30/02, G07C15/00, A63F3/06, H04L9/08 |
+| **Vekil bulma** | — |
+
+**⚠️ KRİTİK:** Uygulamayı (AVM, stadyum, Estelongy) **başvurudan önce**
+kamuya açık yapmak TR ve EPO'da yenilik kaybı doğurur. ABD'de 12 ay grace
+period var, **Avrupa'da yok.**
