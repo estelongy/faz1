@@ -11186,3 +11186,224 @@ doğrulandı). EPO'da 1-15 ücretsiz, 16-50 arası €290/istem → 22 istem iç
 **⚠️ KRİTİK:** Uygulamayı (AVM, stadyum, Estelongy) **başvurudan önce**
 kamuya açık yapmak TR ve EPO'da yenilik kaybı doğurur. ABD'de 12 ay grace
 period var, **Avrupa'da yok.**
+
+---
+
+## 67. ✅✅✅ İSTEM 1 ve 2 — KESİN SON HÂL (2 Kasım)
+
+**Durum:** ✅✅ **KESİN. Kurucu kapattı: *"tartışacak bişi kalmadı."***
+**Bu bölüm §66.3'teki İstem 1-2 metinlerinin yerine geçer.**
+§60.5'te sabitlenen eski metinler de geçersizdir.
+
+### 67.1 İSTEM 1 — KESİN
+
+> **Buluş, öğe belirleme yöntemi olup; ölçütün (hangi öğe veya öğelerin
+> belirlenmiş öğe olacağını tayin eden kural veya kurallar) rastgele
+> saptanması ve bu saptamanın, evrene henüz hiçbir öğe katılmamışken
+> yapılması ile karakterize edilir.**
+
+### 67.2 İSTEM 2 — KESİN
+
+> **Buluş, öğe belirleme yöntemi olup; ölçütün (hangi öğe veya öğelerin
+> belirlenmiş öğe olacağını tayin eden kural veya kurallar) rastgele
+> saptanması, bu saptamanın evrene henüz hiçbir öğe katılmamışken
+> yapılması ve ÖLÇÜT BİLİNSE DAHİ ÖĞENİN KATILIMINA İLİŞKİN BİLGİNİN
+> TARAFLARCA BİLİNMEMESİ NEDENİYLE BELİRLENECEK ÖĞENİN ÖNGÖRÜLEMEMESİ
+> ile karakterize edilir.**
+
+### 67.3 İSTEM 1 — NASIL BU HÂLE GELDİ
+
+Eski metin (§60.5, §66.3):
+
+> ~~ölçütün, ona uyacak öğe evrene katılmadan önce rastgele
+> belirlenmesi~~
+
+Altı düzeltme yapıldı, hepsi kurucunun:
+
+| # | Düzeltme | Gerekçe |
+|---|---|---|
+| 1 | *"ölçütün rastgele belirlenmesi **ve bu belirlemenin** … yapılması"* | İki unsur **"ve"** ile ayrılıyor → ayrı ayrı sayılıyor (§24.1 kuralı). Eski yazımda *"rastgele"* **"katılmadan"**a bağlanıyormuş gibi okunuyordu: kurucunun tespiti — *"a'da ölçütün rastgeleliği değil, öğenin evrene katılma rastgeleliği anlaşılıyor"* |
+| 2 | **Ölçüt parantezle tanımlandı** | *"ölçüt neyin ölçütü"* (m.92) itirazını kapatıyor. Kurucunun talimatı: *"istemi ölçüt tanımını parantez içinde göstererek yaz"* |
+| 3 | *"kural veya kurallar"* | Ölçüt birden fazla kuraldan oluşabilir (sıra + zaman). Tekil bırakılsa rakip *"bizde iki kural var"* diyebilir. **Elenen adaylar:** *"kural/yöntem"* (bölü işareti m.92'de alternatif sayılır; "yöntem" istemin başında başka anlamda geçiyor), *"ilkeler"* (ilke = soyut prensip → m.82'ye kelime vermek) |
+| 4 | *"hangi öğe **veya öğelerin**"* | Tekil, patent dilinde çoğulu kapsar ama o yorum kuralına güvenilmedi. Rakip *"sizin isteminiz tek öğe için"* diyemesin. Kurucunun kararı: *"senin kararın, savunacak olan sensin"* |
+| 5 | **"saptanması"** (ölçüt) / **"belirlenmesi"** (öğe) ayrımı | Aynı cümlede *"belirleme"* iki anlamda geçiyordu → geri atıf hangisine gidiyor sorusu |
+| 6 | ⭐ **"evrene henüz hiçbir öğe katılmamışken"** | **En önemli düzeltme.** Aşağıda |
+
+#### ⭐⭐ Altıncı düzeltme — "ölçüt 1 çekilse ne olacak"
+
+Ara yazım: *"ölçüte uyan ya da uymayan herhangi bir öğenin evrene
+katılımından evvel"* — kurucunun itirazı: *"biraz tuhaf ifade etmişsin,
+daha iyi anlatamaz mıydın"* (iki olumsuzu birleştirip tek şeyi
+anlatıyordu).
+
+**Asıl mesele kurucunun sorusuyla ortaya çıktı:** *"ölçüt 1 çekilse ne
+olacak"*
+
+| Eski yazım | Yeni yazım |
+|---|---|
+| *"ölçüte **uyacak öğe** katılmadan önce"* | *"evrene **henüz hiçbir öğe** katılmamışken"* |
+| Evrende başka öğeler olabilir | **Evren boş** |
+| Ölçüt 1 çıkarsa belirsizleşiyor | Ölçüt 1 veya 437, fark etmez |
+
+**Mekanizma gerçeği — kurucunun kaydı:** *"kesit başta kuruluyor ve
+sonraki kesitin son öğesiyle tetikleniyor."* Her kesit boşken ölçütü
+çekiliyor; ilk kesit sistem kurulurken, sonrakiler bir önceki kesitin son
+öğesi geldiğinde. Yani *"50 öğe girmiş sonra ölçüt çekilmiş"* diye bir
+kurgu bu mekanizmada yok.
+
+**Yan kazanç — rakibe kapı kapanıyor:** *"Biz ölçütü akış başladıktan
+sonra çekiyoruz"* diyen sistem bu istemin dışında kalıyor — ve o sistem
+zaten mevcuda düşüyor, çünkü **gelmiş öğeler arasından** seçim yapmış
+oluyor.
+
+**İkinci yan kazanç:** öngörülemezlik artık İstem 1'in içinde mekanik
+olarak var. Evren boşsa öngörecek kimse de yok.
+
+### 67.4 ⭐⭐ İSTEM 2 — ÖNGÖRÜLEMEZLİKTEN AKIŞ KÖRLÜĞÜNE
+
+**Eski İstem 2 ÇÖKTÜ.** Eski hâli *"ÖLÇÜT BİLİNSE DAHİ, ona uyacak öğenin
+ölçüt belirlendiği anda evrene katılmamış olması"* diyordu — yani
+öngörülemezliği talep ediyordu.
+
+**Kurucunun itirazı:** *"birinci istemde zaten öngörülememezlik vardı,
+yazılmasa dahi. burda bunu niye istiyorsun ki"*
+
+**Haklı.** İstem 1 *"evren boşken"* dediği anda öngörülemezlik içine
+girdi. Eski İstem 2 İstem 1'in daraltılmış kopyası oldu.
+
+**Kayıt — çürüyen istem değil, gerekçesi:** Eski İstem 2 eski İstem 1
+için yazılmıştı (orada evrende başka öğeler olabiliyordu). İstem 1
+sıkılaştırılınca sigortası gereksizleşti. Bir istemi güçlendirmek onun
+sigortasını geçersiz kılar — patentte normal.
+
+#### ⛔ ELENEN DOLDURMA ADAYLARI
+
+| Aday | Neden elendi |
+|---|---|
+| Çİ + eşihtimal | **İstem 14'ün kopyası** — Çİ+unsur bloğunda zaten var |
+| *"Ölçütün akış sürerken değiştirilmemesi"* | Kurucunun tespiti: *"değiştirilebilir bir belirlemeden bahsetmedik ki hiçbir zaman."* Mekanizmada ölçüt kesit açılırken bir kere çekiliyor, değiştirme adımı yok — olmayan riski kapatmak |
+| *"Kör akış"* | Kör randomizasyon literatürde yerleşik (blinding), *"kör akış"* değil → m.92 tanım tartışması. Ve **yanlış şeyi tarif ediyor:** körlükte bilgi saklanır, bizde saklanacak bilgi **üretilmiyor.** Kurucunun eski kaydı: *"müdahale edilecek bilgi yok"* |
+| *"Kriptolojik sayaç takibi"* | Tehdit modeli tutarsız: sayacı okuyabilen ölçütü de okur. Ve rakip *"bizde kripto yok, düz sayaç var"* diyerek kaçar — kendi mekanizmamız da düz sayaç |
+
+#### ⭐⭐ KURUCUNUN 37 ÖRNEĞİ — İstem 2'nin gerçek işi
+
+> *"bak şöyle düşün. 50'de 1 belirlenecek. 37 ölçütü belli, velev ki
+> kurucu veya başkası 37 bilgisini elde etti. bir gelen öğenin de
+> sırasını bilmesi gerekiyor dimi. bunu bilmediği için kimi 37. sırada
+> evrene ekleyeceğini öngöremez."*
+
+**Kayırma için iki bilgi gerekiyor, biri yetmiyor:**
+
+| Bilgi | Durum |
+|---|---|
+| Ölçüt (37) | Sızabilir |
+| **Öğenin katılımına ilişkin bilgi** | Sistemde var ama **taraflarca bilinmiyor** |
+
+**Kurucunun düzeltmesi — sayaç kayıt değil:** *"kaç tane oldu bilgisi
+zaten sıra."* Sistem sırayı biliyor, bilmek zorunda; mekanizma onsuz
+çalışmıyor. Durumsuzluk **öğelere dair kayıt** tutulmamasıdır (kim geldi,
+ne zaman); sayaç tek bir sayıdır, geçmiş tutmaz.
+
+**Mercisizliğin iki ayrı anı:**
+
+| | Nerede |
+|---|---|
+| İstem 13'te gömülü | Ölçüt **saptanırken** — hiçbir taraf etki edemez |
+| **İstem 2** | Ölçüt **bilindikten sonra** — bilen de müdahale edemez |
+
+#### "Ölçüt bilinse dahi" ibaresi — çıkarılamaz
+
+Kurucunun sorusu: *"ölçüt bilinse dahi'ye gerek var mı"*
+
+| | |
+|---|---|
+| İbare **yoksa** | Güvenlik gizliliğe dayanıyor → piyango, çekiliş de öyle. **Mevcutta var** |
+| İbare **varsa** | Gizlilik **gerekmiyor** — ölçüt duvara yazılsa da sistem çalışır. **Mevcutta yok** |
+
+O iki kelime istemin tüm değerini taşıyor.
+
+#### "Öngörülememesi" sonucu — çıkarılamaz
+
+Kurucunun sorusu: *"öğenin katılımına ilişkin bilginin taraflarca
+bilinmemesi zaten sonuç doğurmuyor mu"*
+
+Doğuruyor — mekanizmada. Ama istemde yazılı olması iki ayrı iş yapıyor:
+
+| | |
+|---|---|
+| **İhlal tespiti** | Rakip *"bizde katılım bilgisi biliniyor ama yine de öngörülemiyor"* derse, sonuç yazılıysa o da içeride |
+| **m.82** | İncelemeci *"bilgi bilinmemesi teknik etki mi"* diye sorar; cevap istemin içinde olur |
+
+#### İfade düzeltmeleri — kurucunun
+
+| Eski | Yeni | Gerekçe |
+|---|---|---|
+| *"sırası"* | **"katılımına ilişkin bilgi"** | Kurucunun tespiti: *"ölçüt sadece sıra değil ki."* Sıra yazılsa ölçüt türü sabitlenir; *"katılımına ilişkin bilgi"* sırayı, zamanı, konumu hepsini kapsıyor. **Elenen adaylar:** *"konumu"* (fiziksel yer çağrışımı), *"pozisyonu"* (yabancı kelime), *"katılım bilgileri"* (çoğul ve bulanık) |
+| *"bildirilmediğinden"* | **"bilinmemesi"** | *"Bildirilmemek"* bir eylemin yapılmaması = olumsuz şart, zayıf. *"Bilinmemesi"* bir **durum** = ölçülebilir. Ve daha geniş: bildirilmese de başka yolla bilinebilir |
+| *"-diğinden"* | **"nedeniyle"** | Sebep bağı açık kuruluyor, ekin bulanıklığı kalkıyor |
+
+### 67.5 İKİ İSTEMİN ANALİZİ
+
+#### İSTEM 1
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Sıranın tersine çevrilmesi: ölçüt önce kurulur, evren sonra dolar |
+| **Mevcuda karşı** | 9/9. Fisher-Yates/Madow/reservoir liste gerektiriyor; piyango/çekiliş kapanış bekliyor; sadakat kimlik tutuyor; *"her 100."* ölçütü sabitliyor; NCR sequential'da ödül kaydırılabiliyor; NCR randomized'da nicelik yok |
+| **Sette gerekliliği** | ⭐⭐⭐ Buluşun kendisi. Çıkarılamaz |
+| **Gücü** | Setin en geniş istemi — iki şart, en çok rakip yakalayan |
+| **Buluş değeri** | Anlayış değişikliğinin tek cümlelik ifadesi |
+| **Patent alma gücü** | ⚠️ **Orta.** m.82 riski en yüksek burada: tek cümle, somut adım az. Tarifnamedeki teknik etki anlatımı bu istemi taşımak zorunda |
+
+**Açık — kurucunun tespiti:** *"kesit aralığı istemde yok ama bu saçma
+değil mi."* İstem ölçütün çekileceği aralığı yazmıyor; rastgelelik neye
+göre rastgele sorusu açık. **Bilerek alınan risk:** aralık isteme girerse
+ölçüt türü sabitlenir (sıra sayısı → kesit aralığı, zaman → kesit süresi)
+ve rakip başka tür seçip kaçar. Aralık tarifnamede, ölçüt türleriyle
+birlikte açıklanacak.
+
+**Tür/değer ayrımı tarifnameye:** Kurucu ölçüt **türünü** seçer (*"sırayla
+çalış"*), sistem **değerini** çeker (437). İsteme yazılması denendi,
+kurucu eledi: *"tarifname gibi yazdın."*
+
+#### İSTEM 2
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Akış öngörüsüzlüğü. Ölçüt sızsa bile kayırma yapılamaz — iki bilgi gerekiyor, biri yetmiyor |
+| **Mevcuda karşı** | 9/9. *"Ölçüt bilinse dahi"* gizliliğe dayanan sistemlerin tamamını eliyor. *"Her 100."* burada ikinci kez düşüyor |
+| **Sette gerekliliği** | ⭐⭐ İstem 1'in tamamlayıcısı: 1 **saptama anını**, 2 **akış süresini** koruyor |
+| **Gücü** | Üç şart. İstem 1'den dar ama kapattığı kapı gerçek (37 örneği) |
+| **Buluş değeri** | Güvenin **sırra değil mekanizmaya** dayandığını talep ediyor |
+| **Patent alma gücü** | ⭐⭐ **Orta-iyi.** *"Bilinmemesi"* durum şartı, ölçülebilir. Risk: İstem 1 ile aynı temele oturduğu için 1 düşerse bu da düşebilir |
+
+### 67.6 ÇİFT KÖR ÇALIŞMA KARŞILAŞTIRMASI — tarifnameye
+
+Kurucunun açtığı konu. İstemde kullanılmaz (ödünç terim, m.92), ama
+tarifnamede güçlü argüman:
+
+| | Çift kör çalışma | İzo-odds |
+|---|---|---|
+| Kolda kim var | **Biliniyor**, saklanıyor | **Belli değil** — kişi henüz gelmedi |
+| Körlük kalkarsa | Bilgi açığa çıkar | **Açığa çıkacak bilgi yok** |
+| Güven kaynağı | Protokol + denetim | **Mekanizmanın kendisi** |
+
+Tarifname cümlesi: *"Çift kör çalışmalarda tahsis bilgisi mevcuttur ve
+saklanır; bu yöntemde belirlenecek öğe, ölçüt saptandığı anda evrene
+katılmamış olduğundan saklanacak bir tahsis bilgisi oluşmaz."*
+
+### 67.7 SETE ETKİSİ
+
+**Kalıp değişti.** §66.3'teki Çİ+unsur istemleri (12-19) ve ortam
+bağımsızlığı istemi (20) hâlâ eski kalıpla yazılı:
+
+| | |
+|---|---|
+| **Eski kalıp** | *"…ölçütün rastgele belirlenmesi ve ölçüte uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile karakterize edilir."* |
+| **Yeni kalıp** | *"…ölçütün (hangi öğe veya öğelerin belirlenmiş öğe olacağını tayin eden kural veya kurallar) rastgele saptanması ve bu saptamanın evrene henüz hiçbir öğe katılmamışken yapılması…"* |
+
+**Yapılacak:** sekiz Çİ+unsur istemi + ortam bağımsızlığı istemi yeni
+kalıpla yeniden yazılacak. Sigorta bloğu (Çİ'siz) etkilenmiyor.
+
+**Numaralandırma:** eski İstem 2 (öngörülemezlik) çöktü, yerine akış
+körlüğü geldi — sayı değişmedi. Set **22 istem**.
