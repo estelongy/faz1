@@ -11407,3 +11407,244 @@ kalıpla yeniden yazılacak. Sigorta bloğu (Çİ'siz) etkilenmiyor.
 
 **Numaralandırma:** eski İstem 2 (öngörülemezlik) çöktü, yerine akış
 körlüğü geldi — sayı değişmedi. Set **22 istem**.
+
+---
+
+## 68. Çİ+UNSUR BLOĞU — YENİ KALIPLA YENİDEN YAZIM (2 Kasım)
+
+**Durum:** ⬜ Kalıp çevrimi yapıldı, kurucu onayı bekleniyor. Unsur
+metinleri §66.3'te onaylanmış hâliyle korundu; yalnızca Çİ kalıbı
+§67'nin diline çevrildi.
+
+**Bu bölüm §66.3'teki Blok 3 (İstem 12-20) metinlerinin yerine geçer.**
+
+### 68.1 KALIP DEĞİŞİMİ
+
+| | |
+|---|---|
+| **Eski** | *"…ölçütün rastgele belirlenmesi ve ölçüte uyacak öğenin ölçüt belirlendiği anda evrene katılmamış olması ile karakterize edilir."* |
+| **Yeni** | *"…ölçütün (hangi öğe veya öğelerin belirlenmiş öğe olacağını tayin eden kural veya kurallar) rastgele saptanması ve bu saptamanın evrene henüz hiçbir öğe katılmamışken yapılması ile karakterize edilir."* |
+
+Kalıp aşağıdaki dokuz istemde **birebir aynıdır**; yalnızca başa gelen
+unsur metni değişir.
+
+### 68.2 DOKUZ İSTEM — YENİ KALIPLA
+
+#### A — ANINDALIK
+
+> Buluş, öğe belirleme yöntemi olup; ÖĞENİN BELİRLENMESİNİN, ÖĞENİN
+> EVRENE KATILDIĞI ANDA VE GERİ ALINAMAZ BİÇİMDE GERÇEKLEŞMESİ, ölçütün
+> (hangi öğe veya öğelerin belirlenmiş öğe olacağını tayin eden kural
+> veya kurallar) rastgele saptanması ve bu saptamanın evrene henüz
+> hiçbir öğe katılmamışken yapılması ile karakterize edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Belirleme kararının öğe katıldığı anda verilmesi ve bir daha değiştirilememesi |
+| **Mevcuda karşı** | Reservoir sampling'i eliyor (karar sonda, 500. öğe 42'yi atabilir); piyangoyu eliyor (çekiliş satış kapandıktan sonra) |
+| **Sette gerekliliği** | ⭐⭐⭐ Kurucunun sabitlediği çekirdek ikilinin yarısı: *"alanı dolduracak ikilimiz anındalık ve eşihtimallilik"* |
+| **Gücü** | İki şart + bir nitelik; ihlal tespiti kolay — karar ne zaman kesinleşiyor, değiştirilebiliyor mu |
+| **Buluş değeri** | Teknik üstünlüğün en net ifadesi: karar ile kayıt arasında zaman aralığı yok, müdahale penceresi yok |
+| **Patent alma gücü** | ⭐⭐ İyi — anındalık somut zaman şartı, soyutluk itirazına dirençli. Risk: US5774884'ün *"işlem anında kupon üretimi"* ifadesi karşısında ayrım tarifnamede net kurulmalı (orası **değer üretme** anı, belirleme anı değil) |
+
+#### B — KESİT + YENİDEN BELİRLEME (mercisizlik gömülü)
+
+> Buluş, öğe belirleme yöntemi olup; EVRENİN KESİTLERE AYRILDIĞI VE HER
+> KESİT İÇİN ÖLÇÜTÜN HİÇBİR TARAFIN ETKİSİ OLMAKSIZIN BAĞIMSIZ OLARAK
+> YENİDEN BELİRLENDİĞİ, ölçütün (hangi öğe veya öğelerin belirlenmiş öğe
+> olacağını tayin eden kural veya kurallar) rastgele saptanması ve bu
+> saptamanın evrene henüz hiçbir öğe katılmamışken yapılması ile
+> karakterize edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Evrenin kesitlere ayrılması ve her kesitte ölçütün taraf etkisi olmaksızın yeniden çekilmesi |
+| **Mevcuda karşı** | Madow 1949 dördüncü kez düşüyor — orada **tekrar yok**, bir kez çekim sonrası aritmetik (37, 137, 237); bizde her kesitte yeni çekim, kesitler ilişkisiz (17 → 38 → 4). NCR sequential düşüyor — orada iptal edilen ödül sıradakine **geçiyor**, taraf etkisi var |
+| **Sette gerekliliği** | ⭐⭐⭐ Kurucunun tespiti: *"kesit buluşumuz yaaaa."* Nicelikten ayrı yol — nicelik k'ya ulaşınca sistem durur, kesit akış sürdükçe yenisini açar |
+| **Gücü** | Mercisizlik gömülü olduğu için iki korumayı tek istemde taşıyor |
+| **Buluş değeri** | Akışın sürekliliğini sağlayan mekanizma; kesit kapanışındaki kayırmayı da kapatıyor |
+| **Patent alma gücü** | ⭐⭐ İyi — *"yeniden belirlenmesi"* somut tekrarlanan adım. Risk: nicelik + kesit bileşimi Madow'un aralık formülüne (N÷k) yakın durur; akışkanlık veya eşihtimal eklenmeden ayrışma tarifnamede gösterilmeli |
+
+#### C — EŞİHTİMALLİLİK
+
+> Buluş, öğe belirleme yöntemi olup; EVRENE KATILAN HER ÖĞENİN, DİĞER
+> ÖĞELERİN KATILMASINDAN BAĞIMSIZ OLARAK ÖLÇÜTE UYMA İHTİMALİNİ EŞİT
+> TAŞIDIĞI, ölçütün (hangi öğe veya öğelerin belirlenmiş öğe olacağını
+> tayin eden kural veya kurallar) rastgele saptanması ve bu saptamanın
+> evrene henüz hiçbir öğe katılmamışken yapılması ile karakterize
+> edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Her öğenin, diğerlerinin katılmasından bağımsız olarak eşit ihtimal taşıması |
+| **Mevcuda karşı** | 7 ofis eliyor. *"Katılmasından bağımsız"* ifadesi liste tabanlı yöntemlerin **tamamını** kesiyor — orada katılım kavramı yok (§64.3: Madow'da liste hazır, katılım yok, ifade kurulamıyor) |
+| **Sette gerekliliği** | ⭐⭐⭐ Çekirdek ikilinin öteki yarısı. Tek başına ayakta duramaz (NCR randomized eşihtimali karşılıyor), Çİ veya nicelik şart |
+| **Gücü** | Mevcudu en çok eleyen ikinci unsur |
+| **Buluş değeri** | Adaletin matematiksel ifadesi; kesit paydasıyla kurulur, geriye dönük ölçülmez |
+| **Patent alma gücü** | ⭐⭐⭐ **Setin en yükseği.** Eşihtimal ölçülebilir, ispatlanabilir; m.82'de *"soyut kural"* itirazına en dirençli |
+
+#### D — NİCELİK
+
+> Buluş, öğe belirleme yöntemi olup; BELİRLENECEK ÖĞE SAYISININ ÖNCEDEN
+> SAPTANDIĞI, ölçütün (hangi öğe veya öğelerin belirlenmiş öğe olacağını
+> tayin eden kural veya kurallar) rastgele saptanması ve bu saptamanın
+> evrene henüz hiçbir öğe katılmamışken yapılması ile karakterize
+> edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Kaç öğe belirleneceğinin önceden saptanması |
+| **Mevcuda karşı** | NCR randomized win'i eleyen **tek** unsur — orada *"rolling a die for each transaction"*, nicelik yok. §43'te doğrulandı: US5774884'ün *"fixed number"* ifadesi mekanizmayla desteklenmemiş, nicelik **temiz** |
+| **Sette gerekliliği** | ⭐⭐ Sigortaların ve kombinasyon isteminin omurgası; kurucunun kuralı: *"her dipte eşihtimal veya nicelik en az bir kere olsun"* |
+| **Gücü** | Kapsamı daraltıyor, yeni rakip yakalamıyor — ama tek başına NCR'yi kesiyor |
+| **Buluş değeri** | Bütçe öngörülebilirliği; kurucu maliyetini baştan bilir |
+| **Patent alma gücü** | ⭐⭐ İyi — somut sayısal şart, m.82'de güçlü. §66'da düşülen uyarı geçerli: sigortalarda tekrarlandığı için tek başına anlamsızlaşabilir |
+
+#### E — KİMLİKSİZLİK
+
+> Buluş, öğe belirleme yöntemi olup; BELİRLEMENİN, ÖĞENİN KİMLİĞİ VE
+> KENDİSİNE HAS ÖZELLİKLERİ KULLANILMAKSIZIN YAPILDIĞI, ölçütün (hangi
+> öğe veya öğelerin belirlenmiş öğe olacağını tayin eden kural veya
+> kurallar) rastgele saptanması ve bu saptamanın evrene henüz hiçbir öğe
+> katılmamışken yapılması ile karakterize edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Belirlemenin öğenin kimliği ve kendine has özellikleri kullanılmaksızın yapılması |
+| **Mevcuda karşı** | §42.7: *"öğenin HİÇBİR özelliğinden bağımsızlık"* — **bulunamadı.** Mevcutta *"tutardan bağımsız"* var (US20100153194), *"hiçbir özellikten bağımsız"* yok. US5774884 kart kimliği okuyor. Sadakat programlarının tamamını eliyor |
+| **Sette gerekliliği** | ⭐⭐⭐ Kurucunun kararı: *"kimliksizlik kalsın ya, bizim gümüşümüz o"* |
+| **Gücü** | Taramada bulunamayan tek unsur — §42.9: *"yenilik açısından en güçlü unsur bu"* |
+| **Buluş değeri** | Yapısal olarak ayrımcılık imkânsız; KVKW/anonimlik tarafı buradan geliyor |
+| **Patent alma gücü** | ⭐⭐⭐ **Setin en temizi.** Mevcutta karşılığı yok. Risk: olumsuz şart (*"kullanılmaksızın"*) — rakip *"biz de kullanmıyoruz"* derse ispat yükü doğar |
+
+#### F — AKIŞKAN EVREN
+
+> Buluş, öğe belirleme yöntemi olup; ÖĞELERİN EVRENE ZAMAN İÇERİSİNDE
+> KATILDIĞI VE EVRENİN BÜYÜKLÜĞÜNÜN ÖNCEDEN KESİN BİLİNMEDİĞİ, ölçütün
+> (hangi öğe veya öğelerin belirlenmiş öğe olacağını tayin eden kural
+> veya kurallar) rastgele saptanması ve bu saptamanın evrene henüz
+> hiçbir öğe katılmamışken yapılması ile karakterize edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Öğelerin zaman içinde katıldığı ve büyüklüğü önceden kesin bilinmeyen bir evrende çalışma |
+| **Mevcuda karşı** | Liste tabanlıların tamamı düşüyor — Fisher-Yates, Madow (N bilinmeli, yoksa aralık hesaplanamaz), reservoir (liste yok ama karar sonda), blok randomizasyonu (N protokolde taahhüt) |
+| **Sette gerekliliği** | ⭐⭐⭐ Buluşun ortamı. Kurucunun düzeltmesi kayıtlı: *"bizim buluşumuz olan akışkan evrende öğe belirlemeyi siliyorsun"* — eleme girişimi reddedildi |
+| **Gücü** | Dönüştürme ve paralel evrenler bunun alt kümeleri (kurucunun tespiti) |
+| **Buluş değeri** | *"Evreni tanımadan belirle"* anlayışının ortam karşılığı |
+| **Patent alma gücü** | ⭐⭐ İyi. Risk: NCR randomized işlem akışında çalışıyor; ayrım *"büyüklüğünün önceden kesin bilinmediği"* ibaresinde — o kavram NCR'de yok, tarifnamede gösterilmeli |
+
+#### G — SABİT EVRENİN AKIŞKANA DÖNÜŞTÜRÜLMESİ
+
+> Buluş, öğe belirleme yöntemi olup; ÖĞELERİ LİSTELENEBİLEN BİR
+> TOPLULUĞUN MEVCUT ÖĞELERİNİN YENİ BİR EVRENE EKLENMESİ SURETİYLE
+> AKIŞKAN HÂLE GETİRİLDİĞİ, ölçütün (hangi öğe veya öğelerin belirlenmiş
+> öğe olacağını tayin eden kural veya kurallar) rastgele saptanması ve
+> bu saptamanın evrene henüz hiçbir öğe katılmamışken yapılması ile
+> karakterize edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Kapalı bir topluluğun öğelerinin yeni bir evrene eklenerek akışkan hâle getirilmesi |
+| **Mevcuda karşı** | Fisher-Yates, Madow ve blok randomizasyonu kendi sahalarında yakalanıyor: onlar liste **üzerinde** çalışıyor, bu liste**yi** akışa çeviriyor. Hiçbiri kapalı kümeyi akışa dönüştürmüyor |
+| **Sette gerekliliği** | ⭐⭐⭐ §63.4: **en değerli yeni kol.** Rakip *"bizim evren kapalı, sizin patent akışkan evren için"* diyerek kaçamıyor |
+| **Gücü** | Mevcudun sahasına giren tek istem — alternatif değil, üstüne çıkıyor |
+| **Buluş değeri** | Kurucunun tespiti: *"30 kişilik listede sistem şöyle çalışır — listeyi sisteme tek tek ve istediğin sırayla girersen sana Çİ ile yine sonuç verecektir"* |
+| **Patent alma gücü** | ⭐⭐⭐ **Yüksek.** *"Dönüştürme"* somut işlem, soyut kural değil — m.82'de en güçlü duran istem |
+
+**İfade kaydı (§66.5):** *"listelenebilen"* (liste hâlinde olması şart
+değil) · *"yeni bir evrene eklenmesi"* (topluluk dönüşmüyor, yeni evren
+kuruluyor) · *"mevcut öğelerinin"* (o anki hâli). ⛔ *"Rastgele
+katılma"* elendi — üçüncü bir rastgelelik şart koşuyordu.
+
+#### H — PARALEL EVRENLER
+
+> Buluş, öğe belirleme yöntemi olup; AYNI ÖĞE AKIŞINDAN BİRDEN FAZLA
+> EVREN TANIMLANDIĞI, HER EVRENİN KENDİ KESİT BÜYÜKLÜĞÜ VE KENDİ
+> ÖLÇÜTÜYLE BAĞIMSIZ OLARAK İŞLETİLDİĞİ VE BİR ÖĞENİN BİRDEN FAZLA
+> EVRENDE BELİRLENEBİLDİĞİ, ölçütün (hangi öğe veya öğelerin belirlenmiş
+> öğe olacağını tayin eden kural veya kurallar) rastgele saptanması ve
+> bu saptamanın evrene henüz hiçbir öğe katılmamışken yapılması ile
+> karakterize edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Tek akıştan birden fazla evren; her biri kendi kesiti ve ölçütüyle; bir öğe birkaçında birden belirlenebiliyor |
+| **Mevcuda karşı** | Dokuz ofisin hiçbiri paralel evren kurmuyor. Piyangoda kademeler **aynı çekilişte**, tek evren — bir bilet tek kademede kazanır |
+| **Sette gerekliliği** | ⭐⭐⭐ §56.4'te iptal edilmişti, gerekçe yanlış çıktı; kurucunun piyango kurgusu bunun mekanizmanın **kendisi** olduğunu gösterdi |
+| **Gücü** | Üçüncü parça (*"bir öğenin birden fazla evrende belirlenebildiği"*) **kritik** — onsuz rakip *"bizde her öğe tek evrende"* diyerek kaçar |
+| **Buluş değeri** | Büyük ikramiye kavramı, ikramiye havuzu ve anında sonuç sorunlarını birden çözüyor (E1 kesit 1M/k=1, E2 200K, E3 50K) |
+| **Patent alma gücü** | ⭐⭐⭐ **Yüksek.** Mevcutta karşılığı yok, üç parçalı somut yapı. ⚠️ Hukuki sınır: şans oyunu tekeli TR'de devlet lisansı gerektiriyor — **patentlenebilir ama işletilemez;** değer lisanslamada |
+
+#### I — ORTAM BAĞIMSIZLIĞI
+
+> Buluş, öğe belirleme yöntemi olup; öğenin evrene katılmasının,
+> katılımı algılayan araçtan öğeye özgü hiçbir bilgi alınmaksızın
+> yalnızca katılım olgusu olarak saptandığı, belirlemenin katılımın
+> hangi araç üzerinden gerçekleştiğinden bağımsız olarak aynı biçimde
+> yapıldığı ve belirlenen öğeye bağlanacak değerin niteliğinin belirleme
+> işleminden bağımsız olarak kurucu tarafından tanımlandığı, ölçütün
+> (hangi öğe veya öğelerin belirlenmiş öğe olacağını tayin eden kural
+> veya kurallar) rastgele saptanması ve bu saptamanın evrene henüz
+> hiçbir öğe katılmamışken yapılması ile karakterize edilir.
+
+| | |
+|---|---|
+| **Ne talep ediyor** | Üç parça: araçtan bilgi akmaması · mekanizmanın araca göre değişmemesi · değerin belirlemeden ayrık olması |
+| **Mevcuda karşı** | §42.8'in en güçlü lehte argümanı: *"taranan hiçbir patent bir LED lambaya, bir otobüs turnikesine ve bir POS'a aynı mekanizmayla uygulanamıyor — hepsi kart, kiosk, kupon veya makine gerektiriyor."* Onlar araçtan **kimlik** okuyor, bu okumuyor |
+| **Sette gerekliliği** | ⭐⭐⭐ Kurucunun tespiti: *"ortam bağımsızlığı ticari bir unsur ve buluşumun asıl amacı; her ortama uyarlanabilir olsun diye bu kadar kafa patlattım"* |
+| **Gücü** | Dört ortamda doğrulandı: piyango (bilet alınması), POS (işlem), cami (kapıdan giriş), otobüs (turnikeden geçiş) |
+| **Buluş değeri** | **Tek mekanizma, her ortam, her değer.** Değer çeşitliliği öğe belirlemenin amacını bollaştırıyor |
+| **Patent alma gücü** | ⭐⭐ İyi — üç parça da ölçülebilir. Risk: istem uzun, m.92'de *"yalnızca katılım olgusu"* ifadesinin sınırı sorulabilir |
+
+**Kayıt:** *"Her ortamda çalışır"* diye yazmak **elendi** — iddia,
+ölçülemez, m.92'den döner. *"Olağan yaşam olayları"* ifadesi de elendi:
+kurgulanmış evrenleri (piyango bileti, klinik protokolü, liste girişi)
+dışlıyordu ve *"kurgulanmamış"* kelimesi rakibe kaçış kapısı veriyordu.
+Ticari kullanım alanları **isteme yazılmaz** — sayılan alan dışında
+kalanı dışlar ve m.82'de *"iş yöntemi"* itirazını davet eder;
+tarifnameye gider.
+
+### 68.3 KALIP DENETİMİ
+
+Dokuz istemin tamamında kalıp birebir aynıdır:
+
+> *"…ölçütün (hangi öğe veya öğelerin belirlenmiş öğe olacağını tayin
+> eden kural veya kurallar) rastgele saptanması ve bu saptamanın evrene
+> henüz hiçbir öğe katılmamışken yapılması ile karakterize edilir."*
+
+Unsur metinleri §66.3'teki onaylı hâlleriyle birebir korundu; tek
+değişiklik B isteminde mercisizliğin gömülü olması (§66'da alınan karar).
+
+### 68.4 ⚠️ AÇIK — DEĞER BAĞLAMA İSTEMİNİN ÇIKARILMASI KAYITLI DEĞİL
+
+**Tespit:** Değer bağlama istemi §66.3'te **İstem 20 olarak duruyor**
+ancak çıkarılma kararı hiçbir yerde kayıtlı değil. §66.7'nin elenen
+unsurlar tablosunda da yok.
+
+**Alınan karar (kayda geçmemiş):** Kurucunun tespiti — *"nicelik değer
+bağlamayı kapsamıyor mu? değer üretilecek öğe sayısı değil mi zaten"* ve
+*"niceliği değer bağlanacak öğe sayısı olarak kabul ediyoruz, istem 20
+anlamsız."*
+
+**Gerekçe üç katmanlı:**
+
+| | |
+|---|---|
+| Nicelik ifadesi | *"Belirlenecek öğe sayısı"* — sigortalarda *"değer üretilecek öğe sayısı"* yazılı, değer bağlama orada zaten içinde |
+| Kombinasyon istemi tabanı | *"Değer bağlanacak öğelerin belirlenmesi"* — üçüncü kez geçiyor |
+| nicelik + değer bağlama bileşimi | ⛔ **Değersiz** — belirleme mekanizması yok, sadece *"k öğeye değer verilir"* diyor |
+
+**Sonuç:** değer bağlama ayrı bağımsız istem olarak çıkarıldı; kombinasyon
+isteminin atfı *istem 1 ilâ 19* oldu. §66.3 bu karara göre
+güncellenmelidir.
+
+### 68.5 SET DURUMU
+
+| No | Blok | Durum |
+|---|---|---|
+| 1-2 | Çİ | ✅ **Kesin** (§67) |
+| 3-11 | Sigortalar (9) | ⬜ Çİ'siz, eski dille — kurucu bu bloğa geçiyor |
+| 12-20 | Çİ + unsur (9) | ⬜ **Bu bölümde yeni kalıpla yazıldı**, onay bekliyor |
+| 21 | Kombinasyon | ⬜ Atıf *istem 1 ilâ 19* olmalı (68.4) |
+| 22 | Sistem | ⬜ Zayıf, karar bekliyor (§66.6) |
