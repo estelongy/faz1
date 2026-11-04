@@ -12034,3 +12034,162 @@ biri birleşimi, öteki alternatifi talep ediyor. Kurucunun kararı:
 **⚠️ KRİTİK:** Uygulamayı başvurudan **önce** kamuya açık yapmak TR ve
 EPO'da yenilik kaybı doğurur. ABD'de 12 ay grace period var, Avrupa'da
 yok.
+
+---
+
+## 70. ⭐⭐ KOMBİNASYON İSTEMLERİ — İSTEM 25 ve 26 (8 Kasım)
+
+**Durum:** ✅ Kurucu onaylı. §66.4'teki tek kombinasyon istemi iptal,
+yerine **iki istem** geçti.
+
+### 70.1 İSTEM 25 — akışkan evren
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; Katılımcılık, Çift Rastgelelik,
+> Eşihtimallilik, Anındalık, Kesitsellik, Nicelsellik, Kimliksizlik,
+> Paralellik, Ortam Bağımsızlığı, Akış Körlüğü ve Mercisizlik
+> unsurlarından en az ikisinin ortak etkisiyle öğe belirlenmesi ve
+> belirlenen öğelere değer bağlanması ile karakterize edilir.
+
+### 70.2 İSTEM 26 — dönüştürülmüş evren
+
+> Öğeleri listelenebilen bir topluluğun mevcut öğelerinin yeni bir evrene
+> eklenmesi suretiyle akışkan hâle getirildiği bir evrende; Katılımcılık,
+> Çift Rastgelelik, Eşihtimallilik, Anındalık, Kesitsellik, Nicelsellik,
+> Kimliksizlik, Paralellik, Ortam Bağımsızlığı, Akış Körlüğü ve
+> Mercisizlik unsurlarından en az ikisinin ortak etkisiyle öğe
+> belirlenmesi ve belirlenen öğelere değer bağlanması ile karakterize
+> edilir.
+
+### 70.3 ⭐ NEDEN İKİ İSTEM — kurucunun kurgusu
+
+> *"kombinasyonu iki istemde yazsak. ilki, iki evrende…"*
+
+Tek istemde *"akışkan evrende **veya** dönüştürülmüş evrende"* demek, iki
+alternatifi tek istemde toplar ve birinin düşmesi istemin tamamını
+götürür. Ayrı istemde her biri kendi başına inceleniyor.
+
+### 70.4 ⭐⭐ ATIF DEĞİŞTİ — istem numarası değil, unsur adı
+
+**Kurucunun tespiti:** *"sorun şu aslında, kombinasyon isteminin
+kendisinde geçen unsurları en az ikiden çıkarsak sorun kalmayacak."*
+
+§66.4'teki yazım *"istem 12 ilâ 20'de tanımlanan"* diye numara atfı
+yapıyordu. Sorun: İstem 25 akışkan evreni şart koşuyor, ama atıf
+listesinde **Akışkanlık** (tekrar) ve **Dönüştürülebilirlik** (çelişki)
+istemleri de vardı.
+
+| Çelişen ikili | Neden |
+|---|---|
+| Akışkanlık + Dönüştürülebilirlik | Biri *"büyüklüğü bilinmiyor"*, öteki *"liste belli"* — aynı istemde duramaz |
+
+**Çözüm:** atıf **unsur adlarıyla** verildi ve iki evren unsuru listeden
+çıkarıldı. On üç unsurdan **on biri** listede; Akışkanlık ve
+Dönüştürülebilirlik evren şartı olarak istemin başında duruyor.
+
+Bu, §69.2'de kurulan adlandırma sisteminin ilk meyvesi: adlar istemlerde
+tanımlı olduğu için numara saymaya gerek kalmadı.
+
+### 70.5 İFADE SADELEŞTİRMESİ — kurucunun
+
+| Eski | Yeni |
+|---|---|
+| *"en az ikisinin **birlikte sağlanması ve** bu unsurların ortak etkisiyle öğe belirlenmesi **ile** belirlenen öğelere değer bağlanması"* | *"en az ikisinin **ortak etkisiyle** öğe belirlenmesi **ve** belirlenen öğelere değer bağlanması"* |
+
+*"Birlikte sağlanması"* gereksizdi — *"ortak etki"* birlikteliği zaten
+söylüyor. Ve iki fiil artık paralel: *belirlenmesi* / *bağlanması*.
+
+### 70.6 ⭐ "EN AZ İKİSİ" DENETİMİ — üç soru
+
+**Soru 1 — kaç bileşim talep ediliyor?**
+
+*"En az ikisi"* bir alt sınır: iki, üç, dört… on bir. On bir unsurdan 55
+ikili, 165 üçlü, toplam **2.047 bileşim** (her evren tipi için).
+Dışarıda kalan tek şey tek unsurlu hâller — onlar İstem 1-24'te tek tek
+yazılı.
+
+**Soru 2 — aslında en az üç unsur, değil mi?**
+
+Evet: evren şartı da bir unsur. Akışkanlık veya Dönüştürülebilirlik +
+listeden en az iki = üç katman.
+
+**Kurucunun değerlendirmesi:** *"bir kere evrenimiz tek başına özgün. iki
+unsurla hayli hayli özgün bir istem işaret edilmiş oluyor."*
+
+Doğru: *"büyüklüğü bilinmeyen fakat tahmin edilebilen"* şartı Madow'u,
+blok randomizasyonunu, piyangoyu ve Fisher-Yates'i birden eliyor — hepsi
+N'nin kesin bilinmesini gerektiriyor. Dönüştürülmüş evren ise mevcutta
+hiç yok.
+
+**Soru 3 — anlamsız ikili istemi çökertir mi?**
+
+**Hayır.** İstem *"her ikili çalışır"* demiyor; *"en az ikisinin **ortak
+etkisiyle** öğe belirlenmesi"* diyor. Ortak etki üretmeyen bileşim
+istemin kapsamı dışında kalıyor — talep edilmiş olmuyor.
+
+Bu ifade tam bu yüzden konulmuştu (§66.4, harici raportörün düzeltmesi):
+*"birlikte bulunma"* değil **"ortak etki"**.
+
+**Örtüşen ikililer** (zarar vermiyor, ek katkı da taşımıyor):
+
+| İkili | Durum |
+|---|---|
+| Kesitsellik + Mercisizlik | Mercisizlik kesitsellik tanımında gömülü — tekrar |
+| Çift Rastgelelik + Akış Körlüğü | Akış körlüğü Çİ'yi varsayıyor — örtüşme |
+| Katılımcılık + Ortam Bağımsızlığı | Ortam bağımsızlığı tanımı katılımı içeriyor — örtüşme |
+
+Üçü de tekrar, hiçbiri çelişki değil. İncelemeci *"ek teknik katkı
+taşımıyor"* der; istemi reddetmeye gerekçe olmaz.
+
+### 70.7 ⛔ ELENEN YAZIM — "kısmen veya tamamen"
+
+**Kurucunun ilk önerisi:** *"…unsurlarının kısmen veya tamamen
+kullanılması…"*
+
+**Elendi:** *"kısmen"* tek unsurlu alternatifleri de içeriyor. Tek
+unsurlu hâller İstem 1-24'te zaten var ve bazıları zayıf (örn. tek
+başına Nicelsellik → US5774884). *"Kısmen"* dendiğinde o zayıf hâller
+kombinasyon isteminin içine de girer ve istemin tamamını riske atar.
+
+### 70.8 ⚠️ ASIL RİSK — tarifname desteği
+
+İstem 25 ve 26 toplam **4.094 bileşim** talep ediyor. İncelemeci EPC
+Art. 84 / SMK m.92'den sorabilir: *"kaçı tarifnamede açıklanmış?"*
+
+Cevap on-on iki somutlaştırma olacak. **Başvurudan sonra eklenemez**
+(m.103). Tarifname işi bu yüzden kritik.
+
+### 70.9 AÇIK — SİSTEM İSTEMİ
+
+Kurucu: *"sistemi konuşacaz, sonra yazacaz."*
+
+**Kayıtlı durum (§66.6):** mevcut sistem istemi *"kurtarma istemi"* —
+m.82 riskinden kaçmak için eklenen, gerçek teknik katkısı olmayan istem.
+Dört birim (ölçüt belirleyen, katılımı algılayan, sayaç tutan, öğeyi
+belirleyen) yöntemin dört adımını birim adıyla tekrarlıyor; sunucu,
+bellek, sayaç hepsi mevcut.
+
+**Eşzamanlılık kapısı kapalı** — kurucunun cevabı: *"öğeler sırayla
+katılacak, bunun başka yolu ve yöntemi çalışmaz."* Yani kilitleme/atomik
+artırma gibi bir teknik katkı eklenemez.
+
+**Çıkarmanın bedeli:** sistem istemi **ikinci bir ihlal kapısı.** Yöntem
+istemi birisi adımları *uygularsa* ihlal; sistem istemi birisi birimleri
+*kurarsa* ihlal — kullanmasa bile. Rakip yazılımı yapıp satıyorsa sistem
+istemi onu tutar.
+
+Kapı değerli, istem zayıf. **Karar bekliyor.**
+
+### 70.10 SET — 26 İSTEM
+
+| Blok | No | İçerik |
+|---|---|---|
+| Kökler | 1-3 | Katılımcılık · Çift Rastgelelik · ikisi birden |
+| Unsurlar | 4-14 | On bir unsur, her biri bir kökle |
+| Sigortalar | 15-24 | Köksüz, eski set dili |
+| **Kombinasyon** | **25-26** | Akışkan evren · dönüştürülmüş evren |
+| Sistem | — | **Açık** |
+
+**Ücret:** TR'de istem sayısı ücreti etkilemiyor (§62.4). EPO'da 15 üstü
+€290/istem → 26 istem için **11 × €290 = €3.190** ek ücret, yalnızca
+EPO'ya giderken.
