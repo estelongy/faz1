@@ -7,13 +7,6 @@
 
 ## Bekleyen
 
-### 2. Müşteri indirim oranını SMS'ten öğrenemiyor
-**Durum:** mimari karar gerekiyor
-Oran davet anında referansör tarafından seçiliyor, ama SMS metni oranı
-`ayricalik` alanından regex'le çekiyor (`%\s*\d+`). Serbest oranlı tekliflerde
-bulunamıyor → "size ozel indirimli" diye oransız metin gidiyor.
-Oranın davetin kendisinden gelmesi lazım, teklif metninden değil.
-
 ### 3. Panel linki referansöre hiç gitmiyor
 **Durum:** karar bekliyor (dışarı çıkan iş — onay şart)
 Referansör üye oluyor, paneli `/tavsiye/<önek>` hazır, ama adresi bildiren
@@ -84,6 +77,12 @@ Dışarıdan aday başvurusu kapısı hiç denenmedi, bekleyen başvuru yok.
 ---
 
 ## Çözülenler
+
+- **SMS'te indirim oranı artık her zaman görünüyor** (commit `adda4ec`, canlıda).
+  "Referans Ekle" gibi kendi oranı olmayan tekliflerde müşteriye "size ozel indirim"
+  diye boş bir söz gidiyordu. Oran teklif metninde yoksa referansörün `musteri_max`
+  değerinden alınıyor — veri `referral_panel` RPC'sinde zaten vardı, DB'ye dokunulmadı.
+  Her iki SMS de düzeldi. Genel teklif artık **%20** gösteriyor.
 
 - **PGRST203 "Davet Gönder" bozuk** — DB'de `referral_davet_baslat`'ın iki sürümü vardı.
   4 parametreli eski sürüm düşürüldü (4 Kas 2026). İki gövde de
