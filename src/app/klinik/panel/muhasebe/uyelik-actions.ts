@@ -63,7 +63,11 @@ export async function uyelikKodGonder(
   }
 
   const kod = generateOtpCode()
-  const ad = duzgunAd(hasta.name).split(' ')[0]
+  // "Semra DEMIRLENK" - ad duzgun, soyad buyuk harf.
+  const parcalar = duzgunAd(hasta.name).split(' ')
+  const ad = parcalar.length > 1
+    ? [...parcalar.slice(0, -1), parcalar[parcalar.length - 1].toLocaleUpperCase('tr')].join(' ')
+    : parcalar[0] ?? ''
   const mesaj = smsSadelestir([
     referansor
       ? `Sayin ${ad}, Dr. Izzet GOK Exclusive Member uyeligi ve referansorluk icin onay kodunuz: ${kod}`
@@ -122,7 +126,8 @@ export async function uyelikOnayla(
 /** Kodu BULUR, uygulamaz — personel içeriği görüp onaylasın diye. */
 export async function referansKoduBul(kisaKod: string): Promise<
   | { ok: true; codeId: string; kod: string; oran: number
-      musteri: string | null; teklif: string; ayricalik: string }
+      musteri: string | null; teklif: string; ayricalik: string
+      islemNotu: string | null }
   | { ok: false; error: string }
 > {
   const c = await ctx()
@@ -153,6 +158,7 @@ export async function referansKoduBul(kisaKod: string): Promise<
     musteri: (aktif.musteri_ad as string) ?? null,
     teklif: String(aktif.teklif_baslik ?? ''),
     ayricalik,
+    islemNotu: (aktif.islem_notu as string) ?? null,
   }
 }
 
