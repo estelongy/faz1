@@ -11648,3 +11648,389 @@ güncellenmelidir.
 | 12-20 | Çİ + unsur (9) | ⬜ **Bu bölümde yeni kalıpla yazıldı**, onay bekliyor |
 | 21 | Kombinasyon | ⬜ Atıf *istem 1 ilâ 19* olmalı (68.4) |
 | 22 | Sistem | ⬜ Zayıf, karar bekliyor (§66.6) |
+
+---
+
+## 69. ⭐⭐⭐ İSTEM SETİ YENİDEN KURULDU — YİRMİ DÖRT İSTEM + UNSUR ADLARI (7 Kasım)
+
+**Durum:** ✅ Kurucu onaylı, istem istem geçildi.
+**Bu bölüm §66, §67 ve §68'in yerine geçer.** Önceki istem setleri
+geçersizdir.
+
+### 69.1 NE DEĞİŞTİ — iki yeni unsur, yeni yapı
+
+**1. KATILIM UNSURU BULUNDU (yeni kök).** Kurucunun tespiti:
+
+> *"…………… öğenin evrene katılması olayı üzerinden belirlenen sayıdaki
+> öğelere değer üreten yöntem. tüm istemler için ortak olabilir bence.
+> hatta tek başına ayakta da durabilir"*
+
+Mevcutta **hiçbir yöntem** belirlemeyi katılım verisine bağlamıyor: hepsi
+liste, havuz veya kayıt üzerinden çalışıyor. İki iş birden yapıyor —
+koruma ekliyor **ve** m.91 buluş bütünlüğü ortaklığını kuruyor.
+
+**2. AKIŞ KÖRLÜĞÜ UNSURU** (§67'de kuruldu, burada adlandırıldı).
+
+**3. MERCİSİZLİK GERİ DÖNDÜ.** §66.7'de elenmişti; kurucunun itirazı:
+*"mercisizliği de unsur olarak yaz."* Eleme gerekçem zayıftı — Çİ
+mercisizliği tam getirmiyor: kesit kapandıktan sonra kurucu ölçütü
+kaydırabilir, mercisizlik onu yasaklıyor. Hem İstem 6'da gömülü (kesit
+bağlamında) hem İstem 14'te bağımsız duruyor; kurucunun kararı:
+*"kalsın."*
+
+### 69.2 ⭐ UNSUR ADLARI — istemde tanımlı
+
+**Kurucunun kurgusu:** her unsur, tanımının hemen ardından parantez
+içinde adlandırılıyor:
+
+> *"Buluş, öğe belirleme yöntemi olup; belirlemenin, öğenin evrene
+> katılımına ilişkin veriler aracılığıyla yapılması **(Katılım Unsuru)**
+> ile karakterize edilir."*
+
+Böylece ayrı bir "unsur tanımlama istemi" gerekmiyor; her ad kendi
+isteminde tanımlanmış oluyor ve kombinasyon istemi adlara atıf yapabiliyor.
+
+**On üç unsur adı:**
+
+| | Unsur | Tanımı |
+|---|---|---|
+| 1 | **Katılımcılık** | Belirlemenin, öğenin evrene katılımına ilişkin veriler aracılığıyla yapılması |
+| 2 | **Çift Rastgelelik** | Ölçütün rastgele saptanması ve bu saptamanın evrene henüz hiçbir öğe katılmamışken yapılması |
+| 3 | **Eşihtimallilik** | Evrene katılan her öğenin, diğer öğelerin katılmasından bağımsız olarak belirlenmiş öğe olma ihtimalini eşit taşıması |
+| 4 | **Anındalık** | Öğenin belirlenmesinin, öğenin evrene katıldığı anda ve geri alınamaz biçimde gerçekleşmesi |
+| 5 | **Kesitsellik** | Evrenin kesitlere ayrılması, her kesit için ölçütün hiçbir tarafın etkisi olmaksızın bağımsız olarak yeniden saptanması |
+| 6 | **Nicelsellik** | Belirlenen sayıdaki öğeye değer üretilmesi |
+| 7 | **Kimliksizlik** | Belirlemenin, öğenin evrene eklenmesine ve/veya kendisine has özelliklerinden bağımsız yapılması |
+| 8 | **Akışkanlık** | Öğelerin evrene zaman içerisinde katılması, evrenin büyüklüğünün önceden kesin bilinmemesi |
+| 9 | **Dönüştürülebilirlik** | Öğeleri listelenebilen bir topluluğun mevcut öğelerinin yeni bir evrene eklenmesi suretiyle akışkan hâle getirilmesi |
+| 10 | **Paralellik** | Aynı öğe akışından birden fazla evren tanımlanması, her evrenin kendi kesit büyüklüğü ve kendi ölçütüyle bağımsız olarak işletilmesi, bir öğenin birden fazla evrende belirlenebilmesi |
+| 11 | **Ortam Bağımsızlığı** | Katılımın algılandığı araçtan öğeye özgü hiçbir bilgi alınmaması, belirlemenin katılımın hangi araç üzerinden gerçekleştiğinden bağımsız olarak aynı biçimde yapılması, belirlenen öğeye bağlanacak değerin niteliğinin belirleme işleminden bağımsız olarak kurucu tarafından tanımlanması |
+| 12 | **Akış Körlüğü** | Ölçüt bilinse dahi öğenin katılımına ilişkin verinin taraflarca bilinmemesi nedeniyle belirlenecek öğenin öngörülememesi |
+| 13 | **Mercisizlik** | Belirlenen öğenin hangisi olacağına hiçbir tarafın etki edememesi |
+
+#### Adlandırma kararları
+
+| Karar | Gerekçe |
+|---|---|
+| *Katılım* → **Katılımcılık** | Tek başına çok genel; *"-lık"* eki setin diliyle uyumlu |
+| *Kesitleme* → **Kesitsellik** | *"Kesit"* istatistikte başka anlam taşıyor (cross-section) |
+| *Nicelik* → **Nicelsellik** | *"Nicelik"* belirsiz — neyin niceliği |
+| *Dönüştürme* → **Dönüştürülebilirlik** | Yetenek anlatıyor, işlem değil — daha geniş |
+| *Bağımsızlık* → **Kimliksizlik** | Kurucunun kararı. §42.9'da gümüş unsur o adla kayıtlı |
+| ⛔ *Ortamsızlık* elendi | Ortam **yok** demek olur; bizde ortam var, mekanizma ondan etkilenmiyor. Rakibe kaçış kelimesi verirdi |
+| Yazım | *akışkanlık* / *paralellik* — *"-lılık/-lilik"* ikinci kez ek almaz |
+
+### 69.3 İSTEMLER — TAM METİNLER
+
+**Kalıp (kökler ve unsurlar):** *"Buluş, öğe belirleme yöntemi olup;
+[UNSUR] ([Ad] Unsuru) ile karakterize edilir."*
+
+**Kalıp (sigortalar, eski set dili):** *"[Evren şartı]; [unsurlar] değer
+üreten yöntem."*
+
+#### Blok 1: KÖKLER (1-3)
+
+**İSTEM 1** — Buluş, öğe belirleme yöntemi olup; belirlemenin, öğenin
+evrene katılımına ilişkin veriler aracılığıyla yapılması (Katılımcılık
+Unsuru) ile karakterize edilir.
+
+**İSTEM 2** — Buluş, öğe belirleme yöntemi olup; ölçütün (hangi öğe veya
+öğelerin belirlenmiş öğe olacağını tayin eden kural veya kurallar)
+rastgele saptanması ve bu saptamanın, evrene henüz hiçbir öğe
+katılmamışken yapılması (Çift Rastgelelik Unsuru) ile karakterize edilir.
+
+**İSTEM 3** — Buluş, öğe belirleme yöntemi olup; belirlemenin öğenin
+evrene katılımına ilişkin veriler aracılığıyla yapılması (Katılımcılık
+Unsuru) ve ölçütün (hangi öğe veya öğelerin belirlenmiş öğe olacağını
+tayin eden kural veya kurallar) rastgele saptanması ile bu saptamanın
+evrene henüz hiçbir öğe katılmamışken yapılması (Çift Rastgelelik Unsuru)
+ile karakterize edilir.
+
+#### Blok 2: UNSURLAR (4-14)
+
+**İSTEM 4** — Buluş, öğe belirleme yöntemi olup; belirlemenin öğenin
+evrene katılımına ilişkin veriler aracılığıyla yapılması (Katılımcılık
+Unsuru) ve evrene katılan her öğenin, diğer öğelerin katılmasından
+bağımsız olarak belirlenmiş öğe olma ihtimalini eşit taşıması
+(Eşihtimallilik Unsuru) ile karakterize edilir.
+
+**İSTEM 5** — Buluş, öğe belirleme yöntemi olup; belirlemenin öğenin
+evrene katılımına ilişkin veriler aracılığıyla yapılması (Katılımcılık
+Unsuru) ve öğenin belirlenmesinin, öğenin evrene katıldığı anda ve geri
+alınamaz biçimde gerçekleşmesi (Anındalık Unsuru) ile karakterize edilir.
+
+**İSTEM 6** — Buluş, öğe belirleme yöntemi olup; ölçütün (hangi öğe veya
+öğelerin belirlenmiş öğe olacağını tayin eden kural veya kurallar)
+rastgele saptanması, bu saptamanın evrene henüz hiçbir öğe katılmamışken
+yapılması (Çift Rastgelelik Unsuru) ve evrenin kesitlere ayrılması, her
+kesit için ölçütün hiçbir tarafın etkisi olmaksızın bağımsız olarak
+yeniden saptanması (Kesitsellik Unsuru) ile karakterize edilir.
+
+**İSTEM 7** — Buluş, öğe belirleme yöntemi olup; ölçütün (hangi öğe veya
+öğelerin belirlenmiş öğe olacağını tayin eden kural veya kurallar)
+rastgele saptanması, bu saptamanın evrene henüz hiçbir öğe katılmamışken
+yapılması (Çift Rastgelelik Unsuru) ve belirlenen sayıdaki öğeye değer
+üretilmesi (Nicelsellik Unsuru) ile karakterize edilir.
+
+**İSTEM 8** — Buluş, öğe belirleme yöntemi olup; ölçütün (hangi öğe veya
+öğelerin belirlenmiş öğe olacağını tayin eden kural veya kurallar)
+rastgele saptanması, bu saptamanın evrene henüz hiçbir öğe katılmamışken
+yapılması (Çift Rastgelelik Unsuru) ve belirlemenin, öğenin evrene
+eklenmesine ve/veya kendisine has özelliklerinden bağımsız yapılması
+(Kimliksizlik Unsuru) ile karakterize edilir.
+
+**İSTEM 9** — Buluş, öğe belirleme yöntemi olup; belirlemenin öğenin
+evrene katılımına ilişkin veriler aracılığıyla yapılması (Katılımcılık
+Unsuru) ve öğelerin evrene zaman içerisinde katılması, evrenin
+büyüklüğünün önceden kesin bilinmemesi (Akışkanlık Unsuru) ile
+karakterize edilir.
+
+**İSTEM 10** — Buluş, öğe belirleme yöntemi olup; öğeleri listelenebilen
+bir topluluğun mevcut öğelerinin yeni bir evrene eklenmesi suretiyle
+akışkan hâle getirilerek (Dönüştürülebilirlik Unsuru), belirlemenin
+öğenin evrene katılımına ilişkin veriler aracılığıyla yapılması
+(Katılımcılık Unsuru) ile karakterize edilir.
+
+**İSTEM 11** — Buluş, öğe belirleme yöntemi olup; ölçütün (hangi öğe veya
+öğelerin belirlenmiş öğe olacağını tayin eden kural veya kurallar)
+rastgele saptanması, bu saptamanın evrene henüz hiçbir öğe katılmamışken
+yapılması (Çift Rastgelelik Unsuru) ve aynı öğe akışından birden fazla
+evren tanımlanması, her evrenin kendi kesit büyüklüğü ve kendi ölçütüyle
+bağımsız olarak işletilmesi, bir öğenin birden fazla evrende
+belirlenebilmesi (Paralellik Unsuru) ile karakterize edilir.
+
+**İSTEM 12** — Buluş, öğe belirleme yöntemi olup; belirlemenin öğenin
+evrene katılımına ilişkin veriler aracılığıyla yapılması (Katılımcılık
+Unsuru), katılımın algılandığı araçtan öğeye özgü hiçbir bilgi
+alınmaması, belirlemenin katılımın hangi araç üzerinden gerçekleştiğinden
+bağımsız olarak aynı biçimde yapılması ve belirlenen öğeye bağlanacak
+değerin niteliğinin belirleme işleminden bağımsız olarak kurucu
+tarafından tanımlanması (Ortam Bağımsızlığı Unsuru) ile karakterize
+edilir.
+
+**İSTEM 13** — Buluş, öğe belirleme yöntemi olup; ölçütün (hangi öğe veya
+öğelerin belirlenmiş öğe olacağını tayin eden kural veya kurallar)
+rastgele saptanması, bu saptamanın evrene henüz hiçbir öğe katılmamışken
+yapılması (Çift Rastgelelik Unsuru) ve ölçüt bilinse dahi öğenin
+katılımına ilişkin verinin taraflarca bilinmemesi nedeniyle belirlenecek
+öğenin öngörülememesi (Akış Körlüğü Unsuru) ile karakterize edilir.
+
+**İSTEM 14** — Buluş, öğe belirleme yöntemi olup; belirlemenin öğenin
+evrene katılımına ilişkin veriler aracılığıyla yapılması (Katılımcılık
+Unsuru) ve belirlenen öğenin hangisi olacağına hiçbir tarafın etki
+edememesi (Mercisizlik Unsuru) ile karakterize edilir.
+
+#### Blok 3: SİGORTALAR (15-24) — köksüz, eski set dili
+
+**İSTEM 15** — Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen
+fakat tahmin edilebilen herhangi bir akışkan evrende (Akışkanlık Unsuru);
+belirlenen sayıdaki öğelere (Nicelsellik Unsuru) ve eklenen tüm öğeler
+için eşit ihtimalle (Eşihtimallilik Unsuru) değer üreten yöntem.
+
+**İSTEM 16** — Öğeleri listelenebilen bir topluluğun mevcut öğelerinin
+yeni bir evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende
+(Dönüştürülebilirlik Unsuru); belirlenen sayıdaki öğelere (Nicelsellik
+Unsuru) ve eklenen tüm öğeler için eşit ihtimalle (Eşihtimallilik Unsuru)
+değer üreten yöntem.
+
+**İSTEM 17** — Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen
+fakat tahmin edilebilen herhangi bir akışkan evrende (Akışkanlık Unsuru);
+öğenin evrene eklenmesiyle, anında ve geri alınamaz biçimde (Anındalık
+Unsuru) belirlenen sayıdaki öğelere (Nicelsellik Unsuru) ve eklenen tüm
+öğeler için eşit ihtimalle (Eşihtimallilik Unsuru) değer üreten yöntem.
+
+**İSTEM 18** — Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen
+fakat tahmin edilebilen herhangi bir akışkan evrende (Akışkanlık Unsuru);
+öğenin evrene eklenmesi ile tetiklenen ancak öğenin eklenmesine ve/veya
+kendisine has özelliklerinden bağımsız olarak (Kimliksizlik Unsuru)
+belirlenen sayıdaki öğelere (Nicelsellik Unsuru) ve eklenen tüm öğeler
+için eşit ihtimalle (Eşihtimallilik Unsuru) değer üreten yöntem.
+
+**İSTEM 19** — Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen
+fakat tahmin edilebilen herhangi bir akışkan evrende (Akışkanlık Unsuru);
+öğenin eklenmesine ve/veya kendisine has özelliklerinden bağımsız olarak
+(Kimliksizlik Unsuru), öğenin evrene eklenmesiyle anında ve geri
+alınamaz biçimde (Anındalık Unsuru) belirlenen sayıdaki öğelere
+(Nicelsellik Unsuru) değer üreten yöntem.
+
+**İSTEM 20** — Öğeleri listelenebilen bir topluluğun mevcut öğelerinin
+yeni bir evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende
+(Dönüştürülebilirlik Unsuru); öğenin eklenmesine ve/veya kendisine has
+özelliklerinden bağımsız olarak (Kimliksizlik Unsuru) belirlenen sayıdaki
+öğelere (Nicelsellik Unsuru) değer üreten yöntem.
+
+**İSTEM 21** — Öğeleri listelenebilen bir topluluğun mevcut öğelerinin
+yeni bir evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende
+(Dönüştürülebilirlik Unsuru); öğenin evrene eklenmesiyle anında ve geri
+alınamaz biçimde (Anındalık Unsuru) belirlenen sayıdaki öğelere
+(Nicelsellik Unsuru) değer üreten yöntem.
+
+**İSTEM 22** — Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen
+fakat tahmin edilebilen herhangi bir akışkan evrende (Akışkanlık Unsuru)
+veya öğeleri listelenebilen bir topluluğun mevcut öğelerinin yeni bir
+evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende
+(Dönüştürülebilirlik Unsuru); belirlenen sayıdaki öğelere (Nicelsellik
+Unsuru) ve eklenen tüm öğeler için eşit ihtimalle (Eşihtimallilik Unsuru)
+değer üreten yöntem.
+
+**İSTEM 23** — Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen
+fakat tahmin edilebilen herhangi bir akışkan evrende (Akışkanlık Unsuru)
+veya öğeleri listelenebilen bir topluluğun mevcut öğelerinin yeni bir
+evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende
+(Dönüştürülebilirlik Unsuru); öğenin evrene eklenmesiyle anında ve geri
+alınamaz biçimde (Anındalık Unsuru) belirlenen sayıdaki öğelere
+(Nicelsellik Unsuru) ve eklenen tüm öğeler için eşit ihtimalle
+(Eşihtimallilik Unsuru) değer üreten yöntem.
+
+**İSTEM 24** — Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen
+fakat tahmin edilebilen herhangi bir akışkan evrende (Akışkanlık Unsuru)
+veya öğeleri listelenebilen bir topluluğun mevcut öğelerinin yeni bir
+evrene eklenmesi suretiyle akışkan hâle getirildiği bir evrende
+(Dönüştürülebilirlik Unsuru); öğenin eklenmesine ve/veya kendisine has
+özelliklerinden bağımsız olarak (Kimliksizlik Unsuru) belirlenen sayıdaki
+öğelere (Nicelsellik Unsuru) ve eklenen tüm öğeler için eşit ihtimalle
+(Eşihtimallilik Unsuru) değer üreten yöntem.
+
+### 69.4 YAPI — hangi unsur hangi kökle
+
+**Seçim kuralı — kurucunun:** *"eğer kombinasyonda oluşuyorsa en geniş
+hâli tercih edilir."* Her unsur **bir kez** yazılıyor; diğer eşleşmeler
+kombinasyon istemine bırakılıyor.
+
+| Unsur | Kök | Gerekçe |
+|---|---|---|
+| Eşihtimallilik | Katılımcılık | *"Katılmasından bağımsız"* — aynı kavram |
+| Anındalık | Katılımcılık | *"Katıldığı anda"* — aynı an |
+| Kesitsellik | Çift Rastgelelik | Kesit **ölçütün** yeniden saptanması demek; katılımla kurulamıyor |
+| Nicelsellik | Çift Rastgelelik | Kurucunun kararı: *"bu Çİ ile kalsın"* |
+| Kimliksizlik | Çift Rastgelelik | Katılımla çelişirdi: katılım kökü *"katılım verisine dayanır"*, kimliksizlik *"eklenmesinden bağımsız"* — aynı istemde gerilim |
+| Akışkanlık | Katılımcılık | *"Zaman içerisinde katıldığı"* — aynı kavram |
+| Dönüştürülebilirlik | Katılımcılık | *"Yeni bir evrene eklenmesi"* — aynı kavram |
+| Paralellik | Çift Rastgelelik | *"Her evrenin kendi ölçütü"* — ölçüt şart |
+| Ortam Bağımsızlığı | Katılımcılık | *"Katılımı algılayan araç"* — aynı kavram |
+| Akış Körlüğü | Çift Rastgelelik | Ölçütün bilinmesi varsayımı üzerine kurulu |
+| Mercisizlik | Katılımcılık | İki unsur, en geniş hâl |
+
+### 69.5 ⭐ GENİŞLİK ÖLÇÜMÜ — kurgu çeşitliliğiyle
+
+Kurucunun istediği ölçüm: istemin içine **kaç farklı kurgu** sığıyor
+(mevcut yöntem sayısı değil).
+
+| Kurgu | İstem 1 | İstem 2 |
+|---|---|---|
+| Akışkan evren (AVM, stadyum) | ✅ | ✅ |
+| Sabit evren → akışa çevrilmiş | ✅ | ✅ |
+| Kesitli, akış sürüyor | ✅ | ✅ |
+| Kesitsiz, k'da duruyor | ✅ | ✅ |
+| Paralel evrenler (piyango) | ✅ | ✅ |
+| Sıra ölçütlü | ✅ | ✅ |
+| Zaman ölçütlü | ✅ | ✅ |
+| **Ölçütsüz — her katılımda bağımsız çekim** | ✅ | ❌ |
+| **Ölçütlü ama katılım verisi dışı** (kimlik, tutar) | ❌ | ✅ |
+| Değer bağlı | ✅ | ✅ |
+| Değersiz, saf belirleme (randomizasyon) | ✅ | ✅ |
+| Tek öğe belirleme | ✅ | ✅ |
+| Çok öğe belirleme | ✅ | ✅ |
+
+| İstem | 100 üzerinden |
+|---|---|
+| 1 (Katılımcılık) | **92** |
+| 2 (Çift Rastgelelik) | **92** |
+| 3 (ikisi birden) | **85** |
+| **1 + 2 birlikte** | **100** |
+
+İkisi birden kurgu tarafında boşluk bırakmıyor. Tek başına her biri bir
+kurgu kaçırıyor — bu yüzden iki kök **ayrı** duruyor.
+
+### 69.6 ⛔ ELENEN YAPI ÖNERİLERİ — gerekçeleriyle
+
+| Öneri | Neden elendi |
+|---|---|
+| **İstem 1 ve 2'yi "veya" ile birleştirmek** | Kapsam aynı kalıyor ama risk toplanıyor: *"veya"*lı istemde her alternatif ayrı ayrı inceleniyor, biri düşerse istem düşer. Ayrı dururken biri düşse öteki ayakta |
+| **Nicelsellik'i m.91 ortak kökü yapmak** | m.91 **özel** teknik özellik istiyor; nicelik US5774884'te mevcut, ortaklık kurmuyor. Üstelik Çİ istemlerini daraltırdı |
+| **Katılım ibaresini 24 isteme de yazmak** | Boşa kürek: m.91 itirazı gelse başvuru bölünür, öncelik korunur, hak kaybı yok. Bir idari risk için 24 istemi uzatmak değmez |
+| **Sigortaları Çİ köküne bağlamak** | Sigortanın tüm değeri köksüz olmasında — Çİ düşerse birlikte düşerlerdi |
+| **Unsurları İstem 3'e bağlı yazmak** | Bağımlı istem olur; kurucunun kuralı bağımsızlık (*"E+a ile E+c aynı şey değil"*) |
+| **Ayrı "unsur tanımlama istemi" (İstem 25)** | Gereksiz — her unsur kendi isteminde parantezle adlandırıldı |
+| **Kesit sigortası (İstem 25)** | Kurucunun kararı: *"gereksiz yaaa, çok uzattık. hiçbir istemimizin sigortalık ihtiyacı yok"* |
+| **Çok unsurlu "hepsi birden" sığınağı** | Aynı gerekçe. Çok unsurlu istem koruma değil hayatta kalma sağlıyor; İstem 3 (üç unsur) o işi görüyor |
+
+### 69.7 ⭐ İSTEM 1'İN İFADESİ — nasıl bulundu
+
+Dört deneme elendi, hepsi kurucunun:
+
+| Aday | Neden elendi |
+|---|---|
+| *"katılması olayı üzerinden"* | *"Olay"* rakibe kaçış kelimesi veriyor: *"bizde olay değil işlem var"* |
+| *"katılım özellikleri üzerinden"* | *"Özellik"* kimliksizlikle çelişiyor — öğeden bilgi alındığını çağrıştırıyor |
+| *"katılması endeksli"* | Yabancı terim + daraltıyor (endeks = sıra; zaman ölçütü dışarıda kalır) |
+| *"katılma sırası veya zamanı"* | İki alternatif sayıyor; üçüncü bir ölçüt türü çıkarsa dışarıda kalır |
+
+**Kurucunun seçtiği:** *"katılımına ilişkin veriler"* — üst küme, sıra ve
+zaman dahil her türü içeriyor, liste saymıyor.
+
+**"Veri" kelimesi durumsuzlukla çelişir mi — kurucunun cevabı:**
+*"durumsuzluk kanun mu? katılıma ilişkin veri üzerinden yapmak ne zarar
+veriyor"* — haklı. Durumsuzluk istemde bile yok (§66.7'de elendi). Ve
+sistem sayacı tutuyor, yani katılıma ilişkin veri **var**; tutmadığımız
+şey öğeye ait veri (kimlik, özellik).
+
+| | |
+|---|---|
+| Katılıma ilişkin veri | Sıra, zaman — **öğeden bağımsız**. İstem 1 bunu kullanıyor |
+| Öğeye ilişkin veri | Kimlik, özellik — **kullanılmıyor** (Kimliksizlik Unsuru) |
+
+İkisi çelişmiyor, tamamlıyor.
+
+**Mevcut denetimi — İstem 1'in tersi:** belirlemenin **öğeye** ilişkin
+veriler üzerinden yapılması. Kimliğe bakanlar (sadakat, US5774884,
+US20100153194), listeye bakanlar (Fisher-Yates, Madow, piyango, blok
+randomizasyonu) ve katılıma hiç bakmayanlar (NCR randomized — her işlemde
+ayrı zar). Dokuz ofisin hiçbiri katılım verisi üzerinden belirlemiyor.
+
+### 69.8 SİGORTA BLOĞU — kararlar
+
+**Dil:** Kurucunun kararı eski set dili (*"olağan yaşam olaylarında
+oluşabilen…"*). §66.8'de bu ifade çıkarılmıştı; geri geldi.
+
+**Çelişki yakalandı — kurucunun tespiti:** *"oluşmuşun büyüklüğü bilinir
+ama."* Denenen *"oluşmuş veya oluşabilecek"* yazımı elendi: oluşmuş
+evrenin büyüklüğü bilinir, *"büyüklüğü bilinmeyen"* şartıyla duramaz. Ve
+oluşmuş evren akışkan değil sabit — onu **Dönüştürülebilirlik** istemleri
+tutuyor.
+
+**Eşihtimal çıkarma kararı:** İstem 19, 20, 21'den eşihtimal çıkarıldı
+(kurucunun kararı). Gerekçe: o istemlerde eşihtimal tek koruyucu değil —
+anındalık reservoir ve piyangoyu, kimliksizlik sadakat ve US patentlerini
+eliyor. **İstem 15'ten çıkarılamaz:** orada akışkan evren + nicelik
+kalıyor, ikisi de mevcutta, istem düşer.
+
+**İstem 16'nın kalıp farkı bilinçli:** *"büyüklüğü bilinmeyen"* ifadesi
+dönüştürülmüş evrende olamaz (liste belli). İstem 15 akışkan **doğan**
+evreni, İstem 16 akışkan **yapılan** evreni tutuyor.
+
+**Akışkanlık dönüştürülmüş evreni kapsamıyor** (§65.6'nın teyidi):
+dönüştürülmüş evrende büyüklük **biliniyor** — 30 kişilik liste. Rakip
+*"bizim evren kapalı, 500 kişilik liste"* derse Akışkanlık istemi onu
+tutmuyor, Dönüştürülebilirlik istemi tutuyor.
+
+**İstem 22 kombinasyonun içinde değil:** kombinasyon *"en az ikisinin
+birlikte"* diyor, İstem 22 *"biri veya öteki"* diyor. Farklı mantık —
+biri birleşimi, öteki alternatifi talep ediyor. Kurucunun kararı:
+*"22'de kalsın, çok beğendim."*
+
+### 69.9 AÇIK İŞLER
+
+| İş | Not |
+|---|---|
+| **Kombinasyon istemi** | Atıf *"istem 1 ilâ 24'te tanımlanan unsurlardan en az ikisinin birlikte sağlanması ve bu unsurların ortak etkisiyle öğenin belirlenmesi"*. Unsur adları artık tanımlı olduğu için belirsizlik yok |
+| **Sistem istemi** | §66.6'daki uyarı duruyor: *"kurtarma istemi"* riski. Kalsın mı çıksın mı kararı bekliyor |
+| **Tarifname** | On-on iki somutlaştırma (m.103: başvurudan sonra eklenemez). Ortam bağımsızlığı anlatımı (§66.8). Çift kör karşılaştırması (§67.6). Ölçüt türleri ve aralıkları (§67.5: İstem 1'in açığı tarifnameye bırakıldı) |
+| **m.91 savunması** | Ortak özel teknik özellik: Katılımcılık. İstem 3 köprü. Tarifnamede bir paragraf |
+| Blok randomizasyonu taraması | İstem 6'yı etkileyebilir |
+| CPC taraması | Vekil işi |
+| Vekil bulma | — |
+
+**⚠️ KRİTİK:** Uygulamayı başvurudan **önce** kamuya açık yapmak TR ve
+EPO'da yenilik kaybı doğurur. ABD'de 12 ay grace period var, Avrupa'da
+yok.
