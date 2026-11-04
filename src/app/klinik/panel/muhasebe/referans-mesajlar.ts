@@ -22,6 +22,19 @@ export function duzgunAd(ham: string | null | undefined): string {
 }
 
 /**
+ * "İZZET GÖK" → "İzzet G." · SMS'te tam soyadı yazmayız.
+ *
+ * Müşteriye de referansöre de bu biçimde hitap edilir: ad tanınır kalır,
+ * soyadı açıkta kalmaz. Tek kelimelik ad olduğu gibi döner.
+ */
+export function adSoyadBasHarf(ham: string | null | undefined): string {
+  const t = duzgunAd(ham)
+  if (!t) return ''
+  const p = t.split(' ')
+  return p.length < 2 ? p[0] : `${p[0]} ${p[1].charAt(0)}.`
+}
+
+/**
  * 1) Referansörün WhatsApp daveti.
  *
  * Çıplak link + indirim vaadi dolandırıcılık mesajı gibi durur; kimse tıklamaz.
@@ -82,7 +95,7 @@ export function smsDavetDogrulama(opts: {
   return smsSadelestir([
     `Tebrikler ${ad}! ${KLINIK} kliniginde ${fayda} kazandiniz.`,
     `Onay kodu: ${opts.kod}`,
-    `Kodu referansiniza iletin, ${sure}kullanin!`,
+    `Kodu referansorunuze iletin, ${sure}kullanin!`,
   ].join('\n'))
 }
 
@@ -107,14 +120,22 @@ export function smsKodOzetMetni(opts: {
   kisaKod: string
   ayricalik: string
   sonKullanma: string      // 'YYYY-MM-DD'
+  /** Kodu gönderen referansör — müşteri kimden geldiğini görsün. */
+  referansor?: string | null
 }): string {
-  const ad = duzgunAd(opts.musteriAd).split(' ')[0]
+  const ad = adSoyadBasHarf(opts.musteriAd)
   const tarih = tarihYaz(opts.sonKullanma)
+  // Ayrıcalık metninden yalnızca oranı al ("...%25 indirim" → "%25").
+  // Kampanya detayı (saat, işlem adı) SMS'e girmez; serbest oranlı
+  // tekliflerde oran yoktur, o zaman oransız söylenir.
+  const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
+  const fayda = oran ? `${oran} indirim tanimli` : 'size ozel indirim tanimli'
+  // Referansör adı da baş harfli: "Deniz Hanim" → "Deniz H."
+  // Panel öneki (DH6GOK) ASLA yazılmaz — o, referansörün panel adresi.
+  const ref = adSoyadBasHarf(opts.referansor)
   return smsSadelestir([
-    `Sayin ${ad}, kodunuz: ${opts.kisaKod}`,
-    opts.ayricalik.trim(),
-    `${tarih} tarihine kadar gecerli. Klinikte bu kodu soylemeniz yeterli.`,
-    KLINIK,
+    `Sayin ${ad}, ${KLINIK} kliniginde ${fayda} ALTIN KODUNUZ: ${opts.kisaKod}`,
+    `Indirim firsati icin son tarih ${tarih}.${ref ? ` Ref: ${ref}` : ''}`,
   ].join('\n'))
 }
 

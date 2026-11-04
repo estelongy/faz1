@@ -81,6 +81,9 @@ export async function addReferansTeklif(formData: FormData): Promise<Result> {
     kontenjan: Number.isFinite(kont) && kont > 0 ? kont : null,
     gecerli_bitis: bitis,
     odul_tutar: Number.isFinite(odul) && odul > 0 ? odul : 0,
+    // Varsayılan kapalı: kampanya önce klinik içinde hazırlanır,
+    // referansöre açmak ayrı bir karar.
+    referansore_goster: formData.get('referansore_goster') === 'on',
     created_by: ctx.user.id,
   })
   if (error) return { ok: false, error: error.message }
@@ -93,6 +96,21 @@ export async function toggleReferansTeklif(id: string, aktif: boolean): Promise<
   if (!ctx.ok) return { ok: false, error: ctx.error }
   const { error } = await ctx.supabase.from('referral_offer')
     .update({ aktif }).eq('id', id).eq('owner_id', ctx.clinicOwnerId)
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
+/**
+ * Kampanya referansör panelinde görünsün mü?
+ * 'aktif'ten ayrı: kampanya aktif olup referansöre kapalı olabilir
+ * (klinik içi kullanım, hazırlık aşaması).
+ */
+export async function toggleReferansoreGoster(id: string, goster: boolean): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+  const { error } = await ctx.supabase.from('referral_offer')
+    .update({ referansore_goster: goster }).eq('id', id).eq('owner_id', ctx.clinicOwnerId)
   if (error) return { ok: false, error: error.message }
   revalidatePath('/klinik/panel/muhasebe')
   return { ok: true }

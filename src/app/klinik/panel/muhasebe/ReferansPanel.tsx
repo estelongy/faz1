@@ -6,7 +6,7 @@ import { kisaKod, KAMPANYA_TURLERI, turBilgi, type KampanyaTur, type ReferansAya
 import {
   saveReferansAyar, addReferansTeklif, toggleReferansTeklif,
   addReferansor, toggleReferansor, uretReferansLink, isaretleReferansZiyaret,
-  kurumDavetOlustur, basvuruOnayla, basvuruReddet,
+  kurumDavetOlustur, basvuruOnayla, basvuruReddet, toggleReferansoreGoster,
 } from './referans-actions'
 
 const inputCls = 'w-full px-2.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500'
@@ -464,6 +464,18 @@ export default function ReferansPanel({
               </label>
             )}
 
+            {/* Referansöre açılsın mı? Kampanya aktif olup referansör
+                panelinde görünmeyebilir (klinik içi / hazırlık). */}
+            <label className="flex items-start gap-2 text-xs text-slate-300 bg-violet-500/10 ring-1 ring-violet-500/25 rounded-lg px-2.5 py-2">
+              <input type="checkbox" name="referansore_goster" className="w-4 h-4 mt-0.5 shrink-0" />
+              <span>
+                <b>Referansör panelinde görünsün</b>
+                <span className="block text-slate-500 mt-0.5">
+                  İşaretlenmezse kampanya yalnızca klinik içinde kullanılır.
+                </span>
+              </span>
+            </label>
+
             <div className="grid grid-cols-3 gap-2">
               <input name="odul_tutar" type="number" min="0" placeholder="Referansör ödülü ₺"
                 className={inputCls} title="Gelen her kişi için referansöre yazılacak tutar" />
@@ -496,12 +508,25 @@ export default function ReferansPanel({
                       {t.gecerli_bitis ? ` · ${t.gecerli_bitis} tarihine kadar` : ''}
                     </p>
                   </div>
-                  <button disabled={pending}
-                    onClick={() => run(() => toggleReferansTeklif(t.id, !t.aktif))}
-                    className={`text-[11px] font-bold px-2 py-1 rounded shrink-0 ${
-                      t.aktif ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-500'}`}>
-                    {t.aktif ? 'Aktif' : 'Pasif'}
-                  </button>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <button disabled={pending}
+                      onClick={() => run(() => toggleReferansTeklif(t.id, !t.aktif))}
+                      className={`text-[11px] font-bold px-2 py-1 rounded ${
+                        t.aktif ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-500'}`}>
+                      {t.aktif ? 'Aktif' : 'Pasif'}
+                    </button>
+                    {/* Kampanya aktif olup referansöre kapalı olabilir:
+                        klinik içi kullanım veya hazırlık aşaması. */}
+                    <button disabled={pending}
+                      onClick={() => run(() => toggleReferansoreGoster(t.id, !t.referansore_goster))}
+                      title="Referansör panelinde görünsün mü?"
+                      className={`text-[11px] font-bold px-2 py-1 rounded whitespace-nowrap ${
+                        t.referansore_goster
+                          ? 'bg-violet-500/20 text-violet-300'
+                          : 'bg-slate-800 text-slate-600'}`}>
+                      {t.referansore_goster ? '👁 Referansörde' : '👁 Gizli'}
+                    </button>
+                  </div>
                 </div>
               </div>
             )

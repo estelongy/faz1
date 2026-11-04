@@ -773,6 +773,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   const [refBulunan, setRefBulunan] = useState<{
     codeId: string; kod: string; oran: number
     musteri: string | null; teklif: string; ayricalik: string
+    islemNotu: string | null
   } | null>(null)
   // Kodu TANIMLAYAN referansörün puan bakiyesi. Puan hastanın değil;
   // kod bulunduğunda yüklenir, kod yoksa null kalır ve kutu görünmez.
@@ -2441,6 +2442,12 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         )}
                         {refBulunan.teklif && (
                           <span className="text-xs text-violet-300 font-semibold">{refBulunan.teklif}</span>
+                        )}
+                        {/* Referansörün davette bıraktığı not — personele ipucu */}
+                        {refBulunan.islemNotu && (
+                          <span className="text-xs text-slate-400 italic">
+                            &ldquo;{refBulunan.islemNotu}&rdquo;
+                          </span>
                         )}
                         <span className="text-xs text-slate-400">%{refBulunan.oran}</span>
                         {ziyaretToplam > 0 && oran > 0 && (

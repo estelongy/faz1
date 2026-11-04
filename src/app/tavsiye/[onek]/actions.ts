@@ -38,7 +38,7 @@ async function istemciIp(): Promise<string | null> {
 
 /** 1) Referansör ad + telefon girer → müşteriye doğrulama SMS'i gider. */
 export async function davetBaslat(
-  onek: string, offerId: string, ad: string, hamTel: string,
+  onek: string, offerId: string, ad: string, hamTel: string, islemNotu?: string,
 ): Promise<Baslat> {
   const temizAd = ad.trim()
   if (temizAd.length < 2) return { ok: false, error: 'Adını yazın.' }
@@ -60,6 +60,7 @@ export async function davetBaslat(
   const supabase = await createClient()
   const { data, error } = await supabase.rpc('referral_davet_baslat', {
     p_onek: onek, p_offer: offerId, p_ad: temizAd, p_tel: hamTel,
+    p_not: islemNotu?.trim() || null,
   })
   if (error) return { ok: false, error: error.message }
 
@@ -139,6 +140,7 @@ export async function kodDogrula(
       kisaKod: String(row.kisa),
       ayricalik: (d?.ayricalik as string) ?? '',
       sonKullanma: String(row.son_kullanma),
+      referansor: (d?.referansor as string) ?? null,
     }))
   } catch (err) {
     console.error('[referans-kod-sms]', err)

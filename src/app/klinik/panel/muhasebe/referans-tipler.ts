@@ -45,6 +45,8 @@ export interface ReferansTeklif {
   tur: KampanyaTur
   /** Sakin saat kampanyası: "Salı–Çarşamba 10:00-14:00" gibi. */
   gecerli_zaman: string | null
+  /** Referansör panelinde görünür mü? 'aktif'ten ayrı anahtar. */
+  referansore_goster: boolean
   /** Model kampanyası: müşteriden görsel kullanım izni istenir. */
   gorsel_izni: boolean
 }

@@ -40,6 +40,7 @@ export interface PanelVerisi {
     ayricalik: string | null; gecerli_zaman: string | null
     offer_id: string
     aday_ad: string | null; aday_tel: string | null
+    islem_notu: string | null
   }[]
 }
 
@@ -65,23 +66,23 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   const [basvuruLink, setBasvuruLink] = useState<string | null>(null)
 
   // Kampanya başına ad/telefon girişi
-  const [form, setForm] = useState<Record<string, { ad: string; tel: string }>>({})
+  const [form, setForm] = useState<Record<string, { ad: string; tel: string; not: string }>>({})
   // Bekleyen davet başına doğrulama kodu girişi
   const [kodlar, setKodlar] = useState<Record<string, string>>({})
 
   const gelen = veri.davetler.filter(d => d.geldi === true).length
   const bekleyen = veri.bekleyen_link.length
 
-  const alan = (id: string) => form[id] ?? { ad: '', tel: '' }
+  const alan = (id: string) => form[id] ?? { ad: '', tel: '', not: '' }
 
   /** 1. adım — ad + telefon gir, müşteriye doğrulama SMS'i gitsin. */
   function basla(offerId: string) {
     setHata(null); setAltinKod(null)
     const f = alan(offerId)
     startTransition(async () => {
-      const r = await davetBaslat(veri.onek, offerId, f.ad, f.tel)
+      const r = await davetBaslat(veri.onek, offerId, f.ad, f.tel, f.not)
       if (!r.ok) { setHata(r.error); return }
-      setForm(p => ({ ...p, [offerId]: { ad: '', tel: '' } }))
+      setForm(p => ({ ...p, [offerId]: { ad: '', tel: '', not: '' } }))
     })
   }
 
@@ -162,6 +163,9 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
               <p className="text-xs text-slate-500">
                 {maskeTel(l.aday_tel)} · {l.teklif}
               </p>
+              {l.islem_notu && (
+                <p className="text-xs text-slate-400 mt-1 italic">&ldquo;{l.islem_notu}&rdquo;</p>
+              )}
               <form className="flex gap-2 mt-2.5"
                 onSubmit={e => { e.preventDefault(); dogrula(l.token) }}>
                 <input
@@ -219,6 +223,10 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 <input value={f.tel}
                   onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), tel: e.target.value } }))}
                   placeholder="Telefonu" inputMode="tel" className={inputCls} />
+                {/* Serbest not — klinik kodu uygularken görür. */}
+                <input value={f.not}
+                  onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), not: e.target.value } }))}
+                  placeholder="İşlem / not (isteğe bağlı)" className={inputCls} />
                 <button type="submit" disabled={pending || !f.ad.trim() || !f.tel.trim()}
                   className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50">
                   {pending ? 'Gönderiliyor…' : 'Davet Gönder'}
