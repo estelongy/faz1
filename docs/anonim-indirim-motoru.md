@@ -12193,3 +12193,159 @@ Kapı değerli, istem zayıf. **Karar bekliyor.**
 **Ücret:** TR'de istem sayısı ücreti etkilemiyor (§62.4). EPO'da 15 üstü
 €290/istem → 26 istem için **11 × €290 = €3.190** ek ücret, yalnızca
 EPO'ya giderken.
+
+---
+
+## 71. ⭐⭐ SİGORTA BLOĞU İKİ İSTEME İNDİ — SET 18 İSTEM (8 Kasım)
+
+**Durum:** ✅ Kurucu onaylı, test edildi.
+**§69.3'teki İstem 15-24 (on sigorta) iptal, yerine iki istem geçti.**
+Numaralar kaydı: kombinasyon istemleri 25-26 → **17-18**.
+
+### 71.1 KURUCUNUN TESPİTİ
+
+> *"aslında sigortaları da kombinasyon tarzı yazsak. sonuçta unsurları
+> sıraladık 4-14'te"*
+
+> *"iki ayrı evren + nicelsellik + en az bir unsur. iki ayrı istemde tüm
+> sigortalar kurulur sanki"*
+
+On sigorta on **belirli** bileşimi talep ediyordu. İki kombinasyon istemi
+yedi unsurun **tüm** bileşimlerini talep ediyor — her evren tipi için 127
+kombinasyon.
+
+### 71.2 İSTEM 15 — akışkan evren sigortası
+
+> Olağan yaşam olaylarında oluşabilen, büyüklüğü bilinmeyen fakat tahmin
+> edilebilen herhangi bir akışkan evrende; Eşihtimallilik, Anındalık,
+> Kesitsellik, Kimliksizlik, Paralellik, Ortam Bağımsızlığı ve
+> Mercisizlik unsurlarından en az birinin etkisiyle öğe belirlenmesi ve
+> belirlenen sayıdaki öğeye değer üretilmesi (Nicelsellik Unsuru) ile
+> karakterize edilir.
+
+### 71.3 İSTEM 16 — dönüştürülmüş evren sigortası
+
+> Öğeleri listelenebilen bir topluluğun mevcut öğelerinin yeni bir evrene
+> eklenmesi suretiyle akışkan hâle getirildiği bir evrende;
+> Eşihtimallilik, Anındalık, Kesitsellik, Kimliksizlik, Paralellik, Ortam
+> Bağımsızlığı ve Mercisizlik unsurlarından en az birinin etkisiyle öğe
+> belirlenmesi ve belirlenen sayıdaki öğeye değer üretilmesi (Nicelsellik
+> Unsuru) ile karakterize edilir.
+
+### 71.4 YAPI KARARLARI
+
+**Listede yedi unsur var, altısı yok:**
+
+| Çıkarılan | Neden |
+|---|---|
+| **Katılımcılık** | Sigortalar **köksüz** olmalı — kökler düşerse ayakta kalacaklar |
+| **Çift Rastgelelik** | Aynı |
+| **Akış Körlüğü** | Çİ'yi varsayıyor (*"ölçüt bilinse dahi"*) — köke bağlı |
+| **Akışkanlık** | Evren şartı olarak istemin **başında** (İstem 15) |
+| **Dönüştürülebilirlik** | Evren şartı olarak istemin başında (İstem 16) |
+| **Nicelsellik** | **Tabanda** — listede değil, garanti |
+
+**Nicelsellik neden tabanda:** eski on sigortanın **10/10'unda** vardı
+(*"belirlenen sayıdaki öğelere"*). Eşihtimal 7/10'unda (19, 20, 21'den
+çıkarılmıştı). Yani tek tam ortak unsur nicelik.
+
+Bu sayede *"en az biri"* ifadesi zayıf alternatif riski taşımıyor: "bir"
+seçilse bile istem **üç unsur** taşıyor — evren şartı + nicelik + seçilen
+unsur.
+
+### 71.5 İFADE SEÇİMİ — üç aday
+
+| Aday | Değerlendirme |
+|---|---|
+| *"bir veya birden fazlasının ortak etkisiyle"* | ⛔ Tek unsurun **ortak** etkisi olmaz — iç tutarsızlık |
+| *"bir veya birkaçının etkisiyle"* | ⚠️ *"Birkaç"* sayısal belirsizlik (m.92): Türkçede üç-beş demek, on bir için kullanılmaz |
+| ✅ **"en az birinin etkisiyle"** | En kısa, alt sınır matematiksel olarak net |
+
+Kurucunun kararı: *"a ile yaz."*
+
+**Kayıt:** *"bir veya birkaçı"* ifadesi daha önce üç kez elenmişti (§66.4);
+orada **tek başına** duruyordu ve zayıf tek unsurları içine alıyordu.
+Burada nicelik tabanda garanti olduğu için o risk yok — yine de
+belirlilik gerekçesiyle *"en az biri"* seçildi.
+
+### 71.6 ✅ TEST — on sigortanın tamamı içeride
+
+**Doğrudan test (7 sigorta):**
+
+| Eski | Unsurları | Nasıl karşılanıyor |
+|---|---|---|
+| taban | akışkan + nicelik + eşihtimal | İstem 15, seçilen = eşihtimal |
+| dönüştürme tabanı | dönüştürme + nicelik + eşihtimal | İstem 16, seçilen = eşihtimal |
+| taban + anındalık | + anındalık | İstem 15, iki unsur |
+| taban + kimliksizlik | + kimliksizlik | İstem 15, iki unsur |
+| anındalık + kimliksizlik | eşihtimalsiz | İstem 15, iki unsur |
+| dönüştürme + kimliksizlik | — | İstem 16, bir unsur |
+| dönüştürme + anındalık | — | İstem 16, bir unsur |
+
+**Yarılarıyla test (3 sigorta — "veya"lı olanlar):**
+
+Kurucunun talimatı: *"veya'nın iki kısmıyla tek tek test et."*
+
+| Eski | Yarısı | Karşılanıyor |
+|---|---|---|
+| 22 | Akışkan + nicelik + eşihtimal | ✅ İstem 15 |
+| 22 | Dönüştürme + nicelik + eşihtimal | ✅ İstem 16 |
+| 23 | Akışkan + … + anındalık | ✅ İstem 15 |
+| 23 | Dönüştürme + … + anındalık | ✅ İstem 16 |
+| 24 | Akışkan + … + kimliksizlik | ✅ İstem 15 |
+| 24 | Dönüştürme + … + kimliksizlik | ✅ İstem 16 |
+
+**Altı yarının altısı içeride. Hiçbir bileşim dışarıda kalmıyor.**
+
+### 71.7 "VEYA"LI İSTEM GEREKMİYOR
+
+Kurucunun sorusu: *"veya'lı zaten iki istemin birleşimi olacak, gerek
+kalıyor mu ona"*
+
+Kalmıyor:
+
+| Rakip nerede çalışıyor | İhlal ettiği istem |
+|---|---|
+| Akışkan evrende | İstem 15 |
+| Dönüştürülmüş evrende | İstem 16 |
+| İkisinde birden | İkisi de |
+
+Ve *"veya"*lı tek istem **daha kötü** olurdu: iki alternatif tek istemde,
+biri düşerse ikisi gider. Ayrı dururken bağımsız.
+
+**Kayıt — §70.9'daki ⚠️ işaretim yanlıştı:** eski 22-24'ün tek istemde
+olmaması eksiklik değil, tercih. Koruma kapsamı aynı; fark yalnızca ihlal
+davasında tek istem gösterme kolaylığı.
+
+### 71.8 NE KAZANILDI, NE KAYBEDİLDİ
+
+| | |
+|---|---|
+| **Kapsam** | ⬆️ On belirli bileşim → 127 bileşim (her evren tipi için). Yazılmayan bileşimler de içeride |
+| **Sayı** | 26 istem → **18 istem** |
+| **Derlilik** | İncelemeci on benzer istem yerine iki istem görüyor |
+| **Kayıp** | Açık yazılı istem ihlal davasında daha kolay savunulur (*"bakın bu istem tam bunu söylüyor"*). Kombinasyonda izah gerekir — küçük kayıp, *"en az biri"* yeterince net |
+
+### 71.9 SET — 18 İSTEM
+
+| Blok | No | İçerik |
+|---|---|---|
+| Kökler | 1-3 | Katılımcılık · Çift Rastgelelik · ikisi birden |
+| Unsurlar | 4-14 | On bir unsur, her biri bir kökle, en geniş hâli |
+| **Sigortalar** | **15-16** | Köksüz kombinasyon, nicelik tabanlı |
+| Kombinasyon | 17-18 | Çİ'li ve katılımlı unsurlar dahil, *"en az ikisi"* |
+| Sistem | — | **Açık** (§70.9) |
+
+**İki kombinasyon bloğu arasındaki fark bilinçli:**
+
+| | Sigortalar (15-16) | Kombinasyon (17-18) |
+|---|---|---|
+| Listedeki unsur | 7 (köksüzler) | 11 (hepsi) |
+| Nicelik | **Tabanda** | Listede |
+| Alt sınır | *"en az biri"* | *"en az ikisi"* |
+
+Sigortalarda nicelik tabanda olduğu için "bir" yeterli; kombinasyonda
+listede olduğu için "iki" gerekiyor.
+
+**Ücret:** TR'de fark yok. EPO'da 18 istem → 3 × €290 = **€870** ek
+ücret (26 istemde €3.190 idi).
