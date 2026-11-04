@@ -75,12 +75,24 @@ export async function davetBaslat(
   const { data: ayar } = await supabase
     .from('referral_settings').select('kod_omru_gun').maybeSingle()
 
+  // Kampanyanın kendi oranı yoksa ("Referans Ekle" gibi serbest teklifler),
+  // oran referansörün müşteri aralığından gelir — müşteri somut bir sayı görsün.
+  const ayricalikMetni = (d?.ayricalik as string) ?? ''
+  let indirimOran: number | null = null
+  if (!/%\s*\d+/.test(ayricalikMetni)) {
+    const { data: panel } = await supabase.rpc('referral_panel', { p_onek: onek })
+    const p = (panel ?? null) as Record<string, unknown> | null
+    const max = Number(p?.musteri_max)
+    if (Number.isFinite(max) && max > 0) indirimOran = max
+  }
+
   const kod = generateOtpCode()
   const res = await sendInfoSms(tel, smsDavetDogrulama({
     musteriAd: temizAd,
-    ayricalik: (d?.ayricalik as string) ?? '',
+    ayricalik: ayricalikMetni,
     gecerlilikGun: ayar?.kod_omru_gun ?? undefined,
     kod,
+    indirimOran,
   }))
   if (!res.success) {
     console.error('[referans-davet-sms] Netgsm:', res.error)
@@ -135,12 +147,26 @@ export async function kodDogrula(
   try {
     const { data: davet } = await supabase.rpc('referral_davet_goster', { p_token: token })
     const d = (davet ?? null) as Record<string, unknown> | null
+
+    // Kampanyanın kendi oranı yoksa ("Referans Ekle" gibi serbest teklifler),
+    // oran referansörün müşteri aralığından gelir — müşteri "size özel indirim"
+    // gibi boş bir söz değil, somut bir oran görsün.
+    const ayricalik = (d?.ayricalik as string) ?? ''
+    let indirimOran: number | null = null
+    if (!/%\s*\d+/.test(ayricalik)) {
+      const { data: panel } = await supabase.rpc('referral_panel', { p_onek: onek })
+      const p = (panel ?? null) as Record<string, unknown> | null
+      const max = Number(p?.musteri_max)
+      if (Number.isFinite(max) && max > 0) indirimOran = max
+    }
+
     await sendInfoSms(kayit.tel, smsKodOzetMetni({
       musteriAd: (d?.musteri_ad as string) ?? '',
       kisaKod: String(row.kisa),
-      ayricalik: (d?.ayricalik as string) ?? '',
+      ayricalik,
       sonKullanma: String(row.son_kullanma),
       referansor: (d?.referansor as string) ?? null,
+      indirimOran,
     }))
   } catch (err) {
     console.error('[referans-kod-sms]', err)

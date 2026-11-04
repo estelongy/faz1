@@ -84,11 +84,15 @@ export function smsDavetDogrulama(opts: {
   kod: string
   /** Kod ömrü (gün) — ayarlardan gelir, sabit yazılmaz. */
   gecerlilikGun?: number
+  /** Kampanyanın kendi oranı yoksa dışarıdan verilen indirim yüzdesi. */
+  indirimOran?: number | null
 }): string {
   const ad = duzgunAd(opts.musteriAd).split(' ')[0]
   // Ayrıcalık metninden yalnızca oranı al ("...%25 indirim" → "%25").
   // Kampanya detayı (saat, işlem adı) SMS'e girmez — tek kredide kalsın.
+  // Oranı olmayan serbest tekliflerde çağıran taraf indirimOran geçer.
   const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
+    ?? (opts.indirimOran ? `%${Math.round(opts.indirimOran)}` : undefined)
   const fayda = oran ? `size ozel ${oran} indirim` : 'size ozel bir ayricalik'
   const sure = opts.gecerlilikGun ? `${opts.gecerlilikGun} gun icinde ` : ''
 
@@ -122,13 +126,17 @@ export function smsKodOzetMetni(opts: {
   sonKullanma: string      // 'YYYY-MM-DD'
   /** Kodu gönderen referansör — müşteri kimden geldiğini görsün. */
   referansor?: string | null
+  /** Kampanyanın kendi oranı yoksa dışarıdan verilen indirim yüzdesi. */
+  indirimOran?: number | null
 }): string {
   const ad = adSoyadBasHarf(opts.musteriAd)
   const tarih = tarihYaz(opts.sonKullanma)
   // Ayrıcalık metninden yalnızca oranı al ("...%25 indirim" → "%25").
-  // Kampanya detayı (saat, işlem adı) SMS'e girmez; serbest oranlı
-  // tekliflerde oran yoktur, o zaman oransız söylenir.
+  // Kampanya detayı (saat, işlem adı) SMS'e girmez — mesaj tek kredide kalsın.
+  // Kampanyanın kendi oranı yoksa çağıran taraf indirimOran geçer; müşteriye
+  // "size özel indirim" gibi boş bir söz değil, somut bir oran gider.
   const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
+    ?? (opts.indirimOran ? `%${Math.round(opts.indirimOran)}` : undefined)
   const fayda = oran ? `${oran} indirim tanimli` : 'size ozel indirim tanimli'
   // Referansör adı da baş harfli: "Deniz Hanim" → "Deniz H."
   // Panel öneki (DH6GOK) ASLA yazılmaz — o, referansörün panel adresi.
