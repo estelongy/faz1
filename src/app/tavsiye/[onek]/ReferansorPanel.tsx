@@ -61,7 +61,9 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   const [pending, startTransition] = useTransition()
   const [sekme, setSekme] = useState<'kod' | 'puan' | 'referans' | 'davet'>('kod')
   const [hata, setHata] = useState<string | null>(null)
-  const [altinKod, setAltinKod] = useState<{ kod: string; kisa: string } | null>(null)
+  // Yalnızca "davet tamamlandı" bilgisi tutulur — kodun kendisi müşterinin,
+  // referansör ekranında gösterilmez.
+  const [altinKod, setAltinKod] = useState(false)
   // Referansör adayı başvuru linki — pano çalışmazsa ekranda kalır.
   const [basvuruLink, setBasvuruLink] = useState<string | null>(null)
 
@@ -77,7 +79,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
 
   /** 1. adım — ad + telefon gir, müşteriye doğrulama SMS'i gitsin. */
   function basla(offerId: string) {
-    setHata(null); setAltinKod(null)
+    setHata(null); setAltinKod(false)
     const f = alan(offerId)
     startTransition(async () => {
       const r = await davetBaslat(veri.onek, offerId, f.ad, f.tel, f.not)
@@ -88,7 +90,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
 
   /** Onay kodu süresi dolduysa aynı kişiye yeni kod gönderir. */
   function tekrarGonder(offerId: string, ad: string, tel: string) {
-    setHata(null); setAltinKod(null)
+    setHata(null); setAltinKod(false)
     startTransition(async () => {
       const r = await davetBaslat(veri.onek, offerId, ad, tel)
       if (!r.ok) { setHata(r.error); return }
@@ -101,7 +103,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
     startTransition(async () => {
       const r = await kodDogrula(veri.onek, token, kodlar[token] ?? '')
       if (!r.ok) { setHata(r.error); return }
-      setAltinKod({ kod: r.kod, kisa: r.kisa })
+      setAltinKod(true)
       setKodlar(p => ({ ...p, [token]: '' }))
     })
   }
@@ -131,21 +133,25 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
         <p className="text-sm font-semibold px-3 py-2 rounded-lg bg-rose-500/15 text-rose-300">{hata}</p>
       )}
 
-      {/* Altın kod çıktı */}
+      {/* Davet tamamlandı — kodun kendisi GÖSTERİLMEZ.
+          Kod müşterinin; referansörün bilmesi gerekmiyor, takip
+          "Referanslarım"da zaten duruyor. Kapatılabilir. */}
       {altinKod && (
-        <div className="bg-amber-500/10 ring-1 ring-amber-500/40 rounded-2xl p-5 text-center space-y-2">
-          <p className="text-xs font-bold text-amber-300">ALTIN KOD HAZIR</p>
-          <p className="font-mono text-xs text-slate-500">{altinKod.kod.split('-')[0]}-</p>
-          <p className="font-mono text-4xl font-black text-amber-300 tracking-[0.2em]">
-            {altinKod.kisa}
-          </p>
-          <p className="text-[11px] text-slate-400">
-            Kod müşteriye SMS&rsquo;le de gönderildi. Klinikte bunu söylemesi yeterli.
-          </p>
+        <div className="bg-emerald-500/10 ring-1 ring-emerald-500/40 rounded-2xl p-4
+                        flex items-start gap-3">
+          <p className="text-xl leading-none mt-0.5">✓</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-emerald-300">Altın kod müşteriye gönderildi</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Klinikte kodu söylemesi yeterli. Durumu Referanslarım&rsquo;dan takip edebilirsiniz.
+            </p>
+          </div>
           <button
-            onClick={() => navigator.clipboard?.writeText(altinKod.kisa).catch(() => {})}
-            className="w-full mt-1 px-3 py-2 rounded-lg text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-200">
-            Kodu Kopyala
+            onClick={() => setAltinKod(false)}
+            aria-label="Kapat"
+            className="shrink-0 px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200
+                       hover:bg-slate-800 text-lg leading-none">
+            ×
           </button>
         </div>
       )}
