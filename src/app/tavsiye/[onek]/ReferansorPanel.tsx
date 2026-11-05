@@ -240,20 +240,36 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 {/* Ek indirim KENDİ PUANINDAN. Klinik indirimi sabit, burada
                     seçilmiyor — sunulan tek şey bu. Bakiye yetmezse sunucu
                     daveti açmıyor. */}
-                {veri.puan > 0 && (
-                  <div>
-                    <input value={f.ekstra}
-                      onChange={e => setForm(p => ({
-                        ...p, [t.id]: { ...alan(t.id), ekstra: e.target.value.replace(/\D/g, '') },
-                      }))}
-                      placeholder="Puanımdan ek indirim ₺ (isteğe bağlı)"
-                      inputMode="numeric" className={inputCls} />
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Kullanılabilir: <b className="text-violet-300">{PUAN(veri.puan)}</b> puan
-                    </p>
-                  </div>
-                )}
-                <button type="submit" disabled={pending || !f.ad.trim() || !f.tel.trim()}
+                {veri.puan > 0 && (() => {
+                  // Bakiye aşımı YAZARKEN görünmeli: sunucu zaten reddediyor
+                  // ama referansör formu doldurup bastıktan sonra öğrenmesin.
+                  const asim = (Number(f.ekstra) || 0) > veri.puan
+                  return (
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">
+                        Puanımdan ek indirim (isteğe bağlı)
+                      </label>
+                      <div className="relative">
+                        <input value={f.ekstra}
+                          onChange={e => setForm(p => ({
+                            ...p, [t.id]: { ...alan(t.id), ekstra: e.target.value.replace(/\D/g, '') },
+                          }))}
+                          placeholder="0"
+                          inputMode="numeric"
+                          className={`${inputCls} pr-7 ${asim ? 'border-rose-500' : ''}`} />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sm text-slate-500">₺</span>
+                      </div>
+                      <p className={`text-[11px] mt-1 ${asim ? 'text-rose-400 font-semibold' : 'text-slate-500'}`}>
+                        {asim
+                          ? `Puanınız yetmiyor — en çok ${PUAN(veri.puan)} ₺`
+                          : <>Kullanılabilir: <b className="text-violet-300">{PUAN(veri.puan)}</b> puan</>}
+                      </p>
+                    </div>
+                  )
+                })()}
+                <button type="submit"
+                  disabled={pending || !f.ad.trim() || !f.tel.trim()
+                    || (Number(f.ekstra) || 0) > veri.puan}
                   className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50">
                   {pending ? 'Gönderiliyor…' : 'Davet Gönder'}
                 </button>
