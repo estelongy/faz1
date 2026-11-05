@@ -117,9 +117,22 @@ export async function toggleReferansoreGoster(id: string, goster: boolean): Prom
 }
 
 // ── Referansör ───────────────────────────────────────────────────────
-/** Hastayı referansör yapar; kod önekini (GA3) döndürür. */
-export async function addReferansor(patientId: string): Promise<Result> {
-  return rpc('referral_referansor_ekle', { p_patient: patientId })
+/**
+ * KALDIRILDI — onay SMS'i olmadan referansörlük açıyordu.
+ *
+ * Referansörlük dışarı çıkan bir yetkidir: kişinin haberi ve onayı olmadan
+ * verilmez. Bu yol ayrıca kayıt bonusunu da işlemiyordu (bonus_verildi false
+ * kalıyordu). Tek kapı: hasta kartındaki SMS onaylı üyelik akışı
+ * (uyelikKodGonder → uyelikOnayla, uyelik-actions.ts).
+ *
+ * Fonksiyon silinmedi, çağrıldığında hata döndürüyor — eski bir istemci
+ * elinde kalmışsa sessizce kayıt açmasın.
+ */
+export async function addReferansor(): Promise<Result> {
+  return {
+    ok: false,
+    error: 'Referansörlük onay SMS\'i olmadan açılamaz. Hasta kartındaki üyelik akışını kullanın.',
+  }
 }
 
 export async function toggleReferansor(id: string, aktif: boolean): Promise<Result> {

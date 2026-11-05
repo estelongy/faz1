@@ -5,7 +5,7 @@ import type { PatientRow } from './MuhasebeShellClient'
 import { kisaKod, KAMPANYA_TURLERI, turBilgi, type KampanyaTur, type ReferansAyar, type ReferansTeklif, type ReferansorRow, type ReferansKod } from './referans-tipler'
 import {
   saveReferansAyar, addReferansTeklif, toggleReferansTeklif,
-  addReferansor, toggleReferansor, uretReferansLink, isaretleReferansZiyaret,
+  toggleReferansor, uretReferansLink, isaretleReferansZiyaret,
   kurumDavetOlustur, basvuruOnayla, basvuruReddet, toggleReferansoreGoster,
 } from './referans-actions'
 
@@ -52,7 +52,6 @@ export default function ReferansPanel({
   const [arama, setArama] = useState('')
   const [sekme, setSekme] = useState<
     'kodlar' | 'referansorler' | 'basvurular' | 'teklifler' | 'ayar'>('kodlar')
-  const [yeniRefArama, setYeniRefArama] = useState('')
   // Oluşturulan kurum davet linki — pano çalışmazsa ekranda görünür kalır.
   const [davetLink, setDavetLink] = useState<string | null>(null)
   const [yeniTur, setYeniTur] = useState<KampanyaTur>('tanisma')
@@ -104,16 +103,6 @@ export default function ReferansPanel({
       k.kod.toUpperCase().replace(/-/g, '').includes(q) ||
       (k.musteri_ad ?? '').toUpperCase().includes(arama.trim().toUpperCase()))
   }, [kodlar, arama])
-
-  const mevcutRefIds = useMemo(
-    () => new Set(referansorler.map(r => r.patient_id).filter(Boolean)), [referansorler])
-  const adaylar = useMemo(() => {
-    const q = yeniRefArama.trim().toLocaleLowerCase('tr')
-    if (q.length < 2) return []
-    return patients
-      .filter(p => !mevcutRefIds.has(p.id) && p.name.toLocaleLowerCase('tr').includes(q))
-      .slice(0, 6)
-  }, [patients, yeniRefArama, mevcutRefIds])
 
   return (
     <div className="space-y-3">
@@ -239,18 +228,18 @@ export default function ReferansPanel({
       {/* ══ REFERANSÖRLER ══ */}
       {sekme === 'referansorler' && (
         <div className="space-y-2">
+          {/* Buradaki "hastayı seç → anında referansör yap" düğmesi KALDIRILDI:
+              onay SMS'i sormadan referansörlük açıyordu. Referansörlük dışarı
+              çıkan bir yetkidir — kişinin haberi ve onayı olmadan verilmez.
+              Ayrıca o yol kayıt bonusunu da yazmıyordu (bonus_verildi false).
+              Tek kapı: hasta kartındaki SMS onaylı üyelik akışı. */}
           <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
-            <p className="text-xs font-bold text-slate-300 mb-2">Hastayı referansör yap</p>
-            <input value={yeniRefArama} onChange={e => setYeniRefArama(e.target.value)}
-              placeholder="Hasta adı ara…" className={inputCls} />
-            {adaylar.map(p => (
-              <button key={p.id} disabled={pending}
-                onClick={() => { run(() => addReferansor(p.id)); setYeniRefArama('') }}
-                className="w-full text-left px-2.5 py-2 mt-1 rounded-lg bg-slate-800 hover:bg-violet-600/30 text-sm text-white disabled:opacity-50">
-                {p.name}
-                {p.patient_code && <span className="ml-2 text-[10px] font-mono text-slate-500">{p.patient_code}</span>}
-              </button>
-            ))}
+            <p className="text-xs font-bold text-slate-300">Hastayı referansör yapmak için</p>
+            <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+              Hasta kartını açın → <span className="text-slate-200 font-semibold">Üyelik</span> bölümünden
+              referansörlük kutusunu işaretleyip onay SMS&rsquo;i gönderin. Hasta kodu
+              söyleyince referansörlük açılır ve kayıt bonusu işlenir.
+            </p>
           </div>
 
           {/* Kurumsal davet — kurum hasta kaydı değil, oran anlaşmayla.

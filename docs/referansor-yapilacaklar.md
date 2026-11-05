@@ -78,6 +78,22 @@ Dışarıdan aday başvurusu kapısı hiç denenmedi, bekleyen başvuru yok.
 
 ## Çözülenler
 
+- **Referansör girişi SMS doğrulamalı oldu** (commit `0d731b9`, migration uygulandı, canlıda).
+  Panel eskiden tamamen açıktı: öneği (DH6GOK) bilen herkes açabiliyordu.
+  - Şifre **bilerek konmadı**: referansör ayda bir girer, parola unutur, sıfırlama
+    akışı dört yeni ekran demekti. Yerine telefon + 6 haneli SMS kodu.
+  - Doğrulama sonrası çerez **90 gün** durur; başka cihaz/tarayıcı → yeniden sorar.
+  - **`/tavsiye` (öneksiz)** giriş kapısı: panel adresi unutulursa telefonla girilir,
+    sistem kendi paneline yönlendirir. Önek ezberlenmesi gerekmiyor.
+  - **Numara sızdırma koruması:** kayıtlı olmayan numaraya da "kod gönderildi" denir,
+    SMS gitmez, kota yakılmaz.
+  - `referral_giris_onek` RPC (SECURITY DEFINER): numara formatları tutarsız
+    (`5538693433` / `05418404465`), son 10 hane karşılaştırılıyor. Beş senaryoda
+    doğrulandı: 0'lı, çıplak, +90'lı formatlar aynı öneğe düşüyor; kayıtsız ve
+    geçersiz numara boş dönüyor; pasif kayıtlar `aktif` filtresiyle eleniyor.
+  - Panelde **"Çıkış yap"** — ortak/ödünç cihaz için.
+  - **APK'ya gerek yok:** PWA zaten app gibi kuruluyor, artık girişi de korumalı.
+
 - **SMS'te indirim oranı artık her zaman görünüyor** (commit `adda4ec`, canlıda).
   "Referans Ekle" gibi kendi oranı olmayan tekliflerde müşteriye "size ozel indirim"
   diye boş bir söz gidiyordu. Oran teklif metninde yoksa referansörün `musteri_max`
