@@ -35,7 +35,7 @@ export interface BasvuruRow {
 }
 
 export default function ReferansPanel({
-  ayar, teklifler, referansorler, kodlar, patients, basvurular = [],
+  ayar, teklifler, referansorler, kodlar, patients, basvurular = [], tabanOran = null,
 }: {
   ayar: ReferansAyar | null
   teklifler: ReferansTeklif[]
@@ -44,6 +44,8 @@ export default function ReferansPanel({
   patients: PatientRow[]
   /** Onay bekleyen referansör başvuruları. */
   basvurular?: BasvuruRow[]
+  /** Taban kademenin müşteri üst oranı — kendi oranı olmayan kampanyalarda kullanılır. */
+  tabanOran?: number | null
 }) {
   const [pending, startTransition] = useTransition()
   const [mesaj, setMesaj] = useState<{ tip: 'ok' | 'hata'; metin: string } | null>(null)
@@ -71,12 +73,15 @@ export default function ReferansPanel({
   }, [teklifler])
 
   // İndirim oranı kampanyanın ayrıcalık metninden okunur ("...%25 indirim").
+  // "Referans Ekle" gibi kendi oranı olmayan serbest kampanyalarda metinde %
+  // geçmez; o zaman taban kademenin müşteri üst oranı kullanılır — yoksa
+  // ekranda %0 görünür ve indirim hesaplanamaz.
   const teklifOrani = useMemo(() => {
     const m = new Map(teklifler.map(t => [
-      t.id, Number(t.ayricalik.match(/%\s*(\d+)/)?.[1] ?? 0),
+      t.id, Number(t.ayricalik.match(/%\s*(\d+)/)?.[1] ?? 0) || (tabanOran ?? 0),
     ]))
     return (id: string) => m.get(id) ?? 0
-  }, [teklifler])
+  }, [teklifler, tabanOran])
 
   function run(fn: () => Promise<{ ok: boolean; error?: string }>) {
     startTransition(async () => {

@@ -38,6 +38,28 @@ async function ctx() {
   return { supabase, user, ownerId: staff.clinicOwnerId }
 }
 
+/**
+ * Kampanyanın indirim oranı.
+ *
+ * Önce ayrıcalık metninden okunur ("...%25 indirim" → 25). "Referans Ekle"
+ * gibi kendi oranı olmayan serbest kampanyalarda metinde % geçmez; o zaman
+ * taban kademenin müşteri üst oranı kullanılır. Yoksa %0 çıkıp indirim
+ * hesaplanamıyordu.
+ */
+async function teklifOrani(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  ownerId: string,
+  ayricalik: string,
+): Promise<number> {
+  const metinden = Number(ayricalik.match(/%\s*(\d+)/)?.[1] ?? 0)
+  if (metinden > 0) return metinden
+
+  const { data } = await supabase.from('referral_kademe')
+    .select('musteri_max').eq('owner_id', ownerId)
+    .order('esik', { ascending: true }).limit(1).maybeSingle()
+  return Number(data?.musteri_max ?? 0) || 0
+}
+
 /** 1) Hastaya üyelik onay kodu gönderir. */
 export async function uyelikKodGonder(
   patientId: string, referansor = false,
@@ -154,7 +176,7 @@ export async function referansKoduBul(kisaKod: string): Promise<
     ok: true,
     codeId: String(aktif.code_id),
     kod: String(aktif.kod),
-    oran: Number(ayricalik.match(/%\s*(\d+)/)?.[1] ?? 0),
+    oran: await teklifOrani(c.supabase, c.ownerId, ayricalik),
     musteri: (aktif.musteri_ad as string) ?? null,
     teklif: String(aktif.teklif_baslik ?? ''),
     ayricalik,
@@ -245,7 +267,7 @@ export async function referansKoduUygula(
   }
 
   const ayricalik = String(aktif.teklif_ayricalik ?? '')
-  const oran = Number(ayricalik.match(/%\s*(\d+)/)?.[1] ?? 0)
+  const oran = await teklifOrani(c.supabase, c.ownerId, ayricalik)
   const indirim = hesapTutar && oran > 0 ? Math.round(hesapTutar * oran / 100) : null
 
   const { error: hata } = await c.supabase.rpc('referral_isaretle', {

@@ -25,7 +25,7 @@ export default async function ReferansPage() {
   if (!isMuhasebeOwner(user.id)) redirect('/klinik/panel')
   const clinicOwner = clinicOwnerIdFor(user.id) ?? user.id
 
-  const [patientsRes, setRes, offerRes, refRes, codeRes, basvuruRes] = await Promise.all([
+  const [patientsRes, setRes, offerRes, refRes, codeRes, kademeRes, basvuruRes] = await Promise.all([
     supabase.from('internal_patient')
       .select('id, name, patient_code, phone')
       .eq('owner_id', clinicOwner)
@@ -45,6 +45,12 @@ export default async function ReferansPage() {
       .eq('owner_id', clinicOwner)
       .order('created_at', { ascending: false })
       .limit(300),
+    // Taban kademe: kendi oranı olmayan kampanyalarda indirim buradan gelir.
+    supabase.from('referral_kademe')
+      .select('musteri_max')
+      .eq('owner_id', clinicOwner)
+      .order('esik', { ascending: true })
+      .limit(1).maybeSingle(),
     supabase.from('referral_basvuru')
       .select('id, ad, tel, not_metni, durum, created_at, davet_eden')
       .eq('owner_id', clinicOwner)
@@ -94,6 +100,7 @@ export default async function ReferansPage() {
           })) as ReferansorRow[]}
           kodlar={kodlar}
           patients={patients}
+          tabanOran={Number(kademeRes.data?.musteri_max ?? 0) || null}
           basvurular={(basvuruRes.data ?? []).map(b => ({
             id: String(b.id), ad: String(b.ad), tel: String(b.tel),
             not_metni: b.not_metni ?? null,
