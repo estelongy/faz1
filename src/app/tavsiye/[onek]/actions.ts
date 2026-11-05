@@ -43,7 +43,11 @@ export async function davetBaslat(
   ekstraIndirim?: number,
 ): Promise<Baslat> {
   const temizAd = ad.trim()
-  if (temizAd.length < 2) return { ok: false, error: 'Adını yazın.' }
+  // Ad SOYAD şart: klinik kimi bekleyeceğini bilmeli. Ekran da kontrol ediyor
+  // ama istemci atlanabilir.
+  if (temizAd.split(/\s+/).filter(p => p.length > 1).length < 2) {
+    return { ok: false, error: 'Ad ve soyadı birlikte yazın.' }
+  }
 
   const tel = normalizePhone(hamTel)
   if (!tel) return { ok: false, error: 'Telefon numarası geçersiz.' }

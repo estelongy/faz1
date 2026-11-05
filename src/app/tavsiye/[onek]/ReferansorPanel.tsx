@@ -53,6 +53,31 @@ const PUAN = (n: number) => Math.round(n).toLocaleString('tr-TR')
 
 const inputCls = 'w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500'
 
+/**
+ * Telefonu yazarken biçimler: 5551112233 → 0(555) 111 22 33
+ * Sunucu zaten normalize ediyor; bu yalnız ekran içindir — referansör
+ * numarayı okurken hata yapmasın.
+ */
+function telMaskele(ham: string): string {
+  let r = ham.replace(/\D/g, '')
+  if (r.startsWith('90')) r = r.slice(2)
+  if (r.startsWith('0')) r = r.slice(1)
+  r = r.slice(0, 10)
+  if (!r) return ''
+  const p = [r.slice(0, 3), r.slice(3, 6), r.slice(6, 8), r.slice(8, 10)]
+  let s = `0(${p[0]}`
+  if (r.length > 3) s += `) ${p[1]}`
+  if (r.length > 6) s += ` ${p[2]}`
+  if (r.length > 8) s += ` ${p[3]}`
+  return s
+}
+
+/** Ad SOYAD şart: tek kelime yeterli değil, klinik kimi bekleyeceğini bilmeli. */
+const adGecerli = (ad: string) =>
+  ad.trim().split(/\s+/).filter(p => p.length > 1).length >= 2
+
+const telGecerli = (tel: string) => tel.replace(/\D/g, '').length >= 10
+
 function maskeTel(tel: string | null): string {
   if (!tel) return ''
   const d = tel.replace(/\D/g, '')
@@ -227,12 +252,22 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
 
               <form className="mt-2.5 space-y-2"
                 onSubmit={e => { e.preventDefault(); basla(t.id) }}>
-                <input value={f.ad}
-                  onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), ad: e.target.value } }))}
-                  placeholder="Adı Soyadı" className={inputCls} />
+                <div>
+                  <input value={f.ad}
+                    onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), ad: e.target.value } }))}
+                    placeholder="Adı Soyadı"
+                    autoComplete="name"
+                    className={`${inputCls} ${f.ad.trim() && !adGecerli(f.ad) ? 'border-rose-500' : ''}`} />
+                  {f.ad.trim() && !adGecerli(f.ad) && (
+                    <p className="text-[11px] text-rose-400 mt-1">Ad ve soyadı birlikte yazın.</p>
+                  )}
+                </div>
                 <input value={f.tel}
-                  onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), tel: e.target.value } }))}
-                  placeholder="Telefonu" inputMode="tel" className={inputCls} />
+                  onChange={e => setForm(p => ({
+                    ...p, [t.id]: { ...alan(t.id), tel: telMaskele(e.target.value) },
+                  }))}
+                  placeholder="0(5__) ___ __ __"
+                  inputMode="tel" autoComplete="tel" className={inputCls} />
                 {/* Serbest not — klinik kodu uygularken görür. */}
                 <input value={f.not}
                   onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), not: e.target.value } }))}
@@ -268,7 +303,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                   )
                 })()}
                 <button type="submit"
-                  disabled={pending || !f.ad.trim() || !f.tel.trim()
+                  disabled={pending || !adGecerli(f.ad) || !telGecerli(f.tel)
                     || (Number(f.ekstra) || 0) > veri.puan}
                   className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50">
                   {pending ? 'Gönderiliyor…' : 'Davet Gönder'}
