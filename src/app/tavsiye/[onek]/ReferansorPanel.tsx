@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { davetBaslat, kodDogrula } from './actions'
+import { girisCik } from '../giris-actions'
 import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
 
 export interface PanelVerisi {
@@ -58,6 +60,7 @@ function maskeTel(tel: string | null): string {
 }
 
 export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
+  const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [sekme, setSekme] = useState<'kod' | 'puan' | 'referans' | 'davet'>('kod')
   const [hata, setHata] = useState<string | null>(null)
@@ -392,9 +395,20 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
         </section>
       )}
 
-      <p className="text-[11px] text-slate-600 text-center pt-2">
-        Bu sayfa size özeldir. Bağlantıyı paylaşmayın.
-      </p>
+      <div className="pt-2 space-y-2 text-center">
+        <p className="text-[11px] text-slate-600">
+          Bu sayfa size özeldir. Bağlantıyı paylaşmayın.
+        </p>
+        {/* Ortak/ödünç cihazda oturumu kapatabilmeli. */}
+        <button
+          onClick={() => startTransition(async () => {
+            await girisCik(veri.onek)
+            router.refresh()
+          })}
+          className="text-[11px] text-slate-500 hover:text-slate-300 underline underline-offset-2">
+          Çıkış yap
+        </button>
+      </div>
 
       {/* ── MOBİL ALT NAV — başparmak menzilinde 4 sekme ── */}
       <div className="h-20" aria-hidden />

@@ -1,9 +1,12 @@
 export const dynamic = 'force-dynamic'
 
 import { notFound } from 'next/navigation'
+import { cookies } from 'next/headers'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import ReferansorPanel, { type PanelVerisi } from './ReferansorPanel'
+import GirisFormu from '../GirisFormu'
+import { oturumCerez } from '../giris-sabit'
 
 export const metadata: Metadata = {
   title: 'Tavsiye Panelim',
@@ -28,6 +31,19 @@ export default async function ReferansorSayfasi({
   if (error || !data) notFound()
   const veri = data as PanelVerisi
   if (!veri.aktif) notFound()
+
+  // Panel artık açık değil: önek bilinse bile SMS doğrulaması gerekiyor.
+  // Doğrulama sonrası çerez 90 gün durur; başka cihazda yeniden sorulur.
+  const jar = await cookies()
+  if (!jar.get(oturumCerez(params.onek))) {
+    return (
+      <main className="min-h-dvh bg-slate-950 px-4 py-10">
+        <div className="mx-auto w-full max-w-sm">
+          <GirisFormu onek={params.onek} />
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-dvh bg-slate-950 px-4 py-6">
