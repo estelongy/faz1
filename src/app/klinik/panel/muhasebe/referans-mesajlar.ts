@@ -60,6 +60,37 @@ export function waDavetMetni(opts: {
 }
 
 /**
+ * 1b) Referansörün, tanıdığını REFERANSÖR OLMAYA çağıran WhatsApp metni.
+ *
+ * Bu bir form linki değil, bir davet: karşıdaki kişi tanıdığının adını
+ * görüyor, ne olduğunu ve ne kazanacağını okuyor, sonra linke basıyor.
+ * "Buradan başvuru yapabilirsin" demek daveti form doldurmaya indirger.
+ *
+ * Onay adımı bilerek yazılıyor: kişi başvurunca hemen referansör olmuyor,
+ * klinik onaylıyor. Beklenti doğru kurulsun.
+ */
+export function waReferansorDavetMetni(opts: {
+  /** Daveti gönderen referansörün adı. */
+  referansorAd: string
+  url: string
+}): string {
+  // WhatsApp metni — SMS değil, Türkçe karakter serbest (smsSadelestir YOK).
+  const ad = duzgunAd(opts.referansorAd).split(' ')[0]
+  return [
+    `${KLINIK} kliniğinin tavsiye programındayım.`,
+    '',
+    'Tanıdıklarıma özel indirim tanımlayabiliyorum; onlar işlem yaptırınca ben de puan kazanıyorum. Sana da açabilirim.',
+    '',
+    'Kendi tavsiye panelin olur: kime indirim verdiğini, ne kazandığını telefonundan takip edersin. Üyelik ücreti yok, zorunluluk yok.',
+    '',
+    'Katılmak istersen buradan bilgilerini bırak, klinik onaylasın:',
+    opts.url,
+    '',
+    `— ${ad}`,
+  ].join('\n')
+}
+
+/**
  * Ayrıcalık metni, geçerli zaman bilgisini zaten anlatıyor mu?
  * Saat aralıklarını ("10:00-14:00") karşılaştırır: ikisinde de aynı saatler
  * geçiyorsa tekrar yazmaya gerek yok.

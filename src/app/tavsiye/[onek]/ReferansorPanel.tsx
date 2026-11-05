@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { davetBaslat, kodDogrula } from './actions'
 import { girisCik } from '../giris-actions'
 import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
+import { waReferansorDavetMetni } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
 
 export interface PanelVerisi {
   onek: string
@@ -384,7 +385,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
               <div className="bg-slate-950/60 rounded-lg p-2 space-y-1">
                 <p className="text-[11px] text-emerald-300 font-semibold">Link kopyalandı</p>
                 <p className="font-mono text-[11px] text-slate-400 break-all">{basvuruLink}</p>
-                <a href={`https://wa.me/?text=${encodeURIComponent(`Merhaba, buradan referansör başvurusu yapabilirsin: ${basvuruLink}`)}`}
+                <a href={`https://wa.me/?text=${encodeURIComponent(waReferansorDavetMetni({ referansorAd: veri.ad, url: basvuruLink }))}`}
                   target="_blank" rel="noopener noreferrer"
                   className="block text-center mt-1 px-3 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white">
                   WhatsApp&rsquo;tan gönder
