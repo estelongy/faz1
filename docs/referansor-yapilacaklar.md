@@ -7,6 +7,28 @@
 
 ## Bekleyen
 
+### 11. Kayıt bonusu işlenmiyor
+**Durum:** açık
+`referral_settings.bonus_uye = 3000` tanımlı ama yeni referansörlerde
+`bonus_verildi` false kalıyor. Dört kayıttan yalnız DH6'da true — o da eski bir
+yoldan açılmış. Bonusun hangi koşulda yazıldığı belirsiz; `referral_referansor_ekle`
+ve `uyelik_baslat` RPC'lerinin gövdesine bakmak gerek.
+
+### 12. `/referansor-basvuru` davetsiz de açılıyor
+**Durum:** iş kararı bekliyor
+`searchParams.ref ?? ''` — önek olmadan da form açılıyor, yani adresi bilen herkes
+başvuru bırakabilir. Zarar sınırlı (onaysız referansör oluşmuyor, kuyruğa düşüyor)
+ama davetsiz başvurular birikebilir. Ayrıca gelen önek doğrulanmıyor.
+
+Soru: referansörlük davetle mi yayılsın, isteyen başvurabilsin mi?
+
+### 13. `uyelik_baslat` RPC'sinin iki sürümü var
+**Durum:** açık — bugünkü PGRST203 hatasının aynısı
+`uyelik_baslat(uuid,uuid,text,text)` ve `uyelik_baslat(uuid,uuid,text,text,boolean)`.
+Kod 5 parametreliyi çağırıyor; 4 parametreli çağrı gelirse aynı "Could not choose
+the best candidate function" hatası çıkar. Eski sürüm düşürülmeli — önce
+`pg_get_functiondef` ile yedeği alınmalı.
+
 ### 3. Panel linki referansöre hiç gitmiyor
 **Durum:** karar bekliyor (dışarı çıkan iş — onay şart)
 Referansör üye oluyor, paneli `/tavsiye/<önek>` hazır, ama adresi bildiren
@@ -77,6 +99,19 @@ Dışarıdan aday başvurusu kapısı hiç denenmedi, bekleyen başvuru yok.
 ---
 
 ## Çözülenler
+
+- **Üye hastayı SMS onayıyla referansör yapma** (commit `4e2dc38`, canlıda, test edildi).
+  Üyelik akışı yalnız üye OLMAYANLARDA çalışıyordu; üye birini referansör yapmanın
+  onaylı yolu yoktu. Referanslar sekmesine kondu: hasta ara → seç → onay kodu →
+  referansörlük açılır, `referansor_onay_at` damgalanır.
+- **Onaysız referansör yapma kapatıldı** (commit `5c36f46`). Eski "anında referansör yap"
+  düğmesi kişinin haberi olmadan yetki veriyordu; kaldırıldı, server action hata döndürüyor.
+- **PWA kısayolu anasayfaya atıyordu** (commit `cc29051`, canlıda, test edildi).
+  Manifest kökte tek statik dosyaydı, `start_url: "."` göreliydi ve manifestin
+  konumuna göre çözümlendiği için kökü işaret ediyordu. Koddaki "kurulan kısayol
+  kendi öneğini açar" yorumu yanlıştı — hiç test edilmemiş. Manifest artık önek
+  altından üretiliyor (`/tavsiye/<önek>/manifest.webmanifest`), `start_url` tam
+  panel adresi. Eski statik dosya silindi.
 
 - **Referansör girişi SMS doğrulamalı oldu** (commit `0d731b9`, migration uygulandı, canlıda).
   Panel eskiden tamamen açıktı: öneği (DH6GOK) bilen herkes açabiliyordu.
