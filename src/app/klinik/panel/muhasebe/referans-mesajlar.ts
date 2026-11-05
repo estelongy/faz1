@@ -60,6 +60,32 @@ export function waDavetMetni(opts: {
 }
 
 /**
+ * 4) Referansörlük açıldı — kişiye giden karşılama SMS'i.
+ *
+ * Üç şeyi birden söyler: onaylandın · bonusun yazıldı · panelin burada.
+ * Panel adresi başka hiçbir yerden gitmiyordu; klinik personeli elle
+ * iletmek zorundaydı.
+ *
+ * Kısa tutuluyor: uzun alan adıyla birlikte tek SMS kredisinde kalmalı.
+ */
+export function smsReferansorHosGeldin(opts: {
+  ad: string
+  onek: string
+  /** Kayıt bonusu puanı; 0/boşsa satır hiç yazılmaz. */
+  bonus?: number | null
+  /** Sitenin kök adresi — ortamdan gelir, sabit yazılmaz. */
+  siteUrl: string
+}): string {
+  const ad = duzgunAd(opts.ad).split(' ')[0]
+  const kok = opts.siteUrl.replace(/\/$/, '')
+  return smsSadelestir([
+    `Tebrikler ${ad}! ${KLINIK} referansoru oldunuz.`,
+    opts.bonus && opts.bonus > 0 ? `Hos geldin bonusu: ${Math.round(opts.bonus)} puan.` : null,
+    `Paneliniz: ${kok}/tavsiye/${opts.onek}`,
+  ].filter(Boolean).join('\n'))
+}
+
+/**
  * 1b) Referansörün, tanıdığını REFERANSÖR OLMAYA çağıran WhatsApp metni.
  *
  * Bu bir form linki değil, bir davet: karşıdaki kişi tanıdığının adını

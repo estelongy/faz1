@@ -5,7 +5,7 @@ import { redis } from '@/lib/redis'
 import { createClient } from '@/lib/supabase/server'
 import { getKlinikStaff } from '@/lib/muhasebe-owner'
 import { sendInfoSms, generateOtpCode, normalizePhone, mapNetgsmError } from '@/lib/netgsm'
-import { smsSadelestir, duzgunAd } from './referans-mesajlar'
+import { smsSadelestir, duzgunAd, smsReferansorHosGeldin } from './referans-mesajlar'
 
 /**
  * Üyelik başlatma — iki adım, referans akışıyla aynı desen:
@@ -146,6 +146,50 @@ export async function uyelikOnayla(
 }
 
 /**
+ * Referansörlük açıldıktan sonra kişiye karşılama SMS'i.
+ *
+ * Panel adresi başka hiçbir kanaldan gitmiyordu — personel elle iletmek
+ * zorundaydı. Onay, bonus ve link tek mesajda.
+ *
+ * Gönderilemezse akış BOZULMAZ: referansörlük zaten açıldı, panel adresi
+ * klinik ekranında duruyor. Sessiz geçilir, log'a yazılır.
+ */
+export async function hosGeldinSmsGonder(referrerId: string): Promise<void> {
+  const c = await ctx()
+  if (!c) return
+  const { supabase, ownerId } = c
+  try {
+    const { data: r } = await supabase
+      .from('referral_referrer')
+      .select('kod_harf, kod_rakam, tip, kurum_tel, internal_patient(name, phone)')
+      .eq('id', referrerId).maybeSingle()
+    if (!r) return
+
+    const hasta = r.internal_patient as unknown as { name?: string; phone?: string } | null
+    const tel = normalizePhone(hasta?.phone ?? r.kurum_tel ?? '')
+    if (!tel) return
+
+    const [{ data: ayar }, { data: ledger }] = await Promise.all([
+      supabase.from('referral_settings')
+        .select('isletme_kodu').eq('owner_id', ownerId).maybeSingle(),
+      supabase.from('referral_ledger')
+        .select('tutar').eq('referrer_id', referrerId).eq('tur', 'puan_bonus').maybeSingle(),
+    ])
+
+    const onek = `${r.kod_harf}${r.kod_rakam}${ayar?.isletme_kodu ?? ''}`
+    const res = await sendInfoSms(tel, smsReferansorHosGeldin({
+      ad: hasta?.name ?? '',
+      onek,
+      bonus: ledger?.tutar ? Number(ledger.tutar) : null,
+      siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com',
+    }))
+    if (!res.success) console.error('[referansor-hosgeldin-sms] Netgsm:', res.error)
+  } catch (err) {
+    console.error('[referansor-hosgeldin-sms]', err)
+  }
+}
+
+/**
  * Zaten ÜYE olan hastaya sonradan referansörlük ekler — SMS onaylı.
  *
  * Üyelik akışı yalnız üye olmayanlarda çalışıyor (uyelik_onay_at dolu ise
@@ -219,7 +263,7 @@ export async function referansorOnayla(
     return { ok: false, error: 'Kod hatalı.' }
   }
 
-  const { error } = await c.supabase.rpc('referral_referansor_ekle', {
+  const { data, error } = await c.supabase.rpc('referral_referansor_ekle', {
     p_owner: c.ownerId, p_patient: patientId,
   })
   if (error) return { ok: false, error: error.message }
@@ -228,6 +272,9 @@ export async function referansorOnayla(
   await c.supabase.from('internal_patient')
     .update({ referansor_onay_at: new Date().toISOString() })
     .eq('id', patientId).eq('owner_id', c.ownerId)
+
+  const satir = Array.isArray(data) ? data[0] as { referrer_id?: string } : null
+  if (satir?.referrer_id) await hosGeldinSmsGonder(satir.referrer_id)
 
   await redis.del(otpKey(patientId))
   await redis.del(denemeKey(patientId))

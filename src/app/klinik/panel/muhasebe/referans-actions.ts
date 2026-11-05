@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { getKlinikStaff } from '@/lib/muhasebe-owner'
+import { hosGeldinSmsGonder } from './uyelik-actions'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
 
 type Result = { ok: true; data?: unknown } | { ok: false; error: string }
@@ -202,9 +203,17 @@ export async function kurumDavetToken(referrerId: string): Promise<Result> {
 }
 
 // ── Referansör başvuruları ───────────────────────────────────────────
-/** Başvuruyu onaylar: hasta kaydı yoksa açar, referansör yapar. */
+/**
+ * Başvuruyu onaylar: hasta kaydı yoksa açar, referansör yapar, bonusu işler.
+ * Ardından kişiye karşılama SMS'i gider — onay, bonus ve panel adresi.
+ */
 export async function basvuruOnayla(basvuruId: string): Promise<Result> {
-  return rpc('referral_basvuru_onayla', { p_basvuru: basvuruId })
+  const r = await rpc('referral_basvuru_onayla', { p_basvuru: basvuruId })
+  if (!r.ok) return r
+
+  const satir = Array.isArray(r.data) ? r.data[0] as { referrer_id?: string } : null
+  if (satir?.referrer_id) await hosGeldinSmsGonder(satir.referrer_id)
+  return r
 }
 
 export async function basvuruReddet(basvuruId: string): Promise<Result> {
