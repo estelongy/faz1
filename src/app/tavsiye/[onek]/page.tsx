@@ -8,12 +8,17 @@ import ReferansorPanel, { type PanelVerisi } from './ReferansorPanel'
 import GirisFormu from '../GirisFormu'
 import { oturumCerez } from '../giris-sabit'
 
-export const metadata: Metadata = {
-  title: 'Tavsiye Panelim',
-  robots: { index: false, follow: false },
-  // Telefona kurulabilir: "ana ekrana ekle" → ayrı ikon, tarayıcı çubuğu yok.
-  // start_url "." olduğu için kurulan kısayol referansörün KENDİ önekini açar.
-  manifest: '/tavsiye-manifest.json',
+/**
+ * Manifest öneğin altından sunulur, çünkü her referansörün kısayolu KENDİ
+ * panelini açmalı. Eski tek statik dosyada start_url "." göreliydi ve
+ * manifestin konumuna (kök) göre çözümlendiği için anasayfayı açıyordu.
+ */
+export function generateMetadata({ params }: { params: { onek: string } }): Metadata {
+  return {
+    title: 'Tavsiye Panelim',
+    robots: { index: false, follow: false },
+    manifest: `/tavsiye/${params.onek}/manifest.webmanifest`,
+  }
 }
 
 /**
