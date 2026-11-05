@@ -72,23 +72,23 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   const [basvuruLink, setBasvuruLink] = useState<string | null>(null)
 
   // Kampanya başına ad/telefon girişi
-  const [form, setForm] = useState<Record<string, { ad: string; tel: string; not: string }>>({})
+  const [form, setForm] = useState<Record<string, { ad: string; tel: string; not: string; ekstra: string }>>({})
   // Bekleyen davet başına doğrulama kodu girişi
   const [kodlar, setKodlar] = useState<Record<string, string>>({})
 
   const gelen = veri.davetler.filter(d => d.geldi === true).length
   const bekleyen = veri.bekleyen_link.length
 
-  const alan = (id: string) => form[id] ?? { ad: '', tel: '', not: '' }
+  const alan = (id: string) => form[id] ?? { ad: '', tel: '', not: '', ekstra: '' }
 
   /** 1. adım — ad + telefon gir, müşteriye doğrulama SMS'i gitsin. */
   function basla(offerId: string) {
     setHata(null); setAltinKod(false)
     const f = alan(offerId)
     startTransition(async () => {
-      const r = await davetBaslat(veri.onek, offerId, f.ad, f.tel, f.not)
+      const r = await davetBaslat(veri.onek, offerId, f.ad, f.tel, f.not, Number(f.ekstra) || 0)
       if (!r.ok) { setHata(r.error); return }
-      setForm(p => ({ ...p, [offerId]: { ad: '', tel: '', not: '' } }))
+      setForm(p => ({ ...p, [offerId]: { ad: '', tel: '', not: '', ekstra: '' } }))
     })
   }
 
@@ -237,6 +237,22 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 <input value={f.not}
                   onChange={e => setForm(p => ({ ...p, [t.id]: { ...alan(t.id), not: e.target.value } }))}
                   placeholder="İşlem / not (isteğe bağlı)" className={inputCls} />
+                {/* Ek indirim KENDİ PUANINDAN. Klinik indirimi sabit, burada
+                    seçilmiyor — sunulan tek şey bu. Bakiye yetmezse sunucu
+                    daveti açmıyor. */}
+                {veri.puan > 0 && (
+                  <div>
+                    <input value={f.ekstra}
+                      onChange={e => setForm(p => ({
+                        ...p, [t.id]: { ...alan(t.id), ekstra: e.target.value.replace(/\D/g, '') },
+                      }))}
+                      placeholder="Puanımdan ek indirim ₺ (isteğe bağlı)"
+                      inputMode="numeric" className={inputCls} />
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Kullanılabilir: <b className="text-violet-300">{PUAN(veri.puan)}</b> puan
+                    </p>
+                  </div>
+                )}
                 <button type="submit" disabled={pending || !f.ad.trim() || !f.tel.trim()}
                   className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50">
                   {pending ? 'Gönderiliyor…' : 'Davet Gönder'}

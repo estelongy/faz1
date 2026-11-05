@@ -39,6 +39,8 @@ async function istemciIp(): Promise<string | null> {
 /** 1) Referansör ad + telefon girer → müşteriye doğrulama SMS'i gider. */
 export async function davetBaslat(
   onek: string, offerId: string, ad: string, hamTel: string, islemNotu?: string,
+  /** Referansörün kendi puanından verdiği ek indirim (TL). Klinik %10'un üstü. */
+  ekstraIndirim?: number,
 ): Promise<Baslat> {
   const temizAd = ad.trim()
   if (temizAd.length < 2) return { ok: false, error: 'Adını yazın.' }
@@ -61,6 +63,9 @@ export async function davetBaslat(
   const { data, error } = await supabase.rpc('referral_davet_baslat', {
     p_onek: onek, p_offer: offerId, p_ad: temizAd, p_tel: hamTel,
     p_not: islemNotu?.trim() || null,
+    // Bakiye kontrolü RPC'de: yetmezse davet hiç açılmaz, klinikte
+    // hasta karşısında sürpriz olmasın.
+    p_ekstra: Number.isFinite(ekstraIndirim) ? Math.max(ekstraIndirim!, 0) : 0,
   })
   if (error) return { ok: false, error: error.message }
 
