@@ -82,24 +82,20 @@ export function smsDavetDogrulama(opts: {
   musteriAd: string
   ayricalik: string
   kod: string
-  /** Kod ömrü (gün) — ayarlardan gelir, sabit yazılmaz. */
-  gecerlilikGun?: number
   /** Kampanyanın kendi oranı yoksa dışarıdan verilen indirim yüzdesi. */
   indirimOran?: number | null
 }): string {
-  const ad = duzgunAd(opts.musteriAd).split(' ')[0]
+  const ad = adSoyadBasHarf(opts.musteriAd)
   // Ayrıcalık metninden yalnızca oranı al ("...%25 indirim" → "%25").
   // Kampanya detayı (saat, işlem adı) SMS'e girmez — tek kredide kalsın.
   // Oranı olmayan serbest tekliflerde çağıran taraf indirimOran geçer.
   const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
     ?? (opts.indirimOran ? `%${Math.round(opts.indirimOran)}` : undefined)
   const fayda = oran ? `size ozel ${oran} indirim` : 'size ozel bir ayricalik'
-  const sure = opts.gecerlilikGun ? `${opts.gecerlilikGun} gun icinde ` : ''
 
   return smsSadelestir([
-    `Tebrikler ${ad}! ${KLINIK} kliniginde ${fayda} kazandiniz.`,
-    `Onay kodu: ${opts.kod}`,
-    `Kodu referansorunuze iletin, ${sure}kullanin!`,
+    `Tebrikler! ${ad} - ${KLINIK} kliniginde ${fayda} kazandiniz.`,
+    `REF - ${opts.kod} - Kodu ile ALTIN KODUNUZU Hemen Alabilirsiniz!`,
   ].join('\n'))
 }
 

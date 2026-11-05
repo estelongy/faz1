@@ -71,10 +71,6 @@ export async function davetBaslat(
   const { data: davet } = await supabase.rpc('referral_davet_goster', { p_token: row.token })
   const d = (davet ?? null) as Record<string, unknown> | null
 
-  // Kod ömrü ayarlardan; SMS'te "7 gun gecerli" diye sabit yazmıyoruz.
-  const { data: ayar } = await supabase
-    .from('referral_settings').select('kod_omru_gun').maybeSingle()
-
   // Kampanyanın kendi oranı yoksa ("Referans Ekle" gibi serbest teklifler),
   // oran referansörün müşteri aralığından gelir — müşteri somut bir sayı görsün.
   const ayricalikMetni = (d?.ayricalik as string) ?? ''
@@ -90,7 +86,6 @@ export async function davetBaslat(
   const res = await sendInfoSms(tel, smsDavetDogrulama({
     musteriAd: temizAd,
     ayricalik: ayricalikMetni,
-    gecerlilikGun: ayar?.kod_omru_gun ?? undefined,
     kod,
     indirimOran,
   }))
