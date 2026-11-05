@@ -8,6 +8,7 @@ import {
   toggleReferansor, uretReferansLink, isaretleReferansZiyaret,
   kurumDavetOlustur, basvuruOnayla, basvuruReddet, toggleReferansoreGoster,
 } from './referans-actions'
+import { referansorKodGonder, referansorOnayla } from './uyelik-actions'
 
 const inputCls = 'w-full px-2.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500'
 const btnPrimary = 'px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50'
@@ -52,6 +53,11 @@ export default function ReferansPanel({
   const [arama, setArama] = useState('')
   const [sekme, setSekme] = useState<
     'kodlar' | 'referansorler' | 'basvurular' | 'teklifler' | 'ayar'>('kodlar')
+  // Referansör yapma akışı: hasta ara → seç → SMS → kod.
+  const [yeniRefArama, setYeniRefArama] = useState('')
+  const [refAday, setRefAday] = useState<PatientRow | null>(null)
+  const [refKodGonderildi, setRefKodGonderildi] = useState(false)
+  const [refKod, setRefKod] = useState('')
   // Oluşturulan kurum davet linki — pano çalışmazsa ekranda görünür kalır.
   const [davetLink, setDavetLink] = useState<string | null>(null)
   const [yeniTur, setYeniTur] = useState<KampanyaTur>('tanisma')
@@ -89,6 +95,17 @@ export default function ReferansPanel({
       setTimeout(() => setMesaj(null), 4000)
     })
   }
+
+  // Referansör adayları: zaten referansör olanlar listede çıkmaz.
+  const mevcutRefIds = useMemo(
+    () => new Set(referansorler.map(r => r.patient_id).filter(Boolean)), [referansorler])
+  const adaylar = useMemo(() => {
+    const q = yeniRefArama.trim().toLocaleLowerCase('tr')
+    if (q.length < 2) return []
+    return patients
+      .filter(p => !mevcutRefIds.has(p.id) && p.name.toLocaleLowerCase('tr').includes(q))
+      .slice(0, 6)
+  }, [patients, yeniRefArama, mevcutRefIds])
 
   const bekleyen = kodlar.filter(k => k.geldi === null && k.durum === 'aktif')
 
@@ -228,18 +245,73 @@ export default function ReferansPanel({
       {/* ══ REFERANSÖRLER ══ */}
       {sekme === 'referansorler' && (
         <div className="space-y-2">
-          {/* Buradaki "hastayı seç → anında referansör yap" düğmesi KALDIRILDI:
-              onay SMS'i sormadan referansörlük açıyordu. Referansörlük dışarı
-              çıkan bir yetkidir — kişinin haberi ve onayı olmadan verilmez.
-              Ayrıca o yol kayıt bonusunu da yazmıyordu (bonus_verildi false).
-              Tek kapı: hasta kartındaki SMS onaylı üyelik akışı. */}
-          <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-3">
-            <p className="text-xs font-bold text-slate-300">Hastayı referansör yapmak için</p>
-            <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-              Hasta kartını açın → <span className="text-slate-200 font-semibold">Üyelik</span> bölümünden
-              referansörlük kutusunu işaretleyip onay SMS&rsquo;i gönderin. Hasta kodu
-              söyleyince referansörlük açılır ve kayıt bonusu işlenir.
-            </p>
+          {/* Hastayı referansör yap — SMS ONAYLI.
+              Eski "seç ve anında yap" düğmesi onay sormuyordu; referansörlük
+              dışarı çıkan bir yetkidir, kişinin rızası olmadan verilmez. */}
+          <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
+            <p className="text-xs font-bold text-slate-300">Hastayı referansör yap</p>
+
+            {!refAday ? (
+              <>
+                <input value={yeniRefArama} onChange={e => setYeniRefArama(e.target.value)}
+                  placeholder="Hasta adı ara…" className={inputCls} />
+                {adaylar.map(p => (
+                  <button key={p.id} disabled={pending}
+                    onClick={() => { setRefAday(p); setYeniRefArama(''); setRefKodGonderildi(false); setRefKod('') }}
+                    className="w-full text-left px-2.5 py-2 mt-1 rounded-lg bg-slate-800 hover:bg-violet-600/30 text-sm text-white disabled:opacity-50">
+                    {p.name}
+                    {p.patient_code && <span className="ml-2 text-[10px] font-mono text-slate-500">{p.patient_code}</span>}
+                  </button>
+                ))}
+                <p className="text-[11px] text-slate-500">
+                  Seçtiğiniz hastaya onay SMS&rsquo;i gider; kodu söyleyince referansörlük açılır.
+                </p>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <p className="text-xs text-violet-200 flex-1 font-semibold">{refAday.name}</p>
+                  <button onClick={() => { setRefAday(null); setRefKodGonderildi(false); setRefKod('') }}
+                    className="text-slate-500 hover:text-slate-300 text-sm">✕</button>
+                </div>
+
+                {!refKodGonderildi ? (
+                  <button disabled={pending}
+                    onClick={() => run(async () => {
+                      const r = await referansorKodGonder(refAday.id)
+                      if (r.ok) setRefKodGonderildi(true)
+                      return r
+                    })}
+                    className="w-full px-3 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-40">
+                    {pending ? 'Gönderiliyor…' : 'Onay Kodu Gönder'}
+                  </button>
+                ) : (
+                  <form className="flex gap-2"
+                    onSubmit={e => {
+                      e.preventDefault()
+                      run(async () => {
+                        const r = await referansorOnayla(refAday.id, refKod)
+                        if (r.ok) { setRefAday(null); setRefKodGonderildi(false); setRefKod('') }
+                        return r
+                      })
+                    }}>
+                    <input value={refKod}
+                      onChange={e => setRefKod(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="______" inputMode="numeric" autoFocus
+                      className={`${inputCls} text-center font-mono tracking-[0.3em]`} />
+                    <button type="submit" disabled={pending || refKod.length < 6}
+                      className="px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-40">
+                      Onayla
+                    </button>
+                  </form>
+                )}
+                <p className="text-[11px] text-slate-500">
+                  {refKodGonderildi
+                    ? 'Hastanın söylediği 6 haneli kodu girin.'
+                    : 'Hastanın telefonuna onay kodu gönderilecek.'}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Kurumsal davet — kurum hasta kaydı değil, oran anlaşmayla.

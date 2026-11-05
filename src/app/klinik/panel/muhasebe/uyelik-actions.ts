@@ -145,6 +145,96 @@ export async function uyelikOnayla(
   return { ok: true }
 }
 
+/**
+ * Zaten ÜYE olan hastaya sonradan referansörlük ekler — SMS onaylı.
+ *
+ * Üyelik akışı yalnız üye olmayanlarda çalışıyor (uyelik_onay_at dolu ise
+ * reddediyor). Oysa çoğu referansör zaten üye: "anında referansör yap"
+ * düğmesi bu boşluğu onaysız dolduruyordu, kaldırıldı. Burası aynı işi
+ * rıza alarak yapar.
+ */
+export async function referansorKodGonder(patientId: string): Promise<Sonuc> {
+  const c = await ctx()
+  if (!c) return { ok: false, error: 'Yetkisiz' }
+
+  const { data: hasta } = await c.supabase
+    .from('internal_patient')
+    .select('name, phone')
+    .eq('id', patientId).eq('owner_id', c.ownerId).maybeSingle()
+  if (!hasta) return { ok: false, error: 'Hasta bulunamadı.' }
+
+  const { data: mevcut } = await c.supabase
+    .from('referral_referrer')
+    .select('id').eq('owner_id', c.ownerId).eq('patient_id', patientId).maybeSingle()
+  if (mevcut) return { ok: false, error: 'Bu hasta zaten referansör.' }
+
+  const tel = normalizePhone(hasta.phone ?? '')
+  if (!tel) return { ok: false, error: 'Hastanın telefon numarası geçersiz veya eksik.' }
+
+  const gonderilen = Number(await redis.get<number>(istekKey(tel)) ?? 0)
+  if (gonderilen >= ISTEK_SINIR) {
+    return { ok: false, error: `Bu numaraya son bir saatte ${ISTEK_SINIR} kod gönderildi.` }
+  }
+
+  const kod = generateOtpCode()
+  const parcalar = duzgunAd(hasta.name).split(' ')
+  const ad = parcalar.length > 1
+    ? [...parcalar.slice(0, -1), parcalar[parcalar.length - 1].toLocaleUpperCase('tr')].join(' ')
+    : parcalar[0] ?? ''
+  const res = await sendInfoSms(tel, smsSadelestir([
+    `Sayin ${ad}, Dr. Izzet GOK referansorluk icin onay kodunuz: ${kod}`,
+    'Kabul etmiyorsaniz kodu paylasmayin.',
+  ].join('\n')))
+  if (!res.success) {
+    console.error('[referansor-sms] Netgsm:', res.error)
+    return { ok: false, error: mapNetgsmError(res.code ?? '') }
+  }
+
+  const sayac = await redis.incr(istekKey(tel))
+  if (sayac === 1) await redis.expire(istekKey(tel), 3600)
+
+  await redis.set(otpKey(patientId), { kod, tel }, { ex: OTP_TTL_SEC })
+  await redis.del(denemeKey(patientId))
+  return { ok: true }
+}
+
+/** Kodu doğrular, referansörlüğü açar. */
+export async function referansorOnayla(
+  patientId: string, girilenKod: string,
+): Promise<Sonuc> {
+  const c = await ctx()
+  if (!c) return { ok: false, error: 'Yetkisiz' }
+
+  const kayit = await redis.get<{ kod: string; tel: string }>(otpKey(patientId))
+  if (!kayit) return { ok: false, error: 'Onay kodunun süresi doldu. Yeniden gönderin.' }
+
+  const deneme = await redis.incr(denemeKey(patientId))
+  if (deneme === 1) await redis.expire(denemeKey(patientId), OTP_TTL_SEC)
+  if (deneme > DENEME_SINIR) {
+    await redis.del(otpKey(patientId))
+    return { ok: false, error: 'Çok fazla yanlış deneme. Yeniden kod gönderin.' }
+  }
+
+  if (girilenKod.replace(/\D/g, '') !== kayit.kod) {
+    return { ok: false, error: 'Kod hatalı.' }
+  }
+
+  const { error } = await c.supabase.rpc('referral_referansor_ekle', {
+    p_owner: c.ownerId, p_patient: patientId,
+  })
+  if (error) return { ok: false, error: error.message }
+
+  // Rıza izi: referansörlüğü ne zaman kabul etti.
+  await c.supabase.from('internal_patient')
+    .update({ referansor_onay_at: new Date().toISOString() })
+    .eq('id', patientId).eq('owner_id', c.ownerId)
+
+  await redis.del(otpKey(patientId))
+  await redis.del(denemeKey(patientId))
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
 /** Kodu BULUR, uygulamaz — personel içeriği görüp onaylasın diye. */
 export async function referansKoduBul(kisaKod: string): Promise<
   | { ok: true; codeId: string; kod: string; oran: number
