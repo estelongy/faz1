@@ -21,7 +21,7 @@ export interface PanelVerisi {
   puan_omru_gun: number | null
   /** Nakde dönerse eline geçecek tutar (hasta indiriminin yarısı düşülmüş). */
   nakit_karsiligi: number
-  /** Birikmiş referans cirosu — kademe bundan belirlenir. */
+  /** Birikmiş referans cirosu — gösterim amaçlı; kademe sistemi kalktı. */
   ciro: number
   /** Toplam iskonto havuzu % — müşteri indirimi + kendi puanı. */
   havuz: number
@@ -311,13 +311,13 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-2">
             <p className="text-xs font-bold text-slate-300">Nasıl kazanıyorum?</p>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Gönderdiğiniz her işlemde size <b className="text-violet-300">%{veri.havuz}</b> pay
-              ayrılır. Bunun en az <b className="text-white">%{veri.musteri_min}</b>ini
-              müşterinize indirim olarak verirsiniz, en çok %{veri.musteri_max} verebilirsiniz.
-              Kalanı puan olarak size geçer.
+              Gönderdiğiniz kişi <b className="text-white">%{veri.musteri_min}</b> indirim alır.
+              Siz işlemin <b className="text-violet-300">%{veri.puan_oran}</b>&apos;sini puan
+              olarak kazanırsınız.
             </p>
             <p className="text-[11px] text-slate-500">
-              Müşterinize daha fazla indirim verirseniz puanınız azalır — oranı siz seçersiniz.
+              İşlemin ilk {TRY(10000)} lirasına %{veri.puan_oran}, üstüne %
+              {Math.round(veri.puan_oran / 2)} puan yazılır.
             </p>
           </div>
 
@@ -353,11 +353,11 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 <span className="text-xs font-bold text-slate-300">Toplam referans cironuz</span>
                 <span className="text-sm font-black text-white tabular-nums">{TRY(veri.ciro)}</span>
               </div>
-              {veri.tip === 'uye' && (
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Ciro arttıkça payınız yükselir — şu an %{veri.havuz}.
-                </p>
-              )}
+              {/* "Ciro arttıkça payınız yükselir" kaldırıldı: kademe sistemi
+                  kalktı, oran herkes için sabit. Tutmayan vaat güven kırar. */}
+              <p className="text-[11px] text-slate-500 mt-1">
+                Gönderdiğiniz işlemlerin toplamı.
+              </p>
             </div>
           )}
         </section>
