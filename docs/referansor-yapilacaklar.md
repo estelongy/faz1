@@ -7,20 +7,6 @@
 
 ## Bekleyen
 
-### 14. Aynı kişi hem bireysel hem kurumsal referansör olamıyor
-**Durum:** açık — şu an elle pasife alarak çözülüyor
-Semra Demirlenk hem üye (SD8GOK) hem kurumsal (SE9GOK) referansör; ikisi de
-aynı telefona bağlı. Kurucu SE9'u elle pasife aldı, yoksa çakışacaktı.
-
-Kök sorun: `referral_giris_onek` telefondan önek bulurken `limit 1` diyor.
-İki aktif kayıt aynı numaraya düşerse hangi panele girileceği belirsiz.
-
-Gerçek hayatta olabilir: kişi hem kendi adına tavsiye eder, hem kurumunun
-adına. Çözüm seçenekleri (karar verilmedi):
-- Girişte iki panel çıkarsa "hangisi?" diye sor
-- Kurumsal referansörü ayrı telefona bağla (yetkili numarası)
-- Tek panelde iki kimlik arasında geçiş
-
 ### 12. `/referansor-basvuru` davetsiz de açılıyor
 **Durum:** iş kararı bekliyor
 `searchParams.ref ?? ''` — önek olmadan da form açılıyor, yani adresi bilen herkes
@@ -107,6 +93,14 @@ Dışarıdan aday başvurusu kapısı hiç denenmedi, bekleyen başvuru yok.
 
 ## Çözülenler
 
+- **KURAL: bir telefon, bir aktif referansör** (migration `20261111_...`, uygulandı).
+  Kurucunun kararı. DB trigger'ı olarak kondu — referansör dört ayrı yoldan
+  açılıyor, her birine ayrı kontrol yazmak eksik kalırdı.
+  Semra Demirlenk hem üye (SD8) hem kurumsal (SE9) açılmıştı, aynı numaraya bağlı;
+  elle pasife alınarak çözülmüştü. Asıl risk girişteydi: `referral_giris_onek`
+  `limit 1` diyor, iki aktif kayıtta hangi panele girileceği belirsiz kalıyordu.
+  İki senaryoda doğrulandı: pasif kaydı aktife çekmek engellendi, aynı numaraya
+  yeni kayıt açmak engellendi. Pasif kayıtlar serbest (arşiv/askıya alma çalışıyor).
 - **Dört giriş kapısı da test edildi** (5 Kas): hasta kartı+SMS · kendi başvurusu ·
   üyelikle birlikte · kurumsal davet. Dördü de çalışıyor.
 - **Kayıt bonusu artık işliyor** (migration + commit `ded69e6`, test edildi).
