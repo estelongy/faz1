@@ -7,12 +7,19 @@
 
 ## Bekleyen
 
-### 11. Kayıt bonusu işlenmiyor
-**Durum:** açık
-`referral_settings.bonus_uye = 3000` tanımlı ama yeni referansörlerde
-`bonus_verildi` false kalıyor. Dört kayıttan yalnız DH6'da true — o da eski bir
-yoldan açılmış. Bonusun hangi koşulda yazıldığı belirsiz; `referral_referansor_ekle`
-ve `uyelik_baslat` RPC'lerinin gövdesine bakmak gerek.
+### 14. Aynı kişi hem bireysel hem kurumsal referansör olamıyor
+**Durum:** açık — şu an elle pasife alarak çözülüyor
+Semra Demirlenk hem üye (SD8GOK) hem kurumsal (SE9GOK) referansör; ikisi de
+aynı telefona bağlı. Kurucu SE9'u elle pasife aldı, yoksa çakışacaktı.
+
+Kök sorun: `referral_giris_onek` telefondan önek bulurken `limit 1` diyor.
+İki aktif kayıt aynı numaraya düşerse hangi panele girileceği belirsiz.
+
+Gerçek hayatta olabilir: kişi hem kendi adına tavsiye eder, hem kurumunun
+adına. Çözüm seçenekleri (karar verilmedi):
+- Girişte iki panel çıkarsa "hangisi?" diye sor
+- Kurumsal referansörü ayrı telefona bağla (yetkili numarası)
+- Tek panelde iki kimlik arasında geçiş
 
 ### 12. `/referansor-basvuru` davetsiz de açılıyor
 **Durum:** iş kararı bekliyor
@@ -99,6 +106,23 @@ Dışarıdan aday başvurusu kapısı hiç denenmedi, bekleyen başvuru yok.
 ---
 
 ## Çözülenler
+
+- **Dört giriş kapısı da test edildi** (5 Kas): hasta kartı+SMS · kendi başvurusu ·
+  üyelikle birlikte · kurumsal davet. Dördü de çalışıyor.
+- **Kayıt bonusu artık işliyor** (migration + commit `ded69e6`, test edildi).
+  Hiçbir yerde verilmiyordu — `bonus_uye`/`bonus_kurumsal` tanımlıydı ama ne
+  `uyelik_baslat` ne `referral_referansor_ekle` okuyordu; DH6'daki `true` elle
+  yazılmış olmalı. Bonus ortak yere (`referral_referansor_ekle`) kondu: referansör
+  kaydı hangi yoldan açılırsa açılsın deftere `puan_bonus` satırı yazılıyor.
+  IG5GOK'ta doğrulandı: 3000 puan, `bonus_verildi: true`.
+- **Başvuru onayı diğer yollarla hizalandı** (migration). Kendi önek mantığını
+  yazıyordu (addan ilk iki harf `IZ`, `max(kod_rakam)+1`); artık ortak fonksiyonu
+  çağırıyor — `referral_bas_harf()` ile `IG`, rakam boşlardan rastgele. Ayrıca
+  rıza izi damgalanıyor, telefon eşleştirmesi son 10 haneye çevrildi (mükerrer
+  hasta kaydı açmasın).
+- **Hoş geldin SMS'i** (commit `ded69e6`): onay + bonus + panel linki tek mesajda.
+  Panel adresi daha önce hiçbir kanaldan gitmiyordu, personel elle iletiyordu.
+  Bonus yoksa o satır hiç yazılmıyor. SMS gidemezse akış bozulmuyor.
 
 - **Üye hastayı SMS onayıyla referansör yapma** (commit `4e2dc38`, canlıda, test edildi).
   Üyelik akışı yalnız üye OLMAYANLARDA çalışıyordu; üye birini referansör yapmanın
