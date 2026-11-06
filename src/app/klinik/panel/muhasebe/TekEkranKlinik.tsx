@@ -774,6 +774,8 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     codeId: string; kod: string; oran: number
     musteri: string | null; teklif: string; ayricalik: string
     islemNotu: string | null
+    /** Referansörün kendi puanından verdiği ek indirim (₺, sabit tutar). */
+    ekstraIndirim: number
   } | null>(null)
   // Kodu TANIMLAYAN referansörün puan bakiyesi. Puan hastanın değil;
   // kod bulunduğunda yüklenir, kod yoksa null kalır ve kutu görünmez.
@@ -2436,7 +2438,14 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     // farklı bir tutar kaydedilirdi.
                     const uyeOran = uyelikIndirimi?.oran ?? 0
                     const oran = Math.max(refBulunan.oran, uyeOran)
-                    const indirim = Math.round(ziyaretToplam * oran / 100)
+                    const yuzdeIndirim = Math.round(ziyaretToplam * oran / 100)
+                    // Ek indirim YÜZDE DEĞİL SABİT TUTAR: referansörün
+                    // puanından karşılanır, yüzde indiriminden sonra düşer.
+                    // Kalan tutarı aşamaz — bedava işlem olur, eksiye inmez.
+                    const ekstra = Math.min(
+                      refBulunan.ekstraIndirim,
+                      Math.max(ziyaretToplam - yuzdeIndirim, 0))
+                    const indirim = yuzdeIndirim + ekstra
                     const ustunGeldi = uyeOran > refBulunan.oran
                     return (
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-2.5 py-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/40">
@@ -2454,6 +2463,11 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                           </span>
                         )}
                         <span className="text-xs text-slate-400">%{refBulunan.oran}</span>
+                        {ekstra > 0 && (
+                          <span className="text-xs font-bold text-violet-300">
+                            + puandan −{TRY(ekstra)}
+                          </span>
+                        )}
                         {ziyaretToplam > 0 && oran > 0 && (
                           <span className="text-xs text-slate-300 tabular-nums">
                             {TRY(ziyaretToplam)} → <b className="text-amber-200">{TRY(ziyaretToplam - indirim)}</b>
@@ -2462,7 +2476,13 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                         )}
                         <button type="button" disabled={pending || ziyaretToplam <= 0}
                           onClick={() => {
-                            const oranKat = 1 - oran / 100
+                            // Toplam indirimin ziyaret toplamına oranı: yüzde
+                            // indirimi + sabit ek indirim birlikte. Tek bir
+                            // katsayıya çevrilir ki işlem satırlarına orantılı
+                            // dağılsın (eskiden yalnız yüzde dağıtılıyordu,
+                            // ek indirim satırlara hiç yansımıyordu).
+                            const oranKat = ziyaretToplam > 0
+                              ? Math.max(1 - indirim / ziyaretToplam, 0) : 1
                             startTransition(async () => {
                               const r = await referansKoduOnayla(refBulunan.codeId, ziyaretToplam, indirim, selectedId)
                               if (!r.ok) { setError(r.error); return }
@@ -2480,7 +2500,9 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                                 return g
                               })
                               setIndirimUygulandi(true)
-                              setRefSonuc(`${refBulunan.kod} · %${oran} −${TRY(indirim)}`)
+                              setRefSonuc(ekstra > 0
+                                ? `${refBulunan.kod} · %${oran} + puandan ${TRY(ekstra)} · −${TRY(indirim)}`
+                                : `${refBulunan.kod} · %${oran} −${TRY(indirim)}`)
                               setSonUygulanan({ codeId: refBulunan.codeId, kod: refBulunan.kod })
                               setRefBulunan(null); setRefKodArama('')
                             })

@@ -286,7 +286,9 @@ export async function referansorOnayla(
 export async function referansKoduBul(kisaKod: string): Promise<
   | { ok: true; codeId: string; kod: string; oran: number
       musteri: string | null; teklif: string; ayricalik: string
-      islemNotu: string | null }
+      islemNotu: string | null
+      /** Referansörün kendi puanından müşteriye verdiği ek indirim (₺). */
+      ekstraIndirim: number }
   | { ok: false; error: string }
 > {
   const c = await ctx()
@@ -318,6 +320,9 @@ export async function referansKoduBul(kisaKod: string): Promise<
     teklif: String(aktif.teklif_baslik ?? ''),
     ayricalik,
     islemNotu: (aktif.islem_notu as string) ?? null,
+    // Referansör puanından ek indirim: RPC bunu hiç döndürmüyordu, kart
+    // da göstermiyordu. Veri referral_link'te duruyordu.
+    ekstraIndirim: Number(aktif.ekstra_indirim ?? 0),
   }
 }
 
