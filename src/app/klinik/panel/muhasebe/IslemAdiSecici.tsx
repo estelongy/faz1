@@ -58,11 +58,26 @@ export default function IslemAdiSecici({
     () => [...catalog.map(c => c.name), ...eklendi],
     [catalog, eklendi])
 
+  // Boş kutuda TÜM katalog listelenir — kesersek alfabetik sıra yüzünden
+  // yalnız ilk harfler görünüyordu (55 kalemde hepsi "Botoks" çıkıyordu).
+  // Kutu zaten kaydırılabilir; arama yazıldıkça süzülür.
   const suzulen = useMemo(() => {
     const q = sadele(deger)
-    if (!q) return catalog.slice(0, 8)
-    return catalog.filter(c => sadele(c.name).includes(q)).slice(0, 8)
+    if (!q) return catalog
+    return catalog.filter(c => sadele(c.name).includes(q))
   }, [catalog, deger])
+
+  /** Kategoriye göre grupla — başlıklı liste için. */
+  const gruplu = useMemo(() => {
+    const m = new Map<string, CatalogItem[]>()
+    for (const c of suzulen) {
+      const k = c.category || 'Diğer'
+      const v = m.get(k)
+      if (v) v.push(c)
+      else m.set(k, [c])
+    }
+    return Array.from(m.entries()).sort((a, b) => a[0].localeCompare(b[0], 'tr'))
+  }, [suzulen])
 
   // Yazılan ad katalogda var mı? Yoksa "ekle" teklifi çıkar.
   const tamEslesme = tumKalemler.some(n => sadele(n) === sadele(deger))
@@ -112,18 +127,28 @@ export default function IslemAdiSecici({
 
       {acik && (suzulen.length > 0 || ekleTeklifi) && (
         <div className="absolute z-30 left-0 right-0 mt-1 rounded-lg bg-slate-900 border border-slate-700
-                        shadow-xl max-h-64 overflow-y-auto">
-          {suzulen.map(c => (
-            <button key={c.id} type="button" onClick={() => sec(c)}
-              className="w-full text-left px-3 py-2 text-sm text-slate-200 hover:bg-violet-600/30
-                         flex items-center justify-between gap-2">
-              <span className="truncate">{c.name}</span>
-              {c.default_price ? (
-                <span className="text-[11px] text-slate-500 tabular-nums shrink-0">
-                  ₺{Math.round(c.default_price).toLocaleString('tr-TR')}
-                </span>
-              ) : null}
-            </button>
+                        shadow-xl h-64 overflow-y-auto">
+          {/* Kategori başlıklarıyla gruplu: 55 kalem düz liste olunca göz
+              kayboluyor, hangi grupta olduğu anlaşılmıyor. */}
+          {gruplu.map(([kategori, kalemler]) => (
+            <div key={kategori}>
+              <p className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider
+                            text-slate-500 bg-slate-900 sticky top-0">
+                {kategori}
+              </p>
+              {kalemler.map(c => (
+                <button key={c.id} type="button" onClick={() => sec(c)}
+                  className="w-full text-left px-3 py-2 text-sm text-slate-200 hover:bg-violet-600/30
+                             flex items-center justify-between gap-2">
+                  <span className="truncate">{c.name}</span>
+                  {c.default_price ? (
+                    <span className="text-[11px] text-slate-500 tabular-nums shrink-0">
+                      ₺{Math.round(c.default_price).toLocaleString('tr-TR')}
+                    </span>
+                  ) : null}
+                </button>
+              ))}
+            </div>
           ))}
 
           {ekleTeklifi && (
