@@ -12,6 +12,7 @@ export function generateMetadata(): Metadata {
   return {
     title: 'Tavsiye Panelim',
     robots: { index: false, follow: false },
+    manifest: '/tavsiye-manifest.json',
   }
 }
 

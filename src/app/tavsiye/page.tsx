@@ -12,6 +12,10 @@ import GirisFormu from './GirisFormu'
 export const metadata: Metadata = {
   title: 'Referansör Girişi',
   robots: { index: false, follow: false },
+  // K+ (klinik-manifest.json) ile ayni desen: id + scope + kare ikonlar.
+  // Manifest olmazsa kok manifest devreye girip start_url "/" oluyor,
+  // kurulan kisayol anasayfa aciyordu.
+  manifest: '/tavsiye-manifest.json',
 }
 
 export default function TavsiyeGirisSayfasi() {
