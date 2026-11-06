@@ -91,6 +91,20 @@ Dışarıdan aday başvurusu kapısı hiç denenmedi, bekleyen başvuru yok.
 
 ---
 
+### 15. İşlem kataloğu — fiyat ve stok bağlanacak
+**Durum:** sonraya bırakıldı (kurucu: "fiyat listeleri ve stokları bağlayacaz sonra")
+
+Katalog 6 Kas'ta yeniden kuruldu: 55 kalem, 8 kategori, hepsi `Grup - Ayrıntı`
+kalıbında (Botoks - Glabella, Gençlik Aşısı - Profhilo, Sıvı Yüz Germe - Radiesse…).
+Eski genel kalemler (Botoks, HA Dolgu, Mezoterapi, Skin Booster) silindi — yeni
+bölge bazlı listeyle çakışıyorlardı. Geçmiş 51 işlemin adı `internal_treatment.name`
+alanında metin olarak duruyor, yalnız `catalog_id` bağı koptu.
+
+Bekleyen:
+- `default_price` alanı boş — dolunca işlem seçilince ücret otomatik dolacak
+  (bağlantı `IslemAdiSecici` içinde hazır, `onSec` ile çalışıyor)
+- Stok eşlemesi: `internal_product` + stok tabloları var, katalogla bağlanmadı
+
 ## Çözülenler
 
 - **KURAL: bir telefon, bir aktif referansör** (migration `20261111_...`, uygulandı).
