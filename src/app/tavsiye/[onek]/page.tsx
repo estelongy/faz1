@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import ReferansorPanel, { type PanelVerisi } from './ReferansorPanel'
 import GirisFormu from '../GirisFormu'
+import KurulumCubugu from '../KurulumCubugu'
 import { oturumCerez } from '../giris-sabit'
 
 export function generateMetadata(): Metadata {
@@ -48,6 +49,9 @@ export default async function ReferansorSayfasi({
   return (
     <main className="min-h-dvh bg-slate-950 px-4 py-6">
       <div className="mx-auto w-full max-w-md">
+        {/* Giriş doğrulandıktan hemen sonra: uygulama kurulu değilse
+            kurulum çağrısı. Referansör menüyü karıştırmasın. */}
+        <KurulumCubugu />
         <ReferansorPanel veri={veri} />
       </div>
     </main>
