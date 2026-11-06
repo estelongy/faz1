@@ -98,7 +98,7 @@ export default async function MuhasebePage({
       .maybeSingle(),
     // ─── Referans: sadece sekme rozetindeki bekleyen sayısı ───
     supabase.from('referral_code')
-      .select('id, kod, durum, son_kullanma, created_at, link_id, referral_link!inner(referrer_id, kilitli_ad, kilitli_tel, offer_id), referral_visit(geldi, isaretlendi_at)')
+      .select('id, kod, durum, son_kullanma, created_at, link_id, referral_link!inner(referrer_id, kilitli_ad, kilitli_tel, offer_id, ekstra_indirim, islem_notu), referral_visit(geldi, isaretlendi_at)')
       .eq('owner_id', clinicOwner)
       .order('created_at', { ascending: false })
       .limit(200),
@@ -315,6 +315,12 @@ export default async function MuhasebePage({
             offer_id: link ? String(link.offer_id) : '',
             musteri_ad: (link?.kilitli_ad as string) ?? null,
             musteri_tel: (link?.kilitli_tel as string) ?? null,
+            // Ek indirim ve islem notu BURADA da doldurulmali: tek-ekran
+            // yolu (TekEkranKlinik) kodlari bu sayfadan aliyor. Tipe alan
+            // eklemek yetmiyordu, `as ReferansKod[]` zorlamasi eksik alani
+            // gizliyor ve calisma aninda undefined geliyordu.
+            ekstra_indirim: link?.ekstra_indirim == null ? 0 : Number(link.ekstra_indirim),
+            islem_notu: (link?.islem_notu as string) ?? null,
             geldi: (vis?.geldi as boolean | null) ?? null,
           }
         }) as ReferansKod[]}
