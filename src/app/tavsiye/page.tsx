@@ -12,18 +12,6 @@ import GirisFormu from './GirisFormu'
 export const metadata: Metadata = {
   title: 'Referansör Girişi',
   robots: { index: false, follow: false },
-  // Kisayol bu sayfadan da kurulabiliyor (onek bilinmeden girilen kapi).
-  // Manifest + iOS meta olmadan kurulan ikon Estelongy anasayfasini
-  // aciyordu; artik /tavsiye kapisina duser, oradan kendi paneline gecer.
-  manifest: '/tavsiye/manifest.webmanifest',
-  // iOS manifest ikonlarini da okumaz; apple-touch-icon yoksa ana ekrana
-  // sayfanin ekran goruntusunu koyar.
-  icons: { apple: '/apple-touch-icon.png' },
-  appleWebApp: {
-    capable: true,
-    title: 'Tavsiye',
-    statusBarStyle: 'black-translucent',
-  },
 }
 
 export default function TavsiyeGirisSayfasi() {
