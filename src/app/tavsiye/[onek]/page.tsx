@@ -18,6 +18,17 @@ export function generateMetadata({ params }: { params: { onek: string } }): Meta
     title: 'Tavsiye Panelim',
     robots: { index: false, follow: false },
     manifest: `/tavsiye/${params.onek}/manifest.webmanifest`,
+    // iOS manifesti OKUMAZ: Safari "Ana Ekrana Ekle" derken o anki URL'yi
+    // kaydeder ve tam ekran icin bu meta etiketlerini arar. Bunlar olmadan
+    // kisayol normal Safari sekmesi gibi aciliyordu.
+    // iOS manifest ikonlarini da okumaz; apple-touch-icon yoksa ana ekrana
+    // sayfanin ekran goruntusunu koyar.
+    icons: { apple: '/apple-touch-icon.png' },
+    appleWebApp: {
+      capable: true,
+      title: 'Tavsiye',
+      statusBarStyle: 'black-translucent',
+    },
   }
 }
 
