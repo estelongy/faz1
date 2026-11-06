@@ -23,6 +23,7 @@ import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
 import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
 import type { ReferansKod } from './referans-tipler'
+import IslemAdiSecici from './IslemAdiSecici'
 import { uyelikKodGonder, uyelikOnayla, referansKoduBul, referansKoduOnayla, referansGeriAl, puanBakiyeKod, puanlaOdeKod } from './uyelik-actions'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
@@ -698,7 +699,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
             {[15, 20, 30, 45, 60, 90].map(m => <option key={m} value={m}>{m} dk</option>)}
           </select>
         </div>
-        <input list="katalog-listesi" placeholder="İşlem / sebep" value={editAppt.islem}
+        <input list="katalog-listesi" autoComplete="off" placeholder="İşlem / sebep" value={editAppt.islem}
           onChange={e => setEditAppt(s => s && { ...s, islem: e.target.value })}
           className={inputCls} />
         <SlotSecici tarih={editAppt.tarih} secili={editAppt.saat} haricApptId={editAppt.id} ayniHastaId={editAppt.patientId}
@@ -984,6 +985,11 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
       {tema === 'acik' && (
         <style>{`img, video { filter: invert(1.087) hue-rotate(180deg); }`}</style>
       )}
+      {/* Randevu ve işlem-tipi alanları hâlâ basit öneri kullanıyor; işlem
+          formu IslemAdiSecici'ye geçti. Tanım tek yerde dursun. */}
+      <datalist id="katalog-listesi">
+        {catalog.map(c => <option key={c.id} value={c.name} />)}
+      </datalist>
       {/* Sabit başlık — mobilde sade (Ana Sayfa + ⋯), masaüstünde tüm butonlar */}
       <div className="sticky top-0 z-40 pt-1 bg-slate-950/95 backdrop-blur">
         <div className="flex items-center gap-2 sm:gap-3 py-2">
@@ -2274,12 +2280,16 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                 <form onSubmit={submitIslem} className="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
                   {fromApptId && <p className="text-xs text-emerald-300 font-semibold">Randevu işleme alınıyor — kaydedilince randevu tamamlanır.</p>}
                   <div className="grid sm:grid-cols-[minmax(0,1fr),140px,130px,118px] gap-2">
-                    <div className="min-w-0">
-                      <input name="treatment_name" list="katalog-listesi" placeholder="İşlem adı *" required className={inputCls} />
-                      <datalist id="katalog-listesi">
-                        {catalog.map(c => <option key={c.id} value={c.name} />)}
-                      </datalist>
-                    </div>
+                    {/* datalist yerine gerçek arama: yazdıkça süzer, katalogda
+                        yoksa "listeye ekle" teklif eder, seçilince fiyatı doldurur. */}
+                    <IslemAdiSecici
+                      catalog={catalog} name="treatment_name" required inputCls={inputCls}
+                      onSec={k => {
+                        if (!k.default_price) return
+                        const v = String(Math.round(k.default_price))
+                        if (islemTutarRef.current) islemTutarRef.current.value = v
+                        setIslemTutar(v); setIndirimUygulandi(false)
+                      }} />
                     <input ref={islemTutarRef} name="treatment_amount" placeholder="Ücret ₺ *" required inputMode="decimal"
                       onChange={e => { setIslemTutar(e.target.value); setIndirimUygulandi(false) }} className={inputCls} />
                     <select name="session_total" defaultValue="" className={inputCls} title="Paketse toplam seans sayısı">
@@ -2297,7 +2307,13 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   {/* Ek işlem satırları — aynı ziyaret, ayrı borç kayıtları */}
                   {extraIslemler.map((row, i) => (
                     <div key={row.id} className="grid sm:grid-cols-[minmax(0,1fr),140px,130px,118px] gap-2">
-                      <input name={`extra_name_${i}`} list="katalog-listesi" placeholder={`${i + 2}. işlem adı`} className={inputCls} />
+                      <IslemAdiSecici
+                        catalog={catalog} name={`extra_name_${i}`}
+                        placeholder={`${i + 2}. işlem adı`} inputCls={inputCls}
+                        onSec={k => {
+                          if (!k.default_price) return
+                          setEkTutarlar(p => ({ ...p, [row.id]: String(Math.round(k.default_price!)) }))
+                        }} />
                       <input name={`extra_amount_${i}`} placeholder="Ücret ₺" inputMode="decimal"
                         value={ekTutarlar[row.id] ?? ''}
                         onChange={e => setEkTutarlar(p => ({ ...p, [row.id]: e.target.value }))}
@@ -2584,7 +2600,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                     <select name="duration_minutes" defaultValue="30" className={inputCls}>
                       {[15, 20, 30, 45, 60, 90].map(m => <option key={m} value={m}>{m} dk</option>)}
                     </select>
-                    <input name="treatment_type" list="katalog-listesi" placeholder="İşlem / sebep" className={inputCls} />
+                    <input name="treatment_type" list="katalog-listesi" autoComplete="off" placeholder="İşlem / sebep" className={inputCls} />
                   </div>
 
                   <SlotSecici tarih={randevuTarih} secili={randevuSaat} onSec={setRandevuSaat} ayniHastaId={selectedId ?? undefined} />

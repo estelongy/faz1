@@ -31,6 +31,45 @@ function trDate(dateStr: string, timeStr: string): Date {
 }
 
 // ─── Hasta ────────────────────────────────────────────────────────────────
+/**
+ * İşlem kataloğuna yeni kalem ekler.
+ *
+ * İşlem formunda aranan ad katalogda yoksa personele "listeye ekleyeyim mi?"
+ * diye sorulur; evet derse burası çalışır. Böylece katalog kullanıldıkça
+ * kendi kendine zenginleşir, ayrı bir yönetim ekranına gerek kalmaz.
+ *
+ * Aynı ad varsa yenisi açılmaz, mevcut döner — mükerrer kalem birikmesin.
+ */
+export async function addKatalogKalem(
+  ad: string, fiyat?: number | null,
+): Promise<Result> {
+  const ctx = await requireOwner()
+  if (!ctx.ok) return { ok: false, error: ctx.error }
+
+  const temiz = ad.trim()
+  if (temiz.length < 2) return { ok: false, error: 'İşlem adı en az 2 karakter olmalı.' }
+
+  const { data: mevcut } = await ctx.supabase
+    .from('internal_treatment_catalog')
+    .select('id')
+    .eq('owner_id', ctx.clinicOwnerId)
+    .ilike('name', temiz)
+    .maybeSingle()
+  if (mevcut) return { ok: true }
+
+  const { error } = await ctx.supabase
+    .from('internal_treatment_catalog')
+    .insert({
+      owner_id: ctx.clinicOwnerId,
+      name: temiz,
+      default_price: Number.isFinite(fiyat) && fiyat! > 0 ? fiyat : null,
+    })
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath('/klinik/panel/muhasebe')
+  return { ok: true }
+}
+
 export async function addPatient(formData: FormData): Promise<Result> {
   const ctx = await requireOwner()
   if (!ctx.ok) return { ok: false, error: ctx.error }
