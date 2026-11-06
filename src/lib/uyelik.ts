@@ -37,13 +37,14 @@ export const KADEME_INDIRIM: Record<Kademe, number> = {
 }
 
 /**
- * Tek seferlik hoş geldin indirimi — yalnızca ONAYLI üyenin ilk işleminde.
- * Sürekli %5'ten daha iyi: bir kez ve büyük olduğu için hatırlanıyor,
- * taban fiyatı bozmuyor, Elita'yı (%10 sürekli) gerçek bir hedef yapıyor.
+ * HOŞ GELDİN İNDİRİMİ KALDIRILDI (6 Kas 2026, kurucu kararı).
  *
- * Referansla gelen hastaya UYGULANMAZ — o zaten kampanya indirimini alıyor.
+ * Referans sistemi her referanslı işlemde zaten %10 indirim veriyor; üyelik
+ * tarafında ikinci bir %10 çakışma riski yaratıyordu. Kademe indirimi
+ * (Elita %10, Optima+ %20) olduğu gibi duruyor.
+ *
+ * `hosgeldin_kullanildi_at` sütunu silinmedi: geçmiş kayıtların izi kalsın.
  */
-export const HOSGELDIN_ORAN = 10
 
 /** Sıra çarpanı: 1., 2., 3., 4., 5. ziyaret — 6. ve sonrası sabit ×6. */
 export function siraCarpani(sira: number): number {
@@ -81,8 +82,6 @@ export interface UyelikIslem {
 export interface UyelikDurumu {
   /** Hasta üyeliği SMS ile onayladı mı. false ise kademe GÖSTERİLMEZ. */
   uye: boolean
-  /** Tek seferlik hoş geldin indirimi hâlâ kullanılabilir mi. */
-  hosgeldinVar: boolean
   kademe: Kademe
   kademeAdi: string
   indirim: number
@@ -125,15 +124,12 @@ export function ziyaretTutarlari(odemeler: UyelikOdeme[], islemler: UyelikIslem[
 export interface UyelikKaydi {
   /** internal_patient.uyelik_onay_at — null ise üye değil. */
   uyelik_onay_at: string | null
-  /** internal_patient.hosgeldin_kullanildi_at */
-  hosgeldin_kullanildi_at?: string | null
 }
 
 export function uyelikHesapla(
   odemeler: UyelikOdeme[], islemler: UyelikIslem[], kayit?: UyelikKaydi | null,
 ): UyelikDurumu {
   const uye = Boolean(kayit?.uyelik_onay_at)
-  const hosgeldinVar = uye && !kayit?.hosgeldin_kullanildi_at
 
   const ziyaretler = ziyaretTutarlari(odemeler, islemler)
   const ziyaret = ziyaretler.length
@@ -197,7 +193,6 @@ export function uyelikHesapla(
 
   return {
     uye,
-    hosgeldinVar,
     kademe,
     kademeAdi: KADEME_ADI[kademe],
     indirim: KADEME_INDIRIM[kademe],

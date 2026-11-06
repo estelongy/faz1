@@ -23,8 +23,7 @@ import type { KlinikRole } from '@/lib/muhasebe-owner'
 import SeriKamera from './SeriKamera'
 import UyelikRozet from '@/components/klinik-panel/UyelikRozet'
 import type { ReferansKod } from './referans-tipler'
-import { HOSGELDIN_ORAN } from '@/lib/uyelik'
-import { uyelikKodGonder, uyelikOnayla, referansKoduBul, referansKoduOnayla, hosgeldinKullanildi, referansGeriAl, puanBakiyeKod, puanlaOdeKod } from './uyelik-actions'
+import { uyelikKodGonder, uyelikOnayla, referansKoduBul, referansKoduOnayla, referansGeriAl, puanBakiyeKod, puanlaOdeKod } from './uyelik-actions'
 import { generateSlotsForDay, availabilityForDate, type AvailabilityWeek } from './randevu/slot-utils'
 import { randevuMesaji, whatsappLink, normalizePhone } from './whatsapp'
 import {
@@ -794,18 +793,17 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
   const uyelikIndirimi = useMemo(() => {
     if (indirimUygulandi) return null
     if (!selected?.uyelik.uye) return null       // üye değilse indirim yok
-    // Primula'da sürekli indirim yok; onun yerine TEK SEFERLİK hoş geldin.
-    // Kademe indirimi varsa (Elita+) o uygulanır, ikisi birleşmez.
-    const kademeOran = selected.uyelik.indirim
-    const hosgeldin = selected.uyelik.hosgeldinVar && kademeOran < HOSGELDIN_ORAN
-    const oran = hosgeldin ? HOSGELDIN_ORAN : kademeOran
+    // Hoş geldin indirimi kaldırıldı (6 Kas 2026): referans sistemi zaten
+    // her referanslı işlemde %10 veriyordu, ikinci bir %10 çakışıyordu.
+    // Primula'da indirim yok; Elita %10, Optima+ %20.
+    const oran = selected.uyelik.indirim
     if (oran <= 0) return null
 
     // Tutar girilmeden de HAK görünsün — personel baştan bilsin.
     const girilen = ziyaretToplam
     const hazir = Number.isFinite(girilen) && girilen > 0
     const indirimli = hazir ? Math.round(girilen * (1 - oran / 100)) : 0
-    return { girilen, indirimli, oran, hosgeldin, hazir }
+    return { girilen, indirimli, oran, hazir }
   }, [selected, ziyaretToplam, indirimUygulandi])
 
   function submitIslem(e: React.FormEvent<HTMLFormElement>) {
@@ -818,13 +816,9 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     if (uyelikIndirimi && selected) {
       const u = uyelikIndirimi
       setConfirmBox({
-        title: u.hosgeldin
-          ? 'Hoş geldin indirimi uygulanmadı'
-          : `${selected.uyelik.kademeAdi} üyesi — indirim uygulanmadı`,
+        title: `${selected.uyelik.kademeAdi} üyesi — indirim uygulanmadı`,
         lines: [
-          u.hosgeldin
-            ? `${selected.name} · %${u.oran} tek seferlik hoş geldin indirimi hakkı var`
-            : `${selected.name} · %${u.oran} üye indirimi hakkı var`,
+          `${selected.name} · %${u.oran} üye indirimi hakkı var`,
           `Girilen tutar ${TRY(u.girilen)} · indirimli ${TRY(u.indirimli)} (fark ${TRY(u.girilen - u.indirimli)})`,
           'İndirimi uygulamadan kaydetmek istediğinizden emin misiniz?',
         ],
@@ -2335,9 +2329,7 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                   {uyelikIndirimi && (
                     <div className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/30">
                       <span className="text-xs text-amber-200 font-semibold">
-                        {uyelikIndirimi.hosgeldin
-                          ? `Hoş geldin · %${uyelikIndirimi.oran} (tek seferlik)`
-                          : `${selected?.uyelik.kademeAdi} · %${uyelikIndirimi.oran} üye indirimi`}
+                        {selected?.uyelik.kademeAdi} · %{uyelikIndirimi.oran} üye indirimi
                       </span>
                       {uyelikIndirimi.hazir ? (
                         <>
@@ -2364,10 +2356,6 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
                                 return g
                               })
                               setIndirimUygulandi(true)
-                              // Tek seferlik hoş geldin ise "kullanıldı" işaretle.
-                              if (uyelikIndirimi.hosgeldin && selected) {
-                                startTransition(() => { void hosgeldinKullanildi(selected.id) })
-                              }
                             }}
                             className="ml-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/80 hover:bg-amber-500 text-slate-900 disabled:opacity-40">
                             Uygula

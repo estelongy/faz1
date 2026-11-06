@@ -343,24 +343,12 @@ export async function referansKoduOnayla(
   return { ok: true }
 }
 
-/**
- * Tek seferlik hoş geldin indirimi kullanıldı diye işaretler.
- * Bu olmadan "tek seferlik" tanımı çalışmaz — hasta her işlemde %10 alır.
+/*
+ * hosgeldinKullanildi KALDIRILDI (6 Kas 2026, kurucu kararı).
+ * Hoş geldin indirimi iptal edildi: referans sistemi her referanslı işlemde
+ * zaten %10 veriyor, ikinci bir %10 çakışıyordu. Kademe indirimi duruyor.
+ * `hosgeldin_kullanildi_at` sütunu silinmedi — geçmiş kayıtların izi kalsın.
  */
-export async function hosgeldinKullanildi(patientId: string): Promise<Sonuc> {
-  const c = await ctx()
-  if (!c) return { ok: false, error: 'Yetkisiz' }
-
-  const { error } = await c.supabase
-    .from('internal_patient')
-    .update({ hosgeldin_kullanildi_at: new Date().toISOString() })
-    .eq('id', patientId).eq('owner_id', c.ownerId)
-    .is('hosgeldin_kullanildi_at', null)   // zaten kullanılmışsa dokunma
-
-  if (error) return { ok: false, error: error.message }
-  revalidatePath('/klinik/panel/muhasebe')
-  return { ok: true }
-}
 
 /**
  * Yanlış uygulanan kodu geri alır. Ledger'dan satır SİLİNMEZ; karşısına
