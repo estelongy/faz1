@@ -1,6 +1,6 @@
 {
-  "name": "Tavsiye Panelim",
-  "short_name": "Tavsiye",
+  "name": "T+ Tavsiye Panelim",
+  "short_name": "T+",
   "description": "Tanıdığını davet et, puanını takip et.",
   "id": "/tavsiye",
   "start_url": "/tavsiye",
@@ -12,8 +12,8 @@
   "lang": "tr-TR",
   "categories": ["business", "lifestyle"],
   "icons": [
-    { "src": "/klinik-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/klinik-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/klinik-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "/tavsiye-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/tavsiye-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/tavsiye-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
