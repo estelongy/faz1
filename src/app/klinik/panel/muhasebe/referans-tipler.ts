@@ -79,6 +79,10 @@ export interface ReferansKod {
   offer_id: string
   musteri_ad: string | null
   musteri_tel: string | null
+  /** Referansörün kendi puanından müşteriye verdiği ek indirim (₺). */
+  ekstra_indirim: number
+  /** Referansörün davet ederken yazdığı işlem notu. */
+  islem_notu: string | null
   /** null = beklemede */
   geldi: boolean | null
 }

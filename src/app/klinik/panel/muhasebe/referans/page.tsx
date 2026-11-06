@@ -41,7 +41,7 @@ export default async function ReferansPage() {
       .select('id, patient_id, kod_harf, kod_rakam, aktif, tip, havuz_oran, davet_durum, kurum_ad, kurum_yetkili, davet_token')
       .eq('owner_id', clinicOwner),
     supabase.from('referral_code')
-      .select('id, kod, durum, son_kullanma, created_at, referral_link!inner(referrer_id, kilitli_ad, kilitli_tel, offer_id), referral_visit(geldi)')
+      .select('id, kod, durum, son_kullanma, created_at, referral_link!inner(referrer_id, kilitli_ad, kilitli_tel, offer_id, ekstra_indirim, islem_notu), referral_visit(geldi)')
       .eq('owner_id', clinicOwner)
       .order('created_at', { ascending: false })
       .limit(300),
@@ -76,6 +76,10 @@ export default async function ReferansPage() {
       offer_id: link ? String(link.offer_id) : '',
       musteri_ad: (link?.kilitli_ad as string) ?? null,
       musteri_tel: (link?.kilitli_tel as string) ?? null,
+      // Referansorun kendi puanindan verdigi ek indirim ve islem notu
+      // sorguda YOKTU: referansor giriyordu, klinik ekrani hic gormuyordu.
+      ekstra_indirim: link?.ekstra_indirim == null ? 0 : Number(link.ekstra_indirim),
+      islem_notu: (link?.islem_notu as string) ?? null,
       geldi: (vis?.geldi as boolean | null) ?? null,
     }
   }) as ReferansKod[]

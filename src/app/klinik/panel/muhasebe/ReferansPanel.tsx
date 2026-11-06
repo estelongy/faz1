@@ -200,6 +200,21 @@ export default function ReferansPanel({
                 <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
                   Referansör: <span className="text-slate-300">{refHasta?.name ?? '—'}</span>
                 </p>
+                {k.islem_notu && (
+                  <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">
+                    Not: <span className="text-slate-300">{k.islem_notu}</span>
+                  </p>
+                )}
+                {/* Referansör kendi puanından ek indirim tanımladıysa personel
+                    bunu GÖRMELİ: tahsil edilecek tutar bu kadar düşer ve o
+                    işlemde referansör puan kazanmaz. Eskiden ekrana hiç
+                    gelmiyordu — veri duruyor, sorgu çekmiyordu. */}
+                {k.ekstra_indirim > 0 && (
+                  <p className="mt-1.5 text-xs font-bold text-violet-300 bg-violet-500/10
+                                border border-violet-500/30 rounded-lg px-2 py-1 inline-block">
+                    Referansör puanından ek indirim: −{TRY(k.ekstra_indirim)}
+                  </p>
+                )}
 
                 {/* Hesap tutarı girilir, indirim kampanyadan otomatik hesaplanır.
                     "Geldi" tek başına kampanya kârlılığını ölçmüyordu.
@@ -209,6 +224,11 @@ export default function ReferansPanel({
                   const hesap = Number((tutarlar[k.id] ?? '').replace(',', '.'))
                   const gecerli = Number.isFinite(hesap) && hesap > 0
                   const indirim = gecerli ? Math.round(hesap * oran / 100) : 0
+                  // Ek indirim referansörün puanından karşılanır: tahsilden
+                  // düşer ama kampanya indirimi gibi klinik kasasından
+                  // çıkmaz. Toplam müşteri avantajı ikisinin toplamı.
+                  const ekstra = Math.min(k.ekstra_indirim, Math.max(hesap - indirim, 0))
+                  const tahsil = gecerli ? hesap - indirim - ekstra : 0
                   return (
                     <form className="mt-2.5 space-y-2"
                       onSubmit={e => {
@@ -227,10 +247,15 @@ export default function ReferansPanel({
                           Geldi
                         </button>
                       </div>
-                      {gecerli && oran > 0 && (
+                      {gecerli && (oran > 0 || ekstra > 0) && (
                         <p className="text-xs text-slate-400 tabular-nums">
-                          %{oran} indirim: <span className="text-rose-300">−{TRY(indirim)}</span>
-                          {' · '}Tahsil: <span className="text-emerald-300 font-bold">{TRY(hesap - indirim)}</span>
+                          {oran > 0 && (
+                            <>%{oran} indirim: <span className="text-rose-300">−{TRY(indirim)}</span>{' · '}</>
+                          )}
+                          {ekstra > 0 && (
+                            <>Puandan: <span className="text-violet-300">−{TRY(ekstra)}</span>{' · '}</>
+                          )}
+                          Tahsil: <span className="text-emerald-300 font-bold">{TRY(tahsil)}</span>
                         </p>
                       )}
                     </form>
