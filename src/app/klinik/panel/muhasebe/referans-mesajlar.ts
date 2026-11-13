@@ -80,13 +80,20 @@ export function smsReferansorHosGeldin(opts: {
   whatsappTel?: string | null
 }): string {
   const ad = duzgunAd(opts.ad).split(' ')[0]
-  const kok = opts.siteUrl.replace(/\/$/, '')
+  // "https://" SMS'te 8 karakter yiyor ve hiçbir şey katmıyor: telefonlar
+  // estelongy.com/... adresini zaten bağlantı yapıyor. Uzun adlı
+  // referansörlerde (Abdurrahman, Hayriye) mesaj bu 8 karakter yüzünden
+  // 155'i aşıp ikinci SMS kredisi yakıyordu.
+  const kok = opts.siteUrl.replace(/\/$/, '').replace(/^https?:\/\//, '')
   const wa = (opts.whatsappTel ?? '').replace(/\D/g, '')
   return smsSadelestir([
     `Tebrikler ${ad}! ${KLINIK} referansoru oldunuz.`,
     opts.bonus && opts.bonus > 0 ? `Hos geldin bonusu: ${Math.round(opts.bonus)} puan.` : null,
     `Paneliniz: ${kok}/tavsiye/${opts.onek}`,
-    wa ? `Sorulariniz icin WhatsApp: ${telYaz(wa)}` : null,
+    // "Sorulariniz icin WhatsApp:" yazısı 17 karakter yiyordu ve mesajı
+    // 155'in üstüne çıkarıp her onayda çift SMS kredisi yaktırıyordu.
+    // Numaranın yanındaki "WhatsApp" ne olduğunu zaten söylüyor.
+    wa ? `WhatsApp: ${telYaz(wa)}` : null,
   ].filter(Boolean).join('\n'))
 }
 
