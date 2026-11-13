@@ -249,7 +249,7 @@ export function smsKodOzetMetni(opts: {
   if (opts.randevu) {
     return smsSadelestir([
       `Sayin ${ad}, randevunuz: ${randevuYaz(opts.randevu)}`,
-      `Indirim kodunuz: ${opts.kisaKod} (${fayda.replace(' tanimli', '')})`,
+      `ALTIN KOD: ${opts.kisaKod} (${fayda.replace(' tanimli', '')})`,
       IMZA,
     ].join('\n'))
   }
