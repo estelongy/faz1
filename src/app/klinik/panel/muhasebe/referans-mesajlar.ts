@@ -228,6 +228,8 @@ export function smsKodOzetMetni(opts: {
   referansor?: string | null
   /** Kampanyanın kendi oranı yoksa dışarıdan verilen indirim yüzdesi. */
   indirimOran?: number | null
+  /** Randevu saati 'YYYY-MM-DDTHH:MM'. Varsa mesaj randevu odaklı yazılır. */
+  randevu?: string | null
 }): string {
   const ad = adSoyadBasHarf(opts.musteriAd)
   const tarih = tarihYaz(opts.sonKullanma)
@@ -241,11 +243,35 @@ export function smsKodOzetMetni(opts: {
   // Referansör adı da baş harfli: "Deniz Hanim" → "Deniz H."
   // Panel öneki (DH6GOK) ASLA yazılmaz — o, referansörün panel adresi.
   const ref = adSoyadBasHarf(opts.referansor)
+
+  // RANDEVU VARSA: asıl bilgi randevudur, son kullanma tarihi anlamsız —
+  // müşteri zaten o gün gelecek. Yer de açılmış olur.
+  if (opts.randevu) {
+    return smsSadelestir([
+      `Sayin ${ad}, randevunuz: ${randevuYaz(opts.randevu)}`,
+      `Indirim kodunuz: ${opts.kisaKod} (${fayda.replace(' tanimli', '')})`,
+      IMZA,
+    ].join('\n'))
+  }
+
   return smsSadelestir([
     `Sayin ${ad}, ${KLINIK} kliniginde ${fayda} ALTIN KODUNUZ: ${opts.kisaKod}`,
     `Indirim firsati icin son tarih ${tarih}.${ref ? ` Ref: ${ref}` : ''}`,
   ].join('\n'))
 }
+
+/** '2026-11-17T14:00' → '17 Kasim Pazartesi 14:00' */
+function randevuYaz(iso: string): string {
+  const [tarihKismi, saat] = iso.split('T')
+  const [y, a, g] = (tarihKismi ?? '').split('-').map(Number)
+  if (!y || !a || !g) return iso
+  const d = new Date(y, a - 1, g)
+  const GUNLER = ['Pazar', 'Pazartesi', 'Sali', 'Carsamba', 'Persembe', 'Cuma', 'Cumartesi']
+  return `${g} ${AYLAR[a - 1] ?? ''} ${GUNLER[d.getDay()]} ${(saat ?? '').slice(0, 5)}`.trim()
+}
+
+const AYLAR = ['Ocak', 'Subat', 'Mart', 'Nisan', 'Mayis', 'Haziran',
+               'Temmuz', 'Agustos', 'Eylul', 'Ekim', 'Kasim', 'Aralik']
 
 /**
  * SMS gövdesinde Türkçe karakter bırakmayız: Netgsm'de kodlama
@@ -262,8 +288,6 @@ export function smsSadelestir(t: string): string {
 
 /** '2026-10-13' → '13 Ekim' */
 function tarihYaz(iso: string): string {
-  const AYLAR = ['Ocak', 'Subat', 'Mart', 'Nisan', 'Mayis', 'Haziran',
-                 'Temmuz', 'Agustos', 'Eylul', 'Ekim', 'Kasim', 'Aralik']
   const [, ay, gun] = iso.slice(0, 10).split('-')
   const a = AYLAR[Number(ay) - 1]
   return a ? `${Number(gun)} ${a}` : iso.slice(0, 10)

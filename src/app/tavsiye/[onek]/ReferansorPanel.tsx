@@ -1,8 +1,11 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { davetBaslat, kodDogrula, adayOner, adayKodGonder } from './actions'
+import {
+  davetBaslat, kodDogrula, adayOner, adayKodGonder, musaitlikGetir,
+} from './actions'
+import RandevuSecici, { type MusaitlikVerisi } from './RandevuSecici'
 import { girisCik } from '../giris-actions'
 import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
 import { duzgunAd } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
@@ -107,6 +110,18 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   // Aday kendi telefonuna gelen kodu söylemeden öneri gönderilemez.
   const [adayAdim, setAdayAdim] = useState<'form' | 'kod'>('form')
   const [adayKod, setAdayKod] = useState('')
+  // Randevu takvimi — kampanya başına seçilen saat tutulur.
+  const [musaitlik, setMusaitlik] = useState<MusaitlikVerisi | null>(null)
+  const [randevu, setRandevu] = useState<Record<string, string | null>>({})
+
+  // Takvim bir kez çekilir; panel açıkken yeniden sorulmaz.
+  useEffect(() => {
+    let iptal = false
+    musaitlikGetir(veri.onek).then(d => {
+      if (!iptal && d) setMusaitlik(d as unknown as MusaitlikVerisi)
+    })
+    return () => { iptal = true }
+  }, [veri.onek])
 
   // Kampanya başına ad/telefon girişi
   const [form, setForm] = useState<Record<string, { ad: string; tel: string; not: string; ekstra: string }>>({})
@@ -123,9 +138,15 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
     setHata(null); setAltinKod(false)
     const f = alan(offerId)
     startTransition(async () => {
-      const r = await davetBaslat(veri.onek, offerId, f.ad, f.tel, f.not, Number(f.ekstra) || 0)
+      const r = await davetBaslat(
+        veri.onek, offerId, f.ad, f.tel, f.not, Number(f.ekstra) || 0,
+        randevu[offerId] ?? null,
+      )
       if (!r.ok) { setHata(r.error); return }
       setForm(p => ({ ...p, [offerId]: { ad: '', tel: '', not: '', ekstra: '' } }))
+      setRandevu(p => ({ ...p, [offerId]: null }))
+      // Slot artık rezerve: takvim yenilensin, başka davette dolu görünsün.
+      musaitlikGetir(veri.onek).then(d => d && setMusaitlik(d as unknown as MusaitlikVerisi))
     })
   }
 
@@ -151,24 +172,28 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
 
   return (
     <div className="space-y-4">
-      <header>
-        <p className="text-xs font-bold text-violet-300 tracking-wider">ESTELONGY TAVSİYE</p>
-        <h1 className="text-xl font-black text-white mt-0.5 leading-tight">{veri.ad}</h1>
-        <p className="font-mono text-sm text-slate-500 mt-0.5">{veri.onek}</p>
+      {/* ── ÜST ŞERİT — ad, önek ve üç sayı TEK SATIRDA ──
+          Eskiden başlık 3 satır + 3 kutu = ekranın üçte biri yer kaplıyordu
+          ve telefonda asıl iş (randevu, kod) ancak kaydırınca görünüyordu.
+          Bilgi aynı, yer onda biri. */}
+      <header className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-base font-black text-white leading-tight truncate">{veri.ad}</h1>
+          <p className="font-mono text-[11px] text-slate-500 leading-tight">{veri.onek}</p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0 text-right">
+          {([
+            [String(gelen), 'Gelen', 'text-emerald-300'],
+            [String(bekleyen), 'Bekleyen', 'text-amber-300'],
+            [PUAN(veri.puan), 'Puan', 'text-violet-300'],
+          ] as const).map(([deger, etiket, renk]) => (
+            <div key={etiket} className="leading-none">
+              <p className={`text-sm font-black tabular-nums ${renk}`}>{deger}</p>
+              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{etiket}</p>
+            </div>
+          ))}
+        </div>
       </header>
-
-      <div className="grid grid-cols-3 gap-2">
-        {[
-          ['Gelen', String(gelen), 'text-emerald-300'],
-          ['Bekleyen', String(bekleyen), 'text-amber-300'],
-          ['Puan', PUAN(veri.puan), 'text-violet-300'],
-        ].map(([etiket, deger, renk]) => (
-          <div key={etiket} className="bg-slate-900 border border-slate-800 rounded-xl px-2 py-2.5 text-center">
-            <p className={`text-lg font-black tabular-nums ${renk}`}>{deger}</p>
-            <p className="text-[11px] text-slate-500 font-semibold">{etiket}</p>
-          </div>
-        ))}
-      </div>
 
       {hata && (
         <p className="text-sm font-semibold px-3 py-2 rounded-lg bg-rose-500/15 text-rose-300">{hata}</p>
@@ -314,6 +339,13 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                     </div>
                   )
                 })()}
+                {/* Randevu seçimi — davet gönderilmeden önce.
+                    Akış: bilgi → telefon → not → randevu → gönder. */}
+                <RandevuSecici
+                  musaitlik={musaitlik}
+                  secili={randevu[t.id] ?? null}
+                  onSec={d => setRandevu(p => ({ ...p, [t.id]: d }))} />
+
                 <button type="submit"
                   disabled={pending || !adGecerli(f.ad) || !telGecerli(f.tel)
                     || (Number(f.ekstra) || 0) > veri.puan}

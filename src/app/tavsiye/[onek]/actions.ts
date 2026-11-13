@@ -41,6 +41,8 @@ export async function davetBaslat(
   onek: string, offerId: string, ad: string, hamTel: string, islemNotu?: string,
   /** Referansörün kendi puanından verdiği ek indirim (TL). Klinik %10'un üstü. */
   ekstraIndirim?: number,
+  /** Seçilen randevu saati 'YYYY-MM-DDTHH:MM' (yerel). Slot 5 dk rezerve olur. */
+  randevu?: string | null,
 ): Promise<Baslat> {
   const temizAd = ad.trim()
   // Ad SOYAD şart: klinik kimi bekleyeceğini bilmeli. Ekran da kontrol ediyor
@@ -70,6 +72,9 @@ export async function davetBaslat(
     // Bakiye kontrolü RPC'de: yetmezse davet hiç açılmaz, klinikte
     // hasta karşısında sürpriz olmasın.
     p_ekstra: Number.isFinite(ekstraIndirim) ? Math.max(ekstraIndirim!, 0) : 0,
+    // 'YYYY-MM-DDTHH:MM' yerel saat; sunucu UTC'ye çevirir. Seçilmemişse
+    // null gider, davet randevusuz açılır (eski davranış).
+    p_randevu: randevu ? `${randevu}:00+03` : null,
   })
   if (error) return { ok: false, error: error.message }
 
@@ -174,6 +179,11 @@ export async function kodDogrula(
       sonKullanma: String(row.son_kullanma),
       referansor: (d?.referansor as string) ?? null,
       indirimOran,
+      // Randevu yazıldıysa mesaj randevu odaklı olur: asıl bilgi saattir.
+      // RPC 'YYYY-MM-DDTHH:MM:SS+03' döner, saniye/dilim atılır.
+      randevu: row.randevu_at
+        ? String(row.randevu_at).replace(' ', 'T').slice(0, 16)
+        : null,
     }))
   } catch (err) {
     console.error('[referans-kod-sms]', err)
@@ -283,4 +293,21 @@ export async function adayKodGonder(
   await redis.set(adayOtpKey(tel), { kod }, { ex: OTP_TTL_SEC })
   await redis.del(adayDenemeKey(tel))
   return { ok: true }
+}
+
+/**
+ * Referansörün gördüğü randevu takvimi.
+ *
+ * Yalnız "hangi gün açık" ve "hangi saat dolu" döner — hasta adı,
+ * işlem türü, ciro GÖRÜNMEZ (RPC de döndürmüyor).
+ */
+export async function musaitlikGetir(onek: string): Promise<{
+  hafta: unknown[]; dolu: unknown[]; bugun: string
+} | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('referral_musaitlik', {
+    p_onek: onek, p_gun_sayisi: 7,
+  })
+  if (error || !data) return null
+  return data as { hafta: unknown[]; dolu: unknown[]; bugun: string }
 }

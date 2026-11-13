@@ -1,0 +1,20 @@
+-- REFERANSÖR RANDEVUSU — canlıda uygulandı, kayıt amaçlı.
+--
+-- Akış (kurucu kararı, 14 Kas 2026):
+--   referansör slot seçer → davet gönderir → slot 5 DK REZERVE olur
+--   → müşteriye kod gider → müşteri kodu söyler → referansör girer
+--   → randevu klinik takvimine yazılır + altın kod üretilir
+--
+-- Slot 5 dk içinde onaylanmazsa kendiliğinden serbest kalır (ayrı temizlik
+-- işi yok: sorgu zaten saymıyor). Onay anında slot dolmuşsa altın kod DA
+-- üretilmez — referansör yeni slot seçip yeni kod gönderir.
+--
+-- Uygulanan migration'lar:
+--   referral_musaitlik_rpc            — takvim (müsaitlik + dolu saatler)
+--   referral_randevu_slotu            — referral_link.randevu_at
+--   referral_slot_gecici_rezerv_5dk   — rezerv mantığı, musaitlik güncel
+--   referral_davet_randevu_parametresi— davet p_randevu alır
+--   referral_kilitle_randevu_yazar_v2 — kod doğrulanınca randevu yazar
+--
+-- Referansör kliniğin TAKVİMİNİ görmez: yalnız "bu saat açık/kapalı".
+-- Hasta adı, işlem türü, ciro RPC'den hiç dönmüyor.
