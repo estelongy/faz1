@@ -186,6 +186,7 @@ export async function kodDogrula(
       sonKullanma: String(row.son_kullanma),
       referansor: (d?.referansor as string) ?? null,
       indirimOran,
+      ekstraIndirim: Number(d?.ekstra_indirim ?? 0) || null,
       // Randevu yazıldıysa mesaj randevu odaklı olur: asıl bilgi saattir.
       // RPC 'YYYY-MM-DDTHH:MM:SS+03' döner, saniye/dilim atılır.
       randevu: row.randevu_at

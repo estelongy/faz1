@@ -122,6 +122,7 @@ export async function dogrulaVeKilitle(
       kisaKod: String(row.kisa),
       ayricalik: (d?.ayricalik as string) ?? '',
       sonKullanma: String(row.son_kullanma),
+      ekstraIndirim: Number(d?.ekstra_indirim ?? 0) || null,
     }))
   } catch (err) {
     console.error('[referans-kod-sms]', err)

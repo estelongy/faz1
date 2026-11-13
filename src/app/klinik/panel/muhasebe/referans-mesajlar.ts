@@ -230,6 +230,8 @@ export function smsKodOzetMetni(opts: {
   indirimOran?: number | null
   /** Randevu saati 'YYYY-MM-DDTHH:MM'. Varsa mesaj randevu odaklı yazılır. */
   randevu?: string | null
+  /** Referansörün kendi puanından verdiği TL indirimi. */
+  ekstraIndirim?: number | null
 }): string {
   const ad = adSoyadBasHarf(opts.musteriAd)
   const tarih = tarihYaz(opts.sonKullanma)
@@ -239,7 +241,13 @@ export function smsKodOzetMetni(opts: {
   // "size özel indirim" gibi boş bir söz değil, somut bir oran gider.
   const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
     ?? (opts.indirimOran ? `%${Math.round(opts.indirimOran)}` : undefined)
-  const fayda = oran ? `${oran} indirim tanimli` : 'size ozel indirim tanimli'
+  // Puandan verilen TL indirimi de yazılır: birinci SMS'te "%10 + 1.222 TL"
+  // görüp ikincide göremeyen müşteri indirimi eksik sanıyordu.
+  const ekstra = Number(opts.ekstraIndirim ?? 0)
+  const ekstraYazi = ekstra > 0 ? ` + ${binlik(ekstra)} TL` : ''
+  const fayda = oran
+    ? `${oran}${ekstraYazi} indirim tanimli`
+    : (ekstra > 0 ? `${binlik(ekstra)} TL indirim tanimli` : 'size ozel indirim tanimli')
   // Referansör adı da baş harfli: "Deniz Hanim" → "Deniz H."
   // Panel öneki (DH6GOK) ASLA yazılmaz — o, referansörün panel adresi.
   const ref = adSoyadBasHarf(opts.referansor)
