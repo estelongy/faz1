@@ -27,3 +27,16 @@
 --   2) referral_davet_baslat'ın 6 ve 7 parametreli iki sürümü yan yana
 --      duruyordu (PGRST203 riski). Eski 6'lı silindi:
 --      referral_davet_baslat_eski_surum_sil
+--
+-- 14 Kas 2026, ikinci tur — canlı testte çıkan iki GERÇEK hata:
+--   3) referral_kilitle_aday (referansör panelinin çağırdığı sarmalayıcı)
+--      hâlâ 3 kolon döndürüyordu, içindeki referral_kilitle 4 kolona
+--      çıkmıştı. Asıl "structure of query does not match" sebebi buydu —
+--      önbellek değil. Dönüş tipi değişen fonksiyonun ÇAĞIRANLARINI da tara.
+--      → referral_kilitle_aday_randevu_kolonu
+--   4) Slot rezervi durum='bekliyor' arıyordu; gerçek durum 'uretildi'
+--      (açılınca 'acildi'). Hiç eşleşmiyordu → 5 dk rezerv ÇALIŞMIYORDU.
+--      referral_slot_dolu + referral_musaitlik birlikte düzeltildi.
+--      → referral_slot_rezerv_durum_duzeltme
+--   5) referral_davet_iptal: referansör bekleyen daveti kapatabiliyor.
+--      Silmez, durum 'iptal'. Kilitlenmiş davet iptal edilemez.
