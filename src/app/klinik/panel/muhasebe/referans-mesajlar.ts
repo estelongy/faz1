@@ -242,3 +242,24 @@ function tarihYaz(iso: string): string {
   const a = AYLAR[Number(ay) - 1]
   return a ? `${Number(gun)} ${a}` : iso.slice(0, 10)
 }
+
+/**
+ * 5) Aday onay kodu — referansör birini önermeden ÖNCE adaya gider.
+ *
+ * Kurucu kararı (13 Kas 2026): "onu referansör yapacağından habersiz
+ * referansör yapmış olmayalım." Aday kodu referansöre söyleyerek rıza
+ * vermiş olur; kabul etmiyorsa kodu paylaşmaz, başka bir şey yapmasına
+ * gerek kalmaz.
+ *
+ * Kimin önerdiği YAZILMAZ: referansörün adı mesajda geçerse, aday
+ * aramadan kabul edip edemeyeceğini tartamaz. Zaten kodu ona söyleyecek
+ * kişi kendini tanıtacak.
+ */
+export function smsAdayOnay(opts: { ad: string; kod: string }): string {
+  const ad = adSoyadBasHarf(opts.ad)
+  return smsSadelestir([
+    `Sayin ${ad}, ${KLINIK} tavsiye programina referansor olarak onerildiniz.`,
+    `Onay kodunuz: ${opts.kod}`,
+    'Kabul etmiyorsaniz kodu paylasmayin.',
+  ].join('\n'))
+}

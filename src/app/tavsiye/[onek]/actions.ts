@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redis } from '@/lib/redis'
 import { createClient } from '@/lib/supabase/server'
 import { sendInfoSms, generateOtpCode, normalizePhone, mapNetgsmError } from '@/lib/netgsm'
-import { smsDavetDogrulama, smsKodOzetMetni } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
+import { smsDavetDogrulama, smsKodOzetMetni, smsAdayOnay } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
 
 /**
  * Referansör akışı — iki adım:
@@ -194,16 +194,90 @@ export async function kodDogrula(
 export async function adayOner(
   onek: string, ad: string, tel: string,
   tip: 'bireysel' | 'isletme', tanitim: string,
+  /** Adayın kendi telefonuna gelen onay kodu — rıza kanıtı. */
+  onayKodu: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  const temizTel = normalizePhone(tel)
+  if (!temizTel) return { ok: false, error: 'Telefon numarası geçersiz.' }
+
+  // RIZA KONTROLÜ: aday kendi telefonuna gelen kodu söylemeden öneri
+  // yazılmaz. Yoksa birinin numarasını girip onu habersiz referansör
+  // adayı yapmak mümkün olurdu.
+  const kayit = await redis.get<{ kod: string }>(adayOtpKey(temizTel))
+  if (!kayit) {
+    return { ok: false, error: 'Onay kodunun süresi doldu. Yeniden kod gönderin.' }
+  }
+
+  const deneme = await redis.incr(adayDenemeKey(temizTel))
+  if (deneme === 1) await redis.expire(adayDenemeKey(temizTel), OTP_TTL_SEC)
+  if (deneme > DENEME_SINIR) {
+    await redis.del(adayOtpKey(temizTel))
+    return { ok: false, error: 'Çok fazla yanlış deneme. Yeniden kod gönderin.' }
+  }
+  if (onayKodu.replace(/\D/g, '') !== kayit.kod) {
+    return { ok: false, error: 'Kod hatalı.' }
+  }
+
   const supabase = await createClient()
   const { error } = await supabase.rpc('referral_aday_oner', {
     p_onek: onek,
     p_ad: ad,
-    p_tel: tel,
+    p_tel: temizTel,
     p_tip: tip,
     p_tanitim: tanitim,
   })
   if (error) return { ok: false, error: error.message }
+
+  // Kod tek kullanımlık: aynı kodla ikinci öneri yazılamaz.
+  await redis.del(adayOtpKey(temizTel))
+  await redis.del(adayDenemeKey(temizTel))
+
   revalidatePath(`/tavsiye/${onek}`)
+  return { ok: true }
+}
+
+const adayOtpKey = (tel: string) => `ref_aday_otp:${tel}`
+const adayDenemeKey = (tel: string) => `ref_aday_deneme:${tel}`
+
+/**
+ * Aday onay kodu — referansör öneriyi göndermeden ÖNCE.
+ *
+ * Kurucu kararı: "onu referansör yapacağından habersiz referansör yapmış
+ * olmayalım." Aday kendi telefonuna gelen kodu referansöre söyler; rıza
+ * böyle belgelenir ve bize gelen her öneri rızalı olur.
+ *
+ * Mesajda kabul etmeme yolu da yazar — kodu paylaşmamak yeter.
+ */
+export async function adayKodGonder(
+  ad: string, hamTel: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const temizAd = ad.trim()
+  if (temizAd.split(/\s+/).filter(p => p.length > 1).length < 2) {
+    return { ok: false, error: 'Ad ve soyadı birlikte yazın.' }
+  }
+
+  const tel = normalizePhone(hamTel)
+  if (!tel) return { ok: false, error: 'Telefon numarası geçersiz.' }
+
+  const gonderilen = Number(await redis.get<number>(istekKey(tel)) ?? 0)
+  if (gonderilen >= ISTEK_SINIR) {
+    return {
+      ok: false,
+      error: `Bu numaraya son bir saatte ${ISTEK_SINIR} kod gönderildi. Biraz sonra tekrar deneyin.`,
+    }
+  }
+
+  const kod = generateOtpCode()
+  const res = await sendInfoSms(tel, smsAdayOnay({ ad: temizAd, kod }))
+  if (!res.success) {
+    console.error('[aday-onay-sms] Netgsm:', res.error)
+    return { ok: false, error: mapNetgsmError(res.code ?? '') }
+  }
+
+  const sayac = await redis.incr(istekKey(tel))
+  if (sayac === 1) await redis.expire(istekKey(tel), 3600)
+
+  await redis.set(adayOtpKey(tel), { kod }, { ex: OTP_TTL_SEC })
+  await redis.del(adayDenemeKey(tel))
   return { ok: true }
 }

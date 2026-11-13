@@ -2,9 +2,10 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { davetBaslat, kodDogrula, adayOner } from './actions'
+import { davetBaslat, kodDogrula, adayOner, adayKodGonder } from './actions'
 import { girisCik } from '../giris-actions'
 import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
+import { duzgunAd } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
 
 /** Aday tanıtımı — kararın dayanağı olduğu için alt sınır var. */
 const TANITIM_MIN = 100
@@ -102,6 +103,10 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
     ad: '', tel: '', tip: '' as '' | 'bireysel' | 'isletme', tanitim: '',
   })
   const [adayGonderildi, setAdayGonderildi] = useState(false)
+  // İki adım: 'form' bilgileri toplar, 'kod' adayın onayını bekler.
+  // Aday kendi telefonuna gelen kodu söylemeden öneri gönderilemez.
+  const [adayAdim, setAdayAdim] = useState<'form' | 'kod'>('form')
+  const [adayKod, setAdayKod] = useState('')
 
   // Kampanya başına ad/telefon girişi
   const [form, setForm] = useState<Record<string, { ad: string; tel: string; not: string; ekstra: string }>>({})
@@ -455,6 +460,8 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 onClick={() => {
                   setAdayGonderildi(false)
                   setAday({ ad: '', tel: '', tip: '', tanitim: '' })
+                  setAdayAdim('form')
+                  setAdayKod('')
                 }}
                 className="text-xs text-violet-400 hover:text-violet-300 underline underline-offset-2">
                 Başka birini öner
@@ -530,25 +537,75 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 </p>
               </div>
 
-              <button type="button"
-                disabled={pending
-                  || aday.ad.trim().split(/\s+/).filter(p => p.length > 1).length < 2
-                  || aday.tel.replace(/\D/g, '').length < 10
-                  || !aday.tip
-                  || aday.tanitim.trim().length < TANITIM_MIN}
-                onClick={() => startTransition(async () => {
-                  setHata(null)
-                  const r = await adayOner(
-                    veri.onek, aday.ad, aday.tel,
-                    aday.tip as 'bireysel' | 'isletme', aday.tanitim,
-                  )
-                  if (!r.ok) { setHata(r.error); return }
-                  setAdayGonderildi(true)
-                })}
-                className="w-full px-3 py-3 rounded-lg text-sm font-bold bg-violet-600
-                           hover:bg-violet-500 disabled:opacity-40 text-white">
-                {pending ? 'Gönderiliyor…' : 'Değerlendirmeye gönder'}
-              </button>
+              {/* ADIM 1 — bilgiler tamam, adayın onayı isteniyor.
+                  Rıza olmadan öneri gönderilmez: aday kendi telefonuna
+                  gelen kodu referansöre söyleyerek kabul etmiş olur. */}
+              {adayAdim === 'form' ? (
+                <button type="button"
+                  disabled={pending
+                    || aday.ad.trim().split(/\s+/).filter(p => p.length > 1).length < 2
+                    || aday.tel.replace(/\D/g, '').length < 10
+                    || !aday.tip
+                    || aday.tanitim.trim().length < TANITIM_MIN}
+                  onClick={() => startTransition(async () => {
+                    setHata(null)
+                    const r = await adayKodGonder(aday.ad, aday.tel)
+                    if (!r.ok) { setHata(r.error); return }
+                    setAdayAdim('kod')
+                  })}
+                  className="w-full px-3 py-3 rounded-lg text-sm font-bold bg-violet-600
+                             hover:bg-violet-500 disabled:opacity-40 text-white">
+                  {pending ? 'Gönderiliyor…' : 'Onay kodu gönder'}
+                </button>
+              ) : (
+                /* ADIM 2 — aday kodu söyledi, referansör giriyor. */
+                <div className="space-y-2.5 pt-1 border-t border-slate-800">
+                  <div className="rounded-lg bg-violet-500/10 ring-1 ring-violet-500/25 p-3">
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      <b className="text-white">{duzgunAd(aday.ad).split(' ')[0]}</b> adlı
+                      kişiye onay kodu gönderildi. Kendisini arayın, kabul
+                      ediyorsa size kodu söylesin.
+                    </p>
+                  </div>
+
+                  <input
+                    value={adayKod}
+                    onChange={e => {
+                      const next = e.target.value.replace(/\D/g, '').slice(0, 6)
+                      setAdayKod(next)
+                    }}
+                    placeholder="______"
+                    inputMode="numeric"
+                    autoFocus
+                    className="w-full px-3 py-3 rounded-lg bg-slate-950 border border-slate-700
+                               text-center font-mono text-2xl tracking-[0.4em] text-white
+                               placeholder:text-slate-700 focus:outline-none focus:border-violet-500" />
+
+                  <button type="button"
+                    disabled={pending || adayKod.length < 6}
+                    onClick={() => startTransition(async () => {
+                      setHata(null)
+                      const r = await adayOner(
+                        veri.onek, aday.ad, aday.tel,
+                        aday.tip as 'bireysel' | 'isletme', aday.tanitim, adayKod,
+                      )
+                      if (!r.ok) { setHata(r.error); setAdayKod(''); return }
+                      setAdayGonderildi(true)
+                      setAdayAdim('form')
+                      setAdayKod('')
+                    })}
+                    className="w-full px-3 py-3 rounded-lg text-sm font-bold bg-violet-600
+                               hover:bg-violet-500 disabled:opacity-40 text-white">
+                    {pending ? 'Gönderiliyor…' : 'Değerlendirmeye gönder'}
+                  </button>
+
+                  <button type="button"
+                    onClick={() => { setAdayAdim('form'); setAdayKod(''); setHata(null) }}
+                    className="w-full text-xs text-slate-500 hover:text-slate-300">
+                    Bilgileri düzelt
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </section>
