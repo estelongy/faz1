@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  davetBaslat, kodDogrula, adayOner, adayKodGonder, musaitlikGetir,
+  davetBaslat, kodDogrula, adayOner, adayKodGonder, musaitlikGetir, davetIptal,
 } from './actions'
 import RandevuSecici, { type MusaitlikVerisi } from './RandevuSecici'
 import { girisCik } from '../giris-actions'
@@ -85,6 +85,17 @@ const adGecerli = (ad: string) =>
 
 const telGecerli = (tel: string) => tel.replace(/\D/g, '').length >= 10
 
+/** '2026-11-17T14:00' → '17 Kasım Pazartesi · 14:00' */
+function randevuYaz(iso: string): string {
+  const [tarih, saat] = iso.split('T')
+  const [y, a, g] = (tarih ?? '').split('-').map(Number)
+  if (!y || !a || !g) return iso
+  const d = new Date(y, a - 1, g)
+  return `${d.toLocaleDateString('tr-TR', {
+    day: 'numeric', month: 'long', weekday: 'long',
+  })} · ${(saat ?? '').slice(0, 5)}`
+}
+
 function maskeTel(tel: string | null): string {
   if (!tel) return ''
   const d = tel.replace(/\D/g, '')
@@ -99,7 +110,9 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   const [hata, setHata] = useState<string | null>(null)
   // Yalnızca "davet tamamlandı" bilgisi tutulur — kodun kendisi müşterinin,
   // referansör ekranında gösterilmez.
-  const [altinKod, setAltinKod] = useState(false)
+  // Kod alındıktan sonra AYNI kartta duran sonuç: kod üretildi mi, randevu
+  // yazıldı mı. Referansör sonucu gönderdiği yerde görsün.
+  const [sonuc, setSonuc] = useState<Record<string, { randevu: string | null } | null>>({})
   // Aday önerisi formu. Link paylaşımı kaldırıldı: referansör adayı
   // tanıtıyor, klinik okuyup karar veriyor.
   const [aday, setAday] = useState({
@@ -113,6 +126,9 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   // Randevu takvimi — kampanya başına seçilen saat tutulur.
   const [musaitlik, setMusaitlik] = useState<MusaitlikVerisi | null>(null)
   const [randevu, setRandevu] = useState<Record<string, string | null>>({})
+  // Davet gönderilen kampanyanın token'ı. Kod kutusu AYNI kartta açılsın:
+  // referansör davet gönderdiği yerde kalsın, sayfanın tepesine çıkmasın.
+  const [acikDavet, setAcikDavet] = useState<Record<string, { token: string; ad: string } | null>>({})
 
   // Takvim bir kez çekilir; panel açıkken yeniden sorulmaz.
   useEffect(() => {
@@ -135,7 +151,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
 
   /** 1. adım — ad + telefon gir, müşteriye doğrulama SMS'i gitsin. */
   function basla(offerId: string) {
-    setHata(null); setAltinKod(false)
+    setHata(null)
     const f = alan(offerId)
     startTransition(async () => {
       const r = await davetBaslat(
@@ -143,6 +159,9 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
         randevu[offerId] ?? null,
       )
       if (!r.ok) { setHata(r.error); return }
+      // Kod kutusu bu kartta açılsın — ad kutunun başlığında kalsın.
+      setAcikDavet(p => ({ ...p, [offerId]: { token: r.token, ad: f.ad } }))
+      setSonuc(p => ({ ...p, [offerId]: null }))   // önceki sonuç kapansın
       setForm(p => ({ ...p, [offerId]: { ad: '', tel: '', not: '', ekstra: '' } }))
       setRandevu(p => ({ ...p, [offerId]: null }))
       // Slot artık rezerve: takvim yenilensin, başka davette dolu görünsün.
@@ -152,10 +171,25 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
 
   /** Onay kodu süresi dolduysa aynı kişiye yeni kod gönderir. */
   function tekrarGonder(offerId: string, ad: string, tel: string) {
-    setHata(null); setAltinKod(false)
+    setHata(null)
     startTransition(async () => {
       const r = await davetBaslat(veri.onek, offerId, ad, tel)
       if (!r.ok) { setHata(r.error); return }
+    })
+  }
+
+  /**
+   * Bekleyen daveti iptal eder. Onay istiyor: yanlışlıkla basılırsa
+   * müşteriye gitmiş kod boşa gider, yeniden davet gerekir.
+   */
+  function iptalEt(token: string, ad: string) {
+    if (!confirm(`${ad} için gönderilen davet iptal edilsin mi?`)) return
+    setHata(null)
+    startTransition(async () => {
+      const r = await davetIptal(veri.onek, token)
+      if (!r.ok) { setHata(r.error); return }
+      setKodlar(p => { const y = { ...p }; delete y[token]; return y })
+      router.refresh()
     })
   }
 
@@ -165,8 +199,18 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
     startTransition(async () => {
       const r = await kodDogrula(veri.onek, token, kodlar[token] ?? '')
       if (!r.ok) { setHata(r.error); return }
-      setAltinKod(true)
       setKodlar(p => ({ ...p, [token]: '' }))
+      // Sonuç AYNI kartta: kod kutusu kapanır, yerine "oluşturuldu" gelir.
+      setAcikDavet(p => {
+        const y = { ...p }
+        for (const k of Object.keys(y)) if (y[k]?.token === token) {
+          y[k] = null
+          setSonuc(s => ({ ...s, [k]: { randevu: r.randevu } }))
+        }
+        return y
+      })
+      // Randevu yazıldıysa o saat artık gerçekten dolu.
+      musaitlikGetir(veri.onek).then(d => d && setMusaitlik(d as unknown as MusaitlikVerisi))
     })
   }
 
@@ -199,29 +243,6 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
         <p className="text-sm font-semibold px-3 py-2 rounded-lg bg-rose-500/15 text-rose-300">{hata}</p>
       )}
 
-      {/* Davet tamamlandı — kodun kendisi GÖSTERİLMEZ.
-          Kod müşterinin; referansörün bilmesi gerekmiyor, takip
-          "Referanslarım"da zaten duruyor. Kapatılabilir. */}
-      {altinKod && (
-        <div className="bg-emerald-500/10 ring-1 ring-emerald-500/40 rounded-2xl p-4
-                        flex items-start gap-3">
-          <p className="text-xl leading-none mt-0.5">✓</p>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-emerald-300">Altın kod müşteriye gönderildi</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              Klinikte kodu söylemesi yeterli. Durumu Referanslarım&rsquo;dan takip edebilirsiniz.
-            </p>
-          </div>
-          <button
-            onClick={() => setAltinKod(false)}
-            aria-label="Kapat"
-            className="shrink-0 px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200
-                       hover:bg-slate-800 text-lg leading-none">
-            ×
-          </button>
-        </div>
-      )}
-
       {/* ── Doğrulama bekleyenler — ÖNCE, çünkü iş burada ── */}
       {sekme === 'kod' && veri.bekleyen_link.length > 0 && (
         <section className="space-y-2">
@@ -252,12 +273,20 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                   {pending ? '…' : 'Kodu Al'}
                 </button>
               </form>
-              {/* Onay kodunun süresi 30 dk; dolduysa buradan yenisi gönderilir. */}
-              <button type="button" disabled={pending}
-                onClick={() => tekrarGonder(l.offer_id, l.aday_ad ?? '', l.aday_tel ?? '')}
-                className="mt-2 text-[11px] font-semibold text-slate-500 hover:text-slate-300 disabled:opacity-40">
-                Kod gelmedi mi? Yeni onay kodu gönder
-              </button>
+              <div className="flex items-center justify-between gap-2 mt-2">
+                {/* Onay kodunun süresi 30 dk; dolduysa buradan yenisi gönderilir. */}
+                <button type="button" disabled={pending}
+                  onClick={() => tekrarGonder(l.offer_id, l.aday_ad ?? '', l.aday_tel ?? '')}
+                  className="text-[11px] font-semibold text-slate-500 hover:text-slate-300 disabled:opacity-40 text-left">
+                  Kod gelmedi mi? Yeni onay kodu gönder
+                </button>
+                {/* Vazgeçildiyse davet burada kapanır — yoksa 7 gün listede durur. */}
+                <button type="button" disabled={pending}
+                  onClick={() => iptalEt(l.token, l.aday_ad ?? 'Bu kişi')}
+                  className="shrink-0 text-[11px] font-semibold text-slate-600 hover:text-rose-400 disabled:opacity-40">
+                  İptal et
+                </button>
+              </div>
             </div>
           ))}
         </section>
@@ -287,6 +316,72 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 </p>
               )}
 
+              {/* İş bitti: kod (ve varsa randevu) oluştu. Kodun kendisi
+                  GÖSTERİLMEZ — o müşterinin; takip "Referanslarım"da. */}
+              {sonuc[t.id] ? (
+                <div className="mt-2.5 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-500/40 p-2.5
+                                flex items-start gap-2.5">
+                  <p className="text-lg leading-none mt-0.5">✓</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-emerald-300">
+                      {sonuc[t.id]!.randevu
+                        ? 'Altın kod ve randevu oluşturuldu'
+                        : 'Altın kod oluşturuldu'}
+                    </p>
+                    {sonuc[t.id]!.randevu && (
+                      <p className="text-xs text-emerald-200/90 mt-0.5 font-semibold">
+                        {randevuYaz(sonuc[t.id]!.randevu!)}
+                      </p>
+                    )}
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Müşteriye SMS ile gönderildi. Durumu Referanslarım&rsquo;dan
+                      takip edebilirsiniz.
+                    </p>
+                  </div>
+                  <button type="button"
+                    onClick={() => setSonuc(p => ({ ...p, [t.id]: null }))}
+                    aria-label="Kapat"
+                    className="shrink-0 px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200
+                               hover:bg-slate-800 text-lg leading-none">
+                    ×
+                  </button>
+                </div>
+              ) : acikDavet[t.id] ? (
+                <div className="mt-2.5 rounded-lg bg-slate-950/70 ring-1 ring-amber-500/30 p-2.5 space-y-2">
+                  <p className="text-xs text-slate-300">
+                    <b className="text-white">{acikDavet[t.id]!.ad}</b> için kod gönderildi.
+                    Arayıp sorun, buraya yazın.
+                  </p>
+                  <form className="flex gap-2"
+                    onSubmit={e => { e.preventDefault(); dogrula(acikDavet[t.id]!.token) }}>
+                    <input
+                      value={kodlar[acikDavet[t.id]!.token] ?? ''}
+                      onChange={e => setKodlar(p => ({
+                        ...p, [acikDavet[t.id]!.token]: e.target.value.replace(/\D/g, '').slice(0, 6),
+                      }))}
+                      placeholder="______" inputMode="numeric" autoFocus
+                      className={`${inputCls} text-center font-mono tracking-[0.3em]`} />
+                    <button type="submit"
+                      disabled={pending || (kodlar[acikDavet[t.id]!.token] ?? '').length < 6}
+                      className="px-4 py-2.5 rounded-lg text-sm font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 disabled:opacity-40 whitespace-nowrap">
+                      {pending ? '…' : 'Kodu Al'}
+                    </button>
+                  </form>
+                  <div className="flex items-center justify-between gap-2">
+                    <button type="button" disabled={pending}
+                      onClick={() => setAcikDavet(p => ({ ...p, [t.id]: null }))}
+                      className="text-[11px] font-semibold text-slate-500 hover:text-slate-300 disabled:opacity-40">
+                      Yeni davet gönder
+                    </button>
+                    <button type="button" disabled={pending}
+                      onClick={() => { iptalEt(acikDavet[t.id]!.token, acikDavet[t.id]!.ad)
+                                       setAcikDavet(p => ({ ...p, [t.id]: null })) }}
+                      className="shrink-0 text-[11px] font-semibold text-slate-600 hover:text-rose-400 disabled:opacity-40">
+                      İptal et
+                    </button>
+                  </div>
+                </div>
+              ) : (
               <form className="mt-2.5 space-y-2"
                 onSubmit={e => { e.preventDefault(); basla(t.id) }}>
                 <div>
@@ -353,6 +448,7 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                   {pending ? 'Gönderiliyor…' : 'Davet Gönder'}
                 </button>
               </form>
+              )}
             </div>
           )
         })}

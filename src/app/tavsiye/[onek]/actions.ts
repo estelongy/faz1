@@ -19,7 +19,9 @@ import { smsDavetDogrulama, smsKodOzetMetni, smsAdayOnay } from '@/app/klinik/pa
 
 type Baslat = { ok: true; token: string } | { ok: false; error: string }
 type Dogrula =
-  | { ok: true; kod: string; kisa: string }
+  // randevu: yazıldıysa 'YYYY-MM-DDTHH:MM', yoksa null — panel sonucu
+  // "kod ve randevu oluşturuldu" diye gösterebilsin.
+  | { ok: true; kod: string; kisa: string; randevu: string | null }
   | { ok: false; error: string }
 
 const OTP_TTL_SEC = 30 * 60   // referansörün arayıp sorması zaman alır
@@ -190,7 +192,41 @@ export async function kodDogrula(
   }
 
   revalidatePath(`/tavsiye/${onek}`)
-  return { ok: true, kod: String(row.kod), kisa: String(row.kisa) }
+  return {
+    ok: true, kod: String(row.kod), kisa: String(row.kisa),
+    randevu: row.randevu_at
+      ? String(row.randevu_at).replace(' ', 'T').slice(0, 16)
+      : null,
+  }
+}
+
+/**
+ * Bekleyen daveti iptal eder.
+ *
+ * Önce yolu yoktu: yanlış numara girilse, müşteri vazgeçse ya da davet
+ * takılsa 7 gün listede duruyordu — referansörün elinde kalıyordu.
+ * Silmez, durumu 'iptal' yapar (kim kime davet göndermiş kayıtta kalsın).
+ * Onaylanmış davet iptal edilemez: altın kod müşterinin elinde.
+ */
+export async function davetIptal(
+  onek: string, token: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('referral_davet_iptal', {
+    p_onek: onek, p_token: token,
+  })
+  if (error) return { ok: false, error: error.message }
+
+  // Bekleyen kod varsa düşsün: iptal edilen davetin kodu çalışmasın.
+  try {
+    await redis.del(otpKey(token))
+    await redis.del(denemeKey(token))
+  } catch (err) {
+    console.error('[davet-iptal-redis]', err)
+  }
+
+  revalidatePath(`/tavsiye/${onek}`)
+  return { ok: true }
 }
 
 /**
