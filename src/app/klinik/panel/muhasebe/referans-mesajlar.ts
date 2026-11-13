@@ -89,7 +89,9 @@ export function smsReferansorHosGeldin(opts: {
   return smsSadelestir([
     `Tebrikler ${ad}! ${KLINIK} referansoru oldunuz.`,
     opts.bonus && opts.bonus > 0 ? `Hos geldin bonusu: ${Math.round(opts.bonus)} puan.` : null,
-    `Paneliniz: ${kok}/tavsiye/${opts.onek}`,
+    // Kısa yol: /p/ONEK → /tavsiye/ONEK'e yönlendirir (src/app/p/[onek]).
+    // SMS'te 6 karakter kazandırıyor; uzun adlarda tek krediyi koruyor.
+    `Paneliniz: ${kok}/p/${opts.onek}`,
     // "Sorulariniz icin WhatsApp:" yazısı 17 karakter yiyordu ve mesajı
     // 155'in üstüne çıkarıp her onayda çift SMS kredisi yaktırıyordu.
     // Numaranın yanındaki "WhatsApp" ne olduğunu zaten söylüyor.
