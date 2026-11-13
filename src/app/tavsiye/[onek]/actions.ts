@@ -97,6 +97,9 @@ export async function davetBaslat(
     ayricalik: ayricalikMetni,
     kod,
     indirimOran,
+    // Referansörün puanından verdiği ek indirim mesaja da girsin:
+    // müşteri klinikte sürpriz yaşamasın, ne kazandığını baştan bilsin.
+    ekstraIndirim: Number.isFinite(ekstraIndirim) ? Math.max(ekstraIndirim!, 0) : 0,
   }))
   if (!res.success) {
     console.error('[referans-davet-sms] Netgsm:', res.error)

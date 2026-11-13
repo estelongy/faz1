@@ -162,6 +162,8 @@ export function smsDavetDogrulama(opts: {
   kod: string
   /** Kampanyanın kendi oranı yoksa dışarıdan verilen indirim yüzdesi. */
   indirimOran?: number | null
+  /** Referansörün kendi puanından verdiği ek indirim (TL). Varsa yazılır. */
+  ekstraIndirim?: number | null
 }): string {
   const ad = adSoyadBasHarf(opts.musteriAd)
   // Ayrıcalık metninden yalnızca oranı al ("...%25 indirim" → "%25").
@@ -169,12 +171,36 @@ export function smsDavetDogrulama(opts: {
   // Oranı olmayan serbest tekliflerde çağıran taraf indirimOran geçer.
   const oran = opts.ayricalik.match(/%\s*\d+/)?.[0].replace(/\s/g, '')
     ?? (opts.indirimOran ? `%${Math.round(opts.indirimOran)}` : undefined)
-  const fayda = oran ? `size ozel ${oran} indirim` : 'size ozel bir ayricalik'
+
+  // PUAN İNDİRİMİ: referansör kendi puanından ek indirim tanımladıysa
+  // müşteri bunu da bilmeli — yüzde değil, SABİT TUTAR olarak gelir.
+  // Tanımlı değilse (0/boş) cümleye hiç girmez.
+  const ekstra = Number(opts.ekstraIndirim ?? 0)
+  const ekstraYazi = ekstra > 0 ? ` + ${binlik(ekstra)} TL` : ''
+
+  const fayda = oran
+    ? `${oran}${ekstraYazi}`
+    : (ekstra > 0 ? `${binlik(ekstra)} TL` : null)
 
   return smsSadelestir([
-    `Tebrikler! ${ad} - ${KLINIK} kliniginde ${fayda} kazandiniz.`,
-    `REF - ${opts.kod} - Kodu ile ALTIN KODUNUZU Hemen Alabilirsiniz!`,
+    // "EKSTRA" büyük harf, kurucu kararı: indirimin anlaştığı fiyatın
+    // ÜSTÜNE geldiği anlaşılsın, sıradan bir kampanya sanılmasın.
+    fayda
+      ? `Tebrikler ${ad}! Size ozel EKSTRA ${fayda} indirim tanimlandi.`
+      : `Tebrikler ${ad}! Size ozel bir ayricalik tanimlandi.`,
+    `Onay kodunuz: ${opts.kod}`,
+    // İmza: SMS başlığı "ESTELONGY" görünüyor, müşteri kimden geldiğini
+    // anlamıyordu. Klinik adı mesajın içinde.
+    IMZA,
   ].join('\n'))
+}
+
+/** Mesajlarda görünen klinik imzası. */
+const IMZA = 'Dr. Izzet GOK - Aesthetik & Longevity'
+
+/** 2000 → '2.000' · SMS'te okunaklı olsun. */
+function binlik(n: number): string {
+  return Math.round(n).toLocaleString('tr-TR')
 }
 
 /**
