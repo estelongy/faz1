@@ -188,7 +188,7 @@ export function smsDavetDogrulama(opts: {
     fayda
       ? `Tebrikler ${ad}! Size ozel EKSTRA ${fayda} indirim tanimlandi.`
       : `Tebrikler ${ad}! Size ozel bir ayricalik tanimlandi.`,
-    `Onay kodunuz: ${opts.kod}`,
+    `Randevu onay kodunuz: ${opts.kod}`,
     // İmza: SMS başlığı "ESTELONGY" görünüyor, müşteri kimden geldiğini
     // anlamıyordu. Klinik adı mesajın içinde.
     IMZA,
@@ -285,7 +285,7 @@ export function smsAdayOnay(opts: { ad: string; kod: string }): string {
   const ad = adSoyadBasHarf(opts.ad)
   return smsSadelestir([
     `Sayin ${ad}, ${KLINIK} tavsiye programina referansor olarak onerildiniz.`,
-    `Onay kodunuz: ${opts.kod}`,
+    `Randevu onay kodunuz: ${opts.kod}`,
     'Kabul etmiyorsaniz kodu paylasmayin.',
   ].join('\n'))
 }
