@@ -197,7 +197,7 @@ export default function BasvuruFormu({
             ['Puanım yanar mı?',
              'Puanınız yazıldığı günden 180 gün geçerlidir. Panelinizde hangi puanın ne zaman biteceği yazılı durur.'],
             ['Kaç kişiye tanımlayabilirim?',
-             'Ayda 10 kişiye. Tanımladığınız indirim kodu 7 gün geçerli olur.'],
+             'Sınır yok. Tanımladığınız indirim kodu 7 gün geçerli olur; süresi dolarsa aynı kişiye yeniden tanımlayabilirsiniz.'],
             ['Numarasını verdiğim kişi rahatsız olur mu?',
              'Tek bir SMS gider, indirimini anlatır. İlgilenmezse yanıtlamaz; ikinci bir mesaj gitmez.'],
             ['Tanıdığım zaten hastanız ise olur mu?',
