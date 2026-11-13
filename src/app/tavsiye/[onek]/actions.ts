@@ -179,3 +179,31 @@ export async function kodDogrula(
   revalidatePath(`/tavsiye/${onek}`)
   return { ok: true, kod: String(row.kod), kisa: String(row.kisa) }
 }
+
+/**
+ * Referansörün aday önerisi.
+ *
+ * Eskiden burada "başvuru linkini kopyala" vardı: link sabitti, sınırsızdı,
+ * gruba atılabiliyordu ve kimin kimi davet ettiği kayıtlı değildi.
+ *
+ * Artık referansör adayı TANITIYOR, link almıyor. Klinik tanıtımı okuyup
+ * karar veriyor; onaylanırsa adaya SMS gidiyor.
+ *
+ * Doğrulamalar DB tarafında da var (referral_aday_oner) — ekran atlanabilir.
+ */
+export async function adayOner(
+  onek: string, ad: string, tel: string,
+  tip: 'bireysel' | 'isletme', tanitim: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('referral_aday_oner', {
+    p_onek: onek,
+    p_ad: ad,
+    p_tel: tel,
+    p_tip: tip,
+    p_tanitim: tanitim,
+  })
+  if (error) return { ok: false, error: error.message }
+  revalidatePath(`/tavsiye/${onek}`)
+  return { ok: true }
+}

@@ -5,6 +5,8 @@ export interface ReferansAyar {
   aktif: boolean
   kod_omru_gun: number
   aylik_limit: number
+  /** Kliniğin WhatsApp iletişim numarası — onay SMS'inde adaya gider. */
+  whatsapp_tel?: string | null
 }
 
 /**

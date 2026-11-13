@@ -75,14 +75,26 @@ export function smsReferansorHosGeldin(opts: {
   bonus?: number | null
   /** Sitenin kök adresi — ortamdan gelir, sabit yazılmaz. */
   siteUrl: string
+  /** Kliniğin WhatsApp numarası (referral_settings.whatsapp_tel).
+      Tanımlı değilse satır hiç yazılmaz — uydurma numara gitmez. */
+  whatsappTel?: string | null
 }): string {
   const ad = duzgunAd(opts.ad).split(' ')[0]
   const kok = opts.siteUrl.replace(/\/$/, '')
+  const wa = (opts.whatsappTel ?? '').replace(/\D/g, '')
   return smsSadelestir([
     `Tebrikler ${ad}! ${KLINIK} referansoru oldunuz.`,
     opts.bonus && opts.bonus > 0 ? `Hos geldin bonusu: ${Math.round(opts.bonus)} puan.` : null,
     `Paneliniz: ${kok}/tavsiye/${opts.onek}`,
+    wa ? `Sorulariniz icin WhatsApp: ${telYaz(wa)}` : null,
   ].filter(Boolean).join('\n'))
+}
+
+/** '905551234567' / '05551234567' → '0555 123 45 67' */
+function telYaz(ham: string): string {
+  const d = ham.replace(/\D/g, '').replace(/^90/, '').replace(/^0/, '')
+  if (d.length !== 10) return ham
+  return `0${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`
 }
 
 /**

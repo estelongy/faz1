@@ -31,7 +31,7 @@ export default async function ReferansPage() {
       .eq('owner_id', clinicOwner)
       .order('name', { ascending: true }),
     supabase.from('referral_settings')
-      .select('isletme_kodu, aktif, kod_omru_gun, aylik_limit')
+      .select('isletme_kodu, aktif, kod_omru_gun, aylik_limit, whatsapp_tel')
       .eq('owner_id', clinicOwner).maybeSingle(),
     supabase.from('referral_offer')
       .select('id, baslik, ayricalik, aktif, kontenjan, gecerli_bitis, odul_tutar, tur, gecerli_zaman, gorsel_izni, referansore_goster')
@@ -52,7 +52,7 @@ export default async function ReferansPage() {
       .order('esik', { ascending: true })
       .limit(1).maybeSingle(),
     supabase.from('referral_basvuru')
-      .select('id, ad, tel, not_metni, durum, created_at, davet_eden')
+      .select('id, ad, tel, tip, tanitim, not_metni, durum, created_at, davet_eden')
       .eq('owner_id', clinicOwner)
       .eq('durum', 'bekliyor')
       .order('created_at', { ascending: false }),
@@ -107,6 +107,9 @@ export default async function ReferansPage() {
           tabanOran={Number(kademeRes.data?.musteri_max ?? 0) || null}
           basvurular={(basvuruRes.data ?? []).map(b => ({
             id: String(b.id), ad: String(b.ad), tel: String(b.tel),
+            // Eski başvurularda bu iki alan yok — null geçer, ekran gizler.
+            tip: (b.tip as 'bireysel' | 'isletme' | null) ?? null,
+            tanitim: b.tanitim ?? null,
             not_metni: b.not_metni ?? null,
             created_at: String(b.created_at),
             davet_eden: b.davet_eden ?? null,

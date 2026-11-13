@@ -1,35 +1,21 @@
 export const dynamic = 'force-dynamic'
 
-import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
-import { adSoyadBasHarf } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
-import BasvuruFormu from './BasvuruFormu'
+import { notFound } from 'next/navigation'
 
 /**
- * Referansör adayı başvuru sayfası — şifresiz.
- * Mevcut referansör linki paylaşır (?ref=ÖNEK), aday burada başvurur.
- * Klinik onaylayana kadar referansör oluşmaz.
+ * DIŞARIDAN BAŞVURU KAPATILDI (13 Kas 2026, kurucu kararı).
+ *
+ * Bu sayfa herkese açıktı: linki eline geçen herkes başvurabiliyordu,
+ * referansör de linki kopyalayıp gruba atabiliyordu. Kim kimi davet etti
+ * belli olmuyor, onay kuyruğu dolabiliyordu.
+ *
+ * Yeni yol: referansör kendi panelinden (/tavsiye → Davet) adayı TANITARAK
+ * önerir, klinik okuyup karar verir. Kendi başına başvuru yok.
+ *
+ * Sayfa silinmedi, 404 veriyor: daha önce paylaşılmış linkler çalışmasın
+ * ama dosya geçmişi ve yeniden açma yolu dursun. Açmak için notFound()
+ * satırını kaldırmak yeterli — form bileşeni yerinde duruyor.
  */
-export const metadata: Metadata = {
-  title: 'Referansör Başvurusu',
-  robots: { index: false, follow: false },
-}
-
-export default async function ReferansorBasvuruSayfasi({
-  searchParams,
-}: { searchParams: { ref?: string } }) {
-  const onek = searchParams.ref ?? ''
-
-  // Davet eden referansörün adı sayfada geçsin: aday kimin çağırdığını
-  // görünce mesajın gerçekliğinden emin oluyor. Soyadı baş harfe iner
-  // (SMS'teki disiplinin aynısı). Önek yoksa/yanlışsa sayfa adsız açılır.
-  let davetEden: string | null = null
-  if (onek) {
-    const supabase = await createClient()
-    const { data } = await supabase.rpc('referral_panel', { p_onek: onek })
-    const veri = data as { ad?: string; aktif?: boolean } | null
-    if (veri?.aktif && veri.ad) davetEden = adSoyadBasHarf(veri.ad)
-  }
-
-  return <BasvuruFormu onek={onek} davetEden={davetEden} />
+export default function ReferansorBasvuruSayfasi() {
+  notFound()
 }

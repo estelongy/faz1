@@ -171,7 +171,7 @@ export async function hosGeldinSmsGonder(referrerId: string): Promise<void> {
 
     const [{ data: ayar }, { data: ledger }] = await Promise.all([
       supabase.from('referral_settings')
-        .select('isletme_kodu').eq('owner_id', ownerId).maybeSingle(),
+        .select('isletme_kodu, whatsapp_tel').eq('owner_id', ownerId).maybeSingle(),
       supabase.from('referral_ledger')
         .select('tutar').eq('referrer_id', referrerId).eq('tur', 'puan_bonus').maybeSingle(),
     ])
@@ -182,6 +182,7 @@ export async function hosGeldinSmsGonder(referrerId: string): Promise<void> {
       onek,
       bonus: ledger?.tutar ? Number(ledger.tutar) : null,
       siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com',
+      whatsappTel: ayar?.whatsapp_tel ?? null,
     }))
     if (!res.success) console.error('[referansor-hosgeldin-sms] Netgsm:', res.error)
   } catch (err) {

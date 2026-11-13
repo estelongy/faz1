@@ -30,6 +30,10 @@ export interface BasvuruRow {
   id: string
   ad: string
   tel: string
+  /** Referansörün beyanı. Eski başvurularda yok. */
+  tip: 'bireysel' | 'isletme' | null
+  /** Adayı tanıtan metin — kararın dayanağı. Eski başvurularda yok. */
+  tanitim: string | null
   not_metni: string | null
   created_at: string
   davet_eden: string | null
@@ -479,11 +483,34 @@ export default function ReferansPanel({
               : null
             return (
               <div key={b.id} className="bg-slate-900/60 border border-amber-500/30 rounded-xl p-3">
-                <p className="text-sm font-semibold text-white">{b.ad}</p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm font-semibold text-white">{b.ad}</p>
+                  {b.tip && (
+                    <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold ${
+                      b.tip === 'isletme'
+                        ? 'bg-sky-500/15 text-sky-300 ring-1 ring-sky-500/30'
+                        : 'bg-slate-700/60 text-slate-300'
+                    }`}>
+                      {b.tip === 'isletme' ? 'İŞLETME' : 'BİREYSEL'}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-slate-500 mt-0.5">
                   <span className="font-mono">{b.tel}</span>
-                  {edenAd && <span className="ml-2">· {edenAd} davet etti</span>}
+                  {edenAd && <span className="ml-2">· {edenAd} önerdi</span>}
                 </p>
+
+                {/* Tanıtım kararın dayanağı: kırpılmadan, tam okunur. */}
+                {b.tanitim && (
+                  <div className="mt-2 rounded-lg bg-slate-950/70 ring-1 ring-slate-800 p-2.5">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">
+                      Öneren ne diyor
+                    </p>
+                    <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                      {b.tanitim}
+                    </p>
+                  </div>
+                )}
                 {b.not_metni && (
                   <p className="text-xs text-slate-400 mt-1.5 italic">&ldquo;{b.not_metni}&rdquo;</p>
                 )}
@@ -654,9 +681,18 @@ export default function ReferansPanel({
             <div>
               <label className="block text-xs font-bold text-slate-400 mb-1">Aylık davet limiti</label>
               <input name="aylik_limit" type="number" min="0"
-                defaultValue={ayar?.aylik_limit ?? 10} className={inputCls} />
+                defaultValue={ayar?.aylik_limit ?? 0} className={inputCls} />
               <p className="text-[11px] text-slate-500 mt-1">Referansör başına · 0 = sınırsız</p>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-400 mb-1">WhatsApp iletişim numarası</label>
+            <input name="whatsapp_tel" type="tel" placeholder="0(5__) ___ __ __"
+              defaultValue={ayar?.whatsapp_tel ?? ''} className={inputCls} />
+            <p className="text-[11px] text-slate-500 mt-1">
+              Referansörlük onay SMS&apos;inde adaya gönderilir. Boşsa o satır yazılmaz.
+            </p>
           </div>
 
           <button type="submit" disabled={pending} className={btnPrimary}>Ayarları Kaydet</button>

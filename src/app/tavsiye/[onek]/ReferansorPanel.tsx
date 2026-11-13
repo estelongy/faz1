@@ -2,10 +2,13 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { davetBaslat, kodDogrula } from './actions'
+import { davetBaslat, kodDogrula, adayOner } from './actions'
 import { girisCik } from '../giris-actions'
 import { turBilgi } from '@/app/klinik/panel/muhasebe/referans-tipler'
-import { waReferansorDavetMetni } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
+
+/** Aday tanıtımı — kararın dayanağı olduğu için alt sınır var. */
+const TANITIM_MIN = 100
+const TANITIM_MAX = 2000
 
 export interface PanelVerisi {
   onek: string
@@ -93,8 +96,12 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   // Yalnızca "davet tamamlandı" bilgisi tutulur — kodun kendisi müşterinin,
   // referansör ekranında gösterilmez.
   const [altinKod, setAltinKod] = useState(false)
-  // Referansör adayı başvuru linki — pano çalışmazsa ekranda kalır.
-  const [basvuruLink, setBasvuruLink] = useState<string | null>(null)
+  // Aday önerisi formu. Link paylaşımı kaldırıldı: referansör adayı
+  // tanıtıyor, klinik okuyup karar veriyor.
+  const [aday, setAday] = useState({
+    ad: '', tel: '', tip: '' as '' | 'bireysel' | 'isletme', tanitim: '',
+  })
+  const [adayGonderildi, setAdayGonderildi] = useState(false)
 
   // Kampanya başına ad/telefon girişi
   const [form, setForm] = useState<Record<string, { ad: string; tel: string; not: string; ekstra: string }>>({})
@@ -430,36 +437,116 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
         </section>
       )}
 
-      {/* ── DAVET — referansör adayı başvuru linki ── */}
+      {/* ── DAVET — aday önerisi (link paylaşımı YOK) ──
+          Eskiden burada kopyalanabilir bir başvuru linki vardı: sabitti,
+          sınırsızdı, gruba atılabiliyordu. Artık referansör adayı tanıtıyor,
+          klinik okuyup karar veriyor. */}
       {sekme === 'davet' && (
         <section className="space-y-3">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
-            <p className="text-sm font-bold text-white">Tanıdığınızı referansör yapın</p>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Başvuru linkini paylaşın. Başvuran kişi bilgilerini girer,
-              klinik onayladıktan sonra o da referansör olur.
-            </p>
-            <button type="button"
-              onClick={() => {
-                const link = `${window.location.origin}/referansor-basvuru?ref=${veri.onek}`
-                navigator.clipboard?.writeText(link).catch(() => {})
-                setBasvuruLink(link)
-              }}
-              className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white">
-              Başvuru linkini kopyala
-            </button>
-            {basvuruLink && (
-              <div className="bg-slate-950/60 rounded-lg p-2 space-y-1">
-                <p className="text-[11px] text-emerald-300 font-semibold">Link kopyalandı</p>
-                <p className="font-mono text-[11px] text-slate-400 break-all">{basvuruLink}</p>
-                <a href={`https://wa.me/?text=${encodeURIComponent(waReferansorDavetMetni({ referansorAd: veri.ad, url: basvuruLink }))}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="block text-center mt-1 px-3 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white">
-                  WhatsApp&rsquo;tan gönder
-                </a>
+          {adayGonderildi ? (
+            <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-5 text-center space-y-2">
+              <p className="text-3xl">✓</p>
+              <p className="text-sm font-bold text-emerald-300">Öneriniz iletildi</p>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Klinik tanıtımınızı okuyup karar verecek. Uygun görülürse
+                adaya bilgilendirme mesajı gönderilir.
+              </p>
+              <button type="button"
+                onClick={() => {
+                  setAdayGonderildi(false)
+                  setAday({ ad: '', tel: '', tip: '', tanitim: '' })
+                }}
+                className="text-xs text-violet-400 hover:text-violet-300 underline underline-offset-2">
+                Başka birini öner
+              </button>
+            </div>
+          ) : (
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+              <div>
+                <p className="text-sm font-bold text-white">Tanıdığınızı referansör olarak önerin</p>
+                <p className="text-sm text-slate-400 leading-relaxed mt-1">
+                  Bilgilerini bırakın ve kısaca tanıtın. Klinik değerlendirir;
+                  uygun görülürse adaya kendi paneli açılır.
+                </p>
               </div>
-            )}
-          </div>
+
+              <input
+                value={aday.ad}
+                onChange={e => setAday(a => ({ ...a, ad: e.target.value }))}
+                placeholder="Adı Soyadı"
+                className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-slate-700
+                           text-base text-white placeholder:text-slate-500
+                           focus:outline-none focus:border-violet-500" />
+
+              <input
+                value={aday.tel}
+                onChange={e => setAday(a => ({ ...a, tel: e.target.value }))}
+                placeholder="0(5__) ___ __ __"
+                inputMode="tel"
+                className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-slate-700
+                           text-base text-white placeholder:text-slate-500
+                           focus:outline-none focus:border-violet-500" />
+
+              <div>
+                <p className="text-xs font-bold text-slate-400 mb-1.5">Aday kim?</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {([['bireysel', 'Bireysel'], ['isletme', 'İşletme']] as const).map(([d, etiket]) => (
+                    <button key={d} type="button"
+                      onClick={() => setAday(a => ({ ...a, tip: d }))}
+                      className={`px-3 py-2.5 rounded-lg text-sm font-bold border transition-colors ${
+                        aday.tip === d
+                          ? 'bg-violet-600 border-violet-500 text-white'
+                          : 'bg-slate-950 border-slate-700 text-slate-400 hover:border-slate-600'
+                      }`}>
+                      {etiket}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-baseline justify-between mb-1.5">
+                  <p className="text-xs font-bold text-slate-400">Adayı tanıtın</p>
+                  <p className={`text-[11px] tabular-nums ${
+                    aday.tanitim.trim().length < TANITIM_MIN ? 'text-slate-600' : 'text-emerald-400'
+                  }`}>
+                    {aday.tanitim.trim().length} / {TANITIM_MIN}
+                  </p>
+                </div>
+                <textarea
+                  value={aday.tanitim}
+                  onChange={e => setAday(a => ({ ...a, tanitim: e.target.value.slice(0, TANITIM_MAX) }))}
+                  rows={6}
+                  placeholder="Kim olduğunu, ne iş yaptığını, çevresini ve neden uygun olduğunu yazın. Klinik kararını bu metne göre verecek."
+                  className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-slate-700
+                             text-sm text-white placeholder:text-slate-600 leading-relaxed
+                             focus:outline-none focus:border-violet-500" />
+                <p className="text-[11px] text-slate-600 mt-1">
+                  En az {TANITIM_MIN}, en fazla {TANITIM_MAX} karakter.
+                </p>
+              </div>
+
+              <button type="button"
+                disabled={pending
+                  || aday.ad.trim().split(/\s+/).filter(p => p.length > 1).length < 2
+                  || aday.tel.replace(/\D/g, '').length < 10
+                  || !aday.tip
+                  || aday.tanitim.trim().length < TANITIM_MIN}
+                onClick={() => startTransition(async () => {
+                  setHata(null)
+                  const r = await adayOner(
+                    veri.onek, aday.ad, aday.tel,
+                    aday.tip as 'bireysel' | 'isletme', aday.tanitim,
+                  )
+                  if (!r.ok) { setHata(r.error); return }
+                  setAdayGonderildi(true)
+                })}
+                className="w-full px-3 py-3 rounded-lg text-sm font-bold bg-violet-600
+                           hover:bg-violet-500 disabled:opacity-40 text-white">
+                {pending ? 'Gönderiliyor…' : 'Değerlendirmeye gönder'}
+              </button>
+            </div>
+          )}
         </section>
       )}
 

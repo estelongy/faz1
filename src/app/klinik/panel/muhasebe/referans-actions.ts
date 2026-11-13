@@ -42,14 +42,21 @@ export async function saveReferansAyar(formData: FormData): Promise<Result> {
     return { ok: false, error: 'İşletme kodu 2-5 harf olmalı (örn. GOK).' }
   }
   const omur = Number(formData.get('kod_omru_gun') ?? 7)
-  const limit = Number(formData.get('aylik_limit') ?? 10)
+  const limit = Number(formData.get('aylik_limit') ?? 0)
+  // WhatsApp numarası: yalnız rakam saklanır, biçim gösterimde kurulur.
+  // Boş bırakılabilir — o zaman SMS'te o satır hiç yazılmaz.
+  const waHam = ((formData.get('whatsapp_tel') as string) ?? '').replace(/\D/g, '')
+  if (waHam && waHam.replace(/^(90|0)/, '').length !== 10) {
+    return { ok: false, error: 'WhatsApp numarası geçersiz.' }
+  }
 
   const { error } = await ctx.supabase.from('referral_settings').upsert({
     owner_id: ctx.clinicOwnerId,
     isletme_kodu: isletme,
     aktif: formData.get('aktif') === 'on',
     kod_omru_gun: Number.isFinite(omur) ? omur : 7,
-    aylik_limit: Number.isFinite(limit) ? limit : 10,
+    aylik_limit: Number.isFinite(limit) ? limit : 0,
+    whatsapp_tel: waHam || null,
     updated_at: new Date().toISOString(),
   })
   if (error) return { ok: false, error: error.message }
