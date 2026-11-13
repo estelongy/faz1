@@ -26,7 +26,48 @@ function galaxyForPath(p: string): string | null {
   return null // /admin → galaksi yok
 }
 
+/**
+ * KANONIK ALAN ADI — tek adres kurali.
+ *
+ * Proje iki adresten aciliyordu: estelongy.com ve
+ * estelongy-clean.vercel.app. Ikisi ayri origin oldugu icin CEREZ
+ * PAYLASMIYORLAR: referansor SMS'teki linkten (estelongy.com) girip
+ * dogrulaniyor, sonra kisayoldan (vercel.app) acinca cerez yok ve
+ * sistem her seferinde yeniden SMS kodu istiyordu.
+ *
+ * Artik kanonik adres disindaki her istek 308 ile buraya tasiniyor.
+ * Tek origin = tek cerez alani = bir kez dogrulama.
+ *
+ * Deger NEXT_PUBLIC_SITE_URL'den okunur (SMS linkleri de ayni kaynagi
+ * kullanir, boylece ikisi asla ayrisamaz). Env yoksa yonlendirme hic
+ * calismaz -- preview ve yerel gelistirme kirilmasin diye.
+ */
+const KANONIK_HOST = (() => {
+  const u = process.env.NEXT_PUBLIC_SITE_URL
+  if (!u) return null
+  try { return new URL(u).host } catch { return null }
+})()
+
+function kanonikYonlendir(request: NextRequest): NextResponse | null {
+  if (!KANONIK_HOST) return null
+  const host = request.headers.get('host')
+  if (!host || host === KANONIK_HOST) return null
+  // Vercel'in anlik deploy adresleri (faz-1-xxxx.vercel.app) ve preview
+  // dallari disarida: onlar bilerek ayri ortam, yonlendirilirse test
+  // edilemezler. Yalniz kalici takma adlar tasinir.
+  if (process.env.VERCEL_ENV !== 'production') return null
+
+  const url = request.nextUrl.clone()
+  url.host = KANONIK_HOST
+  url.protocol = 'https:'
+  url.port = ''
+  return NextResponse.redirect(url, 308)
+}
+
 export async function middleware(request: NextRequest) {
+  const kanonik = kanonikYonlendir(request)
+  if (kanonik) return kanonik
+
   let response = NextResponse.next({ request: { headers: request.headers } })
 
   const supabase = createServerClient(
