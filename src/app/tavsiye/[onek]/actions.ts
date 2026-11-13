@@ -6,6 +6,7 @@ import { redis } from '@/lib/redis'
 import { createClient } from '@/lib/supabase/server'
 import { sendInfoSms, generateOtpCode, normalizePhone, mapNetgsmError } from '@/lib/netgsm'
 import { smsDavetDogrulama, smsKodOzetMetni, smsAdayOnay } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
+import { smsSiniriAsildi } from '../sms-muafiyet'
 
 /**
  * Referansör akışı — iki adım:
@@ -31,6 +32,10 @@ const ISTEK_SINIR = 3         // aynı numaraya saatte kaç SMS
 const otpKey = (token: string) => `ref_otp:${token}`
 const denemeKey = (token: string) => `ref_otp_deneme:${token}`
 const istekKey = (tel: string) => `ref_otp_istek:${tel}`
+
+/** Saatlik SMS sınırı — muaf numaralar ortak listede (sms-muafiyet.ts). */
+const sinirAsildi = (tel: string, gonderilen: number) =>
+  smsSiniriAsildi(tel, gonderilen, ISTEK_SINIR)
 
 async function istemciIp(): Promise<string | null> {
   const h = await headers()
@@ -60,7 +65,7 @@ export async function davetBaslat(
   // Sayaç yalnızca OKUNUR; artırma SMS gerçekten gidince yapılır — yoksa
   // DB hatası veya SMS arızasında kota boşa yanıyordu.
   const gonderilen = Number(await redis.get<number>(istekKey(tel)) ?? 0)
-  if (gonderilen >= ISTEK_SINIR) {
+  if (sinirAsildi(tel, gonderilen)) {
     return {
       ok: false,
       error: `Bu numaraya son bir saatte ${ISTEK_SINIR} kod gönderildi. Biraz sonra tekrar deneyin.`,
@@ -309,7 +314,7 @@ export async function adayKodGonder(
   if (!tel) return { ok: false, error: 'Telefon numarası geçersiz.' }
 
   const gonderilen = Number(await redis.get<number>(istekKey(tel)) ?? 0)
-  if (gonderilen >= ISTEK_SINIR) {
+  if (sinirAsildi(tel, gonderilen)) {
     return {
       ok: false,
       error: `Bu numaraya son bir saatte ${ISTEK_SINIR} kod gönderildi. Biraz sonra tekrar deneyin.`,

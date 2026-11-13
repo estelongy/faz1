@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { sendInfoSms, generateOtpCode, normalizePhone, mapNetgsmError } from '@/lib/netgsm'
 import { smsSadelestir } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
 import { oturumCerez, OTURUM_GUN } from './giris-sabit'
+import { smsSiniriAsildi } from './sms-muafiyet'
 
 /**
  * Referansör girişi — şifresiz, SMS ile.
@@ -47,7 +48,7 @@ export async function girisKodGonder(hamTel: string): Promise<Gonder> {
   if (!tel) return { ok: false, error: 'Telefon numarası geçersiz.' }
 
   const gonderilen = Number(await redis.get<number>(istekKey(tel)) ?? 0)
-  if (gonderilen >= ISTEK_SINIR) {
+  if (smsSiniriAsildi(tel, gonderilen, ISTEK_SINIR)) {
     return { ok: false, error: 'Çok fazla kod istendi. Bir saat sonra tekrar deneyin.' }
   }
 

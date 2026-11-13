@@ -5,6 +5,7 @@ import { redis } from '@/lib/redis'
 import { createClient } from '@/lib/supabase/server'
 import { sendInfoSms, generateOtpCode, normalizePhone, mapNetgsmError } from '@/lib/netgsm'
 import { smsDogrulamaMetni, smsKodOzetMetni } from '@/app/klinik/panel/muhasebe/referans-mesajlar'
+import { smsSiniriAsildi } from '@/app/tavsiye/sms-muafiyet'
 
 /**
  * Müşteri akışı — şifresiz, iki adım:
@@ -41,7 +42,7 @@ export async function kodGonder(token: string, hamTel: string): Promise<Gonder> 
   // Aynı numaraya saatte en fazla 3 SMS
   const istek = await redis.incr(istekKey(tel))
   if (istek === 1) await redis.expire(istekKey(tel), 3600)
-  if (istek > ISTEK_SINIR) {
+  if (smsSiniriAsildi(tel, istek - 1, ISTEK_SINIR)) {
     return { ok: false, error: 'Çok fazla deneme. Bir saat sonra tekrar deneyin.' }
   }
 
