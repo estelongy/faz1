@@ -54,10 +54,22 @@ export function siraCarpani(sira: number): number {
 /**
  * Eşikler. Tek ziyaretle gelen daha yüksek eşik öder.
  * Maxima/Suprema puanla değil süreyle kazanılır — burada yok.
+ *
+ * ÜYELİK İNDİRİMİ DURDURULDU (13 Kas 2026, kurucu kararı).
+ *
+ * Kaldırmak yerine eşikler 1.000.000'a çekildi: kimse ulaşamıyor, herkes
+ * Primula'da (%0) kalıyor, üye indirimi fiilen devre dışı. Kademe motoru,
+ * puan birikimi ve ekrandaki rozet olduğu gibi çalışmaya devam ediyor —
+ * yalnızca indirim doğmuyor.
+ *
+ * NEDEN BÖYLE: motoru sökmek geri dönüşü zor bir iş; eşiği değiştirmek
+ * tek satır. Yeniden açmak istenirse aşağıdaki sayılar eski hallerine
+ * döner (elita 50.000/35.000 · optima 150.000/100.000), başka hiçbir
+ * yere dokunmak gerekmez.
  */
 const ESIK = {
-  elita:  { tek: 50_000, coklu:  35_000 },
-  optima: { tek: 150_000, coklu: 100_000 },
+  elita:  { tek: 1_000_000, coklu: 1_000_000 },
+  optima: { tek: 1_000_000, coklu: 1_000_000 },
 } as const
 
 /**
