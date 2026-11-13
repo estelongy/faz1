@@ -799,7 +799,7 @@ istenirse arşiv katmanına alınabilir.
 
 > Operasyonel referans. Detaylı tarihsel devir dosyası: `CLAUDEeski2.md`.
 
-**Güncelleme:** 2026-05-16 · **Aktif branch:** `claude/priceless-ellis` (production) · **Faz:** Soft Launch — SMS/OTP canlı, 3-galaksi mimari devrede, EGP motoru PAUSE, Stripe Live KYC açık.
+**Güncelleme:** 2026-11-14 · **Aktif branch:** `master` (production) · **Faz:** Soft Launch — SMS/OTP canlı, 3-galaksi mimari devrede, EGP motoru PAUSE, Stripe Live KYC açık.
 
 ---
 
@@ -1121,7 +1121,7 @@ Vercel'e push etmeden önce, eğer JSX veya TS dosyası düzenlediysen, **mutlak
 ## 16. Deploy & Operasyon
 
 ```bash
-git checkout claude/priceless-ellis     # ASLA main'e push etme
+git checkout master                      # production branch — Vercel buradan deploy eder
 git add -A && git commit -m "..."
 npm run build                            # ZORUNLU
 vercel --prod --yes
