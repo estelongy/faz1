@@ -463,7 +463,11 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
           ) : (
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
               <div>
-                <p className="text-sm font-bold text-white">Tanıdığınızı referansör olarak önerin</p>
+                {/* Büyük harf: başlık kutunun içinde kaybolmasın, referansör
+                    ne yapacağını bir bakışta görsün. */}
+                <p className="text-sm font-black text-white uppercase tracking-wide">
+                  TANIDIĞINIZI REFERANSÖR OLARAK ÖNERİN
+                </p>
                 <p className="text-sm text-slate-400 leading-relaxed mt-1">
                   Bilgilerini bırakın ve kısaca tanıtın. Klinik değerlendirir;
                   uygun görülürse adaya kendi paneli açılır.
