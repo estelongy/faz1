@@ -9,7 +9,7 @@ import { OTURUM_GUN } from './giris-sabit'
  * Referansör giriş formu — telefon + SMS kodu.
  *
  * İki yerde kullanılır:
- *   /tavsiye            → önek bilinmiyor, doğrulama sonrası kendi paneline gider
+ *   /tavsiye            → önek bilinmiyor, doğrulama sonrası aynı adreste panel açılır
  *   /tavsiye/<önek>     → çerez yoksa panelin önüne çıkar
  *
  * Kod 6 hanede otomatik gönderilir. Stale closure tuzağına düşmemek için
@@ -47,9 +47,12 @@ export default function GirisFormu({ onek }: { onek?: string }) {
     startTransition(async () => {
       const r = await girisKodDogrula(tel, k)
       if (!r.ok) { setHata(r.error); setKod(''); return }
-      // Kendi paneline git; zaten o paneldeyse yenile.
-      if (onek && r.onek.toUpperCase() === onek.toUpperCase()) router.refresh()
-      else router.replace(`/tavsiye/${r.onek}`)
+      // Adres DEĞİŞMEZ. Öneksiz kapı (/tavsiye) çerezi okuyup paneli
+      // kendi üstünde gösteriyor, bu yüzden yenilemek yeterli.
+      // Başka bir referansörün adresindeyken giriş yapıldıysa (önek
+      // uyuşmuyor) orada kalmanın anlamı yok: öneksiz kapıya geç.
+      if (!onek || r.onek.toUpperCase() === onek.toUpperCase()) router.refresh()
+      else router.replace('/tavsiye')
     })
   }
 
