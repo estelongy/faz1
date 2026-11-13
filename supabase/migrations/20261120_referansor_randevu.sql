@@ -18,3 +18,12 @@
 --
 -- Referansör kliniğin TAKVİMİNİ görmez: yalnız "bu saat açık/kapalı".
 -- Hasta adı, işlem türü, ciro RPC'den hiç dönmüyor.
+
+-- 14 Kas 2026 — sonradan çıkan iki sorun:
+--   1) "structure of query does not match function result type":
+--      referral_kilitle 3→4 kolona çıktı (randevu_at), PostgREST eski
+--      imzayı önbellekte tutuyordu. Çözüm: notify pgrst, 'reload schema'.
+--      Dönüş tipi değişen her fonksiyondan sonra bu gerekiyor.
+--   2) referral_davet_baslat'ın 6 ve 7 parametreli iki sürümü yan yana
+--      duruyordu (PGRST203 riski). Eski 6'lı silindi:
+--      referral_davet_baslat_eski_surum_sil
