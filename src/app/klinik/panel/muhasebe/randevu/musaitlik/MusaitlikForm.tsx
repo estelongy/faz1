@@ -70,9 +70,15 @@ function formatDuration(mins: number): string {
 const STEP = 15
 const MAX_MIN = 1440
 
-export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
+export default function MusaitlikForm({ week, referansSlot }: {
+  week: AvailabilityWeek
+  /** Referansörün görebileceği slot sayısı; null = referans sistemi kurulu değil. */
+  referansSlot?: number | null
+}) {
   const router = useRouter()
   const [days, setDays] = useState<Record<number, DayState>>(() => buildInitial(week))
+  // Referansör penceresi: 0 = tüm saatler açık, N = her günün SON N slotu.
+  const [refSlot, setRefSlot] = useState<number>(referansSlot ?? 4)
   const [isPending, startTransition] = useTransition()
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -110,6 +116,7 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
       fd.set(`closed_${dow}`, d.is_active ? '' : 'on')
       fd.set(`duration_${dow}`, String(d.slot_duration_minutes))
     }
+    if (referansSlot != null) fd.set('referans_slot', String(refSlot))
     startTransition(async () => {
       const res = await saveAvailability(fd)
       if (!res.ok) { setError(res.error ?? 'Kayıt hatası'); return }
@@ -118,6 +125,8 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
       setTimeout(() => setSaved(false), 3000)
     })
   }
+
+  function setRef(n: number) { setRefSlot(n); setSaved(false) }
 
   const activeDays = GUNLER.filter(d => days[d.id]?.is_active)
   const totalSlotsPerWeek = activeDays.reduce((sum, d) => {
@@ -147,6 +156,35 @@ export default function MusaitlikForm({ week }: { week: AvailabilityWeek }) {
           </button>
         </div>
       </div>
+
+      {/* Referansör penceresi — takvimin üstüne geçen maske.
+          Klinik takvimi hiç değişmez; referansör bu çerçeveden bakar. */}
+      {referansSlot != null && (
+        <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
+          <div className="flex items-start gap-3 flex-wrap">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-white">Referansör hangi saatleri görsün?</p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {refSlot === 0
+                  ? 'Takvimin tamamı açık — referansör bütün boş saatlere randevu verebilir.'
+                  : `Her günün son ${refSlot} slotu. Gerisi referansöre kapalı, senin takvimin değişmez.`}
+              </p>
+            </div>
+            <div className="flex gap-1.5 shrink-0">
+              {[0, 2, 3, 4, 6].map(n => (
+                <button key={n} type="button" onClick={() => setRef(n)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-colors ${
+                    refSlot === n
+                      ? 'bg-violet-600 text-white'
+                      : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                  }`}>
+                  {n === 0 ? 'Tümü' : `Son ${n}`}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Gün kartları */}
       {GUNLER.map(gun => {

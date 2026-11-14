@@ -1012,6 +1012,23 @@ export async function saveAvailability(formData: FormData): Promise<Result> {
     .upsert(rows, { onConflict: 'owner_id,day_of_week' })
   if (error) return { ok: false, error: error.message }
 
+  // Referansör penceresi — aynı ekranda ayarlanıyor, ayrı tabloda tutuluyor
+  // (klinik geneli, gün bazlı değil). 0 = tüm saatler açık.
+  const pencere = (formData.get('referans_slot') as string | null) ?? null
+  if (pencere !== null) {
+    const n = Number(pencere)
+    if (!Number.isInteger(n) || n < 0 || n > 48) {
+      return { ok: false, error: 'Referansör slot sayısı geçersiz.' }
+    }
+    const { error: hata } = await ctx.supabase
+      .from('referral_settings')
+      .update({ referans_slot_sayisi: n, updated_at: new Date().toISOString() })
+      .eq('owner_id', ctx.clinicOwnerId)
+      .select('owner_id')
+    // Referans sistemi kurulu değilse satır yok — müsaitlik kaydı yine de geçerli.
+    if (hata) return { ok: false, error: hata.message }
+  }
+
   revalidatePath('/klinik/panel/muhasebe')
   revalidatePath('/klinik/panel/muhasebe/randevu')
   revalidatePath('/klinik/panel/muhasebe/randevu/yeni')

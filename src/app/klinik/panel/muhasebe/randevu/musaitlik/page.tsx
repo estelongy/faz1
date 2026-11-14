@@ -24,7 +24,7 @@ export default async function MusaitlikPage() {
   const clinicOwner = clinicOwnerIdFor(user.id) ?? user.id
   const ownerProfile = getMuhasebeOwnerProfile(user.id)
 
-  const [{ data }, { data: clinicRow }] = await Promise.all([
+  const [{ data }, { data: clinicRow }, { data: refRow }] = await Promise.all([
     supabase
       .from('internal_availability')
       .select('day_of_week, open_time, close_time, is_closed, slot_duration_minutes')
@@ -35,10 +35,18 @@ export default async function MusaitlikPage() {
       .select('auto_confirm_appointments')
       .eq('user_id', user.id)
       .maybeSingle(),
+    // Referansörün görebileceği slot sayısı — aynı ekranda ayarlanıyor.
+    supabase
+      .from('referral_settings')
+      .select('referans_slot_sayisi')
+      .eq('owner_id', clinicOwner)
+      .maybeSingle(),
   ])
 
   const week = normalizeWeek((data ?? []) as Partial<DayAvailability>[])
   const autoConfirm = clinicRow?.auto_confirm_appointments ?? true
+  // Referans sistemi kurulu değilse satır yok: null geçilir, form alanı gizlenir.
+  const referansSlot = refRow ? (refRow.referans_slot_sayisi ?? 4) : null
 
   const flavor = await getServerFlavor()
   if (flavor === 'esteklinikpro') {
@@ -71,7 +79,7 @@ export default async function MusaitlikPage() {
         <AutoConfirmCard initial={autoConfirm} />
       </div>
 
-      <MusaitlikForm week={week} />
+      <MusaitlikForm week={week} referansSlot={referansSlot} />
     </div>
   )
 }
