@@ -11,6 +11,10 @@ import { smsSiniriAsildi } from './sms-muafiyet'
 /**
  * Referansör girişi — şifresiz, SMS ile.
  *
+ * ÇEREZ YOLU KÖK ('/'): path '/tavsiye' iken doğrulama yapılıyor, çerez
+ * yazılıyor ama panel açılmıyordu — kod doğru, önek doğru, referral_panel
+ * veri döndürüyor; çerez isteğe binmiyordu. Kök yolda bu sorun yok.
+ *
  * Panel eskiden tamamen açıktı: öneği (DH6GOK) bilen herkes açabiliyordu.
  * Şifre koymak yerine SMS doğrulaması kondu — referansör ayda bir girer,
  * parola unutur; telefonunu unutmaz. Doğrulama sonrası çerez 90 gün durur,
@@ -102,7 +106,7 @@ export async function girisKodDogrula(hamTel: string, girilen: string): Promise<
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
-    path: '/tavsiye',
+    path: '/',
     maxAge: OTURUM_GUN * 24 * 60 * 60,
   })
 
