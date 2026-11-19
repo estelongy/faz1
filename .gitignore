@@ -38,3 +38,6 @@ next-env.d.ts
 # claude code internal
 .claude/
 CLAUDE.md.eski
+
+# TWA APK ciktisi + imza anahtari - depoya girmez
+apk/
