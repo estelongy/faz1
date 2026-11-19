@@ -396,23 +396,27 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
     }
   }, [])
 
-  // Fotoğraflar tembel yüklenir: köprü varsa yerelden, yoksa buluttan
+  // Fotoğraflar tembel yüklenir. Köprü açıkken de bulut okunur: geçmişte
+  // köprü kapalıyken çekilmiş fotoğraflar kaybolmasın diye iki kaynak
+  // birleştirilip tarihe göre sıralanır.
   const [patientPhotos, setPatientPhotos] = useState<PhotoRow[]>([])
 
   const loadPhotos = useCallback(async (pid: string, pname: string) => {
-    if (bridgeHost) {
-      const list = await bridgeList(bridgeHost, pname)
-      return list.map(f => ({
-        id: `local:${f.path}`,
-        patient_id: pid,
-        treatment_id: null,
-        note: f.name.replace(/\.\w+$/, '').replace(/-/g, ' '),
-        created_at: f.modified,
-        url: bridgeFileUrl(bridgeHost, f.path),
-      })) as PhotoRow[]
-    }
-    const res = await getPatientPhotos(pid)
-    return res.ok ? res.photos : []
+    const [yerel, bulut] = await Promise.all([
+      bridgeHost
+        ? bridgeList(bridgeHost, pname).then(list => list.map(f => ({
+            id: `local:${f.path}`,
+            patient_id: pid,
+            treatment_id: null,
+            note: f.name.replace(/\.\w+$/, '').replace(/-/g, ' '),
+            created_at: f.modified,
+            url: bridgeFileUrl(bridgeHost, f.path),
+          })) as PhotoRow[])
+        : Promise.resolve([] as PhotoRow[]),
+      getPatientPhotos(pid).then(res => (res.ok ? res.photos : [])),
+    ])
+    return [...yerel, ...bulut].sort((a, b) =>
+      (b.created_at ?? '').localeCompare(a.created_at ?? ''))
   }, [bridgeHost])
 
   useEffect(() => {
