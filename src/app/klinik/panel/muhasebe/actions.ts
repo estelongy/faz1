@@ -1313,24 +1313,34 @@ export async function getPatientPhotos(patientId: string): Promise<{ ok: true; p
   if (error) return { ok: false, error: error.message }
   if (!rows || rows.length === 0) return { ok: true, photos: [] }
 
-  const { data: signed } = await ctx.supabase.storage
+  // İmzalı URL üretimi sessizce başarısız olabiliyordu: hata yutuluyor, URL'si
+  // olmayan satırlar eleniyor ve liste boş dönüyordu — fotoğraf "kayboldu"
+  // görünüyordu. Hata artık yüzeye çıkıyor.
+  const { data: signed, error: signErr } = await ctx.supabase.storage
     .from('klinik-foto')
     .createSignedUrls(rows.map(r => r.storage_path), 3600)
-  const urlByPath = new Map((signed ?? []).map(s => [s.path, s.signedUrl]))
+  if (signErr) return { ok: false, error: `Fotoğraf bağlantısı üretilemedi: ${signErr.message}` }
 
-  return {
-    ok: true,
-    photos: rows
-      .map(r => ({
-        id: r.id,
-        patient_id: r.patient_id,
-        treatment_id: r.treatment_id,
-        note: r.note,
-        created_at: r.created_at,
-        url: urlByPath.get(r.storage_path) ?? '',
-      }))
-      .filter(p => p.url),
+  const urlByPath = new Map(
+    (signed ?? [])
+      .filter(s => s.path && s.signedUrl)
+      .map(s => [s.path as string, s.signedUrl]),
+  )
+
+  const photos = rows.map(r => ({
+    id: r.id,
+    patient_id: r.patient_id,
+    treatment_id: r.treatment_id,
+    note: r.note,
+    created_at: r.created_at,
+    url: urlByPath.get(r.storage_path) ?? '',
+  }))
+  const eksik = photos.filter(p => !p.url).length
+  if (eksik > 0 && eksik === photos.length) {
+    return { ok: false, error: `${eksik} fotoğrafın bağlantısı üretilemedi.` }
   }
+
+  return { ok: true, photos: photos.filter(p => p.url) }
 }
 
 // ─── Çıkış (PWA modu için — kabuktaki Çıkış butonu gizli olduğundan) ──────

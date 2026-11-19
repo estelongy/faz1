@@ -413,7 +413,10 @@ export default function TekEkranKlinik({ role, displayName, patients, appointmen
             url: bridgeFileUrl(bridgeHost, f.path),
           })) as PhotoRow[])
         : Promise.resolve([] as PhotoRow[]),
-      getPatientPhotos(pid).then(res => (res.ok ? res.photos : [])),
+      getPatientPhotos(pid).then(res => {
+        if (!res.ok) { setError(res.error ?? 'Bulut fotoğrafları okunamadı'); return [] }
+        return res.photos
+      }),
     ])
     return [...yerel, ...bulut].sort((a, b) =>
       (b.created_at ?? '').localeCompare(a.created_at ?? ''))
