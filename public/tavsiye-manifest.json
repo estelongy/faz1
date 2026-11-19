@@ -1,6 +1,6 @@
 {
-  "name": "T+ Tavsiye Panelim",
-  "short_name": "T+",
+  "name": "Estelongy Referans",
+  "short_name": "Referans",
   "description": "Tanıdığını davet et, puanını takip et.",
   "id": "/tavsiye",
   "start_url": "/tavsiye",
@@ -10,10 +10,28 @@
   "theme_color": "#020617",
   "orientation": "portrait",
   "lang": "tr-TR",
-  "categories": ["business", "lifestyle"],
+  "categories": [
+    "business",
+    "lifestyle"
+  ],
   "icons": [
-    { "src": "/tavsiye-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/tavsiye-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/tavsiye-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/referans-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/referans-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/referans-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
