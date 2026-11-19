@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.estelongy.tavsiye",
+      "sha256_cert_fingerprints": [
+        "EA:F4:FB:FD:7A:6B:BE:95:6E:AF:26:F6:AD:CD:82:C0:09:0F:03:56:32:FB:AA:69:9B:E8:79:B5:0F:D5:51:60"
+      ]
+    }
+  }
+]
