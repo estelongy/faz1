@@ -23,6 +23,16 @@ export default function GirisFormu({ onek }: { onek?: string }) {
   const [kod, setKod] = useState('')
   const [hata, setHata] = useState<string | null>(null)
   const [sayac, setSayac] = useState(0)
+  // Uygulama (APK/PWA) icinde mi aciliyor? Tarayicida zaten tarayicidayiz,
+  // "tarayicida ac" dugmesi orada anlamsiz olur.
+  const [uygulamada, setUygulamada] = useState(false)
+
+  useEffect(() => {
+    setUygulamada(
+      window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as { standalone?: boolean }).standalone === true,
+    )
+  }, [])
 
   useEffect(() => {
     if (sayac <= 0) return
@@ -139,6 +149,19 @@ export default function GirisFormu({ onek }: { onek?: string }) {
       <p className="text-[11px] text-center text-slate-500">
         Kayıtlı numaranıza kod gönderilir. Bu cihazda {OTURUM_GUN} gün açık kalır.
       </p>
+
+      {/* Uygulama takilirsa cikis yolu: ayni sayfa tarayicida acilir.
+          target="_blank" uygulama kabugunda sayfayi DIS tarayiciya atar. */}
+      {uygulamada && (
+        <a
+          href={`${(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://estelongy.com').replace(/\/$/, '')}/tavsiye`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full px-3 py-3 rounded-xl text-sm font-bold text-center
+                     bg-slate-800 hover:bg-slate-700 text-slate-300 ring-1 ring-slate-700">
+          Tarayıcıda Aç
+        </a>
+      )}
     </div>
   )
 }
