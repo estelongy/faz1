@@ -129,6 +129,11 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
   // Davet gönderilen kampanyanın token'ı. Kod kutusu AYNI kartta açılsın:
   // referansör davet gönderdiği yerde kalsın, sayfanın tepesine çıkmasın.
   const [acikDavet, setAcikDavet] = useState<Record<string, { token: string; ad: string } | null>>({})
+  // Kart içinde açık duran davetlerin token'ları — üstteki liste bunları atlar.
+  const kartTokenlari = new Set(
+    Object.values(acikDavet).filter(Boolean).map(a => a!.token),
+  )
+  const bekleyenDisListe = veri.bekleyen_link.filter(l => !kartTokenlari.has(l.token))
 
   // Takvim bir kez çekilir; panel açıkken yeniden sorulmaz.
   useEffect(() => {
@@ -243,14 +248,19 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
         <p className="text-sm font-semibold px-3 py-2 rounded-lg bg-rose-500/15 text-rose-300">{hata}</p>
       )}
 
-      {/* ── Doğrulama bekleyenler — ÖNCE, çünkü iş burada ── */}
-      {sekme === 'kod' && veri.bekleyen_link.length > 0 && (
+      {/* ── Doğrulama bekleyenler — ÖNCE, çünkü iş burada ──
+          Bu oturumda gönderilen davet kampanya kartının İÇİNDE zaten açık
+          (acikDavet). Onu burada tekrarlarsak aynı kod kutusu ekranda iki
+          kere çıkıyor ve hangisine yazılacağı belirsiz kalıyor. Kart içinde
+          duran davet bu listeden elenir; başka cihazdan/oturumdan kalanlar
+          burada görünmeye devam eder. */}
+      {sekme === 'kod' && bekleyenDisListe.length > 0 && (
         <section className="space-y-2">
           <h2 className="text-sm font-black text-white">Onay bekleyenler</h2>
           <p className="text-[11px] text-slate-500 -mt-1">
             Arayıp SMS&rsquo;le gelen onay kodunu sorun, buraya yazın.
           </p>
-          {veri.bekleyen_link.map(l => (
+          {bekleyenDisListe.map(l => (
             <div key={l.token} className="bg-slate-900 border border-amber-500/30 rounded-xl p-3">
               <p className="text-sm font-semibold text-white line-clamp-1">{l.aday_ad ?? '—'}</p>
               <p className="text-xs text-slate-500">
