@@ -51,6 +51,8 @@ export interface PanelVerisi {
     offer_id: string
     aday_ad: string | null; aday_tel: string | null
     islem_notu: string | null
+    /** 'YYYY-MM-DDTHH:MM' (TSİ) — zorunluluk öncesi açılan davetlerde null. */
+    randevu: string | null
   }[]
 }
 
@@ -174,11 +176,18 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
     })
   }
 
-  /** Onay kodu süresi dolduysa aynı kişiye yeni kod gönderir. */
-  function tekrarGonder(offerId: string, ad: string, tel: string) {
+  /**
+   * Onay kodu süresi dolduysa aynı kişiye yeni kod gönderir.
+   *
+   * Randevu artık zorunlu: bekleyen davetin kayıtlı saati birlikte gider,
+   * yoksa sunucu "Randevu saati seçin" der ve bu düğme hiç çalışmaz.
+   * Zorunluluk öncesi açılmış randevusuz davetlerde seçim yapılamadığı için
+   * düğme gizlenir — referansör yeni davet açar.
+   */
+  function tekrarGonder(offerId: string, ad: string, tel: string, randevuAt: string) {
     setHata(null)
     startTransition(async () => {
-      const r = await davetBaslat(veri.onek, offerId, ad, tel)
+      const r = await davetBaslat(veri.onek, offerId, ad, tel, undefined, 0, randevuAt)
       if (!r.ok) { setHata(r.error); return }
     })
   }
@@ -284,12 +293,16 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                 </button>
               </form>
               <div className="flex items-center justify-between gap-2 mt-2">
-                {/* Onay kodunun süresi 30 dk; dolduysa buradan yenisi gönderilir. */}
-                <button type="button" disabled={pending}
-                  onClick={() => tekrarGonder(l.offer_id, l.aday_ad ?? '', l.aday_tel ?? '')}
-                  className="text-[11px] font-semibold text-slate-500 hover:text-slate-300 disabled:opacity-40 text-left">
-                  Kod gelmedi mi? Yeni onay kodu gönder
-                </button>
+                {/* Onay kodunun süresi 30 dk; dolduysa buradan yenisi gönderilir.
+                    Randevusu olmayan eski davetlerde gizli: randevu zorunlu ve
+                    burada seçilemiyor. Referansör iptal edip yeni davet açar. */}
+                {l.randevu ? (
+                  <button type="button" disabled={pending}
+                    onClick={() => tekrarGonder(l.offer_id, l.aday_ad ?? '', l.aday_tel ?? '', l.randevu!)}
+                    className="text-[11px] font-semibold text-slate-500 hover:text-slate-300 disabled:opacity-40 text-left">
+                    Kod gelmedi mi? Yeni onay kodu gönder
+                  </button>
+                ) : <span />}
                 {/* Vazgeçildiyse davet burada kapanır — yoksa 7 gün listede durur. */}
                 <button type="button" disabled={pending}
                   onClick={() => iptalEt(l.token, l.aday_ad ?? 'Bu kişi')}
@@ -444,15 +457,22 @@ export default function ReferansorPanel({ veri }: { veri: PanelVerisi }) {
                     </div>
                   )
                 })()}
-                {/* Randevu seçimi — davet gönderilmeden önce.
-                    Akış: bilgi → telefon → not → randevu → gönder. */}
+                {/* Randevu seçimi — ZORUNLU. Randevusuz kod, kliniğin kimi ne
+                    zaman bekleyeceğini bilmediği bir indirim demekti: müşteri
+                    günlerce gelmiyor, slot da boş durmuyordu. */}
                 <RandevuSecici
                   musaitlik={musaitlik}
                   secili={randevu[t.id] ?? null}
                   onSec={d => setRandevu(p => ({ ...p, [t.id]: d }))} />
+                {!randevu[t.id] && (
+                  <p className="text-[11px] text-amber-400/90">
+                    Kod üretmek için randevu saati seçin.
+                  </p>
+                )}
 
                 <button type="submit"
                   disabled={pending || !adGecerli(f.ad) || !telGecerli(f.tel)
+                    || !randevu[t.id]
                     || (Number(f.ekstra) || 0) > veri.puan}
                   className="w-full px-3 py-2.5 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white disabled:opacity-50">
                   {pending ? 'Gönderiliyor…' : 'Davet Gönder'}

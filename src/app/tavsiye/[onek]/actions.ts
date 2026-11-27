@@ -48,7 +48,7 @@ export async function davetBaslat(
   onek: string, offerId: string, ad: string, hamTel: string, islemNotu?: string,
   /** Referansörün kendi puanından verdiği ek indirim (TL). Klinik %10'un üstü. */
   ekstraIndirim?: number,
-  /** Seçilen randevu saati 'YYYY-MM-DDTHH:MM' (yerel). Slot 5 dk rezerve olur. */
+  /** Randevu saati 'YYYY-MM-DDTHH:MM' (yerel) — ZORUNLU. Slot 5 dk rezerve olur. */
   randevu?: string | null,
 ): Promise<Baslat> {
   const temizAd = ad.trim()
@@ -60,6 +60,13 @@ export async function davetBaslat(
 
   const tel = normalizePhone(hamTel)
   if (!tel) return { ok: false, error: 'Telefon numarası geçersiz.' }
+
+  // Randevu ZORUNLU. Ekran da engelliyor ama istemci atlanabilir.
+  // Randevusuz kod, kliniğin kimi ne zaman bekleyeceğini bilmediği bir
+  // indirim demekti: müşteri günlerce gelmiyor, slot da boş durmuyordu.
+  if (!randevu || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(randevu)) {
+    return { ok: false, error: 'Randevu saati seçin.' }
+  }
 
   // Aynı numaraya saatte en fazla N SMS.
   // Sayaç yalnızca OKUNUR; artırma SMS gerçekten gidince yapılır — yoksa
@@ -79,9 +86,8 @@ export async function davetBaslat(
     // Bakiye kontrolü RPC'de: yetmezse davet hiç açılmaz, klinikte
     // hasta karşısında sürpriz olmasın.
     p_ekstra: Number.isFinite(ekstraIndirim) ? Math.max(ekstraIndirim!, 0) : 0,
-    // 'YYYY-MM-DDTHH:MM' yerel saat; sunucu UTC'ye çevirir. Seçilmemişse
-    // null gider, davet randevusuz açılır (eski davranış).
-    p_randevu: randevu ? `${randevu}:00+03` : null,
+    // 'YYYY-MM-DDTHH:MM' yerel saat; sunucu UTC'ye çevirir.
+    p_randevu: `${randevu}:00+03`,
   })
   if (error) return { ok: false, error: error.message }
 
