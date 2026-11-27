@@ -188,10 +188,7 @@ export async function kodDogrula(
       indirimOran,
       ekstraIndirim: Number(d?.ekstra_indirim ?? 0) || null,
       // Randevu yazıldıysa mesaj randevu odaklı olur: asıl bilgi saattir.
-      // RPC 'YYYY-MM-DDTHH:MM:SS+03' döner, saniye/dilim atılır.
-      randevu: row.randevu_at
-        ? String(row.randevu_at).replace(' ', 'T').slice(0, 16)
-        : null,
+      randevu: tsiRandevu(row.randevu_at),
     }))
   } catch (err) {
     console.error('[referans-kod-sms]', err)
@@ -200,9 +197,7 @@ export async function kodDogrula(
   revalidatePath(`/tavsiye/${onek}`)
   return {
     ok: true, kod: String(row.kod), kisa: String(row.kisa),
-    randevu: row.randevu_at
-      ? String(row.randevu_at).replace(' ', 'T').slice(0, 16)
-      : null,
+    randevu: tsiRandevu(row.randevu_at),
   }
 }
 
@@ -214,6 +209,27 @@ export async function kodDogrula(
  * Silmez, durumu 'iptal' yapar (kim kime davet göndermiş kayıtta kalsın).
  * Onaylanmış davet iptal edilemez: altın kod müşterinin elinde.
  */
+/**
+ * Veritabanindan gelen randevu zamanini TSI'ye cevirir: 'YYYY-MM-DDTHH:MM'.
+ *
+ * NEDEN: start_at/randevu_at `timestamptz` ve PostgREST bunu UTC dondurur
+ * ('2026-12-03 16:00:00+00'). Eskiden metin kesilerek kullaniliyordu, bu da
+ * TSI 19:00 olan randevuyu 16:00 gosteriyordu - hem SMS'te hem klinik
+ * ekraninda. Kayit dogruydu, gosterim yanlisti.
+ */
+function tsiRandevu(ham: unknown): string | null {
+  if (!ham) return null
+  const t = new Date(String(ham))
+  if (Number.isNaN(t.getTime())) return null
+  const p = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Istanbul',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  }).formatToParts(t)
+  const g = (tip: string) => p.find(x => x.type === tip)?.value ?? ''
+  return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}:${g('minute')}`
+}
+
 export async function davetIptal(
   onek: string, token: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
